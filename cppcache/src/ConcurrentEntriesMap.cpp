@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ConcurrentEntriesMap.hpp"
 
 #include <algorithm>
@@ -69,7 +70,7 @@ void ConcurrentEntriesMap::clear() {
   m_size = 0;
 }
 
-ConcurrentEntriesMap::~ConcurrentEntriesMap() { delete[] m_segments; }
+ConcurrentEntriesMap::~ConcurrentEntriesMap() noexcept { delete[] m_segments; }
 
 GfErrType ConcurrentEntriesMap::create(
     const std::shared_ptr<CacheableKey>& key,
@@ -175,6 +176,8 @@ void ConcurrentEntriesMap::getValues(
     m_segments[index].getValues(result);
   }
 }
+
+bool ConcurrentEntriesMap::empty() const { return m_size == 0; }
 
 uint32_t ConcurrentEntriesMap::size() const { return m_size; }
 

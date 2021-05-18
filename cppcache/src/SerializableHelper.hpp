@@ -22,10 +22,16 @@
 
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/DataSerializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DataSerializableInternal;
+using internal::DataSerializablePrimitive;
 
 template <class _Serializable>
 struct SerializableHelper {

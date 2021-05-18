@@ -17,6 +17,8 @@
 
 #include "ReadWriteLock.hpp"
 
+#include <thread>
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -29,7 +31,7 @@ TryReadGuard::TryReadGuard(ACE_RW_Thread_Mutex& lock,
       isAcquired_ = true;
       break;
     }
-    ACE_OS::thr_yield();
+    std::this_thread::yield();
   } while (!exitCondition);
 }
 
@@ -41,7 +43,7 @@ TryWriteGuard::TryWriteGuard(ACE_RW_Thread_Mutex& lock,
       isAcquired_ = true;
       break;
     }
-    ACE_OS::thr_yield();
+    std::this_thread::yield();
   } while (!exitCondition);
 }
 

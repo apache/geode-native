@@ -122,7 +122,7 @@ void SimpleCacheListener::afterRegionClear(const RegionEvent& event) {
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
 std::shared_ptr<TallyListener> regListener;
@@ -377,10 +377,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, doEventOperations)
     auto subregPtr2 = exmpRegPtr->getSubregion(myRegNames[4]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      std::string key = "Key-" + std::to_string(index);
+      std::string value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
       regPtr0->put(keyptr, valuePtr);

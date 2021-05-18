@@ -18,8 +18,6 @@
 #include <cinttypes>
 #include <memory>
 
-#include <geode/internal/geode_base.hpp>
-
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 
@@ -39,8 +37,6 @@ using apache::geode::client::DataOutput;
 using apache::geode::client::DataSerializable;
 
 int32_t g_classIdToReturn = 0x04;
-int32_t g_classIdToReturn2 = 0x1234;
-int32_t g_classIdToReturn4 = 0x123456;
 
 template <class T>
 std::shared_ptr<T> duplicate(const std::shared_ptr<T> &orig) {
@@ -103,6 +99,7 @@ class OtherType : public DataSerializable {
     ot->m_struct.b = (i % 2 == 0) ? true : false;
     ot->m_struct.c = static_cast<char>(65) + i;
     ot->m_struct.d = ((2.0) * static_cast<double>(i));
+    ot->m_struct.e = (static_cast<uint64_t>(i) << 32) + i;
 
     printf("Created OtherType: %d, %s, %c, %e\n", ot->m_struct.a,
            ot->m_struct.b ? "true" : "false", ot->m_struct.c, ot->m_struct.d);

@@ -34,8 +34,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT PdxFieldType
-    : public internal::DataSerializableInternal {
+class PdxFieldType : public internal::DataSerializableInternal {
  private:
   std::string m_fieldName;
   std::string m_className;

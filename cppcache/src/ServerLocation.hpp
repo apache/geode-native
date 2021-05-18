@@ -35,14 +35,13 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ServerLocation
-    : public internal::DataSerializableInternal {
+class ServerLocation : public internal::DataSerializableInternal {
  public:
   ServerLocation(std::string serverName, int port)
       : Serializable(), m_serverName(std::move(serverName)), m_port(port) {
     LOGDEBUG(
         "ServerLocation::ServerLocation(): creating ServerLocation for %s:%d",
-        serverName.c_str(), port);
+        m_serverName.c_str(), port);
     makeEpString();
   }
 
@@ -64,11 +63,6 @@ class APACHE_GEODE_EXPORT ServerLocation
 
   const std::string& getServerName() const { return m_serverName; }
 
-  void setServername(std::string serverName) {
-    m_serverName = std::move(serverName);
-    makeEpString();
-  }
-
   int getPort() const { return m_port; }
 
   void toData(DataOutput& output) const override {
@@ -89,7 +83,7 @@ class APACHE_GEODE_EXPORT ServerLocation
   }
 
   void printInfo() {
-    LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
+    LOGDEBUG(" Got Host \"%s\", and port %d", getServerName().c_str(), m_port);
   }
 
   bool operator<(const ServerLocation rhs) const {

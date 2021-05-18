@@ -21,15 +21,19 @@ public_host: localhost
 sections:
 - repository:
     name: geode-native-docs-dotnet
-  directory: docs/geode-native/dotnet/113
+  directory: docs/geode-native/dotnet/115
   subnav_template: geode-nc-nav
 
 template_variables:
   product_name_long: Apache Geode
   product_name: Geode
   product_name_lc: geode
-  product_version: "1.13"
-  product_version_nodot: 113
+  product_version: "1.15"
+  product_version_nodot: 115
+  # Un-versioned API names (cppapiref, dotnetapiref) always point to the latest release. Be sure redirects.rb provides entries for the (right-hand) values.
+  cppapiref_version: cppapiref
+  dotnetapiref_version: dotnetapiref
+  #
   product_language: dotnet
   client_name: Geode Native Client for .NET
   min_java_update: 121
@@ -46,4 +50,4 @@ template_variables:
   local_header_title: Apache Geode Native .NET
   local_header_img: /images/Apache_Geode_logo_symbol.png
 
-broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|113|#
+broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|#

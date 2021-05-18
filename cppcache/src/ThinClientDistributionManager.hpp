@@ -32,7 +32,7 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
  public:
   ThinClientDistributionManager(TcrConnectionManager& connManager,
                                 ThinClientRegion* region);
-  ~ThinClientDistributionManager() override = default;
+  ~ThinClientDistributionManager() noexcept override = default;
 
   void init() override;
   void destroy(bool keepalive = false) override;
@@ -81,6 +81,7 @@ class ThinClientDistributionManager : public ThinClientBaseDM {
   std::vector<TcrEndpoint*> m_endpoints;
   std::recursive_mutex m_endpointsLock;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

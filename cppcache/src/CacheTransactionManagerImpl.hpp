@@ -25,7 +25,6 @@
 
 #include <geode/CacheTransactionManager.hpp>
 
-#include "SuspendedTxExpiryHandler.hpp"
 #include "TXCommitMessage.hpp"
 #include "util/Log.hpp"
 
@@ -35,6 +34,8 @@ namespace client {
 
 enum status { STATUS_COMMITTED = 3, STATUS_ROLLEDBACK = 4 };
 enum commitOp { BEFORE_COMMIT, AFTER_COMMIT };
+
+class ThinClientPoolDM;
 
 class CacheTransactionManagerImpl : public virtual CacheTransactionManager {
  public:

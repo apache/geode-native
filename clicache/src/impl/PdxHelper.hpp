@@ -46,7 +46,7 @@ namespace Apache
 
           static IPdxSerializable^ DeserializePdx(DataInput^ dataOutput, bool forceDeserialize, const native::SerializationRegistry* serializationRegistry);
 
-          static IPdxSerializable^ PdxHelper::DeserializePdx(DataInput^ dataInput, bool forceDeserialize, int typeId, int length, const native::SerializationRegistry* serializationRegistry);
+          static IPdxSerializable^ DeserializePdx(DataInput^ dataInput, bool forceDeserialize, int typeId, int length, const native::SerializationRegistry* serializationRegistry);
 
           literal Byte PdxHeader = 8;
 
@@ -54,7 +54,7 @@ namespace Apache
 
           static Int32 ReadInt16(System::Byte* offsetPosition);
 
-					static Int32 PdxHelper::ReadUInt16(System::Byte* offsetPosition);
+          static Int32 ReadUInt16(System::Byte* offsetPosition);
 
           static Int32 ReadByte(System::Byte* offsetPosition);
 

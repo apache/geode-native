@@ -20,23 +20,7 @@
 #ifndef GEODE_TCPSSLCONN_H_
 #define GEODE_TCPSSLCONN_H_
 
-#include <atomic>
-#include <chrono>
-#include <string>
-
-#if defined(_WIN32)
-#pragma warning(push)
-#pragma warning(disable : 4311)
-#pragma warning(disable : 4302)
-#endif
-
-#pragma pack(push)
-#include <ace/SSL/SSL_SOCK_Stream.h>
-#pragma pack(pop)
-
-#if defined(_WIN32)
-#pragma warning(pop)
-#endif
+#include <boost/asio/ssl.hpp>
 
 #include "TcpConn.hpp"
 
@@ -45,63 +29,51 @@ namespace geode {
 namespace client {
 
 class TcpSslConn : public TcpConn {
- private:
-  static std::atomic_flag initialized_;
-  const std::string trustStoreFile_;
-  const std::string privateKeyFile_;
-  const std::string password_;
-  std::string sniHostname_;
-  std::unique_ptr<ACE_SSL_SOCK_Stream> stream_;
-
  protected:
-  void createSocket(ACE_HANDLE sock) override;
+  using ssl_stream_type =
+      boost::asio::ssl::stream<boost::asio::ip::tcp::socket&>;
 
-  ssize_t doOperation(const SockOp& op, void* buff, size_t sendlen,
-                      ACE_Time_Value& waitTime, size_t& readLen) const override;
+  boost::asio::ssl::context ssl_context_;
+  std::unique_ptr<ssl_stream_type> socket_stream_;
+  boost::asio::io_context::strand strand_;
 
-  void initSsl();
+  void prepareAsyncRead(char* buff, size_t len,
+                        boost::optional<boost::system::error_code>& read_result,
+                        std::size_t& bytes_read) override;
+
+  void prepareAsyncWrite(
+      const char* buff, size_t len,
+      boost::optional<boost::system::error_code>& write_result,
+      std::size_t& bytes_written) override;
 
  public:
-  TcpSslConn(const std::string& ipaddr, std::chrono::microseconds waitSeconds,
-             int32_t maxBuffSizePool, const std::string& sniProxyHostname,
-             uint16_t sniProxyPort, std::string publicKeyFile,
-             std::string privateKeyFile, std::string password)
-      : TcpConn(sniProxyHostname, sniProxyPort, waitSeconds, maxBuffSizePool),
-        trustStoreFile_(std::move(publicKeyFile)),
-        privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)),
-        sniHostname_(ipaddr.substr(0, ipaddr.find(':'))) {
-    initSsl();
-  }
+  TcpSslConn(const std::string& hostname, uint16_t port,
+             const std::string& sniProxyHostname, uint16_t sniProxyPort,
+             std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool,
+             const std::string& pubkeyfile, const std::string& privkeyfile,
+             const std::string& pemPassword);
 
   TcpSslConn(const std::string& hostname, uint16_t port,
              std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool,
-             const std::string& publicKeyFile,
-             const std::string& privateKeyFile, const std::string& password)
-      : TcpConn(hostname.c_str(), port, connect_timeout, maxBuffSizePool),
-        trustStoreFile_(std::move(publicKeyFile)),
-        privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)) {
-    initSsl();
-  }
+             const std::string& pubkeyfile, const std::string& privkeyfile,
+             const std::string& pemPassword);
 
-  TcpSslConn(const std::string& address, std::chrono::microseconds waitSeconds,
-             int32_t maxBuffSizePool, std::string publicKeyFile,
-             std::string privateKeyFile, std::string password)
-      : TcpConn(address, waitSeconds, maxBuffSizePool),
-        trustStoreFile_(std::move(publicKeyFile)),
-        privateKeyFile_(std::move(privateKeyFile)),
-        password_(std::move(password)) {
-    initSsl();
-  }
+  TcpSslConn(const std::string& ipaddr,
+             std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool,
+             const std::string& pubkeyfile, const std::string& privkeyfile,
+             const std::string& pemPassword);
 
-  virtual ~TcpSslConn() noexcept override = default;
+  TcpSslConn(const std::string& ipaddr, std::chrono::microseconds waitSeconds,
+             int32_t maxBuffSizePool, const std::string& sniProxyHostname,
+             uint16_t sniProxyPort, const std::string& publicKeyFile,
+             const std::string& privateKeyFile, const std::string& password);
 
-  void close() override;
+  ~TcpSslConn() override;
 
-  void connect() override;
-
-  uint16_t getPort() override;
+ private:
+  void init(const std::string& pubkeyfile, const std::string& privkeyfile,
+            const std::string& pemPassword,
+            const std::string& sniHostname = "");
 };
 }  // namespace client
 }  // namespace geode

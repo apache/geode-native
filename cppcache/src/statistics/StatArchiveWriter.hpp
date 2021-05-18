@@ -75,7 +75,7 @@ using std::chrono::system_clock;
  *                 // of the Statistics object and the value of the
  *                 // descriptors in the previous sample run.
  */
-class APACHE_GEODE_EXPORT StatDataOutput {
+class StatDataOutput {
  public:
   explicit StatDataOutput(CacheImpl *cache);
   StatDataOutput(std::string, CacheImpl *cache);
@@ -135,7 +135,7 @@ class APACHE_GEODE_EXPORT StatDataOutput {
   friend class StatArchiveWriter;
 };
 
-class APACHE_GEODE_EXPORT ResourceType {
+class ResourceType {
  public:
   ResourceType(int32_t id, const StatisticsType *type);
   ResourceType(const ResourceType &) = delete;
@@ -149,7 +149,7 @@ class APACHE_GEODE_EXPORT ResourceType {
   const StatisticsType *type;
 };
 
-class APACHE_GEODE_EXPORT ResourceInst {
+class ResourceInst {
  public:
   ResourceInst(int32_t id, Statistics *, const ResourceType *,
                StatDataOutput *);
@@ -178,7 +178,7 @@ class APACHE_GEODE_EXPORT ResourceInst {
 
 class HostStatSampler;
 
-class APACHE_GEODE_EXPORT StatArchiveWriter {
+class StatArchiveWriter {
   HostStatSampler *sampler_;
   StatDataOutput *dataBuffer_;
   CacheImpl *cache_;

@@ -31,7 +31,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -47,7 +47,7 @@ CacheHelper* cacheHelper = nullptr;
 #define SERVER2 s2p2
 static bool isLocator = false;
 // static int numberOfLocators = 0;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 void initClient(const bool isthinClient) {
@@ -127,7 +127,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -161,12 +162,14 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -175,12 +178,14 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createPooledRegionSticky(const char* name, bool ackMode,
-                              const char* locators, const char* poolname,
+void createPooledRegionSticky(const std::string& name, bool ackMode,
+                              const std::string& locators,
+                              const std::string& poolname,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
@@ -278,7 +283,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char* regionName = "DistRegionAck";
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -293,8 +298,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
   {
     initClient(true);
-    createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL2__");
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepOne_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -302,10 +306,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
                              "__TEST_POOL1__");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG,
-                             "__TEST_POOL2__");
     LOG("StepOne_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -313,8 +315,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator)
   {
     initClient(true);
-    createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL2__");
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -322,28 +323,23 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionNames[0], USE_ACK, locatorsG,
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
                              "__TEST_POOL1__");
-    createPooledRegionSticky(regionNames[1], NO_ACK, locatorsG,
-                             "__TEST_POOL2__");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
-    createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
+    createEntry(regionName, keys[0], vals[0]);
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
   {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
-    createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[3], vals[3]);
+    doNetsearch(regionName, keys[0], vals[0]);
+    createEntry(regionName, keys[1], vals[1]);
     LOG("StepFour complete.");
   }
 END_TASK_DEFINITION
@@ -367,17 +363,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     // doNetsearch( regionNames[0], keys[1], vals[1] );
     // doNetsearch( regionNames[1], keys[3], vals[3] );
-    updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
+    updateEntry(regionName, keys[0], nvals[0]);
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
-    doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
-    updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
+    doNetsearch(regionName, keys[0], vals[0]);
+    updateEntry(regionName, keys[1], nvals[1]);
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION

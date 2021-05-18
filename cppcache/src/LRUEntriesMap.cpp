@@ -22,7 +22,7 @@
 #include "CacheImpl.hpp"
 #include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "LRUList.cpp"
+#include "LRUEntryProperties.hpp"
 #include "MapSegment.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
@@ -33,16 +33,16 @@ namespace client {
 /**
  * @brief LRUAction for testing map outside of a region....
  */
-class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
+class TestMapAction : public virtual LRUAction {
  private:
   EntriesMap* m_eMap;
 
  public:
   explicit TestMapAction(EntriesMap* eMap) : m_eMap(eMap) { m_destroys = true; }
 
-  virtual ~TestMapAction() {}
+  ~TestMapAction() noexcept override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override {
     std::shared_ptr<CacheableKey> keyPtr;
     mePtr->getKeyI(keyPtr);
     /** @TODO try catch.... return true or false. */
@@ -52,7 +52,7 @@ class APACHE_GEODE_EXPORT TestMapAction : public virtual LRUAction {
     return (m_eMap->remove(keyPtr, cPtr, me, 0, versionTag, false) == GF_NOERR);
   }
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_DESTROY; }
+  LRUAction::Action getType() override { return LRUAction::LOCAL_DESTROY; }
   friend class LRUAction;
 };
 
@@ -65,7 +65,7 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
                              const uint8_t concurrency, bool heapLRUEnabled)
     : ConcurrentEntriesMap(expiryTaskManager, std::move(entryFactory),
                            concurrencyChecksEnabled, region, concurrency),
-      m_lruList(),
+      lru_queue_(),
       m_limit(limit),
       m_pmPtr(nullptr),
       m_validEntries(0),
@@ -93,18 +93,18 @@ LRUEntriesMap::LRUEntriesMap(ExpiryTaskManager* expiryTaskManager,
 
 void LRUEntriesMap::close() {
   if (m_evictionControllerPtr != nullptr) {
-    m_evictionControllerPtr->updateRegionHeapInfo((-1 * (m_currentMapSize)));
-    m_evictionControllerPtr->deregisterRegion(m_name);
+    m_evictionControllerPtr->incrementHeapSize(-m_currentMapSize);
+    m_evictionControllerPtr->unregisterRegion(m_name);
   }
   ConcurrentEntriesMap::close();
 }
 
 void LRUEntriesMap::clear() {
-  updateMapSize((-1 * (m_currentMapSize)));
+  updateMapSize(-m_currentMapSize);
   ConcurrentEntriesMap::clear();
 }
 
-LRUEntriesMap::~LRUEntriesMap() { delete m_action; }
+LRUEntriesMap::~LRUEntriesMap() noexcept { delete m_action; }
 
 /**
  * @brief put an item in the map... if it is a new entry, then the LRU may
@@ -139,7 +139,8 @@ GfErrType LRUEntriesMap::create(const std::shared_ptr<CacheableKey>& key,
     if (mePtr == nullptr) {
       return err;
     }
-    m_lruList.appendEntry(mePtr);
+
+    lru_queue_.push(mePtr);
     me = mePtr;
   }
   if (m_evictionControllerPtr != nullptr) {
@@ -167,16 +168,14 @@ GfErrType LRUEntriesMap::processLRU() {
 
 GfErrType LRUEntriesMap::evictionHelper() {
   GfErrType err = GF_NOERR;
-  std::shared_ptr<MapEntryImpl> lruEntryPtr;
-  m_lruList.getLRUEntry(lruEntryPtr);
-  if (lruEntryPtr == nullptr) {
+  auto entry = lru_queue_.pop();
+  if (entry == nullptr) {
     err = GF_ENOENT;
     return err;
   }
-  bool IsEvictDone = m_action->evict(lruEntryPtr);
+  bool IsEvictDone = m_action->evict(entry);
   if (m_action->overflows() && IsEvictDone) {
     --m_validEntries;
-    lruEntryPtr->getLRUProperties().setEvicted();
   }
   if (!IsEvictDone) {
     err = GF_DISKFULL;
@@ -202,7 +201,6 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
                                     std::shared_ptr<MapEntryImpl>& me,
                                     std::shared_ptr<Cacheable>& oldValue,
                                     std::shared_ptr<VersionTag> versionTag) {
-  int64_t newSize = 0;
   MapSegment* segmentRPtr = segmentFor(key);
   bool isTokenAdded = false;
   GfErrType err =
@@ -221,7 +219,7 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
   // TODO: assess any other effects of this race
   if (CacheableToken::isOverflowed(oldValue)) {
     std::lock_guard<MapSegment> _guard(*segmentRPtr);
-    auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+    auto&& persistenceInfo = me->getLRUProperties().persistence_info();
     //  get the old value first which is required for heapLRU
     // calculation and for listeners; note even though there is a race
     // here between get and destroy, it will not harm if we get a slightly
@@ -236,8 +234,8 @@ GfErrType LRUEntriesMap::invalidate(const std::shared_ptr<CacheableKey>& key,
   }
   if (!isOldValueToken) {
     --m_validEntries;
-    me->getLRUProperties().setEvicted();
-    newSize = CacheableToken::invalid()->objectSize();
+    lru_queue_.remove(me);
+    auto newSize = CacheableToken::invalid()->objectSize();
     if (oldValue != nullptr) {
       newSize -= oldValue->objectSize();
     } else {
@@ -295,7 +293,7 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
         segmentRPtr->unlock();
         segmentLocked = true;
       }
-      auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+      auto&& persistenceInfo = me->getLRUProperties().persistence_info();
       oldValue = m_pmPtr->read(key, persistenceInfo);
       if (oldValue != nullptr) {
         m_pmPtr->destroy(key, persistenceInfo);
@@ -320,16 +318,13 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
       segmentRPtr->getEntry(key, mePtr, tmpValue);
       // mePtr cannot be null, we just put it...
       // must convert to an std::shared_ptr<LRUMapEntryImpl>...
-
-      m_lruList.appendEntry(mePtr);
+      lru_queue_.push(mePtr);
       me = mePtr;
     } else {
       if (!CacheableToken::isToken(newValue) && isOldValueToken) {
         std::shared_ptr<Cacheable> tmpValue;
         segmentRPtr->getEntry(key, mePtr, tmpValue);
-        mePtr->getLRUProperties().clearEvicted();
-        m_lruList.appendEntry(
-            std::shared_ptr<MapEntryImpl>(mePtr->getImplPtr()));
+        lru_queue_.push(mePtr);
         me = mePtr;
       }
     }
@@ -371,80 +366,67 @@ GfErrType LRUEntriesMap::put(const std::shared_ptr<CacheableKey>& key,
  * as recently used.
  */
 bool LRUEntriesMap::get(const std::shared_ptr<CacheableKey>& key,
-                        std::shared_ptr<Cacheable>& returnPtr,
+                        std::shared_ptr<Cacheable>& value,
                         std::shared_ptr<MapEntryImpl>& me) {
-  bool doProcessLRU = false;
-  MapSegment* segmentRPtr = segmentFor(key);
-  bool segmentLocked = false;
-  if (m_action != nullptr &&
-      m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
-    segmentRPtr->lock();
-    segmentLocked = true;
-  }
+  value.reset();
+  bool trigger_lru = false;
+  auto* segment = segmentFor(key);
+  std::shared_ptr<MapEntryImpl> map_entry;
+
   {
-    returnPtr = nullptr;
-    std::shared_ptr<MapEntryImpl> mePtr;
-    if (false == segmentRPtr->getEntry(key, mePtr, returnPtr)) {
-      if (segmentLocked == true) segmentRPtr->unlock();
+    std::unique_lock<MapSegment> lock;
+
+    if (m_action != nullptr &&
+        m_action->getType() == LRUAction::OVERFLOW_TO_DISK) {
+      lock = decltype(lock){*segment};
+    }
+
+    if (!segment->getEntry(key, map_entry, value)) {
       return false;
     }
-    // segmentRPtr->get(key, returnPtr, mePtr);
-    auto nodeToMark = mePtr;
-    LRUEntryProperties& lruProps = nodeToMark->getLRUProperties();
-    if (returnPtr != nullptr && CacheableToken::isOverflowed(returnPtr)) {
-      auto&& persistenceInfo = lruProps.getPersistenceInfo();
-      std::shared_ptr<Cacheable> tmpObj;
+
+    LRUEntryProperties& lru_props = map_entry->getLRUProperties();
+    if (CacheableToken::isOverflowed(value)) {
+      auto&& persistenceInfo = lru_props.persistence_info();
       try {
-        tmpObj = m_pmPtr->read(key, persistenceInfo);
+        value = m_pmPtr->read(key, persistenceInfo);
       } catch (Exception& ex) {
         LOGERROR("read on the persistence layer failed - %s", ex.what());
-        if (segmentLocked == true) segmentRPtr->unlock();
         return false;
       }
+
       m_region->getRegionStats()->incRetrieves();
       m_region->getCacheImpl()->getCachePerfStats().incRetrieves();
 
-      returnPtr = tmpObj;
-
-      std::shared_ptr<Cacheable> oldValue;
-      bool isUpdate;
-      std::shared_ptr<VersionTag> versionTag;
-      if (GF_NOERR == segmentRPtr->put(key, tmpObj, mePtr, oldValue, 0, 0,
-                                       isUpdate, versionTag, nullptr)) {
-        // m_entriesRetrieved++;
-        ++m_validEntries;
-        lruProps.clearEvicted();
-        m_lruList.appendEntry(nodeToMark);
+      bool update;
+      std::shared_ptr<VersionTag> version;
+      std::shared_ptr<Cacheable> old_value;
+      if (GF_NOERR != segment->put(key, value, map_entry, old_value, 0, 0,
+                                   update, version, nullptr)) {
+        return false;
       }
-      doProcessLRU = true;
+
+      ++m_validEntries;
+      trigger_lru = true;
+      lru_queue_.push(map_entry);
+
       if (m_evictionControllerPtr != nullptr) {
         int64_t newSize = 0;
-        if (tmpObj != nullptr) {
+        if (value != nullptr) {
           newSize += static_cast<int64_t>(
-              tmpObj->objectSize() - CacheableToken::invalid()->objectSize());
+              value->objectSize() - CacheableToken::invalid()->objectSize());
         } else {
           newSize += sizeof(void*);
         }
         updateMapSize(newSize);
       }
+    } else {
+      lru_queue_.move_to_end(map_entry);
     }
-    me = mePtr;
-    // lruProps.clearEvicted();
-    lruProps.setRecentlyUsed();
-    if (doProcessLRU) {
-      GfErrType IsProcessLru = processLRU();
-      if ((IsProcessLru != GF_NOERR)) {
-        if (segmentLocked) {
-          segmentRPtr->unlock();
-        }
-        return false;
-      }
-    }
-    if (segmentLocked) {
-      segmentRPtr->unlock();
-    }
-    return true;
   }
+
+  me = std::move(map_entry);
+  return !trigger_lru || processLRU() == GF_NOERR;
 }
 
 GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
@@ -460,15 +442,15 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
                                  afterRemote, isEntryFound)) == GF_NOERR) {
     // ACE_Guard<MapSegment> _guard(*segmentRPtr);
     if (result != nullptr && me != nullptr) {
-      LRUEntryProperties& lruProps = me->getLRUProperties();
-      lruProps.setEvicted();
+      lru_queue_.remove(me);
+      LRUEntryProperties& lru_prop = me->getLRUProperties();
       if (isEntryFound) --m_size;
       if (!CacheableToken::isToken(result)) {
         --m_validEntries;
       }
       if (CacheableToken::isOverflowed(result)) {
         std::lock_guard<MapSegment> _guard(*segmentRPtr);
-        auto&& persistenceInfo = lruProps.getPersistenceInfo();
+        auto&& persistenceInfo = lru_prop.persistence_info();
         //  get the old value first which is required for heapLRU
         // calculation and for listeners; note even though there is a race
         // here between get and destroy, it will not harm if we get a slightly
@@ -484,10 +466,11 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
       if (m_evictionControllerPtr != nullptr) {
         int64_t sizeToRemove = static_cast<int64_t>(key->objectSize());
         sizeToRemove += static_cast<int64_t>(result->objectSize());
-        updateMapSize((-1 * sizeToRemove));
+        updateMapSize(-sizeToRemove);
       }
     }
   }
+
   return err;
 }
 
@@ -495,17 +478,14 @@ void LRUEntriesMap::updateMapSize(int64_t size) {
   // TODO: check and remove null check since this has already been done
   // by all the callers
   if (m_evictionControllerPtr != nullptr) {
-    {
-      std::lock_guard<spinlock_mutex> __guard(m_mapInfoLock);
-      m_currentMapSize += size;
-    }
-    m_evictionControllerPtr->updateRegionHeapInfo(size);
+    m_currentMapSize += size;
+    m_evictionControllerPtr->incrementHeapSize(size);
   }
 }
 std::shared_ptr<Cacheable> LRUEntriesMap::getFromDisk(
     const std::shared_ptr<CacheableKey>& key,
     std::shared_ptr<MapEntryImpl>& me) const {
-  auto&& persistenceInfo = me->getLRUProperties().getPersistenceInfo();
+  auto&& persistenceInfo = me->getLRUProperties().persistence_info();
   std::shared_ptr<Cacheable> tmpObj;
   try {
     LOGDEBUG("Reading value from persistence layer for key: %s",

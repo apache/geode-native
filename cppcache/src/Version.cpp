@@ -14,15 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "Version.hpp"
 
-#include "CacheImpl.hpp"
+#include <limits>
+
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-int8_t Version::m_ordinal = 45;  // Geode 1.0.0
+void Version::write(DataOutput& dataOutput, const Version& version,
+                    bool compressed) {
+  const auto ordinal = version.getOrdinal();
+  if (compressed && (ordinal <= std::numeric_limits<int8_t>::max())) {
+    dataOutput.write(static_cast<int8_t>(ordinal));
+  } else {
+    dataOutput.write(kTokenOrdinal);
+    dataOutput.writeInt(ordinal);
+  }
+}
+
+Version Version::read(DataInput& dataInput) {
+  int16_t ordinal = dataInput.read();
+  if (kTokenOrdinal == ordinal) {
+    ordinal = dataInput.readInt16();
+  }
+  return Version(ordinal);
+}
 
 }  // namespace client
 }  // namespace geode

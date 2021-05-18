@@ -61,11 +61,11 @@ class OperMonitor : public CacheListener {
 
  public:
   OperMonitor() : m_events(0), m_value(0) {}
-  ~OperMonitor() {}
+  ~OperMonitor() noexcept override = default;
 
-  virtual void afterCreate(const EntryEvent &event) { check(event); }
+  void afterCreate(const EntryEvent &event) override { check(event); }
 
-  virtual void afterUpdate(const EntryEvent &event) { check(event); }
+  void afterUpdate(const EntryEvent &event) override { check(event); }
 
   void validate(bool conflation) {
     LOG("validate called");

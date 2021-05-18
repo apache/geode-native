@@ -31,30 +31,9 @@ namespace security {
 
 class DummyCredentialGenerator : public CredentialGenerator {
  public:
-  DummyCredentialGenerator() : CredentialGenerator(ID_DUMMY, "DUMMY") {
-    ;
-    ;
-  }
+  DummyCredentialGenerator() : CredentialGenerator(ID_DUMMY, "DUMMY") {}
 
-  std::string getInitArgs(std::string workingDir, bool userMode) override {
-    std::string additionalArgs;
-    char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-    FWKINFO("Inside dummy Credentials usermode is " << userMode);
-    if (userMode) {
-      additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                       std::string(workingDir) +
-                       std::string("authz-dummyMU.xml");
-    } else {
-      additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                       std::string(workingDir) + std::string("authz-dummy.xml");
-    }
-
-    return additionalArgs;
-  }
+  std::string getInitArgs(std::string workingDir, bool userMode) override;
 
   std::string getClientAuthInitLoaderFactory() override {
     return "createUserPasswordAuthInitInstance";
@@ -73,21 +52,8 @@ class DummyCredentialGenerator : public CredentialGenerator {
     return "javaobject.DummyAuthorization.create";
   }
 
-  void getValidCredentials(std::shared_ptr<Properties>& p) override {
-    p->insert("security-username", "user1");
-    p->insert("security-password", "user1");
-    FWKDEBUG("inserted valid security-username "
-             << p->find("security-username")->value().c_str() << " password "
-             << p->find("security-password")->value().c_str());
-  }
-
-  void getInvalidCredentials(std::shared_ptr<Properties>& p) override {
-    p->insert("security-username", "1user");
-    p->insert("security-password", "user1");
-    FWKDEBUG("inserted invalid security-username "
-             << p->find("security-username")->value().c_str() << " password "
-             << p->find("security-password")->value().c_str());
-  }
+  void getValidCredentials(std::shared_ptr<Properties>& p) override;
+  void getInvalidCredentials(std::shared_ptr<Properties>& p) override;
 
   void getAllowedCredentialsForOps(opCodeList& opCodes,
                                    std::shared_ptr<Properties>& p,

@@ -17,6 +17,8 @@
 
 #include "DistributedSystemImpl.hpp"
 
+#include "Utils.hpp"
+
 #if defined(HAVE_PTHREAD_H)
 #include <pthread.h>
 #elif defined(_WIN32)
@@ -79,11 +81,8 @@ void DistributedSystemImpl::logSystemInformation() const {
   LOGCONFIG("Source revision: %s", PRODUCT_SOURCE_REVISION);
   LOGCONFIG("Source repository: %s", PRODUCT_SOURCE_REPOSITORY);
 
-  ACE_utsname u;
-  ACE_OS::uname(&u);
-  LOGCONFIG(
-      "Running on: SystemName=%s Machine=%s Host=%s Release=%s Version=%s",
-      u.sysname, u.machine, u.nodename, u.release, u.version);
+  auto sysinfo = Utils::getSystemInfo();
+  LOGCONFIG("Running on: %s", sysinfo.c_str());
   LOGCONFIG("Current directory: %s",
             boost::filesystem::current_path().string().c_str());
   LOGCONFIG("Current value of PATH: %s", Utils::getEnv("PATH").c_str());

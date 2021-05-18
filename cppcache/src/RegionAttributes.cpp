@@ -67,9 +67,8 @@ std::shared_ptr<CacheLoader> RegionAttributes::getCacheLoader() const {
       m_cacheLoader.reset((CacheXmlParser::managedCacheLoaderFn_)(
           m_cacheLoaderLibrary.c_str(), m_cacheLoaderFactory.c_str()));
     } else {
-      CacheLoader* (*funcptr)();
-      funcptr = reinterpret_cast<CacheLoader* (*)()>(Utils::getFactoryFunction(
-          m_cacheLoaderLibrary, m_cacheLoaderFactory));
+      auto funcptr = Utils::getFactoryFunction<CacheLoader*()>(
+          m_cacheLoaderLibrary, m_cacheLoaderFactory);
       m_cacheLoader.reset(funcptr());
     }
   }
@@ -84,9 +83,8 @@ std::shared_ptr<CacheWriter> RegionAttributes::getCacheWriter() const {
       m_cacheWriter.reset((CacheXmlParser::managedCacheWriterFn_)(
           m_cacheWriterLibrary.c_str(), m_cacheWriterFactory.c_str()));
     } else {
-      CacheWriter* (*funcptr)();
-      funcptr = reinterpret_cast<CacheWriter* (*)()>(Utils::getFactoryFunction(
-          m_cacheWriterLibrary, m_cacheWriterFactory));
+      auto funcptr = Utils::getFactoryFunction<CacheWriter*()>(
+          m_cacheWriterLibrary, m_cacheWriterFactory);
       m_cacheWriter.reset(funcptr());
     }
   }
@@ -101,10 +99,8 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
       m_cacheListener.reset((CacheXmlParser::managedCacheListenerFn_)(
           m_cacheListenerLibrary.c_str(), m_cacheListenerFactory.c_str()));
     } else {
-      CacheListener* (*funcptr)();
-      funcptr =
-          reinterpret_cast<CacheListener* (*)()>(Utils::getFactoryFunction(
-              m_cacheListenerLibrary, m_cacheListenerFactory));
+      auto funcptr = Utils::getFactoryFunction<CacheListener*()>(
+          m_cacheListenerLibrary, m_cacheListenerFactory);
       m_cacheListener.reset(funcptr());
     }
   }
@@ -113,7 +109,8 @@ std::shared_ptr<CacheListener> RegionAttributes::getCacheListener() const {
 
 std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
     const {
-  if (!m_partitionResolver && !m_partitionResolverLibrary.empty()) {
+  if (!m_partitionResolver && (!m_partitionResolverLibrary.empty() ||
+                               !m_partitionResolverFactory.empty())) {
     if (CacheXmlParser::managedPartitionResolverFn_ &&
         m_partitionResolverFactory.find('.') != std::string::npos) {
       // this is a managed library
@@ -121,10 +118,8 @@ std::shared_ptr<PartitionResolver> RegionAttributes::getPartitionResolver()
           m_partitionResolverLibrary.c_str(),
           m_partitionResolverFactory.c_str()));
     } else {
-      PartitionResolver* (*funcptr)();
-      funcptr =
-          reinterpret_cast<PartitionResolver* (*)()>(Utils::getFactoryFunction(
-              m_partitionResolverLibrary, m_partitionResolverFactory));
+      auto funcptr = Utils::getFactoryFunction<PartitionResolver*()>(
+          m_partitionResolverLibrary, m_partitionResolverFactory);
       m_partitionResolver.reset(funcptr());
     }
   }
@@ -140,10 +135,8 @@ std::shared_ptr<PersistenceManager> RegionAttributes::getPersistenceManager()
       m_persistenceManager.reset((CacheXmlParser::managedPersistenceManagerFn_)(
           m_persistenceLibrary.c_str(), m_persistenceFactory.c_str()));
     } else {
-      PersistenceManager* (*funcptr)();
-      funcptr =
-          reinterpret_cast<PersistenceManager* (*)()>(Utils::getFactoryFunction(
-              m_persistenceLibrary, m_persistenceFactory));
+      auto funcptr = Utils::getFactoryFunction<PersistenceManager*()>(
+          m_persistenceLibrary, m_persistenceFactory);
       m_persistenceManager.reset(funcptr());
     }
   }

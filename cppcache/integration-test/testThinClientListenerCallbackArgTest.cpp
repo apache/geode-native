@@ -21,12 +21,9 @@
 #include "ThinClientHelper.hpp"
 #include "TallyListener.hpp"
 #include "TallyWriter.hpp"
-#include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"
 
-#include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
-#include "CacheImpl.hpp"
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -44,7 +41,7 @@ using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 
@@ -77,7 +74,7 @@ class CallbackListener : public CacheListener {
     LOG("CallbackListener contructor called");
   }
 
-  virtual ~CallbackListener() {}
+  ~CallbackListener() noexcept override = default;
 
   int getCreates() { return m_creates; }
 
@@ -142,30 +139,31 @@ class CallbackListener : public CacheListener {
     check(event.getCallbackArgument(), updateEvent);
   }
 
-  virtual void afterCreate(const EntryEvent &event) {
+  void afterCreate(const EntryEvent &event) override {
     checkcallbackArg(event, m_creates);
   }
 
-  virtual void afterUpdate(const EntryEvent &event) {
+  void afterUpdate(const EntryEvent &event) override {
     checkcallbackArg(event, m_updates);
   }
 
-  virtual void afterInvalidate(const EntryEvent &event) {
+  void afterInvalidate(const EntryEvent &event) override {
     checkcallbackArg(event, m_invalidates);
   }
 
-  virtual void afterDestroy(const EntryEvent &event) {
+  void afterDestroy(const EntryEvent &event) override {
     checkcallbackArg(event, m_destroys);
   }
 
-  virtual void afterRegionInvalidate(const RegionEvent &event) {
+  void afterRegionInvalidate(const RegionEvent &event) override {
     checkcallbackArg(event, m_regionInvalidate);
   }
 
-  virtual void afterRegionDestroy(const RegionEvent &event) {
+  void afterRegionDestroy(const RegionEvent &event) override {
     checkcallbackArg(event, m_regionDestroy);
   }
-  virtual void afterRegionClear(const RegionEvent &event) {
+
+  void afterRegionClear(const RegionEvent &event) override {
     checkcallbackArg(event, m_regionClear);
   }
 };

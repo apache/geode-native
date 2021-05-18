@@ -40,7 +40,7 @@ using apache::geode::client::testing::TallyWriter;
 
 bool isLocalServer = true;
 static bool isLocator = false;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 

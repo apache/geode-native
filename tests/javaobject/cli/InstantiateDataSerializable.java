@@ -32,11 +32,43 @@ import org.apache.geode.cache.partition.PartitionRegionHelper;
 public class InstantiateDataSerializable extends FunctionAdapter implements Declarable{
 
 public void execute(FunctionContext context) {
+
+  Instantiator.register(new Instantiator(javaobject.cli.PositionKey.class, 21) {
+    public DataSerializable newInstance() {
+      return new javaobject.cli.PositionKey();
+    }
+  });
+
   Instantiator.register(new Instantiator(javaobject.cli.Position.class, 22) {
     public DataSerializable newInstance() {
       return new javaobject.cli.Position();
     }
   });
+
+  Instantiator.register(new Instantiator(javaobject.cli.TestClassA.class, 100) {
+    public DataSerializable newInstance() {
+      return new javaobject.cli.TestClassA();
+    }
+  });
+
+  Instantiator.register(new Instantiator(javaobject.cli.TestClassB.class, 101) {
+    public DataSerializable newInstance() {
+      return new javaobject.cli.TestClassB();
+    }
+  });
+
+  Instantiator.register(new Instantiator(javaobject.cli.TestClassC.class, 102) {
+    public DataSerializable newInstance() {
+      return new javaobject.cli.TestClassC();
+    }
+  });
+
+  Instantiator.register(new Instantiator(javaobject.cli.CompositeClass.class, 125) {
+    public DataSerializable newInstance() {
+      return new javaobject.cli.CompositeClass();
+    }
+  });
+
 
   ResultSender sender = context.getResultSender();
     sender.lastResult(0);

@@ -17,19 +17,20 @@
 
 #include "TcrMessage.hpp"
 
-#include <sstream>
-
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/SystemProperties.hpp>
 
 #include "AutoDelete.hpp"
+#include "BucketServerLocation.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
 #include "DiskStoreId.hpp"
 #include "DiskVersionTag.hpp"
-#include "DistributedSystem.hpp"
+#include "EventId.hpp"
+#include "FixedPartitionAttributesImpl.hpp"
+#include "SerializationRegistry.hpp"
 #include "StackTrace.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TXState.hpp"
@@ -39,6 +40,8 @@
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
+#include "VersionTag.hpp"
+#include "VersionedCacheableObjectPartList.hpp"
 #include "util/JavaModifiedUtf8.hpp"
 #include "util/string.hpp"
 
@@ -50,9 +53,16 @@ namespace apache {
 namespace geode {
 namespace client {
 namespace {
-const uint32_t g_headerLen = 17;
-const uint32_t REGULAR_EXPRESSION =
-    1;  // come from Java InterestType.REGULAR_EXPRESSION
+
+constexpr size_t kHeaderLength = 17;
+
+/**
+ * come from Java InterestType.kREGULAR_EXPRESSION
+ */
+constexpr int32_t kREGULAR_EXPRESSION = 1;
+
+constexpr int32_t kFlagEmpty = 0x01;
+constexpr int32_t kFlagConcurrencyChecks = 0x02;
 
 inline void readInt(uint8_t* buffer, uint16_t* value) {
   uint16_t tmp = *(buffer++);
@@ -82,12 +92,6 @@ inline void writeInt(uint8_t* buffer, uint32_t value) {
 }  // namespace
 
 extern void setThreadLocalExceptionMessage(std::string);
-
-uint8_t* TcrMessage::m_keepAlive = nullptr;
-const int TcrMessage::m_flag_empty = 0x01;
-const int TcrMessage::m_flag_concurrency_checks = 0x02;
-
-bool TcrMessage::isKeepAlive() { return (m_keepAlive && (*m_keepAlive > 0)); }
 
 bool TcrMessage::isUserInitiativeOps(const TcrMessage& msg) {
   int32_t msgType = msg.getMessageType();
@@ -140,20 +144,14 @@ TcrMessage::TcrMessage()
       m_callbackArgument(nullptr),
       m_versionTag(),
       m_eventid(nullptr),
-      m_vectorPtr(),
-      m_bucketServerLocation(nullptr),
       m_tombstoneVersions(),
       m_tombstoneKeys(),
-      m_versionObjPartListptr(),
       m_exceptionMessage(),
       m_regionName("INVALID_REGION_NAME"),
       m_regex(),
-      m_bucketServerLocations(),
       m_colocatedWith(),
-      m_partitionResolverName(),
       m_securityHeaderLength(0),
       m_msgType(TcrMessage::INVALID),
-      m_msgLength(-1),
       m_msgTypeRequest(0),
       m_txId(-1),
       m_bucketCount(0),
@@ -162,7 +160,7 @@ TcrMessage::TcrMessage()
       m_deltaBytesLen(0),
       m_entryNotFound(0),
       m_feAnotherHop(false),
-      isSecurityOn(false),
+      m_isSecurityOn(false),
       m_isLastChunkAndisSecurityHeader(0),
       m_isSecurityHeaderAdded(false),
       m_isMetaRegion(false),
@@ -229,8 +227,6 @@ bool TcrMessage::hasCqPart() const { return m_hasCqsPart; }
 
 uint32_t TcrMessage::getMessageTypeForCq() const { return m_msgTypeForCq; }
 
-bool TcrMessage::isInterestListPassed() const { return m_isInterestListPassed; }
-
 bool TcrMessage::shouldIgnore() const { return m_shouldIgnore; }
 
 int8_t TcrMessage::getMetaDataVersion() const { return m_metaDataVersion; }
@@ -259,17 +255,7 @@ TcrChunkedResult* TcrMessage::getChunkedResultHandler() {
   return m_chunkedResult;
 }
 
-void TcrMessage::setVersionedObjectPartList(
-    std::shared_ptr<VersionedCacheableObjectPartList> versionObjPartListptr) {
-  m_versionObjPartListptr = versionObjPartListptr;
-}
-
-std::shared_ptr<VersionedCacheableObjectPartList>
-TcrMessage::getVersionedObjectPartList() {
-  return m_versionObjPartListptr;
-}
-
-DataInput* TcrMessage::getDelta() { return m_delta.get(); }
+DataInput* TcrMessage::getDelta() const { return m_delta.get(); }
 
 //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
 //  that
@@ -284,7 +270,7 @@ std::shared_ptr<CacheableBytes> TcrMessage::getDeltaBytes() {
   return retVal;
 }
 
-bool TcrMessage::hasDelta() { return (m_delta != nullptr); }
+bool TcrMessage::hasDelta() const { return (m_delta != nullptr); }
 
 void TcrMessage::setMetaRegion(bool isMetaRegion) {
   m_isMetaRegion = isMetaRegion;
@@ -296,10 +282,6 @@ int32_t TcrMessage::getNumBuckets() const { return m_bucketCount; }
 
 const std::string& TcrMessage::getColocatedWith() const {
   return m_colocatedWith;
-}
-
-const std::string& TcrMessage::getPartitionResolver() const {
-  return m_partitionResolverName;
 }
 
 std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
@@ -322,14 +304,12 @@ void TcrMessage::setCallBackArguement(bool aCallBackArguement) {
   m_isCallBackArguement = aCallBackArguement;
 }
 
-void TcrMessage::setBucketServerLocation(
-    std::shared_ptr<BucketServerLocation> serverLocation) {
-  m_bucketServerLocation = serverLocation;
-}
 void TcrMessage::setVersionTag(std::shared_ptr<VersionTag> versionTag) {
   m_versionTag = versionTag;
 }
-std::shared_ptr<VersionTag> TcrMessage::getVersionTag() { return m_versionTag; }
+std::shared_ptr<VersionTag> TcrMessage::getVersionTag() const {
+  return m_versionTag;
+}
 
 uint8_t TcrMessage::hasResult() const { return m_hasResult; }
 
@@ -339,30 +319,6 @@ std::shared_ptr<CacheableHashMap> TcrMessage::getTombstoneVersions() const {
 
 std::shared_ptr<CacheableHashSet> TcrMessage::getTombstoneKeys() const {
   return m_tombstoneKeys;
-}
-
-TcrMessagePing* TcrMessage::getPingMessage(CacheImpl* cacheImpl) {
-  static auto pingMsg =
-      new TcrMessagePing(new DataOutput(cacheImpl->createDataOutput()), true);
-  return pingMsg;
-}
-
-TcrMessage* TcrMessage::getAllEPDisMess() {
-  static auto allEPDisconnected = new TcrMessageReply(true, nullptr);
-  return allEPDisconnected;
-}
-
-TcrMessage* TcrMessage::getCloseConnMessage(CacheImpl* cacheImpl) {
-  static auto closeConnMsg = new TcrMessageCloseConnection(
-      new DataOutput(cacheImpl->createDataOutput()), true);
-  return closeConnMsg;
-}
-
-void TcrMessage::setKeepAlive(bool keepalive) {
-  // TODO global
-  if (TcrMessage::m_keepAlive != nullptr) {
-    *TcrMessage::m_keepAlive = keepalive ? 1 : 0;
-  }
 }
 
 void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
@@ -471,13 +427,6 @@ void TcrMessage::readIntPart(DataInput& input, uint32_t* intValue) {
   }
   if (input.read()) throw Exception("Integer is not an object");
   *intValue = input.readInt32();
-}
-
-void TcrMessage::readLongPart(DataInput& input, uint64_t* intValue) {
-  uint32_t longLen = input.readInt32();
-  if (longLen != 8) throw Exception("long length should have been 8");
-  if (input.read()) throw Exception("Long is not an object");
-  *intValue = input.readInt64();
 }
 
 const std::string TcrMessage::readStringPart(DataInput& input) {
@@ -821,7 +770,7 @@ void TcrMessage::writeHeader(uint32_t msgType, uint32_t numOfParts) {
   int8_t earlyAck = 0x0;
   LOGDEBUG("TcrMessage::writeHeader m_isMetaRegion = %d", m_isMetaRegion);
   if (m_tcdm != nullptr) {
-    if ((isSecurityOn =
+    if ((m_isSecurityOn =
              (m_tcdm->isSecurityOn() &&
               TcrMessage::isUserInitiativeOps(*this) && !m_isMetaRegion))) {
       earlyAck |= 0x2;
@@ -896,7 +845,7 @@ void TcrMessage::writeEventIdPart(int reserveSize,
 
 void TcrMessage::writeMessageLength() {
   auto totalLen = m_request->getBufferLength();
-  auto msgLen = totalLen - g_headerLen;
+  auto msgLen = totalLen - kHeaderLength;
   m_request->rewindCursor(
       totalLen -
       4);  // msg len is written after the msg type which is of 4 bytes ...
@@ -906,7 +855,7 @@ void TcrMessage::writeMessageLength() {
                                            // the beginning.
 }
 
-void TcrMessage::startProcessChunk(ACE_Semaphore& finalizeSema) {
+void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
   if (m_msgTypeRequest == TcrMessage::EXECUTECQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::STOPCQ_MSG_TYPE ||
       m_msgTypeRequest == TcrMessage::CLOSECQ_MSG_TYPE ||
@@ -1196,9 +1145,9 @@ void TcrMessage::handleByteArrayResponse(
   m_txId = input.readInt32();
   auto earlyack = input.read();
   LOGDEBUG(
-      "handleByteArrayResponse m_msgType = %d isSecurityOn = %d requesttype "
+      "handleByteArrayResponse m_msgType = %d m_isSecurityOn = %d requesttype "
       "=%d",
-      m_msgType, isSecurityOn, m_msgTypeRequest);
+      m_msgType, m_isSecurityOn, m_msgTypeRequest);
   LOGDEBUG(
       "Message type=%d, length=%d, parts=%d, txid=%d and eack %d with data "
       "length=%d",
@@ -1303,7 +1252,7 @@ void TcrMessage::handleByteArrayResponse(
       uint8_t lastChunk = static_cast<uint8_t>(numparts);
       lastChunk = (lastChunk << 5);
       readExceptionPart(input, lastChunk);
-      // if (isSecurityOn)
+      // if (m_isSecurityOn)
       // readSecureObjectPart( input );
       break;
     }
@@ -1530,7 +1479,7 @@ void TcrMessage::handleByteArrayResponse(
           }
           m_metadata->push_back(bucketServerLocations);
         }
-        LOGFINER("Metadata size is %", m_metadata->size());
+        LOGFINER("Metadata size is %zu", m_metadata->size());
       }
       break;
     }
@@ -1559,7 +1508,7 @@ void TcrMessage::handleByteArrayResponse(
         input.read();                    // ignore isObj;
         if (partLength > 0) {
           // PART3 = partitionresolvername
-          m_partitionResolverName = input.readString();
+          input.readString();  // ignore
         }
 
         input.readInt32();  // ignore partlen;
@@ -1702,7 +1651,7 @@ TcrMessageClearRegion::TcrMessageClearRegion(
   m_timeout = DEFAULT_TIMEOUT;
   m_messageResponseTimeout = messageResponsetimeout;
 
-  isSecurityOn = false;
+  m_isSecurityOn = false;
   m_isSecurityHeaderAdded = false;
 
   uint32_t numOfParts = 1;
@@ -1981,7 +1930,7 @@ TcrMessageInvalidate::TcrMessageInvalidate(
 TcrMessageDestroy::TcrMessageDestroy(
     DataOutput* dataOutput, const Region* region,
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Cacheable>& value, bool isUserNullValue,
     const std::shared_ptr<Serializable>& aCallbackArgument,
     ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
@@ -2004,7 +1953,7 @@ TcrMessageDestroy::TcrMessageDestroy(
         "key passed to the constructor can't be nullptr");
   }
 
-  if (value != nullptr) {
+  if (value != nullptr || isUserNullValue) {
     numOfParts += 2;  // for GFE Destroy65.java
     writeHeader(TcrMessage::DESTROY, numOfParts);
     writeRegionPart(m_regionName);
@@ -2085,44 +2034,25 @@ TcrMessageReply::TcrMessageReply(bool decodeAll,
   m_decodeAll = decodeAll;
   m_tcdm = connectionDM;
 
-  if (connectionDM != nullptr) isSecurityOn = connectionDM->isSecurityOn();
+  if (connectionDM != nullptr) m_isSecurityOn = connectionDM->isSecurityOn();
 }
 
-TcrMessagePing::TcrMessagePing(DataOutput* dataOutput, bool decodeAll) {
+TcrMessagePing::TcrMessagePing(std::unique_ptr<DataOutput> dataOutput) {
   m_msgType = TcrMessage::PING;
-  m_decodeAll = decodeAll;
-  m_request.reset(dataOutput);
-  m_request->writeInt(m_msgType);
-  m_request->writeInt(static_cast<int32_t>(
-      0));  // 17 is fixed message len ...  PING only has a header.
-  m_request->writeInt(static_cast<int32_t>(0));  // Number of parts.
-  // int32_t txId = TcrMessage::m_transactionId++;
-  // Setting the txId to 0 for all ping message as it is not being used on the
-  // SERVER side or the
-  // client side.
-  m_request->writeInt(static_cast<int32_t>(0));
-  m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
-  m_msgLength = g_headerLen;
-  m_txId = 0;
+  m_request = std::move(dataOutput);
+  writeHeader(m_msgType, 0);
+  writeMessageLength();
 }
 
-TcrMessageCloseConnection::TcrMessageCloseConnection(DataOutput* dataOutput,
-                                                     bool decodeAll) {
+TcrMessageCloseConnection::TcrMessageCloseConnection(
+    std::unique_ptr<DataOutput> dataOutput, bool keepAlive) {
   m_msgType = TcrMessage::CLOSE_CONNECTION;
-  m_decodeAll = decodeAll;
-  m_request.reset(dataOutput);
-  m_request->writeInt(m_msgType);
-  m_request->writeInt(static_cast<int32_t>(6));
-  m_request->writeInt(static_cast<int32_t>(1));  // Number of parts.
-  // int32_t txId = TcrMessage::m_transactionId++;
-  m_request->writeInt(static_cast<int32_t>(0));
-  m_request->write(static_cast<int8_t>(0));  // Early ack is '0'.
-  // last two parts are not used ... setting zero in both the parts.
-  m_request->writeInt(static_cast<int32_t>(1));  // len is 1
-  m_request->write(static_cast<int8_t>(0));      // is obj is '0'.
-  // cast away constness here since we want to modify this
-  TcrMessage::m_keepAlive = const_cast<uint8_t*>(m_request->getCursor());
-  m_request->write(static_cast<int8_t>(0));  // keepalive is '0'.
+  m_request = std::move(dataOutput);
+  writeHeader(m_msgType, 1);
+  m_request->writeInt(static_cast<int32_t>(1));  // len
+  m_request->writeBoolean(false);                // is obj
+  m_request->writeBoolean(keepAlive);            // keepalive
+  writeMessageLength();
 }
 
 TcrMessageClientMarker::TcrMessageClientMarker(DataOutput* dataOutput,
@@ -2259,7 +2189,7 @@ TcrMessageRegisterInterest::TcrMessageRegisterInterest(
   writeHeader(m_msgType, numOfParts);
 
   writeRegionPart(str1);                          // region name
-  writeIntPart(REGULAR_EXPRESSION);               // InterestType
+  writeIntPart(kREGULAR_EXPRESSION);              // InterestType
   writeInterestResultPolicyPart(interestPolicy);  // InterestResultPolicy
   writeBytePart(isDurable ? 1 : 0);
   writeRegionPart(str2);  // regexp string
@@ -2293,11 +2223,11 @@ TcrMessageUnregisterInterest::TcrMessageUnregisterInterest(
   uint32_t numOfParts = 3;
   numOfParts += 2;
   writeHeader(m_msgType, numOfParts);
-  writeRegionPart(str1);             // region name
-  writeIntPart(REGULAR_EXPRESSION);  // InterestType
-  writeRegionPart(str2);             // regexp string
-  writeBytePart(0);                  // isClosing
-  writeBytePart(isDurable ? 1 : 0);  // keepalive
+  writeRegionPart(str1);              // region name
+  writeIntPart(kREGULAR_EXPRESSION);  // InterestType
+  writeRegionPart(str2);              // regexp string
+  writeBytePart(0);                   // isClosing
+  writeBytePart(isDurable ? 1 : 0);   // keepalive
   writeMessageLength();
   m_regionName = str1;
   m_regex = str2;
@@ -2434,11 +2364,11 @@ TcrMessagePutAll::TcrMessagePutAll(
   // checks are disabled.
   int flags = 0;
   if (!region->getAttributes().getCachingEnabled()) {
-    flags |= TcrMessage::m_flag_empty;
+    flags |= kFlagEmpty;
     LOGDEBUG("TcrMessage::PUTALL datapolicy empty flags = %d ", flags);
   }
   if (region->getAttributes().getConcurrencyChecksEnabled()) {
-    flags |= TcrMessage::m_flag_concurrency_checks;
+    flags |= kFlagConcurrencyChecks;
     LOGDEBUG("TcrMessage::PUTALL ConcurrencyChecksEnabled flags = %d ", flags);
   }
   writeIntPart(flags);
@@ -2488,11 +2418,11 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   // checks are disabled.
   int flags = 0;
   if (!region->getAttributes().getCachingEnabled()) {
-    flags |= TcrMessage::m_flag_empty;
+    flags |= kFlagEmpty;
     LOGDEBUG("TcrMessage::REMOVE_ALL datapolicy empty flags = %d ", flags);
   }
   if (region->getAttributes().getConcurrencyChecksEnabled()) {
-    flags |= TcrMessage::m_flag_concurrency_checks;
+    flags |= kFlagConcurrencyChecks;
     LOGDEBUG("TcrMessage::REMOVE_ALL ConcurrencyChecksEnabled flags = %d ",
              flags);
   }
@@ -3078,7 +3008,6 @@ void TcrMessage::setMessageType(int32_t msgType) { m_msgType = msgType; }
 void TcrMessage::setMessageTypeRequest(int32_t msgType) {
   m_msgTypeRequest = msgType;
 }
-int32_t TcrMessage::getMessageTypeRequest() const { return m_msgTypeRequest; }
 
 const std::map<std::string, int>* TcrMessage::getCqs() const { return m_cqs; }
 std::shared_ptr<CacheableKey> TcrMessage::getKey() const { return m_key; }
@@ -3103,19 +3032,8 @@ const char* TcrMessage::getMsgData() const {
   return reinterpret_cast<const char*>(m_request->getBuffer());
 }
 
-const char* TcrMessage::getMsgHeader() const {
-  return reinterpret_cast<const char*>(m_request->getBuffer());
-}
-
-const char* TcrMessage::getMsgBody() const {
-  return reinterpret_cast<const char*>(m_request->getBuffer() + g_headerLen);
-}
-
 size_t TcrMessage::getMsgLength() const { return m_request->getBufferLength(); }
 
-size_t TcrMessage::getMsgBodyLength() const {
-  return m_request->getBufferLength() - g_headerLen;
-}
 std::shared_ptr<EventId> TcrMessage::getEventId() const { return m_eventid; }
 
 int32_t TcrMessage::getTransId() const { return m_txId; }

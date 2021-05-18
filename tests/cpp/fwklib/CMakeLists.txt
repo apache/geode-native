@@ -13,33 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
 project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
-  FwkBB.hpp
-  FwkBBClient.cpp
-  FwkBBClient.hpp
-  FwkBBServer.cpp
-  FwkBBServer.hpp
-  FwkException.hpp
-  FwkExport.hpp
-  FwkLog.cpp
-  FwkLog.hpp
-  FwkStrCvt.cpp
-  FwkStrCvt.hpp
   GsRandom.cpp
-  GsRandom.hpp
-  IpcHandler.cpp
-  IpcHandler.hpp
-  Service.cpp
-  Service.hpp
-  TcpIpc.cpp
-  TcpIpc.hpp
-  TimeBomb.cpp
-  TimeBomb.hpp
-  UDPIpc.cpp
-  UDPIpc.hpp
 )
 
 set_target_properties(framework PROPERTIES
@@ -66,6 +43,7 @@ target_link_libraries(framework
     apache-geode
   PRIVATE
     ACE::ACE
+    Boost::boost
     internal
     _WarningsAsError
 )
@@ -73,4 +51,4 @@ target_link_libraries(framework
 add_clangformat(framework)
 
 # For Visual Studio organization
-set_target_properties(framework PROPERTIES FOLDER cpp/test/integration)
+set_target_properties(framework PROPERTIES FOLDER cpp/test/integration/legacy)

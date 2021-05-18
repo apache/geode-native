@@ -34,7 +34,7 @@ int testXmlCacheCreationWithRefid(const char *fileName) {
   auto cacheFactory = CacheFactory();
   std::shared_ptr<Cache> cptr;
 
-  char *path = ACE_OS::getenv("TESTSRC");
+  char *path = std::getenv("TESTSRC");
   std::string directory(path);
 
   std::cout << "create DistributedSytem with name=XML_CACHE_CREATION_TEST"

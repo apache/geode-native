@@ -26,14 +26,14 @@
 
 using apache::geode::client::CacheableDate;
 
-TEST(CacheableDateTest, constructFrom_time_t_WithDefault) {
+TEST(CacheableDateTest, constructFromTimeTWithDefault) {
   const CacheableDate cacheableDate;
 
   EXPECT_EQ(0, cacheableDate.milliseconds());
   EXPECT_EQ(0, static_cast<time_t>(cacheableDate));
 }
 
-TEST(CacheableDateTest, constructFrom_time_t) {
+TEST(CacheableDateTest, constructFromTimeT) {
   time_t time = 0;
   std::time(&time);
   CacheableDate cacheableDate(time);
@@ -42,7 +42,7 @@ TEST(CacheableDateTest, constructFrom_time_t) {
   EXPECT_EQ(time, static_cast<time_t>(cacheableDate));
 }
 
-TEST(CacheableDateTest, constructFrom_time_point) {
+TEST(CacheableDateTest, constructFromTimePoint) {
   const auto timePoint = CacheableDate::clock::now();
   const CacheableDate cacheableDate(timePoint);
 
@@ -61,7 +61,7 @@ TEST(CacheableDateTest, constructFrom_time_point) {
   EXPECT_EQ(time, static_cast<time_t>(cacheableDate));
 }
 
-TEST(CacheableDateTest, constructFrom_duration) {
+TEST(CacheableDateTest, constructFromDuration) {
   const auto duration = CacheableDate::duration(1000);
   const CacheableDate cacheableDate(duration);
 

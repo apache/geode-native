@@ -76,24 +76,24 @@ class EventListener : public CacheListener {
         m_destroys(0),
         m_name(name) {}
 
-  ~EventListener() {}
+  ~EventListener() noexcept override = default;
 
-  virtual void afterCreate(const EntryEvent &event) {
+  void afterCreate(const EntryEvent &event) override {
     check(event, "afterCreate");
     m_creates++;
   }
 
-  virtual void afterUpdate(const EntryEvent &event) {
+  void afterUpdate(const EntryEvent &event) override {
     check(event, "afterUpdate");
     m_updates++;
   }
 
-  virtual void afterInvalidate(const EntryEvent &event) {
+  void afterInvalidate(const EntryEvent &event) override {
     check(event, "afterInvalidate");
     m_invalidates++;
   }
 
-  virtual void afterDestroy(const EntryEvent &event) {
+  void afterDestroy(const EntryEvent &event) override {
     check(event, "afterDestroy");
     m_destroys++;
   }
@@ -147,7 +147,6 @@ const char *keysForRegex[] = {"key-regex-1", "key-regex-2", "key-regex-3"};
 
 #include "ThinClientDurableInit.hpp"
 #include "ThinClientTasks_C2S2.hpp"
-#include "LocatorHelper.hpp"
 
 void initClientForInterestNotify(std::shared_ptr<EventListener> &mon1,
                                  std::shared_ptr<EventListener> &mon2,
@@ -262,8 +261,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER_AND_FEEDER, FeederUpAndFeed)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0, true);
     getHelper()->createPooledRegion(regions[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regions[1], USE_ACK, locatorsG,

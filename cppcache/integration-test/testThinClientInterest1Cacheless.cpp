@@ -38,16 +38,18 @@ class MyListener : public CacheListener {
   inline void checkEntry(const EntryEvent &event) {
     auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
     for (int i = 0; i < 5; i++) {
-      if (!ACE_OS::strcmp(keys[i], keyPtr->value().c_str())) {
+      if (keyPtr->value() == keys[i]) {
         auto valPtr =
             std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
-        if (!ACE_OS::strcmp(vals[i], valPtr->value().c_str())) m_gotit[i] = 1;
+        if (valPtr->value() == vals[i]) {
+          m_gotit[i] = 1;
+        }
         break;
       }
     }
   }
-  virtual void afterCreate(const EntryEvent &event) { checkEntry(event); }
-  virtual void afterUpdate(const EntryEvent &event) { checkEntry(event); }
+  void afterCreate(const EntryEvent &event) override { checkEntry(event); }
+  void afterUpdate(const EntryEvent &event) override { checkEntry(event); }
   inline bool gotAll() {
     for (int i = 0; i < 5; i++) {
       if (m_gotit[i] == 0) return false;

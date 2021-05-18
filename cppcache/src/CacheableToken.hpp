@@ -28,8 +28,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT CacheableToken;
-
 /** Implement a non-mutable int64_t wrapper that can serve as a distributable
  * key object for cacheing as well as being a 64 bit value. */
 class APACHE_GEODE_EXPORT CacheableToken

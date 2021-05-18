@@ -85,10 +85,6 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
   this->numericId = calcNumericId(system, numericIdArg);
   this->uniqueId = uniqueIdArg;
   this->closed = false;
-  ;
-  /* adongre
-   * CID 28981: Uninitialized pointer field (UNINIT_CTOR)
-   */
   doubleStorage = nullptr;
   intStorage = nullptr;
   longStorage = nullptr;
@@ -125,22 +121,18 @@ OsStatisticsImpl::OsStatisticsImpl(StatisticsType* typeArg,
 }
 
 OsStatisticsImpl::~OsStatisticsImpl() noexcept {
-  try {
-    statsType = nullptr;
-    if (intStorage != nullptr) {
-      delete[] intStorage;
-      intStorage = nullptr;
-    }
-    if (longStorage != nullptr) {
-      delete[] longStorage;
-      longStorage = nullptr;
-    }
-    if (doubleStorage != nullptr) {
-      delete[] doubleStorage;
-      doubleStorage = nullptr;
-    }
-  } catch (...) {
-    LOGERROR("Exception in ~OsStatisticsImpl");
+  statsType = nullptr;
+  if (intStorage != nullptr) {
+    delete[] intStorage;
+    intStorage = nullptr;
+  }
+  if (longStorage != nullptr) {
+    delete[] longStorage;
+    longStorage = nullptr;
+  }
+  if (doubleStorage != nullptr) {
+    delete[] doubleStorage;
+    doubleStorage = nullptr;
   }
 }
 

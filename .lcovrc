@@ -1,2 +1,2 @@
-# branch coverage generates lots of misses due to emmitted exception code.
+# branch coverage generates lots of misses due to emitted exception code.
 lcov_branch_coverage=0

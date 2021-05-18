@@ -26,10 +26,6 @@
 #include "PdxInstanceFactory.hpp"
 #include "internal/geode_globals.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -60,10 +56,9 @@ class QueryService;
  */
 
 class APACHE_GEODE_EXPORT RegionService {
-  /**
-   * @brief public methods
-   */
  public:
+  virtual ~RegionService() = 0;
+
   /**
    * Indicates if this cache has been closed.
    * After a new cache object is created, this method returns false;
@@ -127,6 +122,7 @@ class APACHE_GEODE_EXPORT RegionService {
   virtual PdxInstanceFactory createPdxInstanceFactory(
       const std::string& className, bool expectDomainClass) const = 0;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

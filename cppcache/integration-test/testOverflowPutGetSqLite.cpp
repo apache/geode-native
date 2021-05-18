@@ -18,7 +18,8 @@
 #include <string>
 #include <iostream>
 
-#include <ace/OS.h>
+#include <boost/asio.hpp>
+#include <boost/process.hpp>
 
 #include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
@@ -27,6 +28,8 @@
 #include <CacheableToken.hpp>
 #include <CacheRegionHelper.hpp>
 #include <MapEntry.hpp>
+
+#include "CacheImpl.hpp"
 
 #include "fw_helper.hpp"
 
@@ -288,7 +291,7 @@ class PutThread : public ACE_Task_Base {
   PutThread(std::shared_ptr<Region> &regPtr, int min, int max)
       : m_regPtr(regPtr), m_min(min), m_max(max) {}
 
-  int svc(void) {
+  int svc(void) override {
     /** put some values into the cache. */
     doNput(m_regPtr, m_max, m_min);
     /** do some gets... printing what we find in the cache. */
@@ -351,17 +354,16 @@ void setSqLiteProperties(std::shared_ptr<Properties> &sqliteProperties,
 // creation of subregion.
 
 void createSubRegion(std::shared_ptr<Region> &regionPtr,
-                     std::shared_ptr<Region> &subRegion, const char *regionName,
+                     std::shared_ptr<Region> &subRegion,
+                     const std::string &regionName,
                      std::string pDir = sqlite_dir) {
   RegionAttributes regionAttributesPtr;
   setAttributes(regionAttributesPtr, pDir);
   subRegion = regionPtr->createSubregion(regionName, regionAttributesPtr);
   ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
-  char fileName[512];
-  sprintf(fileName, "%s/%s/%s.db", pDir.c_str(), regionName, regionName);
-  ACE_stat fileStat;
-  ASSERT(ACE_OS::stat(fileName, &fileStat) == 0,
-         "persistence file not present");
+
+  std::string fileName = pDir + '/' + regionName + '/' + regionName + ".db";
+  ASSERT(boost::filesystem::exists(fileName), "persistence file not present");
   doNput(subRegion, 50);
   doNget(subRegion, 50);
 }
@@ -409,15 +411,12 @@ BEGIN_TEST(OverFlowTest)
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
       subRegion = nullptr;
-      ACE_TCHAR hname[MAXHOSTNAMELEN];
-      ACE_OS::hostname(hname, sizeof(hname) - 1);
-      char sqliteDirSubRgn[512];
-      sprintf(sqliteDirSubRgn, "%s/%s_%u/_%s_SubRegion/file_0.db",
-              sqlite_dir.c_str(), hname, ACE_OS::getpid(),
-              regionPtr->getName().c_str());
 
-      ACE_stat fileStat;
-      ASSERT(ACE_OS::stat(sqliteDirSubRgn, &fileStat) == -1,
+      std::string sqliteDirSubRgn =
+          sqlite_dir + "/" + boost::asio::ip::host_name() + '_' +
+          std::to_string(boost::this_process::get_id()) + "/_" +
+          regionPtr->getName() + "_SubRegion/file_0.db";
+      ASSERT(!boost::filesystem::exists(sqliteDirSubRgn),
              "persistence file still present");
     }
     // cache close
@@ -428,11 +427,10 @@ END_TEST(OverFlowTest)
 BEGIN_TEST(OverFlowTest_absPath)
   {
     std::shared_ptr<RegionAttributes> attrsPtr;
-    char currWDPath[512];
-    char *wdPath = ACE_OS::getcwd(currWDPath, 512);
-    ASSERT(wdPath != nullptr,
-           "Expected current Working Directory to be NON-nullptr");
-    std::string absPersistenceDir = std::string(wdPath) + "/absSqLite";
+    auto wdPath = boost::filesystem::current_path().string();
+    ASSERT(!wdPath.empty(),
+           "Expected current Working Directory to be not empty");
+    std::string absPersistenceDir = wdPath + "/absSqLite";
 
     /** Creating a cache to manage regions. */
     std::shared_ptr<Properties> sqliteProperties;
@@ -473,11 +471,9 @@ BEGIN_TEST(OverFlowTest_absPath)
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
       subRegion = nullptr;
-      char fileName[512];
-      sprintf(fileName, "%s/%s/%s.db", absPersistenceDir.c_str(), "SubRegion",
-              "SubRegion");
-      ACE_stat fileStat;
-      ASSERT(ACE_OS::stat(fileName, &fileStat) == -1,
+
+      std::string fileName = absPersistenceDir + "/SubRegion/SubRegion.db";
+      ASSERT(!boost::filesystem::exists(fileName),
              "persistence file still present");
     }
     // cache close
@@ -569,18 +565,16 @@ BEGIN_TEST(OverFlowTest_HeapLRU)
       setAttributes(regionAttributes);
       subRegion = regionPtr->createSubregion("SubRegion", regionAttributes);
       ASSERT(subRegion != nullptr, "Expected region to be NON-nullptr");
-      char fileName[512];
-      sprintf(fileName, "%s/%s/%s.db", sqlite_dir.c_str(), "SubRegion",
-              "SubRegion");
-      ACE_stat fileStat;
-      ASSERT(ACE_OS::stat(fileName, &fileStat) == 0,
+
+      std::string fileName = sqlite_dir + "/SubRegion/SubRegion.db";
+      ASSERT(boost::filesystem::exists(fileName),
              "persistence file not present");
       doNput(subRegion, 50);
       doNget(subRegion, 50);
       subRegion->destroyRegion();
       ASSERT(subRegion->isDestroyed(), "Expected region is not destroyed ");
       subRegion = nullptr;
-      ASSERT(ACE_OS::stat(fileName, &fileStat) == -1,
+      ASSERT(!boost::filesystem::exists(fileName),
              "persistence file still present");
     }
     // cache close

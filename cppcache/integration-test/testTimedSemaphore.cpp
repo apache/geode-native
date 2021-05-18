@@ -15,8 +15,11 @@
  * limitations under the License.
  */
 
-#include "fw_helper.hpp"
+#include <iostream>
+
 #include <ace/Synch.h>
+
+#include "fw_helper.hpp"
 
 class ThreadAcquire : public ACE_Task_Base {
  public:
@@ -26,20 +29,31 @@ class ThreadAcquire : public ACE_Task_Base {
         m_acquireSecs(acquireSecs),
         m_status(0) {}
 
-  int svc() {
-    ACE_Time_Value start = ACE_OS::gettimeofday();
-    ACE_Time_Value interval(m_acquireSecs, 0);  // 10 seconds
-    ACE_Time_Value expireAt = start + interval;
+  int svc() override {
+    auto start = std::chrono::steady_clock::now();
+    ACE_Time_Value expireAt =
+        ACE_Time_Value{time(nullptr)} + ACE_Time_Value{m_acquireSecs};
 
-    printf("Thread acquiring lock at %ld msecs.\n", start.msec());
+    std::cout << "Thread acquiring lock at "
+              << std::chrono::time_point_cast<std::chrono::milliseconds>(start)
+                     .time_since_epoch()
+                     .count()
+              << "msecs" << std::endl;
+
     if (m_sema.acquire(expireAt) == 0) {
-      interval = ACE_OS::gettimeofday() - start;
-      printf("Thread acquired lock after %ld msecs.\n", interval.msec());
+      auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          std::chrono::steady_clock::now() - start)
+                          .count();
+      std::cout << "Thread acquired lock after " << interval << "msecs"
+                << std::endl;
       m_status = 0;
     } else {
-      interval = ACE_OS::gettimeofday() - start;
-      printf("Thread failed to acquire lock after %ld msecs.\n",
-             interval.msec());
+      auto interval = std::chrono::duration_cast<std::chrono::milliseconds>(
+                          std::chrono::steady_clock::now() - start)
+                          .count();
+
+      std::cout << "Thread failed to acquire lock after " << interval << "msecs"
+                << std::endl;
       m_status = -1;
     }
     return m_status;
@@ -62,7 +76,7 @@ BEGIN_TEST(CheckTimedAcquire)
     thread->activate();
 
     LOG("Sleeping for 8 secs.");
-    ACE_OS::sleep(8);
+    std::this_thread::sleep_for(std::chrono::seconds(8));
     ASSERT(thread->thr_count() == 1, "Expected thread to be running.");
     sema.release();
     SLEEP(50);  // Sleep for a few millis for the thread to end.
@@ -82,9 +96,9 @@ BEGIN_TEST(CheckTimedAcquireFail)
     thread->activate();
 
     LOG("Sleeping for 8 secs.");
-    ACE_OS::sleep(8);
+    std::this_thread::sleep_for(std::chrono::seconds(8));
     ASSERT(thread->thr_count() == 1, "Expected thread to be running.");
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
     ASSERT(thread->thr_count() == 0, "Expected no thread to be running.");
     ASSERT(thread->wait() == 0, "Expected successful end of thread.");
     ASSERT(thread->getStatus() == -1,
@@ -102,7 +116,7 @@ BEGIN_TEST(CheckNoWait)
     sema.release();
     thread->activate();
 
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     ASSERT(thread->thr_count() == 0, "Expected no thread to be running.");
     ASSERT(thread->wait() == 0, "Expected successful end of thread.");
     ASSERT(thread->getStatus() == 0, "Expected zero exit status from thread.");
@@ -117,17 +131,16 @@ BEGIN_TEST(CheckResetAndTimedAcquire)
     ThreadAcquire *thread = new ThreadAcquire(sema, 10);
 
     sema.acquire();
-    ACE_OS::sleep(1);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     sema.release();
     sema.release();
     sema.release();
     while (sema.tryacquire() != -1) {
-      ;
     }
     thread->activate();
 
     LOG("Sleeping for 8 secs.");
-    ACE_OS::sleep(8);
+    std::this_thread::sleep_for(std::chrono::seconds(8));
     ASSERT(thread->thr_count() == 1, "Expected thread to be running.");
     sema.release();
     SLEEP(50);  // Sleep for a few millis for the thread to end.

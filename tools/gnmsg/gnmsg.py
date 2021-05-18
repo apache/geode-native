@@ -20,6 +20,7 @@ import sys
 import threading
 import traceback
 
+
 from modified_utf8 import utf8m_to_utf8s
 from numeric_conversion import to_hex_digit
 import command_line
@@ -44,7 +45,7 @@ from server_message_decoder import ServerMessageDecoder
 from handshake_decoder import HandshakeDecoder
 
 
-def scan_file(filename, dump_handshake, dump_messages):
+def scan_file(filename, dump_handshake, dump_messages, thread_id):
     output_queue = queue.Queue()
     separator = ""
     if dump_handshake:
@@ -56,7 +57,7 @@ def scan_file(filename, dump_handshake, dump_messages):
                     data = output_queue.get_nowait()
                     for key, value in data.items():
                         if key == "handshake":
-                            print(separator + json.dumps(data, indent=2, default=str))
+                            print(separator + json.dumps(value, indent=2, default=str))
                             separator = ","
                 except queue.Empty:
                     continue
@@ -64,6 +65,7 @@ def scan_file(filename, dump_handshake, dump_messages):
     separator = ""
     client_decoder = ClientMessageDecoder(output_queue)
     server_decoder = ServerMessageDecoder(output_queue)
+    print("[")
     with open(filename, "rb") as f:
         for line in f:
             linestr = line.decode("utf-8")
@@ -73,8 +75,16 @@ def scan_file(filename, dump_handshake, dump_messages):
                 data = output_queue.get_nowait()
                 for key, value in data.items():
                     if key == "message" and dump_messages:
-                        print(separator + json.dumps(data, indent=2, default=str))
-                        separator = ","
+                        if thread_id:
+                            if "tid" in value.keys() and value["tid"] == thread_id:
+                                print(
+                                    separator + json.dumps(value, indent=2, default=str)
+                                )
+                                separator = ","
+                        else:
+                            print(separator + json.dumps(value, indent=2, default=str))
+                            separator = ","
+
             except queue.Empty:
                 continue
             except:
@@ -90,7 +100,9 @@ def scan_file(filename, dump_handshake, dump_messages):
         except queue.Empty:
             break
 
+    print("]")
+
 
 if __name__ == "__main__":
-    (file, handshake, messages) = command_line.parse_command_line()
-    scan_file(file, handshake, messages)
+    (file, handshake, messages, thread_id) = command_line.parse_command_line()
+    scan_file(file, handshake, messages, thread_id)

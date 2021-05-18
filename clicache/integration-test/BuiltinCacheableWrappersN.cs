@@ -112,6 +112,8 @@ namespace Apache.Geode.Client.UnitTests
       return ~crc32;
     }
 
+#pragma warning disable 618
+
     public static bool IsContainerTypeId(uint typeId)
     {
       return (typeId == GeodeClassIds.CacheableObjectArray) ||

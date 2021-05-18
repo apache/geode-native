@@ -24,6 +24,7 @@
 #include "PdxRemoteWriter.hpp"
 
 #include "PdxTypeRegistry.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {

@@ -40,7 +40,7 @@ namespace client {
  *
  * For compatibility rules and default values, see {@link CqAttributesFactory}.
  */
-class APACHE_GEODE_EXPORT CqAttributesImpl : public CqAttributes {
+class CqAttributesImpl : public CqAttributes {
  public:
   ~CqAttributesImpl() noexcept override {}
 

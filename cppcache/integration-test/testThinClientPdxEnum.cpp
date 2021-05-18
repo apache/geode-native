@@ -32,7 +32,7 @@ bool isLocalServer = false;
 #define SERVER1 s2p1
 static bool isLocator = false;
 
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClientPoolLoc)
@@ -40,7 +40,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClientPoolLoc)
     LOG("Starting Step One with Pool + Locator lists");
     initClient(true);
 
-    createPool("__TEST_POOL1__", locatorsG, nullptr, 0, true);
+    createPool("__TEST_POOL1__", locatorsG, {}, 0, true);
     createRegionAndAttachPool("DistRegionAck", USE_ACK, "__TEST_POOL1__");
 
     LOG("SetupClient complete.");

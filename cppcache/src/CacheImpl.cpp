@@ -33,9 +33,9 @@
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "LocalRegion.hpp"
 #include "PdxTypeRegistry.hpp"
-#include "RegionExpiryHandler.hpp"
 #include "SerializationRegistry.hpp"
 #include "TcrConnectionManager.hpp"
+#include "TcrEndpoint.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientHARegion.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -44,7 +44,6 @@
 #include "ThinClientRegion.hpp"
 #include "ThreadPool.hpp"
 #include "Utils.hpp"
-#include "Version.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 
@@ -75,7 +74,8 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
       m_serializationRegistry(std::make_shared<SerializationRegistry>()),
       m_pdxTypeRegistry(nullptr),
       m_threadPool(m_distributedSystem.getSystemProperties().threadPoolSize()),
-      m_authInitialize(authInitialize) {
+      m_authInitialize(authInitialize),
+      m_keepAlive(false) {
   using apache::geode::statistics::StatisticsManager;
 
   m_cacheTXManager = std::shared_ptr<CacheTransactionManager>(
@@ -89,7 +89,7 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
     LOGINFO("Heap LRU eviction controller thread started");
   }
 
-  m_expiryTaskManager->begin();
+  m_expiryTaskManager->start();
 
   m_initialized = true;
   m_pdxTypeRegistry = std::make_shared<PdxTypeRegistry>(this);
@@ -161,7 +161,9 @@ CacheImpl::RegionKind CacheImpl::getRegionKind(
 }
 
 void CacheImpl::removeRegion(const std::string& name) {
+  LOGDEBUG("recursive lock: CacheImpl::removeRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::removeRegion");
   if (!m_destroyPending) {
     m_regions.erase(name);
   }
@@ -233,15 +235,18 @@ void CacheImpl::sendNotificationCloseMsgs() {
   }
 }
 
-void CacheImpl::close(bool keepalive) {
+void CacheImpl::close(bool keepAlive) {
   this->throwIfClosed();
 
-  TcrMessage::setKeepAlive(keepalive);
-  // bug #247 fix for durable clients missing events when recycled
+  m_keepAlive = keepAlive;
+
+  // fix for durable clients missing events when recycled
   sendNotificationCloseMsgs();
 
   {
+    LOGDEBUG("recursive lock: CacheImpl::setKeepAlive");
     std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+    LOGDEBUG("locked: CacheImpl::setKeepAlive");
     if (m_destroyPending) {
       return;
     }
@@ -296,10 +301,12 @@ void CacheImpl::close(bool keepalive) {
     m_cacheStats->close();
   }
 
-  m_poolManager->close(keepalive);
+  m_poolManager->close(keepAlive);
+
+  m_poolManager.reset();
 
   LOGFINE("Closed pool manager with keepalive %s",
-          keepalive ? "true" : "false");
+          keepAlive ? "true" : "false");
 
   // Close CachePef Stats
   if (m_cacheStats) {
@@ -316,7 +323,9 @@ void CacheImpl::close(bool keepalive) {
   _GEODE_SAFE_DELETE(m_tcrConnectionManager);
   m_cacheTXManager = nullptr;
 
-  m_expiryTaskManager->stopExpiryTaskManager();
+  m_expiryTaskManager->stop();
+
+  m_threadPool.shutDown();
 
   try {
     getDistributedSystem().disconnect();
@@ -331,7 +340,9 @@ void CacheImpl::close(bool keepalive) {
 }
 
 bool CacheImpl::doIfDestroyNotPending(std::function<void()> f) {
+  LOGDEBUG("recursive lock: CacheImpl::doIfDestroyNotPending");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::doIfDestroyNotPending");
   if (!m_destroyPending) {
     f();
   }
@@ -413,7 +424,7 @@ void CacheImpl::createRegion(std::string name,
     }
 
     regionPtr = rpImpl;
-    rpImpl->addDisMessToQueue();
+    rpImpl->addDisconnectedMessageToQueue();
     // Instantiate a PersistenceManager object if DiskPolicy is overflow
     if (regionAttributes.getDiskPolicy() == DiskPolicyType::OVERFLOWS) {
       auto pmPtr = regionAttributes.getPersistenceManager();
@@ -466,7 +477,9 @@ std::shared_ptr<Region> CacheImpl::getRegion(const std::string& path) {
   LOGDEBUG("CacheImpl::getRegion " + path);
 
   this->throwIfClosed();
+  LOGDEBUG("recursive lock: CacheImpl::getRegion");
   std::lock_guard<decltype(m_destroyCacheMutex)> lock(m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::getRegion");
 
   if (m_destroyPending) {
     return nullptr;
@@ -681,8 +694,10 @@ bool CacheImpl::getEndpointStatus(const std::string& endpoint) {
 }
 
 void CacheImpl::processMarker() {
+  LOGDEBUG("recursive lock: CacheImpl::processMarker");
   std::lock_guard<decltype(m_destroyCacheMutex)> destroy_lock(
       m_destroyCacheMutex);
+  LOGDEBUG("locked: CacheImpl::processMarker");
   if (m_destroyPending) {
     return;
   }
@@ -693,16 +708,14 @@ void CacheImpl::processMarker() {
     if (!kv.second->isDestroyed()) {
       if (const auto tcrHARegion =
               std::dynamic_pointer_cast<ThinClientHARegion>(kv.second)) {
-        auto regionMsg = new TcrMessageClientMarker(
-            new DataOutput(createDataOutput()), true);
-        tcrHARegion->receiveNotification(regionMsg);
+        tcrHARegion->receiveNotification(
+            TcrMessageClientMarker(new DataOutput(createDataOutput()), true));
         for (const auto& iter : tcrHARegion->subregions(true)) {
           if (!iter->isDestroyed()) {
             if (const auto subregion =
                     std::dynamic_pointer_cast<ThinClientHARegion>(iter)) {
-              regionMsg = new TcrMessageClientMarker(
-                  new DataOutput(createDataOutput()), true);
-              subregion->receiveNotification(regionMsg);
+              subregion->receiveNotification(TcrMessageClientMarker(
+                  new DataOutput(createDataOutput()), true));
             }
           }
         }
@@ -858,6 +871,37 @@ void CacheImpl::setCache(Cache* cache) { m_cache = cache; }
 void CacheImpl::setClientCrashTEST() {
   m_tcrConnectionManager->setClientCrashTEST();
 }
+
+int CacheImpl::getNumberOfTimeEndpointDisconnected(
+    const std::string& endpoint, const std::string& poolName) {
+  this->throwIfClosed();
+  const auto& pools = getPoolManager().getAll();
+
+  if (pools.empty()) {
+    return m_tcrConnectionManager->getNumberOfTimeEndpointDisconnected(
+        endpoint);
+  }
+
+  auto pool = std::static_pointer_cast<ThinClientPoolDM>(
+      getPoolManager().find(poolName));
+
+  if (pool == nullptr) {
+    throw IllegalStateException(
+        "Either pool not found or it has been destroyed");
+  }
+
+  auto& mutex = pool->m_endpointsLock;
+  std::lock_guard<decltype(mutex)> guard(mutex);
+  for (const auto& itr : pool->m_endpoints) {
+    auto ep = itr.second;
+    if (ep->name().find(endpoint) != std::string::npos) {
+      return ep->numberOfTimesFailed();
+    }
+  }
+  throw IllegalStateException("Endpoint not found");
+}
+
+bool CacheImpl::isKeepAlive() { return m_keepAlive; }
 
 }  // namespace client
 }  // namespace geode

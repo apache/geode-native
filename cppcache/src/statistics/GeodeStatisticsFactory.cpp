@@ -23,6 +23,7 @@
 
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
+#include <geode/util/LogLevel.hpp>
 
 #include "../util/Log.hpp"
 #include "AtomicStatisticsImpl.hpp"
@@ -36,6 +37,7 @@ namespace statistics {
 using client::Exception;
 using client::IllegalArgumentException;
 using client::Log;
+using client::LogLevel;
 using client::OutOfMemoryException;
 
 GeodeStatisticsFactory::GeodeStatisticsFactory(StatisticsManager* statMngr) {
@@ -61,13 +63,12 @@ GeodeStatisticsFactory::~GeodeStatisticsFactory() {
     statsTypeMap.clear();
 
   } catch (const Exception& ex) {
-    Log::warningCatch("~GeodeStatisticsFactory swallowing Geode exception", ex);
-
+    Log::logCatch(LogLevel::Warning,
+                  "~GeodeStatisticsFactory swallowing Geode exception", ex);
   } catch (const std::exception& ex) {
     std::string what = "~GeodeStatisticsFactory swallowing std::exception: ";
     what += ex.what();
     LOGWARN(what.c_str());
-
   } catch (...) {
     LOGERROR("~GeodeStatisticsFactory swallowing unknown exception");
   }

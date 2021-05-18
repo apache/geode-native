@@ -30,7 +30,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cacheable;
 
@@ -41,7 +41,7 @@ using apache::geode::client::testing::TallyWriter;
 static bool isLocator = false;
 static bool isLocalServer = true;
 static int numberOfLocators = 1;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
 std::shared_ptr<TallyListener> reg1Listener1, reg1Listener2;
@@ -57,11 +57,11 @@ class ThinClientTallyLoader : public TallyLoader {
  public:
   ThinClientTallyLoader() : TallyLoader() {}
 
-  virtual ~ThinClientTallyLoader() = default;
+  ~ThinClientTallyLoader() noexcept override = default;
 
   std::shared_ptr<Cacheable> load(
       Region& rp, const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Serializable>& aCallbackArgument) {
+      const std::shared_ptr<Serializable>& aCallbackArgument) override {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();

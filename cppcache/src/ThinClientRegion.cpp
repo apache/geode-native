@@ -18,7 +18,6 @@
 #include "ThinClientRegion.hpp"
 
 #include <algorithm>
-#include <limits>
 #include <regex>
 
 #include <geode/PoolManager.hpp>
@@ -59,19 +58,15 @@ class PutAllWork : public PooledWork<GfErrType> {
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
-  MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
   std::shared_ptr<UserAttributes> m_userAttribute;
   const std::shared_ptr<Region> m_region;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
   std::shared_ptr<HashMapOfCacheable> m_map;
   std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
   std::chrono::milliseconds m_timeout;
   std::shared_ptr<PutAllPartialResultServerException> m_papException;
-  bool m_isPapeReceived;
   ChunkedPutAllResponse* m_resultCollector;
-  // UNUSED const std::shared_ptr<Serializable>& m_aCallbackArgument;
 
  public:
   PutAllWork(const PutAllWork&) = delete;
@@ -90,13 +85,9 @@ class PutAllWork : public PooledWork<GfErrType> {
         m_isBGThread(isBGThread),
         m_userAttribute(nullptr),
         m_region(region),
-        m_keys(keys),
         m_map(map),
         m_timeout(timeout),
-        m_papException(nullptr),
-        m_isPapeReceived(false)
-  // UNUSED , m_aCallbackArgument(aCallbackArgument)
-  {
+        m_papException(nullptr) {
     m_request = new TcrMessagePutAll(
         new DataOutput(m_region->getCache().createDataOutput()), m_region.get(),
         *m_map, m_timeout, m_poolDM, aCallbackArgument);
@@ -118,19 +109,13 @@ class PutAllWork : public PooledWork<GfErrType> {
     m_reply->setChunkedResultHandler(m_resultCollector);
   }
 
-  ~PutAllWork() {
+  ~PutAllWork() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
   }
 
-  TcrMessage* getReply() { return m_reply; }
-
   std::shared_ptr<HashMapOfCacheable> getPutAllMap() { return m_map; }
-
-  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
-    return m_verObjPartListPtr;
-  }
 
   ChunkedPutAllResponse* getResultCollector() { return m_resultCollector; }
 
@@ -143,7 +128,7 @@ class PutAllWork : public PooledWork<GfErrType> {
   }
 
   void init() {}
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
@@ -175,7 +160,6 @@ class PutAllWork : public PooledWork<GfErrType> {
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
-        m_isPapeReceived = true;
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
           LOGDEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
@@ -208,16 +192,13 @@ class RemoveAllWork : public PooledWork<GfErrType> {
   std::shared_ptr<BucketServerLocation> m_serverLocation;
   TcrMessage* m_request;
   TcrMessageReply* m_reply;
-  MapOfUpdateCounters m_mapOfUpdateCounters;
   bool m_attemptFailover;
   bool m_isBGThread;
   std::shared_ptr<UserAttributes> m_userAttribute;
   const std::shared_ptr<Region> m_region;
   const std::shared_ptr<Serializable>& m_aCallbackArgument;
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> m_keys;
   std::shared_ptr<VersionedCacheableObjectPartList> m_verObjPartListPtr;
   std::shared_ptr<PutAllPartialResultServerException> m_papException;
-  bool m_isPapeReceived;
   ChunkedRemoveAllResponse* m_resultCollector;
 
  public:
@@ -237,9 +218,7 @@ class RemoveAllWork : public PooledWork<GfErrType> {
         m_userAttribute(nullptr),
         m_region(region),
         m_aCallbackArgument(aCallbackArgument),
-        m_keys(keys),
-        m_papException(nullptr),
-        m_isPapeReceived(false) {
+        m_papException(nullptr) {
     m_request = new TcrMessageRemoveAll(
         new DataOutput(m_region->getCache().createDataOutput()), m_region.get(),
         *keys, m_aCallbackArgument, m_poolDM);
@@ -253,21 +232,15 @@ class RemoveAllWork : public PooledWork<GfErrType> {
       m_userAttribute = UserAttributes::threadLocalUserAttributes;
     }
 
-    m_resultCollector = new ChunkedRemoveAllResponse(
-        m_region, *m_reply, responseLock, m_verObjPartListPtr);
+    m_resultCollector =
+        new ChunkedRemoveAllResponse(m_region, *m_reply, m_verObjPartListPtr);
     m_reply->setChunkedResultHandler(m_resultCollector);
   }
 
-  ~RemoveAllWork() {
+  ~RemoveAllWork() noexcept override {
     delete m_request;
     delete m_reply;
     delete m_resultCollector;
-  }
-
-  TcrMessage* getReply() { return m_reply; }
-
-  std::shared_ptr<VersionedCacheableObjectPartList> getVerObjPartList() {
-    return m_verObjPartListPtr;
   }
 
   ChunkedRemoveAllResponse* getResultCollector() { return m_resultCollector; }
@@ -281,7 +254,7 @@ class RemoveAllWork : public PooledWork<GfErrType> {
   }
 
   void init() {}
-  GfErrType execute(void) {
+  GfErrType execute(void) override {
     GuardUserAttributes gua;
 
     if (m_userAttribute != nullptr) {
@@ -313,7 +286,6 @@ class RemoveAllWork : public PooledWork<GfErrType> {
         // TODO::Check for the PAPException and READ
         // PutAllPartialResultServerException and set its member for later use.
         // set m_papException and m_isPapeReceived
-        m_isPapeReceived = true;
         if (m_poolDM->isNotAuthorizedException(m_reply->getException())) {
           LOGDEBUG("received NotAuthorizedException");
           err = GF_AUTHENTICATION_FAILED_EXCEPTION;
@@ -772,6 +744,7 @@ bool ThinClientRegion::containsKeyOnServer(
   TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
+  if (err != GF_NOERR) return err;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
@@ -799,7 +772,6 @@ bool ThinClientRegion::containsKeyOnServer(
 
   auto rptr = CacheableBoolean::create(ret);
 
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
   throwExceptionIfError("Region::containsKeyOnServer ", err);
   return rptr->value();
 }
@@ -818,7 +790,7 @@ bool ThinClientRegion::containsValueForKey_remote(
   TcrMessageReply reply(true, m_tcrdm.get());
   reply.setMessageTypeRequest(TcrMessage::CONTAINS_KEY);
   err = m_tcrdm->sendSyncRequest(request, reply);
-  // if ( err != GF_NOERR ) return ret;
+  if (err != GF_NOERR) return ret;
 
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE:
@@ -845,8 +817,6 @@ bool ThinClientRegion::containsValueForKey_remote(
   }
 
   auto rptr = CacheableBoolean::create(ret);
-
-  rptr = std::dynamic_pointer_cast<CacheableBoolean>(handleReplay(err, rptr));
 
   throwExceptionIfError("Region::containsValueForKey ", err);
   return rptr->value();
@@ -1052,7 +1022,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 
   // do TCR destroy
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -1096,8 +1066,8 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, cvalue, aCallbackArgument,
-                            m_tcrdm.get());
+                            this, keyPtr, cvalue, cvalue == nullptr,
+                            aCallbackArgument, m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -1139,7 +1109,7 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -1913,7 +1883,7 @@ GfErrType ThinClientRegion::multiHopRemoveAllNoThrow_remote(
       std::make_shared<VersionedCacheableObjectPartList>(this, responseLock);
   // need to check
   ChunkedRemoveAllResponse* resultCollector(new ChunkedRemoveAllResponse(
-      shared_from_this(), reply, responseLock, versionedObjPartList));
+      shared_from_this(), reply, versionedObjPartList));
   reply.setChunkedResultHandler(resultCollector);
 
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -2026,6 +1996,23 @@ GfErrType ThinClientRegion::registerStoredRegex(
   }
 
   return retVal;
+}
+
+void ThinClientRegion::clearKeysOfInterest() {
+  if (!getAttributes().getCachingEnabled()) {
+    return;
+  }
+
+  clearKeysOfInterestRegex(m_interestListRegex);
+  clearKeysOfInterestRegex(m_interestListRegexForUpdatesAsInvalidates);
+  clearKeysOfInterestRegex(m_durableInterestListRegex);
+  clearKeysOfInterestRegex(m_durableInterestListRegexForUpdatesAsInvalidates);
+
+  LocalRegion::clearKeysOfInterest(m_interestList);
+  LocalRegion::clearKeysOfInterest(m_interestListForUpdatesAsInvalidates);
+  LocalRegion::clearKeysOfInterest(m_durableInterestList);
+  LocalRegion::clearKeysOfInterest(
+      m_durableInterestListForUpdatesAsInvalidates);
 }
 
 GfErrType ThinClientRegion::registerKeys(TcrEndpoint* endpoint,
@@ -2650,7 +2637,7 @@ ThinClientRegion::getInterestListRegex() const {
   return vlist;
 }
 
-GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
+GfErrType ThinClientRegion::clientNotificationHandler(const TcrMessage& msg) {
   GfErrType err = GF_NOERR;
   std::shared_ptr<Cacheable> oldValue;
   switch (msg.getMessageType()) {
@@ -2702,11 +2689,16 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
       LocalRegion::tombstoneOperationNoThrow(msg.getTombstoneVersions(),
                                              msg.getTombstoneKeys());
       break;
-    default: {
-      if (TcrMessage::getAllEPDisMess() == &msg) {
+    default:
+      try {
+        auto& marker =
+            dynamic_cast<const TcrMessageAllEndpointsDisconnectedMarker&>(msg);
         setProcessedMarker(false);
+        LOGDEBUG(
+            "ThinClientRegion::clientNotificationHandler: rec'd endpoints "
+            "disconnected message");
         LocalRegion::invokeAfterAllEndPointDisconnected();
-      } else {
+      } catch (std::bad_cast&) {
         LOGERROR(
             "Unknown message type %d in subscription event handler; possible "
             "serialization mismatch",
@@ -2714,13 +2706,12 @@ GfErrType ThinClientRegion::clientNotificationHandler(TcrMessage& msg) {
         err = GF_MSG;
       }
       break;
-    }
   }
 
   // Update EventIdMap to mark event processed, Only for durable client.
   // In case of closing, don't send it as listener might not be invoked.
   if (!m_destroyPending && (m_isDurableClnt || msg.hasDelta()) &&
-      TcrMessage::getAllEPDisMess() != &msg) {
+      msg.getMessageType() != TcrMessage::INVALID) {
     m_tcrdm->checkDupAndAdd(msg.getEventId());
   }
 
@@ -2753,14 +2744,21 @@ GfErrType ThinClientRegion::handleServerException(
                                "TransactionDataNodeHasDepartedException") !=
              std::string::npos) {
     error = GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION;
-  } else if (exceptionMsg.find(
-                 "org.apache.geode.cache.TransactionDataRebalancedException") !=
+  } else if (exceptionMsg.find("org.apache.geode.cache."
+                               "TransactionDataRebalancedException") !=
              std::string::npos) {
     error = GF_TRANSACTION_DATA_REBALANCED_EXCEPTION;
-  } else if (exceptionMsg.find(
-                 "org.apache.geode.security.AuthenticationRequiredException") !=
+  } else if (exceptionMsg.find("org.apache.geode.security."
+                               "AuthenticationRequiredException") !=
              std::string::npos) {
     error = GF_AUTHENTICATION_REQUIRED_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.cache.LowMemoryException") !=
+             std::string::npos) {
+    error = GF_LOW_MEMORY_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.cache.query."
+                               "QueryExecutionLowMemoryException") !=
+             std::string::npos) {
+    error = GF_QUERY_EXECUTION_LOW_MEMORY_EXCEPTION;
   } else {
     error = GF_CACHESERVER_EXCEPTION;
   }
@@ -2775,27 +2773,23 @@ GfErrType ThinClientRegion::handleServerException(
   return error;
 }
 
-void ThinClientRegion::receiveNotification(TcrMessage* msg) {
+void ThinClientRegion::receiveNotification(const TcrMessage& msg) {
   std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
     TryReadGuard guard(m_rwLock, m_destroyPending);
     if (m_destroyPending) {
-      if (msg != TcrMessage::getAllEPDisMess()) {
-        _GEODE_SAFE_DELETE(msg);
-      }
       return;
     }
     lock.lock();
   }
 
-  if (msg->getMessageType() == TcrMessage::CLIENT_MARKER) {
+  if (msg.getMessageType() == TcrMessage::CLIENT_MARKER) {
     handleMarker();
   } else {
-    clientNotificationHandler(*msg);
+    clientNotificationHandler(msg);
   }
 
   lock.unlock();
-  if (TcrMessage::getAllEPDisMess() != msg) _GEODE_SAFE_DELETE(msg);
 }
 
 void ThinClientRegion::localInvalidateRegion_internal() {
@@ -2871,22 +2865,6 @@ InterestResultPolicy ThinClientRegion::copyInterestList(
   return interestPolicy;
 }
 
-void ThinClientRegion::registerInterestGetValues(
-    const char* method, const std::vector<std::shared_ptr<CacheableKey>>* keys,
-    const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
-        resultKeys) {
-  auto exceptions = std::make_shared<HashMapOfException>();
-  auto err = getAllNoThrow_remote(keys, nullptr, exceptions, resultKeys, true,
-                                  nullptr);
-  throwExceptionIfError(method, err);
-  // log any exceptions here
-  for (const auto& iter : *exceptions) {
-    LOGWARN("%s Exception for key %s:: %s: %s", method,
-            Utils::nullSafeToString(iter.first).c_str(),
-            iter.second->getName().c_str(), iter.second->what());
-  }
-}
-
 void ThinClientRegion::destroyDM(bool keepEndpoints) {
   if (m_tcrdm != nullptr) {
     m_tcrdm->destroy(keepEndpoints);
@@ -2903,6 +2881,8 @@ void ThinClientRegion::release(bool invokeCallbacks) {
     lock.lock();
   }
 
+  // TODO suspect
+  // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
   destroyDM(invokeCallbacks);
 
   m_interestList.clear();
@@ -2921,6 +2901,8 @@ void ThinClientRegion::release(bool invokeCallbacks) {
 ThinClientRegion::~ThinClientRegion() noexcept {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     release(false);
   }
 }
@@ -3002,7 +2984,8 @@ void ThinClientRegion::executeFunction(
       } else if (err == GF_NOTCON) {
         attempt++;
         LOGDEBUG(
-            "ThinClientRegion::executeFunction with GF_NOTCON retry attempt = "
+            "ThinClientRegion::executeFunction with GF_NOTCON retry attempt "
+            "= "
             "%d ",
             attempt);
         if (attempt > retryAttempts) {
@@ -3087,7 +3070,8 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         failedNodes->clear();
         if (failedNodesIds) {
           LOGDEBUG(
-              "ThinClientRegion::reExecuteFunction with GF_FUNCTION_EXCEPTION "
+              "ThinClientRegion::reExecuteFunction with "
+              "GF_FUNCTION_EXCEPTION "
               "failedNodesIds size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
@@ -3176,7 +3160,8 @@ bool ThinClientRegion::executeFunctionSH(
             currentReply->getFailedNode());
         if (failedNodeIds) {
           LOGDEBUG(
-              "ThinClientRegion::executeFunctionSH with GF_FUNCTION_EXCEPTION "
+              "ThinClientRegion::executeFunctionSH with "
+              "GF_FUNCTION_EXCEPTION "
               "failedNodeIds size = %zu ",
               failedNodeIds->size());
           failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
@@ -3400,12 +3385,14 @@ void ChunkedQueryResponse::readObjectPartList(DataInput& input,
           if (arrayType != DSFid::CacheableObjectPartList) {
             LOGERROR(
                 "Query response got unhandled message format %d while "
-                "expecting struct set object part list; possible serialization "
+                "expecting struct set object part list; possible "
+                "serialization "
                 "mismatch",
                 arrayType);
             throw MessageException(
                 "Query response got unhandled message format while expecting "
-                "struct set object part list; possible serialization mismatch");
+                "struct set object part list; possible serialization "
+                "mismatch");
           }
           readObjectPartList(input, true);
         } else {
@@ -3526,7 +3513,8 @@ void ChunkedQueryResponse::handleChunk(const uint8_t* chunk, int32_t chunkLen,
           "object part list; possible serialization mismatch",
           arrayType);
       throw MessageException(
-          "Query response got unhandled message format while expecting object "
+          "Query response got unhandled message format while expecting "
+          "object "
           "part list; possible serialization mismatch");
     }
     readObjectPartList(input, isResultSet);
@@ -3591,9 +3579,9 @@ void ChunkedFunctionExecutionResponse::handleChunk(
     return;
   }
 
-  auto startLen = static_cast<size_t>(
-      input.getBytesRead() -
-      1);  // from here need to look value part + memberid AND -1 for array type
+  // from here need to look value part + memberid AND -1 for array type
+  auto startLen = static_cast<size_t>(input.getBytesRead() - 1);
+
   // read and ignore array length
   input.readArrayLength();
 
@@ -3606,7 +3594,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
   const int SECURE_PART_LEN = 5 + 8;
   bool readPart = true;
   LOGDEBUG(
-      "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen = "
+      "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen "
+      "= "
       "%d ",
       chunkLen, partLen);
   if (partType == DSCode::JavaSerializable) {
@@ -3627,7 +3616,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       // skip first part i.e JavaSerializable.
       TcrMessageHelper::skipParts(m_msg, input, 1);
 
-      // read the second part which is string in usual manner, first its length.
+      // read the second part which is string in usual manner, first its
+      // length.
       partLen = input.readInt32();
 
       // then isObject byte
@@ -3636,8 +3626,8 @@ void ChunkedFunctionExecutionResponse::handleChunk(
       startLen = input.getBytesRead();  // reset from here need to look value
       // part + memberid AND -1 for array type
 
-      // Since it is contained as a part of other results, read arrayType which
-      // is arrayList = 65.
+      // Since it is contained as a part of other results, read arrayType
+      // which is arrayList = 65.
       input.read();
 
       // read and ignore its len which is 2

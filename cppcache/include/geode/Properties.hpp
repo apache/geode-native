@@ -55,7 +55,7 @@ class APACHE_GEODE_EXPORT Properties
    public:
     virtual void visit(const std::shared_ptr<CacheableKey>& key,
                        const std::shared_ptr<Cacheable>& value) = 0;
-    virtual ~Visitor() {}
+    virtual ~Visitor() noexcept = default;
   };
 
   Properties() = default;

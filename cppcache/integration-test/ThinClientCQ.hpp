@@ -28,10 +28,10 @@
 static bool isLocator = false;
 static bool isLocalServer = false;
 static int numberOfLocators = 1;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
-void createRegionForCQ(const char* name, bool ackMode,
+void createRegionForCQ(const std::string& name, bool ackMode,
                        bool clientNotificationEnabled = false,
                        int redundancyLevel = 0,
                        bool caching = true) {

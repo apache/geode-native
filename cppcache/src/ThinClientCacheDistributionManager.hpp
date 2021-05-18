@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_
-#define GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,6 +15,11 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_
+#define GEODE_THINCLIENTCACHEDISTRIBUTIONMANAGER_H_
+
 #include <memory>
 
 #include <geode/internal/geode_globals.hpp>
@@ -29,37 +29,38 @@
 namespace apache {
 namespace geode {
 namespace client {
-/**
- * @brief Distribute data between caches
- */
+
 class TcrMessage;
 class TcrConnection;
 
+/**
+ * @brief Distribute data between caches
+ */
 class ThinClientCacheDistributionManager
     : public ThinClientDistributionManager {
  public:
   explicit ThinClientCacheDistributionManager(
       TcrConnectionManager& connManager);
-  ~ThinClientCacheDistributionManager() {}
+  ~ThinClientCacheDistributionManager() override {}
 
-  void init();
+  void init() override;
   virtual GfErrType sendSyncRequest(TcrMessage& request, TcrMessageReply& reply,
                                     bool attemptFailover = true,
-                                    bool isBGThread = false);
+                                    bool isBGThread = false) override;
 
   GfErrType sendSyncRequestCq(TcrMessage& request, TcrMessageReply& reply);
   GfErrType sendRequestToPrimary(TcrMessage& request, TcrMessageReply& reply);
 
  protected:
-  virtual bool preFailoverAction();
-  virtual bool postFailoverAction(TcrEndpoint* endpoint);
+  bool preFailoverAction() override;
+  bool postFailoverAction(TcrEndpoint* endpoint) override;
 
- private:
-  // Disallow default/copy constructor and assignment operator.
-  ThinClientCacheDistributionManager();
-  ThinClientCacheDistributionManager(const ThinClientCacheDistributionManager&);
+ public:
+  ThinClientCacheDistributionManager() = delete;
+  ThinClientCacheDistributionManager(
+      const ThinClientCacheDistributionManager&) = delete;
   ThinClientCacheDistributionManager& operator=(
-      const ThinClientCacheDistributionManager&);
+      const ThinClientCacheDistributionManager&) = delete;
 };
 
 }  // namespace client

@@ -53,7 +53,7 @@ static bool isLocator = false;
 static int numberOfLocators = 0;
 const char* poolName = "__TEST_POOL1__";
 
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 #include "LocatorHelper.hpp"
@@ -93,15 +93,19 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER2, CreateServer2And3_Locator)
   {
-    if (isLocalServer) CacheHelper::initServer(2, nullptr, locatorsG);
-    if (isLocalServer) CacheHelper::initServer(3, nullptr, locatorsG);
+    if (isLocalServer) {
+      CacheHelper::initServer(2, {}, locatorsG);
+    }
+    if (isLocalServer) {
+      CacheHelper::initServer(3, {}, locatorsG);
+    }
     LOG("SERVER23 started");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
                        true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
@@ -111,7 +115,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, nullptr, nullptr, 0,
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
                        true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
@@ -169,7 +173,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1GetAll)
     // re-create region with caching enabled
     reg0->localDestroyRegion();
     reg0 = nullptr;
-    getHelper()->createPooledRegion(regionNames[0], USE_ACK, nullptr,
+    getHelper()->createPooledRegion(regionNames[0], USE_ACK, {},
                                     "__TEST_POOL1__", true, true);
     reg0 = getHelper()->getRegion(_regionNames[0]);
     // check for IllegalArgumentException for empty key list

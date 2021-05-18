@@ -13,108 +13,110 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(nativeclient.tests.clicache)
+project(Apache.Geode.Client.UnitTests CSharp )
 
-set (NUNIT "C:\\Program Files (x86)\\NUnit 2.6.4")
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
 
-if (64 EQUAL ${BUILD_BITS})
-  set (NUNIT_CONSOLE "nunit-console")
-else()
-  set (NUNIT_CONSOLE "nunit-console-x86")
+file(GLOB_RECURSE SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
+file(GLOB_RECURSE XML_SOURCE RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.xml")
+set(RESOURCES
+  ${XML_SOURCE}
+  geode.properties.mixed
+  geode.properties.nativeclient
+  system.properties
+)
+
+add_library(Apache.Geode.Client.UnitTests SHARED
+  NUnitTestAddTests.ps1
+  packages.config
+  test.runsettings.in
+  ${SOURCE}
+  ${RESOURCES}
+)
+
+source_group("Source Files" FILES "${SOURCE}")
+source_group("Resource Files" FILES ${RESOURCES})
+
+set_source_files_properties(
+  ${RESOURCES}
+  PROPERTIES
+    VS_COPY_TO_OUT_DIR PreserveNewest
+    VS_TOOL_OVERRIDE None
+)
+
+target_link_libraries(Apache.Geode.Client.UnitTests
+  PUBLIC
+    Apache.Geode
+    DUnitFramework
+    NewTestObject
+    PdxClassLibrary
+    PdxVersion1Lib
+    PdxVersion2Lib
+    QueryWrapper
+    SecurityUtil
+)
+
+set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
+  VS_GLOBAL_ROOTNAMESPACE "Apache.Geode.Client.UnitTests"
+  VS_GLOBAL_TreatWarningsAsErrors False
+  VS_GLOBAL_IsTestProject True
+  VS_GLOBAL_TestProjectType UnitTest
+  VS_GLOBAL_RunSettingsFilePath "\$(MSBuildProjectDirectory)\\test.runsettings"
+  VS_GLOBAL_PROJECT_TYPES "{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Web;System.Configuration;System.Management"
+  VS_DOTNET_REFERENCE_NUnit "${CMAKE_BINARY_DIR}/packages/NUnit.2.6.4/lib/nunit.framework.dll"
+  FOLDER cli/test/integration
+)
+
+if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
+  set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
+    VS_GLOBAL_SignAssembly "true"
+    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
+  )
 endif()
 
+add_dependencies(Apache.Geode.Client.UnitTests FwkClient SqLiteImpl)
+add_dependencies(Apache.Geode.Client.UnitTests nuget-restore)
 
-foreach(var CMAKE_CURRENT_SOURCE_DIR CMAKE_SOURCE_DIR CMAKE_BINARY_DIR CMAKE_CURRENT_BINARY_DIR)
-  file(TO_NATIVE_PATH ${${var}} ${var}_NATIVE)
-endforeach()
 
-file(GLOB_RECURSE CSPROJECTS RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.csproj.in")
-if(EXISTS "${STRONG_NAME_KEY}")
-  set(STRONG_NAME_KEY_ENABLED true)
-endif()
-
-foreach(FILE ${CSPROJECTS})
-  # TODO: make this a one line MATCH statement
-  string(REGEX REPLACE "\\.csproj.in" "" PROJDIR ${FILE})
-  string(REGEX REPLACE ".*/" "" PROJNAME ${PROJDIR})
-  configure_file(${FILE} ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj)
-  include_external_msproject(
-      ${PROJNAME}  ${CMAKE_CURRENT_BINARY_DIR}/${PROJNAME}.csproj
-      TYPE FAE04EC0-301F-11D3-BF4B-00C04F79EFBC)
-  set_target_properties(${PROJNAME} PROPERTIES FOLDER cli/test/integration)
-
-endforeach()
+configure_file(test.runsettings.in test.runsettings.gen)
+file(GENERATE OUTPUT test.runsettings INPUT ${CMAKE_CURRENT_BINARY_DIR}/test.runsettings.gen)
 
 enable_testing()
 
-# Function to resolve both config and generate stage variables.
-macro(generate_config INPUT TEMP OUTPUT)
-    configure_file(${INPUT} ${TEMP})
-    file(GENERATE OUTPUT ${OUTPUT}
-      INPUT ${TEMP}
-      CONDITION 1
-    )
-endmacro()
+set(ctest_file_base "${CMAKE_CURRENT_BINARY_DIR}/NUnit")
+set(ctest_include_file "${ctest_file_base}_include.cmake")
+set(ctest_tests_file "${ctest_file_base}_tests.cmake")
 
-foreach( lib SQLite::sqlite3 )
-  get_target_property(runtime_path ${lib} INTERFACE_RUNTIME_DIR)
-  set(PATH ${PATH} ${runtime_path})
-endforeach()
-
-file(GLOB SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.cs")
-
-foreach(FILE ${SOURCES})
-  # Find all non-deprecated tests
-  file(STRINGS ${FILE} HasTests REGEX "\\[Test\\]")
-
-  LIST(LENGTH HasTests length)
-  if (${length} GREATER 0)
-    # Get the namespace
-    file(STRINGS ${FILE} NameSpaceLine REGEX "namespace Apache.Geode.Client.UnitTests")
-    string(REGEX REPLACE "namespace.*Apache" "Apache" NAMESPACE ${NameSpaceLine})
-
-    string(REGEX REPLACE "\\.cs" "" TEST ${FILE})
-    set(TESTS ${TESTS} ${TEST})
-    set(TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/.tests/${TEST})
-
-    # Get the test class (NewAPI tests have N in the file name but not test class name)
-    string(REGEX REPLACE "N$" "" TESTCLASS ${TEST})
-
-    set(TEST_SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/${TEST}.bat)
-    generate_config(${CMAKE_CURRENT_SOURCE_DIR}/test.bat.in ${CMAKE_CURRENT_BINARY_DIR}/.${TEST}.bat.in ${TEST_SCRIPT})
-
-    add_test(NAME ${TEST} COMMAND ${TEST_SCRIPT})
-    set_tests_properties(${TEST} PROPERTIES LABELS STABLE)
-
-    file(STRINGS ${FILE} IsDeprecated REGEX "\\[Category.*deprecated.*\\]")
-    if (IsDeprecated)
-      set_tests_properties(${TEST} PROPERTIES DISABLED TRUE)
-	  endif()
-  endif()
-endforeach()
-
-# Label any flaky tests here
-set_tests_properties(ThinClientCqStatusTestTwoServers
-    ThinClientPoolTestsN
-    ThinClientQueryTestsN
-  PROPERTIES
-    DISABLED TRUE
-    LABELS FLAKY
+add_custom_command(
+  TARGET Apache.Geode.Client.UnitTests POST_BUILD
+  BYPRODUCTS "${ctest_tests_file}"
+  COMMAND pwsh -File 
+          "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}/NUnitTestAddTests.ps1>"
+          -AssemblyPath "$<SHELL_PATH:$<TARGET_FILE:Apache.Geode.Client.UnitTests>>"
+          -NUnitConsolePath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/packages/NUnit.Runners.2.6.4/tools/nunit-console.exe>"
+          -WorkingDirectory "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
+          -CTestFile "$<SHELL_PATH:${ctest_tests_file}>"
+          -SourcePath "$<SHELL_PATH:${CMAKE_CURRENT_SOURCE_DIR}>"
+          -ServerLogLevel "config"
+          -ServerSecurityLogLevel "config"
+          -ServerClasspath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/tests/javaobject/javaobject.jar>"
+          -GeodePath "$<SHELL_PATH:${Geode_PATH}>"
+          -JavaPath "$<SHELL_PATH:${Java_JAVA_EXECUTABLE}>"
+          -EnvPath "$<SHELL_PATH:${CMAKE_BINARY_DIR}/packages/NUnit.Runners.2.6.4/tools>"
+  WORKING_DIRECTORY "$<TARGET_FILE_DIR:Apache.Geode.Client.UnitTests>"
 )
 
-# Label any tests that always fail here
-set_tests_properties(OverflowTestsN
-    ThinClientDeltaTestFailing
-    ThinClientDurableTestsN
-    ThinClientHARegionTestsN
-    ThinClientSecurityAuthTestsMUN
-    ThinClientSecurityAuthTestsN
-    RegionFailingTests
-    ThinClientSecurityAuthzTestsMUN
-    ThinClientSecurityAuthzTestsN
-  PROPERTIES
-    DISABLED TRUE
-    LABELS OMITTED
+file(WRITE "${ctest_include_file}"
+  "if(EXISTS \"${ctest_tests_file}\")\n"
+  "  include(\"${ctest_tests_file}\")\n"
+  "else()\n"
+  "  add_test(${TARGET}_NOT_BUILT ${TARGET}_NOT_BUILT)\n"
+  "endif()\n"
+)
+
+set_property(DIRECTORY
+  APPEND PROPERTY TEST_INCLUDE_FILES "${ctest_include_file}"
 )
 
 add_custom_target(run-stable-clicache-integration-tests

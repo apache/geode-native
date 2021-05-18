@@ -33,7 +33,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT StructSetImpl : public StructSet {
+class StructSetImpl : public StructSet {
  public:
   StructSetImpl(const std::shared_ptr<CacheableVector>& values,
                 const std::vector<std::string>& fieldNames);

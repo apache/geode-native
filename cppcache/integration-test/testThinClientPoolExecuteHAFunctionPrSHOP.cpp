@@ -34,7 +34,7 @@ using apache::geode::client::FunctionService;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"partition_region", "PoolRegion2"};
 const char *poolName = "__TEST_POOL1__";

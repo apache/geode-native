@@ -1,0 +1,155 @@
+{
+  "variables": {
+    "aws_region": "",
+    "googlecompute_zone": "",
+    "googlecompute_project": "",
+    "image_family": "build-rhel-7",
+    "image_name_prefix": "{{user `image_family`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "t2.micro",
+      "ami_virtualization_type": "hvm",
+      "ami_name": "{{user `image_family`}}-{{timestamp}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "RHEL-7.7_HVM-*-x86_64-*-Hourly2-GP2",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "309956199498"
+        ],
+        "most_recent": true
+      },
+      "subnet_id": "{{user `subnet_id`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "tags": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "ssh_username": "ec2-user",
+      "ssh_pty": true
+    },
+    {
+      "type": "googlecompute",
+      "machine_type": "n1-standard-1",
+      "project_id": "{{user `googlecompute_project`}}",
+      "zone": "{{user `googlecompute_zone`}}",
+      "source_image_family": "rhel-7",
+      "image_name": "{{user `image_name_prefix`}}-{{timestamp}}",
+      "image_family": "{{user `image_family`}}",
+      "image_labels": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "disk_size": "20",
+      "ssh_username": "packer"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "linux/aws/wait-for-cloud-init.sh",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "rhel/update.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "linux/files",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "linux/setup-files.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "linux/aws/files",
+      "destination": "/tmp",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "linux/aws/setup-files.sh"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "rhel/aws/files",
+      "destination": "/tmp",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "rhel/aws/setup-files.sh"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "rhel/disable-selinux.sh",
+        "rhel/7/install-devtoolset.sh",
+        "rhel/install-jdk-11.sh",
+        "linux/install-cmake.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "inline": [
+        "yum install -y git make zlib-devel patch openssl-devel",
+        "yum install -y python3-pip",
+        "pip3 install cpp-coveralls",
+        "yum --enablerepo '*codeready*' install -y doxygen"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "rhel/aws/add-user-build.sh"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "rhel/cleanup.sh"
+      ]
+    }
+  ]
+}

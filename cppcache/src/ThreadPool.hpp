@@ -50,7 +50,7 @@ class PooledWork : public Callable {
  public:
   PooledWork() : m_mutex(), m_cond(), m_done(false) {}
 
-  ~PooledWork() override {}
+  ~PooledWork() noexcept override = default;
 
   void call() override {
     T res = execute();

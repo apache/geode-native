@@ -16,6 +16,8 @@
 add_executable(cpp-integration-test
   AuthInitializeTest.cpp
   BasicIPv6Test.cpp
+  CacheWriterTest.cpp
+  CachingProxyTest.cpp
   CacheXmlTest.cpp
   CleanIdleConnections.cpp
   ClientTransactionXATest.cpp
@@ -25,15 +27,23 @@ add_executable(cpp-integration-test
   DataSerializableTest.cpp
   EnableChunkHandlerThreadTest.cpp
   ExampleTest.cpp
+  ExceptionTranslationTest.cpp
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
+  LRUEvictionTest.cpp
   LocatorRequestsTest.cpp
+  Order.cpp
+  Order.hpp
   PartitionRegionOpsTest.cpp
+  PdxInstanceFactoryTest.cpp
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp
   PdxSerializerTest.cpp
-  Order.cpp
-  Order.hpp
+  PdxTypeRegistryTest.cpp
+  Position.cpp
+  Position.hpp
+  PositionKey.cpp
+  PositionKey.hpp
   RegionGetAllTest.cpp
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
@@ -47,11 +57,21 @@ add_executable(cpp-integration-test
   SslTwoWayTest.cpp
   StructTest.cpp
   TransactionCleaningTest.cpp
-  WanDeserializationTest.cpp
-  PdxInstanceFactoryTest.cpp
-  CacheWriterTest.cpp
   TransactionsTest.cpp
+  WanDeserializationTest.cpp
+  DisconnectEndPointAtException.cpp
+  ContainsKeyOnServerExceptionTest.cpp
 )
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(cpp-integration-test
+    PUBLIC
+      -Wno-used-but-marked-unused
+  )
+endif()
+
+include(ExecutableExportHeader)
+
+generate_exec_export_header(cpp-integration-test)
 
 target_compile_definitions(cpp-integration-test
   PUBLIC
@@ -103,6 +123,7 @@ configure_file(
 set_target_properties(cpp-integration-test PROPERTIES
   CXX_VISIBILITY_PRESET hidden
   VISIBILITY_INLINES_HIDDEN ON
+  ENABLE_EXPORTS 1
   FOLDER cpp/test/integration
 )
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CQSERVICESTATISTICS_H_
-#define GEODE_CQSERVICESTATISTICS_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,11 +15,12 @@
  * limitations under the License.
  */
 
-#include "internal/geode_globals.hpp"
+#pragma once
 
-/**
- * @file
- */
+#ifndef GEODE_CQSERVICESTATISTICS_H_
+#define GEODE_CQSERVICESTATISTICS_H_
+
+#include "internal/geode_globals.hpp"
 
 namespace apache {
 namespace geode {
@@ -38,6 +34,8 @@ namespace client {
  */
 class APACHE_GEODE_EXPORT CqServiceStatistics {
  public:
+  virtual ~CqServiceStatistics() noexcept = default;
+
   /**
    * Get the number of CQs currently active.
    * Active CQs are those which are executing (in running state).

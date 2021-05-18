@@ -138,7 +138,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, RegisterRegexClient2)
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionOnClient1)
-  ;
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
     rptr->localDestroyRegion();
@@ -147,7 +146,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionOnClient1)
   }
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, CreateRegionOnClient2)
-  ;
   {
     SLEEP(10000);
     createRegion(regionNamesAuth[0], false, true);

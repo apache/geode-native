@@ -23,16 +23,8 @@ package-list
 .*\.md
 .*\.md.erb
 
-# contrib/pdxautoserializer
-# public domain sources
-CPPDictionary.hpp
-CPPSymbol.hpp
-CPP_parser.g
-DictEntry.hpp
-Dictionary.cpp
-Dictionary.hpp
-STDCTokenTypes.txt
-Support.cpp
+# docker/
+bellsoft.repo
 
 # well known build directories
 build

@@ -56,7 +56,7 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
 
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 const char* poolName = "__TESTPOOL1_";
 
@@ -197,12 +197,12 @@ void createRegion(const char* name, bool ackMode, bool isCacheEnabled,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -212,11 +212,11 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
 }
 
 void createPooledRegionConcurrencyCheckDisabled(
-    const char* name, bool ackMode, const char* locators, const char* poolname,
+    const std::string& name, bool ackMode, const std::string& locators, const std::string& poolname,
     bool clientNotificationEnabled = false, bool cachingEnable = true,
     bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
@@ -567,7 +567,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, ExecuteLargePutAll)
     LOG("Do large PutAll");
     HashMapOfCacheable map0;
     map0.clear();
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
       char key0[50] = {0};
       char val0[2500] = {0};
       sprintf(key0, "key-%d", i);
@@ -587,7 +587,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, VerifyLargePutAll)
   {
     LOG("Verify large PutAll");
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 1000; i++) {
       char key0[50] = {0};
       sprintf(key0, "key-%d", i);
       verifyCreated(regionNames[0], key0);

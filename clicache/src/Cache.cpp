@@ -18,7 +18,6 @@
 
 #include "begin_native.hpp"
 #include <CacheRegionHelper.hpp>
-#include <CacheImpl.hpp>
 #include "end_native.hpp"
 
 #include "Cache.hpp"
@@ -55,6 +54,22 @@ namespace Apache
         m_nativeptr = gcnew native_shared_ptr<native::Cache>(nativeptr);
         m_pdxTypeRegistry = gcnew Apache::Geode::Client::Internal::PdxTypeRegistry(this);
         m_typeRegistry = gcnew Apache::Geode::Client::TypeRegistry(this);
+      }
+
+      Cache::~Cache() {
+        if (m_nativeptr) {
+          try {
+            if (!IsClosed) {
+              Close();
+            }
+          }
+          catch (...) {
+          }
+          finally{
+              delete m_nativeptr;
+              m_nativeptr = nullptr;
+          }
+        }
       }
 
       String^ Cache::Name::get( )

@@ -70,6 +70,7 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
     pool->getStats().incQueryExecutionId();
   }
   /*get the start time for QueryExecutionTime stat*/
+  // NOLINTNEXTLINE(clang-analyzer-core.CallAndMessage)
   bool enableTimeStatistics = tcdm->getConnectionManager()
                                   .getCacheImpl()
                                   ->getDistributedSystem()
@@ -140,12 +141,11 @@ GfErrType RemoteQuery::executeNoThrow(
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
-    GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
     if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
-    err = tcdm->sendSyncRequest(msg, reply);
+    auto err = tcdm->sendSyncRequest(msg, reply);
     if (err != GF_NOERR) {
       return err;
     }
@@ -164,12 +164,11 @@ GfErrType RemoteQuery::executeNoThrow(
     msg.setTimeout(timeout);
     reply.setTimeout(timeout);
 
-    GfErrType err = GF_NOERR;
     LOGFINEST("%s: sending request for query: %s", func, m_queryString.c_str());
     if (tcdm == nullptr) {
       tcdm = m_tccdm;
     }
-    err = tcdm->sendSyncRequest(msg, reply);
+    auto err = tcdm->sendSyncRequest(msg, reply);
     if (err != GF_NOERR) {
       return err;
     }

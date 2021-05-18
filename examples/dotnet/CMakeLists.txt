@@ -49,6 +49,9 @@ endfunction()
 add_example(NAME authinitialize
 	SOURCE ExampleAuthInitialize.cs Program.cs)
 
+add_example(NAME classaskey
+	SOURCE PhotosKey.cs PhotosValue.cs Program.cs)
+
 add_example(NAME continuousquery
 	SOURCE Order.cs MyCqListener.cs Program.cs)
 

@@ -40,7 +40,7 @@ CacheHelper *cacheHelper = nullptr;
 #define SERVERS s2p2
 #define SERVER1 s2p2
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool g_poolConfig = false;
 bool g_poolLocators = false;

@@ -454,7 +454,7 @@ namespace Apache.Geode.DUnitFramework
 
     private static Random m_rnd = new Random((int)DateTime.Now.Ticks);
     private static IDriverComm m_driverComm = null;
-    private static int m_driverPort = RandPort(20000, 40000);
+    private static int m_driverPort = 0;
     private static IPAddress m_ipAddress = null;
     private static IBBComm m_bbComm = null;
     private static string m_externalBBServer = null;
@@ -474,7 +474,12 @@ namespace Apache.Geode.DUnitFramework
     private const string NoServerConnMsg = "Server connection not established.";
     private static Dictionary<UnitFnMethod, bool> m_testCompleteMap =
       new Dictionary<UnitFnMethod, bool>();
+    
 
+    static Util()
+    {
+      DriverPort = GetAvailablePort();
+    }
     #endregion
 
     /// <summary>
@@ -753,41 +758,20 @@ namespace Apache.Geode.DUnitFramework
     }
 
     /// <summary>
-    /// Get a free random port in the given range.
+    /// Get a free ephemeral port.
     /// </summary>
-    /// <param name="min">
-    /// The inclusive lower bound of the random integer.
-    /// </param>
-    /// <param name="max">
-    /// The exclusive upper bound of the random integer.
-    /// </param>
     /// <returns>the free port number</returns>
-    public static int RandPort(int min, int max)
+    public static int GetAvailablePort()
     {
-      int portNo;
-      while (true)
+      Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+      try
       {
-        portNo = Rand(min, max);
-        Socket s = new Socket(AddressFamily.InterNetwork,
-          SocketType.Stream, ProtocolType.Tcp);
-        try
-        {
-          s.Bind(new IPEndPoint(IPAddress.Any, portNo));
-          s.Close();
-          return portNo;
-        }
-        catch (SocketException ex)
-        {
-          // EADDRINUSE?
-          if (ex.ErrorCode == 10048)
-          {
-            continue;
-          }
-          else
-          {
-            throw;
-          }
-        }
+        s.Bind(new IPEndPoint(IPAddress.Any, 0));
+        return ((IPEndPoint)s.LocalEndPoint).Port;
+      }
+      finally
+      {
+        s.Close();
       }
     }
 
@@ -827,15 +811,28 @@ namespace Apache.Geode.DUnitFramework
       return StartProcess(procPath, procArgs, useShell, startDir, redirectStdOut,
       redirectStdIn, redirectStdErr, false, out proc);
     }
-    
+
     public static bool StartProcess(string procPath, string procArgs,
       bool useShell, string startDir, bool redirectStdOut,
       bool redirectStdIn, bool redirectStdErr, bool createNoWindow, out Process proc)
+    {
+      return StartProcess(procPath, procArgs, useShell, startDir, redirectStdOut,
+        redirectStdIn, redirectStdErr, createNoWindow, new Dictionary<string, string>(), out proc);
+    }
+
+    public static bool StartProcess(string procPath, string procArgs,
+      bool useShell, string startDir, bool redirectStdOut,
+      bool redirectStdIn, bool redirectStdErr, bool createNoWindow, IDictionary<string, string> environment, out Process proc)
     {
       ProcessStartInfo pInfo = new ProcessStartInfo(procPath, procArgs);
 
       // Force launch without a shell. This allows launching FwkClient.exe without a window so tests can run in CI.
       useShell = false;
+
+      foreach(var e in environment)
+      {
+        pInfo.EnvironmentVariables[e.Key] = e.Value;
+      }
 
       if (!useShell)
       {

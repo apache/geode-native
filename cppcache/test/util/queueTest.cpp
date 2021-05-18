@@ -23,7 +23,7 @@
 
 using apache::geode::client::queue::coalesce;
 
-TEST(util_queueTest, coalesce) {
+TEST(queueTest, coalesce) {
   auto queue = std::deque<int32_t>({1, 1, 1, 2, 3, 4});
 
   coalesce(queue, 1);

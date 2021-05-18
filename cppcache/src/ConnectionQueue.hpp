@@ -68,7 +68,7 @@ class ConnectionQueue {
       }
       condition_.notify_one();
     }
-    if (delMp) {
+    if (delMp && mp) {
       mp->close();
       delete mp;
     }

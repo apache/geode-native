@@ -26,6 +26,7 @@
 #include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientConnectionRequest.hpp"
 #include "ClientConnectionResponse.hpp"
 #include "ClientReplacementRequest.hpp"
@@ -33,9 +34,11 @@
 #include "LocatorListResponse.hpp"
 #include "QueueConnectionRequest.hpp"
 #include "QueueConnectionResponse.hpp"
+#include "TcpConn.hpp"
 #include "TcpSslConn.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
+#include "Version.hpp"
 
 namespace apache {
 namespace geode {
@@ -44,17 +47,12 @@ namespace client {
 const size_t BUFF_SIZE = 3000;
 const size_t DEFAULT_CONNECTION_RETRIES = 3;
 
-ThinClientLocatorHelper::ConnectionWrapper::~ConnectionWrapper() {
-  if (conn_ != nullptr) {
-    LOGDEBUG("Closing the locator connection");
-    conn_->close();
-    delete conn_;
-  }
-}
-
 ThinClientLocatorHelper::ThinClientLocatorHelper(
     const std::vector<std::string>& locators, const ThinClientPoolDM* poolDM)
-    : locators_(locators.begin(), locators.end()), m_poolDM(poolDM) {}
+    : locators_(locators.begin(), locators.end()),
+      m_poolDM(poolDM),
+      m_sniProxyHost(""),
+      m_sniProxyPort(0) {}
 
 ThinClientLocatorHelper::ThinClientLocatorHelper(
     const std::vector<std::string>& locators, const std::string& sniProxyHost,
@@ -85,15 +83,13 @@ std::vector<ServerLocation> ThinClientLocatorHelper::getLocators() const {
   return locators;
 }
 
-ThinClientLocatorHelper::ConnectionWrapper
-ThinClientLocatorHelper::createConnection(
+std::unique_ptr<Connector> ThinClientLocatorHelper::createConnection(
     const ServerLocation& location) const {
   auto& sys_prop = m_poolDM->getConnectionManager()
                        .getCacheImpl()
                        ->getDistributedSystem()
                        .getSystemProperties();
 
-  Connector* conn;
   const auto port = location.getPort();
   auto timeout = sys_prop.connectTimeout();
   const auto& hostname = location.getServerName();
@@ -101,25 +97,23 @@ ThinClientLocatorHelper::createConnection(
 
   if (sys_prop.sslEnabled()) {
     if (m_sniProxyHost.empty()) {
-      conn = new TcpSslConn(hostname, static_cast<uint16_t>(port), timeout,
-                            buffer_size, sys_prop.sslTrustStore(),
-                            sys_prop.sslKeyStore(),
-                            sys_prop.sslKeystorePassword());
+      return std::unique_ptr<Connector>(new TcpSslConn(
+          hostname, static_cast<uint16_t>(port), timeout, buffer_size,
+          sys_prop.sslTrustStore(), sys_prop.sslKeyStore(),
+          sys_prop.sslKeystorePassword()));
     } else {
-      conn = new TcpSslConn(hostname, timeout, buffer_size, m_sniProxyHost,
-                            m_sniProxyPort, sys_prop.sslTrustStore(),
-                            sys_prop.sslKeyStore(),
-                            sys_prop.sslKeystorePassword());
+      return std::unique_ptr<Connector>(new TcpSslConn(
+          hostname, static_cast<uint16_t>(port), m_sniProxyHost, m_sniProxyPort,
+          timeout, buffer_size, sys_prop.sslTrustStore(),
+          sys_prop.sslKeyStore(), sys_prop.sslKeystorePassword()));
     }
   } else {
-    conn = new TcpConn(hostname, port, timeout, buffer_size);
+    return std::unique_ptr<Connector>(new TcpConn(
+        hostname, static_cast<uint16_t>(port), timeout, buffer_size));
   }
-
-  ConnectionWrapper cw{conn};
-  cw->init();
-  return cw;
 }
 
+static constexpr int32_t kGossipVersion = 1002;
 std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     const ServerLocation& location,
     const std::shared_ptr<Serializable>& request) const {
@@ -132,7 +126,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     auto conn = createConnection(location);
     auto data =
         m_poolDM->getConnectionManager().getCacheImpl()->createDataOutput();
-    data.writeInt(static_cast<int32_t>(1001));  // GOSSIPVERSION
+    data.writeInt(kGossipVersion);
+    data.writeInt(Version::current().getOrdinal());
     data.writeObject(request);
     auto sentLength = conn->send(
         reinterpret_cast<char*>(const_cast<uint8_t*>(data.getBuffer())),
@@ -141,9 +136,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
       return nullptr;
     }
     char buff[BUFF_SIZE];
-    auto receivedLength =
-        conn->receive(buff, BUFF_SIZE, m_poolDM->getReadTimeout());
-    if (receivedLength <= 0) {
+    const auto receivedLength = conn->receive(buff, m_poolDM->getReadTimeout());
+    if (!receivedLength) {
       return nullptr;
     }
 
@@ -163,6 +157,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
   } catch (const Exception& excp) {
     LOGFINE("Exception while querying locator: %s: %s", excp.getName().c_str(),
             excp.what());
+  } catch (...) {
+    LOGFINE("Exception while querying locator");
   }
 
   return nullptr;

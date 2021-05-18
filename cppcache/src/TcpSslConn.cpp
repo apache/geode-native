@@ -17,9 +17,15 @@
 
 #include "TcpSslConn.hpp"
 
-#include <memory>
+#include <openssl/err.h>
+#include <openssl/x509.h>
 
-#include <ace/SSL/SSL_SOCK_Connector.h>
+#include <chrono>
+#include <iostream>
+#include <thread>
+
+#include <boost/exception/diagnostic_information.hpp>
+#include <boost/optional.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/SystemProperties.hpp>
@@ -29,105 +35,167 @@
 namespace apache {
 namespace geode {
 namespace client {
-std::atomic_flag TcpSslConn::initialized_ = ATOMIC_FLAG_INIT;
 
-void TcpSslConn::createSocket(ACE_HANDLE sock) {
-  LOGDEBUG("Creating SSL socket stream");
-  stream_ = std::unique_ptr<ACE_SSL_SOCK_Stream>(new ACE_SSL_SOCK_Stream());
-  stream_->set_handle(sock);
+TcpSslConn::TcpSslConn(const std::string& hostname, uint16_t,
+                       const std::string& sniProxyHostname,
+                       uint16_t sniProxyPort,
+                       std::chrono::microseconds connect_timeout,
+                       int32_t maxBuffSizePool, const std::string& pubkeyfile,
+                       const std::string& privkeyfile,
+                       const std::string& pemPassword)
+    : TcpConn{sniProxyHostname, sniProxyPort, connect_timeout, maxBuffSizePool},
+      ssl_context_{boost::asio::ssl::context::sslv23_client},
+      strand_(io_context_) {
+  init(pubkeyfile, privkeyfile, pemPassword, hostname);
 }
 
-void TcpSslConn::connect() {
-  using apache::geode::internal::chrono::duration::to_string;
+TcpSslConn::TcpSslConn(const std::string& hostname, uint16_t port,
+                       std::chrono::microseconds connect_timeout,
+                       int32_t maxBuffSizePool, const std::string& pubkeyfile,
+                       const std::string& privkeyfile,
+                       const std::string& pemPassword)
+    : TcpConn{hostname, port, connect_timeout, maxBuffSizePool},
+      ssl_context_{boost::asio::ssl::context::sslv23_client},
+      strand_(io_context_) {
+  init(pubkeyfile, privkeyfile, pemPassword);
+}
 
-  ACE_OS::signal(SIGPIPE, SIG_IGN);  // Ignore broken pipe
+TcpSslConn::TcpSslConn(const std::string& ipaddr,
+                       std::chrono::microseconds connect_timeout,
+                       int32_t maxBuffSizePool, const std::string& pubkeyfile,
+                       const std::string& privkeyfile,
+                       const std::string& pemPassword)
+    : TcpSslConn{
+          ipaddr.substr(0, ipaddr.find(':')),
+          static_cast<uint16_t>(std::stoi(ipaddr.substr(ipaddr.find(':') + 1))),
+          connect_timeout,
+          maxBuffSizePool,
+          pubkeyfile,
+          privkeyfile,
+          pemPassword} {}
 
-  LOGFINER(std::string("Connecting SSL socket stream to ") +
-           inetAddress_.get_host_name() + ":" +
-           std::to_string(inetAddress_.get_port_number()) + " waiting " +
-           to_string(timeout_));
+TcpSslConn::TcpSslConn(const std::string& ipaddr,
+                       std::chrono::microseconds connect_timeout,
+                       int32_t maxBuffSizePool,
+                       const std::string& sniProxyHostname,
+                       uint16_t sniProxyPort, const std::string& pubkeyfile,
+                       const std::string& privkeyfile,
+                       const std::string& pemPassword)
+    : TcpSslConn{
+          ipaddr.substr(0, ipaddr.find(':')),
+          static_cast<uint16_t>(std::stoi(ipaddr.substr(ipaddr.find(':') + 1))),
+          sniProxyHostname,
+          sniProxyPort,
+          connect_timeout,
+          maxBuffSizePool,
+          pubkeyfile,
+          privkeyfile,
+          pemPassword} {}
 
-  if (!sniHostname_.empty()) {
-    SSL_set_tlsext_host_name(stream_->ssl(), sniHostname_.c_str());
-  }
+void TcpSslConn::init(const std::string& pubkeyfile,
+                      const std::string& privkeyfile,
+                      const std::string& pemPassword,
+                      const std::string& sniHostname) {
+  // Most of the SSL configuration provided *through* Asio is on the context.
+  // This configuration is copied into each SSL instance upon construction.
+  // That means you need to get your configuration in order before you
+  // construct the stream and connect the socket.
+  LOGDEBUG(
+      "*** TcpSslConn init, pubkeyfile = %s, pemPassword = %s, sniHostname = "
+      "%s",
+      pubkeyfile.c_str(), pemPassword.c_str(), sniHostname.c_str());
 
-  ACE_SSL_SOCK_Connector conn;
-  ACE_Time_Value actTimeout(timeout_);
-  if (conn.connect(*stream_, inetAddress_,
-                   timeout_ > std::chrono::microseconds::zero()
-                       ? &actTimeout
-                       : nullptr) == -1) {
-    const auto lastError = ACE_OS::last_error();
-    if (lastError == ETIME || lastError == ETIMEDOUT) {
-      throw TimeoutException(
-          "TcpSslConn::connect Attempt to connect timed out after " +
-          to_string(timeout_) + ".");
+  try {
+    ssl_context_.set_verify_mode(boost::asio::ssl::verify_peer);
+    ssl_context_.load_verify_file(pubkeyfile);
+
+    ssl_context_.set_password_callback(
+        [pemPassword](std::size_t /*max_length*/,
+                      boost::asio::ssl::context::password_purpose /*purpose*/) {
+          return pemPassword;
+        });
+
+    if (!privkeyfile.empty()) {
+      ssl_context_.use_certificate_chain_file(privkeyfile);
+      ssl_context_.use_private_key_file(
+          privkeyfile, boost::asio::ssl::context::file_format::pem);
     }
-    close();
-    throw GeodeIOException("TcpSslConn::connect failed with errno: " +
-                           ACE_errno_to_string(lastError));
+
+    auto stream = std::unique_ptr<ssl_stream_type>(
+        new ssl_stream_type{socket_, ssl_context_});
+
+    SSL_set_tlsext_host_name(stream->native_handle(), sniHostname.c_str());
+
+    stream->handshake(ssl_stream_type::client);
+
+    std::stringstream ss;
+    ss << "Setup SSL " << socket_.local_endpoint() << " -> "
+       << socket_.remote_endpoint();
+    LOGINFO(ss.str());
+
+    ss.clear();
+    ss << "SNI hostname: " << sniHostname;
+    LOGINFO(ss.str());
+
+    socket_stream_ = std::move(stream);
+  } catch (const boost::exception& ex) {
+    // error handling
+    std::string info = boost::diagnostic_information(ex);
+    LOGDEBUG("caught boost exception: %s", info.c_str());
+    throw apache::geode::client::SslException(info.c_str());
   }
 }
 
-void TcpSslConn::close() {
-  if (stream_) {
-    stream_->close();
-    stream_ = nullptr;
+TcpSslConn::~TcpSslConn() {
+  std::stringstream ss;
+  ss << "Teardown SSL " << socket_.local_endpoint() << " -> ";
+  try {
+    ss << socket_.remote_endpoint();
+  } catch (...) {
   }
+  LOGFINE(ss.str());
 }
 
-uint16_t TcpSslConn::getPort() {
-  ACE_INET_Addr localAddr;
-  stream_->get_local_addr(localAddr);
-  return localAddr.get_port_number();
+void TcpSslConn::prepareAsyncRead(
+    char* buff, size_t len,
+    boost::optional<boost::system::error_code>& read_result,
+    std::size_t& bytes_read) {
+  boost::asio::async_read(
+      *socket_stream_, boost::asio::buffer(buff, len),
+      boost::asio::bind_executor(
+          strand_, [&read_result, &bytes_read](
+                       const boost::system::error_code& ec, const size_t n) {
+            bytes_read = n;
+
+            // EOF itself occurs when there is no data available on the socket
+            // at the time of the read. It may simply imply data has yet to
+            // arrive. Do nothing. Defer to timeout rather than assume a broken
+            // connection.
+            if (ec != boost::asio::error::eof &&
+                ec != boost::asio::error::try_again) {
+              read_result = ec;
+              return;
+            }
+          }));
 }
 
-static int pem_passwd_cb(char* buf, int size, int /*rwflag*/, void* passwd) {
-  strncpy(buf, reinterpret_cast<char*>(passwd), size);
-  buf[size - 1] = '\0';
-  return static_cast<int>(strlen(buf));
-}
+void TcpSslConn::prepareAsyncWrite(
+    const char* buff, size_t len,
+    boost::optional<boost::system::error_code>& write_result,
+    std::size_t& bytes_written) {
+  boost::asio::async_write(
+      *socket_stream_, boost::asio::buffer(buff, len),
+      boost::asio::bind_executor(
+          strand_, [&write_result, &bytes_written](
+                       const boost::system::error_code& ec, const size_t n) {
+            bytes_written = n;
 
-void TcpSslConn::initSsl() {
-  if (!TcpSslConn::initialized_.test_and_set()) {
-    auto sslContext = ACE_SSL_Context::instance();
-
-    SSL_CTX_set_cipher_list(sslContext->context(), "DEFAULT");
-    sslContext->set_mode(ACE_SSL_Context::SSLv23_client);
-    sslContext->set_verify_peer();
-    if (sslContext->load_trusted_ca(trustStoreFile_.c_str()) != 0) {
-      throw SslException("Failed to read SSL trust store.");
-    }
-
-    if (!password_.empty()) {
-      SSL_CTX_set_default_passwd_cb(sslContext->context(), pem_passwd_cb);
-      SSL_CTX_set_default_passwd_cb_userdata(
-          sslContext->context(), const_cast<char*>(password_.c_str()));
-    }
-
-    if (!privateKeyFile_.empty()) {
-      if (sslContext->certificate(privateKeyFile_.c_str()) != 0) {
-        throw SslException("Failed to read SSL certificate.");
-      }
-      if (sslContext->private_key(privateKeyFile_.c_str()) != 0) {
-        throw SslException("Invalid SSL keystore password.");
-      }
-      if (SSL_CTX_use_certificate_chain_file(sslContext->context(),
-                                             privateKeyFile_.c_str()) <= 0) {
-        throw SslException("Failed to read SSL certificate chain.");
-      }
-    }
-  }
-}
-
-ssize_t TcpSslConn::doOperation(const TcpConn::SockOp& op, void* buff,
-                                size_t sendlen, ACE_Time_Value& waitTime,
-                                size_t& readLen) const {
-  if (op == SOCK_READ) {
-    return stream_->recv_n(buff, sendlen, &waitTime, &readLen);
-  } else {
-    return stream_->send_n(buff, sendlen, &waitTime, &readLen);
-  }
+            if (ec != boost::asio::error::eof &&
+                ec != boost::asio::error::try_again) {
+              write_result = ec;
+              return;
+            }
+          }));
 }
 
 }  // namespace client

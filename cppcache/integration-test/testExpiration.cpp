@@ -126,7 +126,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R1, 100);
 
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     n = getNumOfEntries(R1);
     ASSERT(n == 100, "Expected 100 entries");
@@ -145,7 +145,7 @@ BEGIN_TEST(TEST_EXPIRATION)
     LOG("Region R2 created");
     doNPuts(R2, 1);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     n = getNumOfEntries(R2);
     ASSERT(n == 1, "Expected 1 entry");
@@ -162,7 +162,7 @@ BEGIN_TEST(TEST_EXPIRATION)
     cacheImpl->createRegion("R3", attrs_3, R3);
     ASSERT(R3 != nullptr, "Expected R3 to be NON-nullptr");
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     ASSERT(R3->isDestroyed() == false, "Expected R3 to be alive");
 
@@ -179,7 +179,7 @@ BEGIN_TEST(TEST_EXPIRATION)
     doNPuts(R4, 1);
     // This will be same as updating the object
 
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     n = getNumOfEntries(R4);
     ASSERT(n == 0, "Expected 0 entry");
@@ -198,18 +198,18 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto key_0 = do1Put(R5);
 
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     R5->get(key_0);
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 
     n = getNumOfEntries(R5);
 
     printf("n ==  %zd\n", n);
     ASSERT(n == 1, "Expected 1 entry");
 
-    // ACE_OS::sleep(3);
-    ACE_OS::sleep(6);
+    // std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(6));
     n = getNumOfEntries(R5);
 
     ASSERT(n == 0, "Expected 0 entry");
@@ -227,11 +227,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R6, 1);
 
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     doNPuts(R6, 1);
 
-    ACE_OS::sleep(7);
+    std::this_thread::sleep_for(std::chrono::seconds(7));
 
     ASSERT(R6->isDestroyed() == true, "Expected R6 to be dead");
 
@@ -247,11 +247,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R7, 1);
 
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     doNPuts(R7, 1);
 
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     ASSERT(R7->isDestroyed() == true, "Expected R7 to be dead");
 
@@ -267,11 +267,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto key = do1Put(R8);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     R8->get(key);
 
-    ACE_OS::sleep(6);
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     n = getNumOfEntries(R8);
     ASSERT(n == 0, "Expected 1 entries");
@@ -288,11 +288,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto key_1 = do1Put(R9);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     R9->get(key_1);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     n = getNumOfEntries(R9);
     ASSERT(n == 1, "Expected 1 entries");
@@ -311,12 +311,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R10, 1);
 
-    ACE_OS::sleep(10);
+    std::this_thread::sleep_for(std::chrono::seconds(10));
 
     n = getNumOfEntries(R10);
     ASSERT(n == 0, "Expected 0 entries");
 
-    ACE_OS::sleep(11);
+    std::this_thread::sleep_for(std::chrono::seconds(11));
 
     ASSERT(R10->isDestroyed() == true, "Expected R10 to be dead");
 
@@ -333,19 +333,19 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto k11 = do1Put(R11);
 
-    ACE_OS::sleep(3);
+    std::this_thread::sleep_for(std::chrono::seconds(3));
 
     n = getNumOfEntries(R11);
     ASSERT(n == 1, "Expected 1 entries");
 
     R11->get(k11);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     ASSERT(R11->isDestroyed() == false,
            "Expected R11 to be alive as the get has changed the access time");
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     ASSERT(R11->isDestroyed() == true, "Expected R11 to be dead");
 
@@ -361,7 +361,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto key_3 = do1Put(R12);
 
-    ACE_OS::sleep(6);
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 
     n = getNumOfEntries(R12);
     ASSERT(n == 0, "Expected 0 entries");
@@ -381,7 +381,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R14, 1);
 
-    ACE_OS::sleep(12);
+    std::this_thread::sleep_for(std::chrono::seconds(12));
 
     ASSERT(R14->isDestroyed() == true, "Expected R14 to be dead");
 
@@ -397,11 +397,11 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     auto key_4 = do1Put(R15);
 
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     R15->destroy(key_4);
 
-    ACE_OS::sleep(5);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
 
     ASSERT(R15->isDestroyed() == false, "Expected R15 to be alive");
 
@@ -418,12 +418,12 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     doNPuts(R18, 1);
 
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
 
     n = getNumOfEntries(R18);
     ASSERT(n == 1, "entry idle should be useless as ttl is > 0");
 
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
     n = getNumOfEntries(R18);
     ASSERT(n == 0, "ttl is over so it should be 0");
 
@@ -437,16 +437,16 @@ BEGIN_TEST(TEST_EXPIRATION)
     cacheImpl->createRegion("R19x", attrs_19, R19);
     ASSERT(R19 != nullptr, "Expected R19 to be NON-nullptr");
 
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
 
     doNPuts(R19, 1);
 
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
 
     ASSERT(R19->isDestroyed() == false,
            "Expected R19 to be alive as an entry was put");
 
-    ACE_OS::sleep(4);
+    std::this_thread::sleep_for(std::chrono::seconds(4));
 
     ASSERT(R19->isDestroyed() == true, "Expected R19 to be dead");
     cache->close();

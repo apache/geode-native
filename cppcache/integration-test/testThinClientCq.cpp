@@ -16,13 +16,10 @@
  */
 #include "fw_dunit.hpp"
 #include <geode/CqAttributesFactory.hpp>
-#include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>
 #include <geode/CqStatusListener.hpp>
-#include <geode/CqQuery.hpp>
 #include <geode/CqServiceStatistics.hpp>
 #include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include <string>
 
 #define ROOT_NAME "TestThinClientCq"
@@ -30,7 +27,6 @@
 
 #include "CacheHelper.hpp"
 
-#include "QueryStrings.hpp"
 #include "QueryHelper.hpp"
 
 #include <geode/Query.hpp>
@@ -59,7 +55,7 @@ using apache::geode::client::QueryService;
 
 static bool m_isPdx = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *cqNames[MAX_LISTNER] = {"MyCq_0", "MyCq_1", "MyCq_2", "MyCq_3",
                                     "MyCq_4", "MyCq_5", "MyCq_6", "MyCq_7"};
@@ -161,15 +157,15 @@ class MyCqListener : public CqListener {
     }
   }
 
-  void onEvent(const CqEvent &cqe) {
+  void onEvent(const CqEvent &cqe) override {
     //  LOG("MyCqListener::OnEvent called");
     updateCount(cqe);
   }
-  void onError(const CqEvent &cqe) {
+  void onError(const CqEvent &cqe) override {
     updateCount(cqe);
     //   LOG("MyCqListener::OnError called");
   }
-  void close() {
+  void close() override {
     //   LOG("MyCqListener::close called");
   }
 };
@@ -225,20 +221,22 @@ class MyCqStatusListener : public CqStatusListener {
     }
   }
 
-  void onEvent(const CqEvent &cqe) {
+  void onEvent(const CqEvent &cqe) override {
     LOGINFO("MyCqStatusListener::OnEvent %d called", m_id);
     updateCount(cqe);
   }
-  void onError(const CqEvent &cqe) {
+  void onError(const CqEvent &cqe) override {
     updateCount(cqe);
     LOGINFO("MyCqStatusListener::OnError %d called", m_id);
   }
-  void close() { LOGINFO("MyCqStatusListener::close %d called", m_id); }
-  void onCqDisconnected() {
+  void close() override {
+    LOGINFO("MyCqStatusListener::close %d called", m_id);
+  }
+  void onCqDisconnected() override {
     LOGINFO("MyCqStatusListener %d got onCqDisconnected", m_id);
     m_cqsDisconnectedCount++;
   }
-  void onCqConnected() {
+  void onCqConnected() override {
     LOGINFO("MyCqStatusListener %d got onCqConnected", m_id);
     m_cqsConnectedCount++;
   }
@@ -296,7 +294,7 @@ END_TASK_DEFINITION
 void createServer_group(bool locator, const char *XML) {
   LOG("Starting SERVER1...");
   if (isLocalServer) {
-    CacheHelper::initServer(1, XML, locator ? locHostPort : nullptr);
+    CacheHelper::initServer(1, XML, locator ? locHostPort : std::string{});
   }
   LOG("SERVER1 started");
 }
@@ -304,7 +302,7 @@ void createServer_group(bool locator, const char *XML) {
 void createServer_group2(bool locator, const char *XML) {
   LOG("Starting SERVER2...");
   if (isLocalServer) {
-    CacheHelper::initServer(2, XML, locator ? locHostPort : nullptr);
+    CacheHelper::initServer(2, XML, locator ? locHostPort : std::string{});
   }
   LOG("SERVER2 started");
 }
@@ -890,13 +888,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, createCQ_Pool)
     char KeyStr[256] = {0};
     char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      auto keyport = CacheableKey::create(KeyStr);
-      auto valport = CacheableString::create(valStr);
+      std::string key = "Key-" + std::to_string(i);
+      std::string value = "val-" + std::to_string(i);
+
+      auto keyport = CacheableKey::create(key);
+      auto valport = CacheableString::create(value);
+
       regPtr0->put(keyport, valport);
       regPtr1->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+      SLEEP(10000);  // sleep a while to allow server query to complete
     }
     LOGINFO("putEntries complete");
 
@@ -1030,16 +1030,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, putEntries)
     auto regPtr0 = getHelper()->getRegion(regionName);
     auto regPtr1 = getHelper()->getRegion(regionName1);
     std::shared_ptr<Cacheable> val = nullptr;
-    char KeyStr[256] = {0};
-    char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      auto keyport = CacheableKey::create(KeyStr);
-      auto valport = CacheableString::create(valStr);
+      std::string key = "Key-" + std::to_string(i);
+      std::string value = "val-" + std::to_string(i);
+
+      auto keyport = CacheableKey::create(key);
+      auto valport = CacheableString::create(value);
+
       regPtr0->put(keyport, valport);
       regPtr1->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+      SLEEP(10000);  // sleep a while to allow server query to complete
     }
     LOGINFO("putEntries complete");
   }
@@ -1098,15 +1098,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
 
     auto regPtr0 = getHelper()->getRegion(regionName);
     std::shared_ptr<Cacheable> val = nullptr;
-    char KeyStr[256] = {0};
-    char valStr[256] = {0};
     for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      auto keyport = CacheableKey::create(KeyStr);
-      auto valport = CacheableString::create(valStr);
+      std::string key = "Key-" + std::to_string(i);
+      std::string value = "val-" + std::to_string(i);
+
+      auto keyport = CacheableKey::create(key);
+      auto valport = CacheableString::create(value);
+
       regPtr0->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+      SLEEP(10000);  // sleep a while to allow server query to complete
     }
     LOGINFO("putEntries complete");
 
@@ -1157,12 +1157,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, ProcessCQ)
     myStatusCq2->clear();
 
     for (int i = 1; i <= 5; i++) {
-      ACE_OS::snprintf(KeyStr, 256, "Key-%d ", i);
-      ACE_OS::snprintf(valStr, 256, "val-%d ", i);
-      auto keyport = CacheableKey::create(KeyStr);
-      auto valport = CacheableString::create(valStr);
+      std::string key = "Key-" + std::to_string(i);
+      std::string value = "val-" + std::to_string(i);
+
+      auto keyport = CacheableKey::create(key);
+      auto valport = CacheableString::create(value);
+
       regPtr0->put(keyport, valport);
-      SLEEP(10 * 1000);  // sleep a while to allow server query to complete
+      SLEEP(10000);  // sleep a while to allow server query to complete
     }
     LOGINFO("putEntries complete again");
 

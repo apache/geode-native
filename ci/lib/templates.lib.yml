@@ -1,0 +1,464 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("@ytt:data", "data")
+
+#@ load("functions.lib.yml",
+#@      "gci_label_value",
+#@      "image_family_name",
+#@ )
+
+#@ load("templates.lib.txt",
+#@      "remote_functions",
+#@      "instance_variables",
+#@      "google_variables",
+#@      "ctest_bash_task",
+#@      "clang_tidy_bash_task",
+#@      "clang_format_bash_task",
+#@      "rat_check_bash_task",
+#@      "packer_build_bash_task",
+#@      "instance_create_bash_task",
+#@      "instance_delete_bash_task",
+#@      "download_build_bash_task",
+#@      "build_bash_task",
+#@      "upload_source_bash_task",
+#@      "upload_geode_bash_task",
+#@      "extract_geode_bash_task",
+#@ )
+
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+#@ load("@ytt:template", "template")
+#@ load("@ytt:struct", "struct")
+
+---
+#@ def resource_type(name, repository):
+name: #@ name
+type: docker-image
+source:
+  repository: #@ repository
+#@ end
+
+---
+#@ def resource(name, type, source=None, icon=None):
+#@ return {
+#@   "name": name,
+#@   "type": type,
+#@   "source": source,
+#@   "icon": icon
+#@ }
+#@ end
+
+---
+#@ def registry_image_resource(name, repository, tag="latest", username=None, password=None, mirror="mirror.gcr.io"):
+#@ return resource(name, "registry-image", {
+#@   "repository": repository,
+#@   "tag": tag,
+#@   "username": username,
+#@   "password": password,
+#@   "registry_mirror": {
+#@     "host": mirror
+#@   }
+#@ }, "docker")
+#@ end
+
+---
+#@ def gcr_image_resource(name, repository, tag="latest"):
+#@ return registry_image_resource(name, "gcr.io/" + repository, tag, "_json_key", "((concourse-gcp-key))", None)
+#@ end
+
+---
+#@ def docker_image_resource(name, repository, tag="latest", username=None, password=None):
+#@ return resource(name, "docker-image", {
+#@   "repository": repository,
+#@   "tag": tag,
+#@   "username": username,
+#@   "password": password,
+#@  }, "docker")
+#@ end
+
+---
+#@ def project_gcr_image_resource(name, repository, tag="latest"):
+#@ return docker_image_resource(name, "gcr.io/" + data.values.google.project + "/" + repository, tag, "_json_key", "((concourse-gcp-key))")
+#@ end
+
+---
+#@ def github_resource(name, owner, repository, branch, paths=[], ignore_paths=[], depth=1):
+#@ return resource(name, "git", {
+#@   "branch": branch,
+#@   "depth": depth,
+#@   "paths": paths,
+#@   "ignore_paths": ignore_paths,
+#@   "uri": "https://github.com/" + owner + "/" + repository + ".git"
+#@  }, "github")
+#@ end
+
+---
+#@ def gci_resource_name(family):
+#@ return family + "-gci"
+#@ end
+
+---
+#@ def gci_resource(family, project=data.values.google.project):
+#@ return resource(gci_resource_name(family), "gci-resource", {
+#@   "key": "((concourse-gcp-key))",
+#@   "family_project": project,
+#@   "family": family,
+#@  }, "google-cloud")
+#@ end
+
+---
+#@ def apache_directory_index_resource(name, directory, folder_pattern, file_pattern, expand=True):
+#@ return resource(name, "apache-directory-index-resource", {
+#@   "directory": directory,
+#@   "folder_pattern": folder_pattern,
+#@   "file_pattern": file_pattern,
+#@   "expand": expand
+#@  }, "file-multiple")
+#@ end
+
+---
+#@ def maven_resource(name, url, artifact, version=None):
+#@ return resource(name, "maven-resource", {
+#@   "url": url,
+#@   "artifact": artifact,
+#@   "version": version
+#@  }, "archive")
+#@ end
+
+---
+#@ def create_instance_task(build, config):
+#@ return bash_task(
+#@   "instance-create",
+#@   [{"name":gci_resource_name(image_family_name(build.image_family)), "path":"image"}],
+#@   [{"name":"instance"}],
+#@   instance_create_bash_task(gci_label_value(data.values.pipeline.name), config.name),
+#@   "gcloud-image")
+#@ end
+
+---
+#@ def build_task(config, params={}):
+#@ params = struct.decode(params)
+#@ params.update({"CMAKE_CONFIG": config})
+#@ return bash_task("build",
+#@   [{"name":"instance"},{"name":"version"},{"name":"source"}],
+#@   [{"name":"package"}],
+#@   build_bash_task(),
+#@   params=params)
+#@ end
+
+---
+#@ def remote_task(name, config, source, timeout, params={}):
+#@ params = struct.decode(params)
+#@ params.update({"CMAKE_CONFIG": config})
+#@ return bash_task(name,
+#@   [{"name":"instance"}],
+#@   [],
+#@   source,
+#@   params=params,
+#@   timeout=timeout)
+#@ end
+
+---
+#@ def download_build_task():
+#@ return bash_task("download-build", [{"name":"instance"}], [{"name":"build"}], download_build_bash_task())
+#@ end
+
+---
+#@ def build_job_name(build, config):
+#@ return "build-" + build.name + "-" + config.name
+#@ end
+
+---
+#@ def build_job(build, config):
+name: #@ build_job_name(build, config)
+public: true
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: version
+          trigger: true
+        - get: source
+          trigger: true
+        - get: task-image
+  - do:
+    - do:
+      - in_parallel:
+          fail_fast: true
+          steps:
+            - get: gcloud-image
+            - get: #@ gci_resource_name(image_family_name(build.image_family))
+      - in_parallel:
+          fail_fast: true
+          steps:
+            - #@ create_instance_task(build, config)
+            - get: geode-latest
+    - in_parallel:
+        fail_fast: true
+        steps:
+          - #@ bash_task("upload-source", [{"name":"instance"},{"name":"source"}], [], upload_source_bash_task())
+          - #@ bash_task("upload-geode", [{"name":"instance"},{"name":"geode-latest"}], [], upload_geode_bash_task())
+    - #@ build_task(config.config, build.params)
+    - #@ remote_task("cpp-unit-tests", config.config, ctest_bash_task("build/cppcache/test", parallel=8), "30m", build.params)
+    - #@ remote_task("cpp-integration-tests", config.config, ctest_bash_task("build/cppcache/integration/test"), "1h", build.params)
+    - #@ remote_task("cpp-legacy-integration-tests", config.config, ctest_bash_task("build/cppcache/integration-test", timeout=500, parallel=4), "2h", build.params)
+    #@ if build.with_dot_net:
+    - #@ remote_task("net-unmanaged-unit-tests", config.config, ctest_bash_task("build/clicache/test", parallel=8), "10m", build.params)
+    - #@ remote_task("net-unit-tests", config.config, ctest_bash_task("build/clicache/test2", parallel=8), "30m", build.params)
+    - #@ remote_task("net-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test2"), "1h", build.params)
+    - #@ remote_task("net-legacy-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test", timeout=500, parallel=4), "2h", build.params)
+    #@ end
+    on_failure:
+      in_parallel:
+        steps:
+          - #@ download_build_task()
+    ensure:
+      in_parallel:
+        steps:
+          - #@ bash_task("instance-delete", [{"name":"instance"}], [], instance_delete_bash_task(), "gcloud-image")
+#@ end
+
+---
+#@ def packer_job_name(build):
+#@ return "packer-" + build.image_family
+#@ end
+
+---
+#@ def packer_job(build):
+name: #@ packer_job_name(build)
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: packer-image
+        - get: #@ gci_resource_name(build.source_image_family)
+          trigger: true
+        - get: packer-source
+          trigger: true
+  - #@ bash_task("packer-build", [{"name":"packer-source", "path":"source"}], [], packer_build_bash_task(build), "packer-image", attempts=5)
+#@ end
+
+---
+#@ def update_pipeline_job_name():
+#@ return "update-pipeline"
+#@ end
+
+---
+#@ def update_pipeline_job():
+name: #@ update_pipeline_job_name()
+public: true
+serial: true
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: ytt-image
+        - get: ci-source
+          trigger: true
+  - task: ytt
+    image: ytt-image
+    config:
+      platform: linux
+      inputs:
+        - name: ci-source
+          path: source
+      outputs:
+        - name: pipeline
+      params:
+      run:
+        path: /usr/bin/ytt
+        args:
+          - --file
+          - source/ci/lib
+          - --file
+          - source/ci/base
+          - --file
+          - #@ "source/ci/" + data.values.pipeline.variant
+          - --data-value
+          - #@ "pipeline.name=" + data.values.pipeline.name
+          - --data-value
+          - #@ "pipeline.variant=" + data.values.pipeline.variant
+          - --data-value
+          - #@ "github.owner=" + data.values.github.owner
+          - --data-value
+          - #@ "github.repository=" + data.values.github.repository
+          - --data-value
+          - #@ "repository.branch=" + data.values.repository.branch
+          - --data-value
+          - #@ "google.project=" + data.values.google.project
+          - --data-value
+          - #@ "google.zone=" + data.values.google.zone
+          - --data-value
+          - #@ "google.storage.bucket=" + data.values.google.storage.bucket
+          - --data-value
+          - #@ "google.storage.key=" + data.values.google.storage.key
+          - --output-files
+          - pipeline/
+  - set_pipeline: self
+    file: pipeline/pipeline.yml
+#@ end
+
+---
+#@ def docker_job_name(name):
+#@ return "docker-" + name
+#@ end
+
+---
+#@ def docker_job(name, source, path):
+name: #@ docker_job_name(name)
+plan:
+  - get: #@ source
+    trigger: true
+  - put: #@ name
+    params:
+      build: #@ source + "/" + path
+      cache: true
+#@ end
+
+---
+#@ def semver_resource(name, initialVersion="0.1.0-build.0"):
+#@ return resource(
+#@   name,
+#@   "semver",
+#@   {
+#@     "initial_version": initialVersion,
+#@     "driver": "gcs",
+#@     "bucket": data.values.google.storage.bucket,
+#@     "key": data.values.google.storage.key + "/" + name,
+#@     "json_key": "((concourse-gcp-key))"
+#@   },
+#@   "numeric-1-box-multiple")
+#@ end
+
+---
+#@ def version_source_job_name():
+#@   return "version-source"
+#@ end
+
+---
+#@ def version_source_job():
+name: #@ version_source_job_name()
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: version
+          params:
+            pre: build
+        - get: source
+          trigger: true
+  - put: version
+    params:
+      file: version/number
+#@ end
+
+---
+#@ def package_resource_name(build, config, package):
+#@   return "package-" + build.name + "-" + config.name + "-" + package.name
+#@ end
+
+---
+#@ def package_resource(build, config, package):
+#@ return resource(
+#@   package_resource_name(build, config, package),
+#@   "gcs-resource",
+#@   {
+#@     "bucket": data.values.google.storage.bucket,
+#@     "json_key": "((concourse-gcp-key))",
+#@     "regexp": data.values.google.storage.key + "/packages/" + build.name + "/" + config.name + "/" + package.regexp
+#@   },
+#@   "content-save")
+#@ end
+
+---
+#@ def put_package(build, config):
+in_parallel:
+  fail_fast: true
+  steps:
+    #@ for package in build.packages:
+    - put: #@ package_resource_name(build, config, package)
+      params:
+        file: #@ "package/" + package.glob
+    #@ end
+#@ end
+
+---
+#@ def build_resources(builds, configs):
+#@ for build in builds:
+  - #@ gci_resource(image_family_name(build.image_family))
+#@ end
+#@ end
+
+---
+#@ def build_jobs(builds, configs):
+#@ for build in builds:
+  #@ for/end config in configs:
+  - #@ build_job(build, config)
+#@ end
+#@ end
+
+---
+#@ def check_source_job_name():
+#@ return "check-source"
+#@ end
+
+---
+#@ def check_source_job():
+name: #@ check_source_job_name()
+public: true
+plan:
+  - in_parallel:
+      fail_fast: true
+      steps:
+        - get: clang-tools-image
+        - get: version
+          trigger: true
+        - get: source
+          trigger: true
+        - do:
+          - get: task-image
+          - get: geode-latest
+          - #@ bash_task("extract-geode", [{"name":"geode-latest"}], [{"name":"geode"}], extract_geode_bash_task(), caches=[{"path":"geode"}])
+  - in_parallel:
+      steps:
+        - #@ bash_task("clang-tidy", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_tidy_bash_task(), "clang-tools-image")
+        - #@ bash_task("clang-format", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], clang_format_bash_task(), "clang-tools-image")
+        - #@ bash_task("rat-check", [{"name":"source"}, {"name":"geode"}], [{"name":"build"}], rat_check_bash_task(), "clang-tools-image")
+#@ end
+
+---
+#@ def bash_task(name, inputs, outputs, source, image="task-image", params={}, platform="linux", timeout=None, attempts=None, caches=None):
+task: #@ name
+#@ if timeout != None:
+timeout: #@ timeout
+#@ end
+#@ if attempts != None:
+attempts: #@ attempts
+#@ end
+image: #@ image
+config:
+  platform: #@ platform
+  inputs: #@ inputs
+  outputs: #@ outputs
+  caches: #@ caches
+  params:
+    _: #@ template.replace(params)
+  run:
+    path: bash
+    args:
+      - -c
+      - #@ source
+#@ end

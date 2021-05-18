@@ -49,7 +49,7 @@ CacheHelper* cacheHelper = nullptr;
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 
@@ -120,12 +120,12 @@ CacheHelper* getHelper() {
   return cacheHelper;
 }
 
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -223,12 +223,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, putOps)
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      auto key = "Key-" + std::to_string(index);
+      auto value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
+
       regPtr0->put(keyptr, valuePtr);
     }
     LOG("StepFour complete.");
@@ -253,12 +253,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      auto key = "Key-" + std::to_string(index);
+      auto value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
+
       regPtr0->put(keyptr, valuePtr);
     }
     LOG("StepFour complete.");
@@ -303,12 +303,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      auto key = "Key-" + std::to_string(index);
+      auto value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
+
       regPtr0->put(keyptr, valuePtr);
       regPtr1->put(keyptr, valuePtr);
     }
@@ -372,12 +372,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
     auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      auto key = "Key-" + std::to_string(index);
+      auto value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
+
       regPtr2->put(keyptr, valuePtr);
       subregPtr0->put(keyptr, valuePtr);
       subregPtr1->put(keyptr, valuePtr);
@@ -395,10 +395,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, VerifySubRegionOps)
     auto subregPtr1 = regPtr2->getSubregion(regionNames[4]);
 
     for (int index = 0; index < 5; index++) {
-      char key[100] = {0};
-      char value[100] = {0};
-      ACE_OS::sprintf(key, "Key-%d", index);
-      ACE_OS::sprintf(value, "Value-%d", index);
+      auto key = "Key-" + std::to_string(index);
+      auto value = "Value-" + std::to_string(index);
+
       auto keyptr = CacheableKey::create(key);
       auto valuePtr = CacheableString::create(value);
 

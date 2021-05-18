@@ -33,19 +33,15 @@
 #include <geode/EntryEvent.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/PersistenceManager.hpp>
-#include <geode/RegionAttributesFactory.hpp>
 #include <geode/RegionEntry.hpp>
 #include <geode/RegionEvent.hpp>
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "CacheableToken.hpp"
-#include "EntriesMapFactory.hpp"
+#include "EntriesMap.hpp"
 #include "EventType.hpp"
-#include "ExpMapEntry.hpp"
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
-#include "SerializationRegistry.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TombstoneList.hpp"
 #include "util/synchronized_map.hpp"
@@ -55,29 +51,35 @@ namespace geode {
 namespace client {
 
 #ifndef CHECK_DESTROY_PENDING
-#define CHECK_DESTROY_PENDING(lock, function)           \
-  lock checkGuard(m_rwLock, m_destroyPending);          \
-  if (m_destroyPending) {                               \
-    std::string err_msg = #function;                    \
-    err_msg += ": region " + m_fullPath + " destroyed"; \
-    throw RegionDestroyedException(err_msg.c_str());    \
-  }
+#define CHECK_DESTROY_PENDING(lock, function)             \
+  lock checkGuard(m_rwLock, m_destroyPending);            \
+  do {                                                    \
+    if (m_destroyPending) {                               \
+      std::string err_msg = #function;                    \
+      err_msg += ": region " + m_fullPath + " destroyed"; \
+      throw RegionDestroyedException(err_msg.c_str());    \
+    }                                                     \
+  } while (0)
 #endif
 
 #ifndef CHECK_DESTROY_PENDING_NOTHROW
-#define CHECK_DESTROY_PENDING_NOTHROW(lock)     \
-  lock checkGuard(m_rwLock, m_destroyPending);  \
-  if (m_destroyPending) {                       \
-    return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
-  }
+#define CHECK_DESTROY_PENDING_NOTHROW(lock)       \
+  lock checkGuard(m_rwLock, m_destroyPending);    \
+  do {                                            \
+    if (m_destroyPending) {                       \
+      return GF_CACHE_REGION_DESTROYED_EXCEPTION; \
+    }                                             \
+  } while (0)
 #endif
 
-class PutActions;
-class PutActionsTx;
 class CreateActions;
 class DestroyActions;
-class RemoveActions;
 class InvalidateActions;
+class InterestResultPolicy;
+class PutActions;
+class PutActionsTx;
+class RemoveActions;
+class VersionedCacheableObjectPartList;
 
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::pair<std::shared_ptr<Cacheable>, int>>
@@ -197,6 +199,8 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   void localDestroy(const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Serializable>& aCallbackArgument =
                         nullptr) override;
+  virtual GfErrType localDestroyNoCallbacks(
+      const std::shared_ptr<CacheableKey>& key);
   bool remove(const std::shared_ptr<CacheableKey>& key,
               const std::shared_ptr<Cacheable>& value,
               const std::shared_ptr<Serializable>& aCallbackArgument =
@@ -393,7 +397,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
                          const std::string& factoryFuncName) override;
   CacheImpl* getCacheImpl() const override;
 
-  void evict(int32_t percentage) override;
+  void evict(float percentage) override;
 
   virtual void acquireGlobals(bool isFailover);
 
@@ -509,6 +513,7 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
       m_subRegions;
   std::string m_fullPath;
   volatile bool m_destroyPending;
+  ExpiryTask::id_t expiry_task_id_;
   std::shared_ptr<CacheListener> m_listener;
   std::shared_ptr<CacheWriter> m_writer;
   std::shared_ptr<CacheLoader> m_loader;
@@ -569,6 +574,14 @@ class APACHE_GEODE_EXPORT LocalRegion : public RegionInternal {
   virtual GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag);
+
+  void clearKeysOfInterest(
+      const std::unordered_map<std::shared_ptr<CacheableKey>,
+                               InterestResultPolicy>& interest_list);
+  void clearKeysOfInterestRegex(const std::string& regex);
+  void clearKeysOfInterestRegex(
+      const std::unordered_map<std::string, InterestResultPolicy>&
+          interest_list);
 
  private:
   std::shared_ptr<Region> findSubRegion(const std::string& name);

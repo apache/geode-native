@@ -22,7 +22,8 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "MapEntry.hpp"
+#include "ExpEntryProperties.hpp"
+#include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
@@ -32,16 +33,18 @@ namespace client {
  * @brief Hold region mapped entry value.
  * This subclass adds expiration times.
  */
-class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
-                                        public ExpEntryProperties {
+class ExpMapEntry : public MapEntryImpl, public ExpEntryProperties {
  public:
-  virtual ~ExpMapEntry() {}
+  ~ExpMapEntry() noexcept override = default;
 
-  virtual ExpEntryProperties& getExpProperties() { return *this; }
+  ExpMapEntry(const ExpMapEntry&) = delete;
+  ExpMapEntry& operator=(const ExpMapEntry&) = delete;
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
+  ExpEntryProperties& getExpProperties() override { return *this; }
+
+  virtual void cleanup(const CacheEventFlags eventFlags) override {
     if (!eventFlags.isExpiration()) {
-      cancelExpiryTaskId(m_key);
+      cancel_task();
     }
   }
 
@@ -52,15 +55,9 @@ class APACHE_GEODE_EXPORT ExpMapEntry : public MapEntryImpl,
   inline ExpMapEntry(ExpiryTaskManager* expiryTaskManager,
                      const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key), ExpEntryProperties(expiryTaskManager) {}
-
- private:
-  // disabled
-  ExpMapEntry(const ExpMapEntry&);
-  ExpMapEntry& operator=(const ExpMapEntry&);
 };
 
-class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
-                                                 public VersionStamp {
+class VersionedExpMapEntry : public ExpMapEntry, public VersionStamp {
  public:
   inline VersionedExpMapEntry(ExpiryTaskManager* expiryTaskManager,
                               const std::shared_ptr<CacheableKey>& key)
@@ -68,25 +65,23 @@ class APACHE_GEODE_EXPORT VersionedExpMapEntry : public ExpMapEntry,
 
   inline explicit VersionedExpMapEntry(bool) : ExpMapEntry(true) {}
 
-  virtual ~VersionedExpMapEntry() {}
+  ~VersionedExpMapEntry() noexcept override {}
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  VersionedExpMapEntry(const VersionedExpMapEntry&) = delete;
+  VersionedExpMapEntry& operator=(const VersionedExpMapEntry&) = delete;
 
- private:
-  // disabled
-  VersionedExpMapEntry(const VersionedExpMapEntry&);
-  VersionedExpMapEntry& operator=(const VersionedExpMapEntry&);
+  VersionStamp& getVersionStamp() override { return *this; }
 };
 
-class APACHE_GEODE_EXPORT ExpEntryFactory : public EntryFactory {
+class ExpEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~ExpEntryFactory() {}
+  ~ExpEntryFactory() noexcept override {}
 
-  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const;
+  void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                   const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<MapEntryImpl>& result) const override;
 };
 }  // namespace client
 }  // namespace geode

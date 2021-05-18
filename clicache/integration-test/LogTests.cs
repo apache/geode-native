@@ -23,7 +23,7 @@ namespace Apache.Geode.Client.UnitTests
   using NUnit.Framework;
   using Apache.Geode.DUnitFramework;
 
-
+  [Ignore("broken")]
   [TestFixture]
   [Category("unicast_only")]
   public class LogTests : UnitTests

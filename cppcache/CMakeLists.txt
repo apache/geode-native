@@ -24,6 +24,13 @@ if (CMAKE_USE_PTHREADS_INIT)
   check_function_exists("pthread_setname_np" HAVE_pthread_setname_np)
 endif()
 
+check_function_exists(uname HAVE_uname)
+
+# Search OpenSSL
+find_package(OpenSSL COMPONENTS Crypto)
+
+include_directories(${OPENSSL_INCLUDE_DIRS})
+
 set(COMMON_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(COMMON_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
@@ -83,12 +90,13 @@ endif()
 
 target_link_libraries(_apache-geode INTERFACE
   ACE::ACE
-  ACE::ACE_SSL
   Boost::boost
   Boost::filesystem
   Boost::thread
   Boost::stacktrace
   XercesC::XercesC
+  OpenSSL::SSL
+  OpenSSL::Crypto
 )
 
 if (USE_PCH)

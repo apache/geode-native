@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_TXID_H_
-#define GEODE_TXID_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * TXId.h
- *
- *  Created on: 07-Feb-2011
- *      Author: ankurs
- */
+
+#pragma once
+
+#ifndef GEODE_TXID_H_
+#define GEODE_TXID_H_
 
 #include <atomic>
 
@@ -41,9 +35,13 @@ class TXId : public apache::geode::client::TransactionId {
 
   TXId& operator=(const TXId&);
 
-  virtual ~TXId();
+  ~TXId() noexcept override;
 
   int32_t getId();
+
+  // This method is only for testing and should not be used for any
+  // other purpose. See TXIdTest.cpp for more details.
+  static void setInitalTransactionIDValue(int32_t);
 
  private:
   int32_t m_TXId;

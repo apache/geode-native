@@ -21,6 +21,7 @@
 #include "CqServiceVsdStats.hpp"
 #include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "UserAttributes.hpp"
 #include "statistics/StatisticsManager.hpp"
@@ -271,7 +272,7 @@ RemoteQueryService::getCqServiceStatistics() const {
   return nullptr;
 }
 
-void RemoteQueryService::receiveNotification(TcrMessage* msg) {
+void RemoteQueryService::receiveNotification(TcrMessage& msg) {
   {
     TryReadGuard guard(m_rwLock, m_invalid);
 

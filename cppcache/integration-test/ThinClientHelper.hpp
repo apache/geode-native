@@ -22,8 +22,10 @@
 
 #include <chrono>
 
-#include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
+
+#include <boost/process.hpp>
+
 #include "testUtils.hpp"
 #include "security/typedefs.hpp"
 #include "security/CredentialGenerator.hpp"
@@ -66,7 +68,7 @@ void initClient(const bool isthinClient,
 }
 
 void initClientWithPool(const bool isthinClient, const char* poolName,
-                        const char* locators, const char* serverGroup,
+                        const std::string& locators, const char* serverGroup,
                         const std::shared_ptr<Properties>& configPtr = nullptr,
                         int redundancy = 0, bool clientNotification = false,
                         int subscriptionAckInterval = -1, int connections = -1,
@@ -367,7 +369,7 @@ std::shared_ptr<Region> createOverflowRegion(const char* name, bool,
   sqLiteProps->insert("PageSize", "65536");
   sqLiteProps->insert("MaxPageCount", "1073741823");
   std::string sqlite_dir =
-      "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
+      "SqLiteRegionData" + std::to_string(boost::this_process::get_id());
   sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
   regionAttributesFactory.setPersistenceManager(
       "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
@@ -380,7 +382,7 @@ std::shared_ptr<Region> createOverflowRegion(const char* name, bool,
   return regionPtr;
 }
 std::shared_ptr<Region> createPooledRegion(
-    const char* name, bool ackMode, const char* locators, const char* poolname,
+    const char* name, bool ackMode, const std::string& locators, const char* poolname,
     bool clientNotificationEnabled = false,
     const std::shared_ptr<CacheListener>& listener = nullptr,
     bool caching = true) {
@@ -409,7 +411,7 @@ std::shared_ptr<Pool> findPool(const char* poolName) {
   return poolPtr;
 }
 std::shared_ptr<Pool> createPool(
-    const char* poolName, const char* locators, const char* serverGroup,
+    const std::string& poolName, const std::string& locators, const std::string& serverGroup,
     int redundancy = 0, bool clientNotification = false,
     std::chrono::milliseconds subscriptionAckInterval =
         std::chrono::milliseconds::zero(),
@@ -424,7 +426,7 @@ std::shared_ptr<Pool> createPool(
   return poolPtr;
 }
 std::shared_ptr<Pool> createPoolAndDestroy(
-    const char* poolName, const char* locators, const char* serverGroup,
+    const std::string& poolName, const std::string& locators, const std::string& serverGroup,
     int redundancy = 0, bool clientNotification = false,
     std::chrono::milliseconds subscriptionAckInterval =
         std::chrono::milliseconds::zero(),
@@ -440,9 +442,9 @@ std::shared_ptr<Pool> createPoolAndDestroy(
   return poolPtr;
 }
 // this will create pool even endpoints and locatorhost has been not defined
-std::shared_ptr<Pool> createPool2(const char* poolName, const char* locators,
-                                  const char* serverGroup,
-                                  const char* servers = nullptr,
+std::shared_ptr<Pool> createPool2(const std::string& poolName, const std::string& locators,
+                                  const std::string& serverGroup,
+                                  const std::string& servers = nullptr,
                                   int redundancy = 0,
                                   bool clientNotification = false) {
   LOG("createPool2() entered.");

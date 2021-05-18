@@ -71,29 +71,16 @@ class TestDataOutput : public DataOutputInternal {
 
 class DataOutputTest : public ::testing::Test, public ByteArrayFixture {
  public:
-  DataOutputTest() : m_mersennesTwister(m_randomDevice()) {
-    // NOP
-  }
-
-  virtual ~DataOutputTest() {
-    // NOP
-  }
+  DataOutputTest() : randomEngine_(randomDevice_()) {}
+  ~DataOutputTest() noexcept override = default;
 
  protected:
-  std::random_device m_randomDevice;
-  std::mt19937 m_mersennesTwister;
+  std::random_device randomDevice_;
+  std::default_random_engine randomEngine_;
+  std::uniform_int_distribution<int32_t> random_;
 
   int32_t getRandomSequenceNumber() {
-    // One would normally just use std::uniform_int_distribution but gcc 4.4.7
-    // is lacking.
-    const std::mt19937::result_type upperLimit =
-        static_cast<std::mt19937::result_type>(
-            std::numeric_limits<int32_t>::max());
-    std::mt19937::result_type result;
-    while (upperLimit < (result = m_mersennesTwister())) {
-      // Try again.
-    }
-    return static_cast<int32_t>(result);
+    return static_cast<int32_t>(random_(randomEngine_));
   }
 };
 

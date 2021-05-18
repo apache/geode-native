@@ -14,12 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * ThinClientRedundancyManager.cpp
- *
- *  Created on: Dec 1, 2008
- *      Author: abhaware
- */
 
 #include "ThinClientRedundancyManager.hpp"
 
@@ -31,11 +25,10 @@
 
 #include "CacheImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
-#include "ExpiryHandler_T.hpp"
+#include "FunctionExpiryTask.hpp"
 #include "RemoteQueryService.hpp"
 #include "ServerLocation.hpp"
 #include "TcrHADistributionManager.hpp"
-#include "ThinClientLocatorHelper.hpp"
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
@@ -53,7 +46,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
     ThinClientPoolHADM* poolHADM, bool sentReadyForEvents,
     bool globalProcessedMarker)
     : m_globalProcessedMarker(globalProcessedMarker),
-      m_IsAllEpDisCon(false),
+      m_allEndpointsDisconnected(false),
       m_server(0),
       m_sentReadyForEvents(sentReadyForEvents),
       m_redundancyLevel(redundancyLevel),
@@ -63,8 +56,7 @@ ThinClientRedundancyManager::ThinClientRedundancyManager(
       m_locators(nullptr),
       m_servers(nullptr),
       m_periodicAckTask(nullptr),
-      m_processEventIdMapTaskId(-1),
-      m_nextAckInc(0),
+      periodic_ack_semaphore_(1),
       m_HAenabled(false) {}
 
 std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
@@ -232,12 +224,12 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     outEndpoints = selectServers(howMany, exclEndPts);
     for (std::list<ServerLocation>::iterator it = outEndpoints.begin();
          it != outEndpoints.end(); it++) {
-      TcrEndpoint* ep = m_poolHADM->addEP(*it);
+      auto ep = m_poolHADM->addEP(*it);
       LOGDEBUG(
           "ThinClientRedundancyManager::maintainRedundancyLevel(): Adding "
           "endpoint %s to nonredundant list.",
           ep->name().c_str());
-      m_nonredundantEndpoints.push_back(ep);
+      m_nonredundantEndpoints.push_back(ep.get());
     }
   }
 
@@ -437,14 +429,14 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
   }
 
   if (isRedundancySatisfied) {
-    m_IsAllEpDisCon = false;
+    m_allEndpointsDisconnected = false;
     m_loggedRedundancyWarning = false;
     return GF_NOERR;
   } else if (isPrimaryConnected) {
     if (fatal && err != GF_NOERR) {
       return fatalError;
     }
-    m_IsAllEpDisCon = false;
+    m_allEndpointsDisconnected = false;
     if (m_redundancyLevel == -1) {
       LOGINFO("Current subscription redundancy level is %zu",
               m_redundantEndpoints.size() - 1);
@@ -462,9 +454,10 @@ GfErrType ThinClientRedundancyManager::maintainRedundancyLevel(
     // save any fatal errors that occur during maintain redundancy so
     // that we can send it back to the caller, to avoid missing out due
     // to nonfatal errors such as server not available
-    if (m_poolHADM && !m_IsAllEpDisCon) {
-      m_poolHADM->sendNotConMesToAllregions();
-      m_IsAllEpDisCon = true;
+    if (m_poolHADM && !m_allEndpointsDisconnected) {
+      m_poolHADM->clearKeysOfInterestAllRegions();
+      m_poolHADM->sendNotConnectedMessageToAllregions();
+      m_allEndpointsDisconnected = true;
     }
     if (fatal && err != GF_NOERR) {
       return fatalError;
@@ -635,7 +628,7 @@ void ThinClientRedundancyManager::initialize(int redundancyLevel) {
     if (interval < std::chrono::milliseconds(100)) {
       interval = std::chrono::milliseconds(100);
     }
-    m_nextAckInc = interval;
+    next_ack_inc_ = interval;
     m_nextAck = clock::now() + interval;
   }
 
@@ -684,12 +677,11 @@ void ThinClientRedundancyManager::close() {
   LOGDEBUG("ThinClientRedundancyManager::close(): closing redundancy manager.");
 
   if (m_periodicAckTask) {
-    if (m_processEventIdMapTaskId >= 0) {
-      m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager().cancelTask(
-          m_processEventIdMapTaskId);
-    }
+    auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
+    manager.cancel(process_event_id_map_task_id_);
+
     m_periodicAckTask->stopNoblock();
-    m_periodicAckSema.release();
+    periodic_ack_semaphore_.release();
     m_periodicAckTask->wait();
     m_periodicAckTask = nullptr;
   }
@@ -949,7 +941,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
   }
 }
 
-synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
+synchronized_map<std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
                  std::recursive_mutex>&
 ThinClientRedundancyManager::updateAndSelectEndpoints() {
   // 38196 Fix: For durable clients reconnect
@@ -983,8 +975,7 @@ ThinClientRedundancyManager::updateAndSelectEndpoints() {
 
 void ThinClientRedundancyManager::getAllEndpoints(
     std::vector<TcrEndpoint*>& endpoints) {
-  TcrEndpoint* maxQEp = nullptr;
-  TcrEndpoint* primaryEp = nullptr;
+  std::shared_ptr<TcrEndpoint> maxQEp, primaryEp;
 
   auto& selectedEndpoints = updateAndSelectEndpoints();
   for (const auto& currItr : selectedEndpoints) {
@@ -998,13 +989,13 @@ void ThinClientRedundancyManager::getAllEndpoints(
         m_poolHADM->addConnection(statusConn);
       }
       if (status == REDUNDANT_SERVER) {
-        if (maxQEp == nullptr) {
+        if (!maxQEp) {
           maxQEp = ep;
         } else if (ep->getServerQueueSize() > maxQEp->getServerQueueSize()) {
-          insertEPInQueueSizeOrder(maxQEp, endpoints);
+          insertEPInQueueSizeOrder(maxQEp.get(), endpoints);
           maxQEp = ep;
         } else {
-          insertEPInQueueSizeOrder(ep, endpoints);
+          insertEPInQueueSizeOrder(ep.get(), endpoints);
         }
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
@@ -1016,33 +1007,33 @@ void ThinClientRedundancyManager::getAllEndpoints(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found primary endpoint.");
       } else {
-        endpoints.push_back(currItr.second);
+        endpoints.push_back(currItr.second.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, found nonredundant endpoint.");
       }
     } else {
-      endpoints.push_back(currItr.second);
+      endpoints.push_back(currItr.second.get());
     }
     //(*currItr)++;
   }
 
   // Add Endpoint with Max Queuesize at the last and Primary at first position
   if (isDurable()) {
-    if (maxQEp != nullptr) {
-      endpoints.push_back(maxQEp);
+    if (maxQEp) {
+      endpoints.push_back(maxQEp.get());
       LOGDEBUG(
           "ThinClientRedundancyManager::getAllEndpoints(): sorting endpoints, "
           "pushing max-q endpoint at back.");
     }
-    if (primaryEp != nullptr) {
-      if (m_redundancyLevel == 0 || maxQEp == nullptr) {
-        endpoints.push_back(primaryEp);
+    if (primaryEp) {
+      if (m_redundancyLevel == 0 || !maxQEp) {
+        endpoints.push_back(primaryEp.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, pushing primary at back.");
       } else {
-        endpoints.insert(endpoints.begin(), primaryEp);
+        endpoints.insert(endpoints.begin(), primaryEp.get());
         LOGDEBUG(
             "ThinClientRedundancyManager::getAllEndpoints(): sorting "
             "endpoints, inserting primary at head.");
@@ -1122,21 +1113,12 @@ void ThinClientRedundancyManager::readyForEvents() {
   m_sentReadyForEvents = true;
 }
 
-int ThinClientRedundancyManager::processEventIdMap(const ACE_Time_Value&,
-                                                   const void*) {
-  m_periodicAckSema.release();
-  return 0;
-}
-
 void ThinClientRedundancyManager::periodicAck(std::atomic<bool>& isRunning) {
+  periodic_ack_semaphore_.acquire();
+
   while (isRunning) {
-    m_periodicAckSema.acquire();
-    if (isRunning) {
-      doPeriodicAck();
-      while (m_periodicAckSema.tryacquire() != -1) {
-        ;
-      }
-    }
+    doPeriodicAck();
+    periodic_ack_semaphore_.acquire();
   }
 }
 
@@ -1147,7 +1129,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
   // do periodic ack if HA is enabled and the time has come
   if (m_HAenabled && (m_nextAck < clock::now())) {
     LOGFINER("Doing periodic ack");
-    m_nextAck += m_nextAckInc;
+    m_nextAck += next_ack_inc_;
 
     auto entries = m_eventidmap.getUnAcked();
     auto count = entries.size();
@@ -1170,7 +1152,7 @@ void ThinClientRedundancyManager::doPeriodicAck() {
           result = m_poolHADM->sendRequestToEP(request, reply, *endpoint);
         } else {
           result = (*endpoint)->send(request, reply);
-        };
+        }
 
         if (result == GF_NOERR && reply.getMessageType() == TcrMessage::REPLY) {
           LOGFINE(
@@ -1216,18 +1198,16 @@ void ThinClientRedundancyManager::startPeriodicAck() {
                           ->getDistributedSystem()
                           .getSystemProperties();
   // start the periodic ACK task handler
-  auto periodicAckTask = new ExpiryHandler_T<ThinClientRedundancyManager>(
-      this, &ThinClientRedundancyManager::processEventIdMap);
-  m_processEventIdMapTaskId =
-      m_theTcrConnManager->getCacheImpl()
-          ->getExpiryTaskManager()
-          .scheduleExpiryTask(periodicAckTask, m_nextAckInc, m_nextAckInc,
-                              false);
+  auto& manager = m_theTcrConnManager->getCacheImpl()->getExpiryTaskManager();
+  auto task = std::make_shared<FunctionExpiryTask>(
+      manager, [this] { periodic_ack_semaphore_.release(); });
+  process_event_id_map_task_id_ =
+      manager.schedule(std::move(task), next_ack_inc_, next_ack_inc_);
   LOGFINE(
       "Registered subscription event "
       "periodic ack task with id = %ld, notify-ack-interval = %ld, "
       "notify-dupcheck-life = %ld, periodic ack is %sabled",
-      m_processEventIdMapTaskId,
+      process_event_id_map_task_id_,
       (m_poolHADM ? m_poolHADM->getSubscriptionAckInterval()
                   : props.notifyAckInterval())
           .count(),

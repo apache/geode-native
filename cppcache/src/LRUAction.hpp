@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRUACTION_H_
-#define GEODE_LRUACTION_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,12 +15,17 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRUACTION_H_
+#define GEODE_LRUACTION_H_
+
 #include <geode/Cache.hpp>
 #include <geode/PersistenceManager.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheableToken.hpp"
-#include "MapEntry.hpp"
+#include "MapEntryImpl.hpp"
 #include "RegionInternal.hpp"
 #include "Utils.hpp"
 
@@ -37,7 +37,7 @@ namespace client {
  * @brief abstract behavior for different eviction actions.
  */
 class LRUEntriesMap;
-class APACHE_GEODE_EXPORT LRUAction {
+class LRUAction {
  protected:
   bool m_invalidates;
   bool m_destroys;
@@ -77,7 +77,7 @@ class APACHE_GEODE_EXPORT LRUAction {
                                  RegionInternal* regionPtr,
                                  LRUEntriesMap* entriesMapPtr);
 
-  virtual ~LRUAction() {}
+  virtual ~LRUAction() noexcept = default;
 
   virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) = 0;
 
@@ -95,7 +95,7 @@ class APACHE_GEODE_EXPORT LRUAction {
 /**
  * @brief LRUAction for destroy (distributed)
  */
-class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
+class LRUDestroyAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
@@ -106,9 +106,9 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
   }
 
  public:
-  virtual ~LRUDestroyAction() = default;
+  ~LRUDestroyAction() noexcept override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) {
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override {
     std::shared_ptr<CacheableKey> keyPtr;
     mePtr->getKeyI(keyPtr);
     std::shared_ptr<VersionTag> versionTag;
@@ -124,7 +124,7 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
     return (err == GF_NOERR);
   }
 
-  virtual LRUAction::Action getType() { return LRUAction::DESTROY; }
+  LRUAction::Action getType() override { return LRUAction::DESTROY; }
 
   friend class LRUAction;
 };
@@ -132,7 +132,7 @@ class APACHE_GEODE_EXPORT LRUDestroyAction : public virtual LRUAction {
 /**
  * @brief LRUAction for invalidate.
  */
-class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
+class LRULocalInvalidateAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
 
@@ -142,11 +142,11 @@ class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
   }
 
  public:
-  virtual ~LRULocalInvalidateAction() = default;
+  ~LRULocalInvalidateAction() noexcept override = default;
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::LOCAL_INVALIDATE; }
+  LRUAction::Action getType() override { return LRUAction::LOCAL_INVALIDATE; }
 
   friend class LRUAction;
 };
@@ -154,7 +154,7 @@ class APACHE_GEODE_EXPORT LRULocalInvalidateAction : public virtual LRUAction {
 /**
  * @brief LRUAction for invalidate.
  */
-class APACHE_GEODE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
+class LRUOverFlowToDiskAction : public virtual LRUAction {
  private:
   RegionInternal* m_regionPtr;
   LRUEntriesMap* m_entriesMapPtr;
@@ -166,11 +166,11 @@ class APACHE_GEODE_EXPORT LRUOverFlowToDiskAction : public virtual LRUAction {
   }
 
  public:
-  virtual ~LRUOverFlowToDiskAction() {}
+  ~LRUOverFlowToDiskAction() noexcept override {}
 
-  virtual bool evict(const std::shared_ptr<MapEntryImpl>& mePtr);
+  bool evict(const std::shared_ptr<MapEntryImpl>& mePtr) override;
 
-  virtual LRUAction::Action getType() { return LRUAction::OVERFLOW_TO_DISK; }
+  LRUAction::Action getType() override { return LRUAction::OVERFLOW_TO_DISK; }
 
   friend class LRUAction;
 };

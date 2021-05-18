@@ -13,20 +13,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( sqlite VERSION 3310100 LANGUAGES NONE )
+project( sqlite VERSION 3340100 LANGUAGES NONE )
 
-set( SHA256 f3c79bc9f4162d0b06fa9fe09ee6ccd23bb99ce310b792c5145f87fbcc30efca )
+set( SHA256 e0b1c0345fe4338b936e17da8e1bd88366cd210e576834546977f040c12a8f68 )
 
 
 set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
-  URL "https://www.sqlite.org/2020/sqlite-amalgamation-${PROJECT_VERSION}.zip"
+  URL "https://www.sqlite.org/2021/sqlite-amalgamation-${PROJECT_VERSION}.zip"
   URL_HASH SHA256=${SHA256}
   UPDATE_COMMAND ""
   CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=$<CONFIG>
     -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+  CMAKE_CACHE_ARGS
+    -DCMAKE_OSX_ARCHITECTURES:STRING=${CMAKE_OSX_ARCHITECTURES}
+    -DCMAKE_OSX_SYSROOT:STRING=${CMAKE_OSX_SYSROOT}
+    -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${CMAKE_OSX_DEPLOYMENT_TARGET}
 )
 
 ExternalProject_Get_Property( ${EXTERN} SOURCE_DIR )

@@ -49,7 +49,7 @@ bool isLocalServer = false;
 bool isLocator = false;
 
 const char* poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char* locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 static bool m_isPdx = false;
 const char* qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
@@ -90,6 +90,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
   {
     initClient(true);
+    LOG("StepOnePoolLocator");
     try {
       auto serializationRegistry =
           CacheRegionHelper::getCacheImpl(cacheHelper->getCache().get())
@@ -106,13 +107,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOnePoolLocator)
     } catch (const IllegalStateException&) {
       // ignore exception
     }
-    createPool(poolNames[0], locHostPort, nullptr, 0, true);
+    createPool(poolNames[0], locHostPort, {}, 0, true);
     createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
     createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
 
     createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
-
-    createPool(poolNames[1], locHostPort, nullptr, 0, true);
+    createPool(poolNames[1], locHostPort, {}, 0, true);
     createRegionAndAttachPool(qRegionNames[3], USE_ACK, poolNames[1]);
 
     auto regptr = getHelper()->getRegion(qRegionNames[0]);
@@ -171,7 +171,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     bool doAnyErrorOccured = false;
-
     auto region = getHelper()->getRegion(qRegionNames[0]);
 
     for (int i = 0; i < QueryStrings::RQsize(); i++) {
@@ -188,14 +187,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         continue;
       }
 
-      auto results = region->query((regionQueries[i].query()));
+      auto results = region->query(regionQueries[i].query());
 
       if (results->size() != regionQueryRowCounts[i]) {
-        char failmsg[100] = {0};
-        ACE_OS::sprintf(
-            failmsg,
-            "FAIL: Query # %d expected result size is %zd, actual is %zd", i,
-            regionQueryRowCounts[i], results->size());
+        std::string failmsg = "FAIL: Query #" + std::to_string(i) +
+                              " expected result size is " +
+                              std::to_string(regionQueryRowCounts[i]) +
+                              ", actual is " + std::to_string(results->size());
         doAnyErrorOccured = true;
         LOG(failmsg);
         continue;
@@ -263,11 +261,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       bool expectedResult = regionQueryRowCounts[i] > 0 ? true : false;
 
       if (existsValue != expectedResult) {
-        char failmsg[100] = {0};
-        ACE_OS::sprintf(
-            failmsg,
-            "FAIL: Query # %d existsValue expected is %s, actual is %s", i,
-            expectedResult ? "true" : "false", existsValue ? "true" : "false");
+        std::string failmsg = "FAIL: Query #" + std::to_string(i) +
+                              " existsValue expected is " +
+                              (expectedResult ? "true" : "false") +
+                              ", actual is " + (existsValue ? "true" : "false");
         ASSERT(false, failmsg);
       }
     }
@@ -323,45 +320,26 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
 
       try {
-        auto result = region->selectValue((regionQueries[i].query()));
-
-        /*
-              if (result == nullptr)
-              {
-                char logmsg[100] = {0};
-                ACE_OS::sprintf(logmsg, "Query # %d query selectValue result is
-           nullptr", i);
-                LOG(logmsg);
-              }
-              else
-              {
-                char logmsg[100] = {0};
-                ACE_OS::sprintf(logmsg, "Query # %d query selectValue result
-           size
-           is not nullptr", i);
-                LOG(logmsg);
-              }
-        */
+        auto result = region->selectValue(regionQueries[i].query());
         if (!(regionQueryRowCounts[i] == 0 || regionQueryRowCounts[i] == 1)) {
-          char logmsg[100] = {0};
-          ACE_OS::sprintf(
-              logmsg, "FAIL: Query # %d expected query exception did not occur",
-              i);
+          std::string logmsg = "FAIL: Query #" + std::to_string(i) +
+                               " expected query exception did not occur";
+
           LOG(logmsg);
           doAnyErrorOccured = true;
         }
       } catch (const QueryException&) {
         if (regionQueryRowCounts[i] == 0 || regionQueryRowCounts[i] == 1) {
-          char logmsg[100] = {0};
-          ACE_OS::sprintf(
-              logmsg, "FAIL: Query # %d unexpected query exception occured", i);
+          std::string logmsg = "FAIL: Query #" + std::to_string(i) +
+                               " unexpected query exception occurred";
+
           LOG(logmsg);
           doAnyErrorOccured = true;
         }
       } catch (...) {
-        char logmsg[100] = {0};
-        ACE_OS::sprintf(logmsg,
-                        "FAIL: Query # %d unexpected exception occurred", i);
+        std::string logmsg = "FAIL: Query #" + std::to_string(i) +
+                             " unexpected exception occurred";
+
         LOG(logmsg);
         FAIL(logmsg);
       }
@@ -429,10 +407,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryError)
       }
 
       try {
-        auto results = region->query((regionQueries[i].query()));
+        auto results = region->query(regionQueries[i].query());
+        std::string failmsg =
+            "Query exception didnt occur for index " + std::to_string(i);
 
-        char failmsg[100] = {0};
-        ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d", i);
         LOG(failmsg);
         FAIL(failmsg);
       } catch (apache::geode::client::QueryException&) {

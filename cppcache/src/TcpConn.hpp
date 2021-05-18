@@ -20,10 +20,8 @@
 #ifndef GEODE_TCPCONN_H_
 #define GEODE_TCPCONN_H_
 
-#include <chrono>
-#include <memory>
-
-#include <ace/SOCK_Stream.h>
+#include <boost/asio.hpp>
+#include <boost/optional.hpp>
 
 #include <geode/internal/geode_globals.hpp>
 
@@ -32,62 +30,49 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-inline std::string ACE_errno_to_string(decltype(ACE_OS::last_error()) error) {
-  return std::to_string(error) + ": " + ACE_OS::strerror(error);
-}
-
 class TcpConn : public Connector {
- private:
-  std::unique_ptr<ACE_SOCK_Stream> stream_;
-  const int32_t maxBuffSizePool_;
+  size_t receive(char*, size_t, std::chrono::milliseconds) override;
+  size_t receive_nothrowiftimeout(char*, size_t,
+                                  std::chrono::milliseconds) override;
+  size_t send(const char*, size_t, std::chrono::milliseconds) override;
 
-  /**
-   * Attempt to set chunk size to nearest OS page size for perf improvement
-   */
-  static size_t getDefaultChunkSize();
+  uint16_t getPort() override final;
 
  protected:
-  ACE_INET_Addr inetAddress_;
-  std::string endpoint_;
-  std::chrono::microseconds timeout_;
-  static const size_t kChunkSize;
+  boost::asio::io_context io_context_;
+  boost::asio::ip::tcp::socket socket_;
 
-  enum SockOp { SOCK_READ, SOCK_WRITE };
+  boost::asio::ip::tcp::resolver::results_type resolve(
+      const std::string hostname, uint16_t port);
 
-  void clearNagle(ACE_HANDLE sock);
-  int32_t maxSize(ACE_HANDLE sock, int32_t flag, int32_t size);
+  void connect(boost::asio::ip::tcp::resolver::results_type r,
+               std::chrono::microseconds connect_timeout);
 
-  virtual size_t socketOp(SockOp op, char* buff, size_t len,
-                          std::chrono::microseconds waitDuration);
+  size_t receive(char*, size_t, std::chrono::milliseconds,
+                 bool throwTimeoutException);
 
-  virtual void createSocket(ACE_HANDLE sock);
+  virtual void prepareAsyncRead(
+      char* buff, size_t len,
+      boost::optional<boost::system::error_code>& read_result,
+      std::size_t& bytes_read);
 
-  virtual ssize_t doOperation(const SockOp& op, void* buff, size_t sendlen,
-                              ACE_Time_Value& waitTime, size_t& readLen) const;
+  virtual void prepareAsyncWrite(
+      const char* buff, size_t len,
+      boost::optional<boost::system::error_code>& write_result,
+      std::size_t& bytes_written);
 
  public:
-  TcpConn(const std::string& hostname, uint16_t port,
-          std::chrono::microseconds waitSeconds, int32_t maxBuffSizePool);
-
-  TcpConn(const std::string& address, std::chrono::microseconds waitSeconds,
+  TcpConn(const std::string ipaddr, std::chrono::microseconds connect_timeout,
           int32_t maxBuffSizePool);
 
-  ~TcpConn() override {}
+  TcpConn(const std::string hostname, uint16_t port,
+          std::chrono::microseconds connect_timeout, int32_t maxBuffSizePool);
 
-  void close() override;
+  TcpConn(const std::string ipaddr, std::chrono::microseconds connect_timeout,
+          int32_t maxBuffSizePool, std::chrono::microseconds send_timeout,
+          std::chrono::microseconds receive_timeout);
 
-  void init() override;
-
-  virtual void connect();
-
-  size_t receive(char* buff, size_t len,
-                 std::chrono::microseconds waitSeconds) override;
-
-  size_t send(const char* buff, size_t len,
-              std::chrono::microseconds waitSeconds) override;
-
-  virtual uint16_t getPort() override;
+  ~TcpConn() override;
 };
 
 }  // namespace client

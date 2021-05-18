@@ -20,7 +20,7 @@
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 #define CLIENT1 s1p1
@@ -37,8 +37,12 @@ END_TASK(CreateLocator1)
 DUNIT_TASK(SERVER12, CreateServer12)
   {
     // starting servers
-    if (isLocalServer) CacheHelper::initServer(1, nullptr, locHostPort);
-    if (isLocalServer) CacheHelper::initServer(2, nullptr, locHostPort);
+    if (isLocalServer) {
+      CacheHelper::initServer(1, {}, locHostPort);
+    }
+    if (isLocalServer) {
+      CacheHelper::initServer(2, {}, locHostPort);
+    }
     LOG("Server12 started");
   }
 END_TASK(CreateServer12)
@@ -49,8 +53,6 @@ DUNIT_TASK(CLIENT1, StepOne)
                        true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locHostPort,
                                     "__TEST_POOL1__", true, true);
-    getHelper()->createPooledRegion(regionNames[1], NO_ACK, locHostPort,
-                                    "__TEST_POOL1__", true, true);
     LOG("StepOne complete.");
   }
 END_TASK(StepOne)
@@ -60,8 +62,6 @@ DUNIT_TASK(CLIENT2, StepTwo)
                        true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locHostPort,
                                     "__TEST_POOL1__", true, true);
-    getHelper()->createPooledRegion(regionNames[1], NO_ACK, locHostPort,
-                                    "__TEST_POOL1__", true, true);
     LOG("StepTwo complete.");
   }
 END_TASK(StepTwo)
@@ -69,34 +69,27 @@ END_TASK(StepTwo)
 DUNIT_TASK(CLIENT1, StepThree)
   {
     createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
     LOG("StepThree complete.");
   }
 END_TASK(StepThree)
 DUNIT_TASK(CLIENT2, StepFour)
   {
     doNetsearch(regionNames[0], keys[0], vals[0]);
-    doNetsearch(regionNames[1], keys[2], vals[2]);
     createEntry(regionNames[0], keys[1], vals[1]);
-    createEntry(regionNames[1], keys[3], vals[3]);
     LOG("StepFour complete.");
   }
 END_TASK(StepFour)
 DUNIT_TASK(CLIENT1, StepFive)
   {
     doNetsearch(regionNames[0], keys[1], vals[1]);
-    doNetsearch(regionNames[1], keys[3], vals[3]);
     updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
     LOG("StepFive complete.");
   }
 END_TASK(StepFive)
 DUNIT_TASK(CLIENT2, StepSix)
   {
     doNetsearch(regionNames[0], keys[0], vals[0], false);
-    doNetsearch(regionNames[1], keys[2], vals[2], false);
     updateEntry(regionNames[0], keys[1], nvals[1]);
-    updateEntry(regionNames[1], keys[3], nvals[3]);
     LOG("StepSix complete.");
   }
 END_TASK(StepSix)

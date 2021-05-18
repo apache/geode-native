@@ -29,6 +29,10 @@ if (MSVC)
   )
 endif()
 
+if (has_linker_exclude_libs)
+  target_link_options(apache-geode PRIVATE -Wl,--exclude-libs,ALL)
+endif()
+
 generate_export_file( "apache-geode" )
 
 set_source_files_properties(${CONFIGURE_OUT_FILES} PROPERTIES GENERATED TRUE)

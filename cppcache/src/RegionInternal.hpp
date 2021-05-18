@@ -45,17 +45,18 @@ namespace client {
  */
 class CacheEventFlags {
  private:
-  uint8_t m_flags;
-  static const uint8_t GF_NORMAL = 0x01;
-  static const uint8_t GF_LOCAL = 0x02;
-  static const uint8_t GF_NOTIFICATION = 0x04;
-  static const uint8_t GF_NOTIFICATION_UPDATE = 0x08;
-  static const uint8_t GF_EVICTION = 0x10;
-  static const uint8_t GF_EXPIRATION = 0x20;
-  static const uint8_t GF_CACHE_CLOSE = 0x40;
-  static const uint8_t GF_NOCACHEWRITER = 0x80;
+  uint16_t m_flags;
+  static const uint16_t GF_NORMAL = 0x01;
+  static const uint16_t GF_LOCAL = 0x02;
+  static const uint16_t GF_NOTIFICATION = 0x04;
+  static const uint16_t GF_NOTIFICATION_UPDATE = 0x08;
+  static const uint16_t GF_EVICTION = 0x10;
+  static const uint16_t GF_EXPIRATION = 0x20;
+  static const uint16_t GF_CACHE_CLOSE = 0x40;
+  static const uint16_t GF_NOCACHEWRITER = 0x80;
+  static const uint16_t GF_NOCALLBACKS = 0x100;
 
-  inline explicit CacheEventFlags(const uint8_t flags) : m_flags(flags) {}
+  inline explicit CacheEventFlags(const uint16_t flags) : m_flags(flags) {}
 
  public:
   static const CacheEventFlags NORMAL;
@@ -66,6 +67,7 @@ class CacheEventFlags {
   static const CacheEventFlags EXPIRATION;
   static const CacheEventFlags CACHE_CLOSE;
   static const CacheEventFlags NOCACHEWRITER;
+  static const CacheEventFlags NOCALLBACKS;
 
   inline CacheEventFlags(const CacheEventFlags& flags) = default;
 
@@ -84,46 +86,36 @@ class CacheEventFlags {
     return (m_flags == flags.m_flags);
   }
 
-  inline bool isNormal() const {
-    return (m_flags & GF_NORMAL) > 0 ? true : false;
-  }
+  inline bool isNormal() const { return (m_flags & GF_NORMAL) > 0; }
 
-  inline bool isLocal() const {
-    return (m_flags & GF_LOCAL) > 0 ? true : false;
-  }
+  inline bool isLocal() const { return (m_flags & GF_LOCAL) > 0; }
 
-  inline bool isNotification() const {
-    return (m_flags & GF_NOTIFICATION) > 0 ? true : false;
-  }
+  inline bool isNotification() const { return (m_flags & GF_NOTIFICATION) > 0; }
 
   inline bool isNotificationUpdate() const {
-    return (m_flags & GF_NOTIFICATION_UPDATE) > 0 ? true : false;
+    return (m_flags & GF_NOTIFICATION_UPDATE) > 0;
   }
 
-  inline bool isEviction() const {
-    return (m_flags & GF_EVICTION) > 0 ? true : false;
-  }
+  inline bool isEviction() const { return (m_flags & GF_EVICTION) > 0; }
 
-  inline bool isExpiration() const {
-    return (m_flags & GF_EXPIRATION) > 0 ? true : false;
-  }
+  inline bool isExpiration() const { return (m_flags & GF_EXPIRATION) > 0; }
 
-  inline bool isCacheClose() const {
-    return (m_flags & GF_CACHE_CLOSE) > 0 ? true : false;
-  }
+  inline bool isCacheClose() const { return (m_flags & GF_CACHE_CLOSE) > 0; }
 
   inline bool isNoCacheWriter() const {
-    return (m_flags & GF_NOCACHEWRITER) > 0 ? true : false;
+    return (m_flags & GF_NOCACHEWRITER) > 0;
   }
 
+  inline bool isNoCallbacks() const { return (m_flags & GF_NOCALLBACKS) > 0; }
+
   inline bool isEvictOrExpire() const {
-    return (m_flags & (GF_EVICTION | GF_EXPIRATION)) > 0 ? true : false;
+    return (m_flags & (GF_EVICTION | GF_EXPIRATION)) > 0;
   }
 
   // special optimized method for CacheWriter invocation condition
   inline bool invokeCacheWriter() const {
     return ((m_flags & (GF_NOTIFICATION | GF_EVICTION | GF_EXPIRATION |
-                        GF_NOCACHEWRITER)) == 0x0);
+                        GF_NOCACHEWRITER | GF_NOCALLBACKS)) == 0x0);
   }
 };
 
@@ -260,7 +252,7 @@ class RegionInternal : public Region {
   virtual RegionStats* getRegionStats() = 0;
   virtual bool cacheEnabled() = 0;
   bool isDestroyed() const override = 0;
-  virtual void evict(int32_t percentage) = 0;
+  virtual void evict(float percentage) = 0;
   virtual CacheImpl* getCacheImpl() const = 0;
   virtual std::shared_ptr<TombstoneList> getTombstoneList();
 
@@ -271,7 +263,7 @@ class RegionInternal : public Region {
   std::shared_ptr<RegionEntry> createRegionEntry(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Cacheable>& value);
-  virtual void addDisMessToQueue() {}
+  virtual void addDisconnectedMessageToQueue() {}
 
   virtual void txDestroy(const std::shared_ptr<CacheableKey>& key,
                          const std::shared_ptr<Serializable>& callBack,

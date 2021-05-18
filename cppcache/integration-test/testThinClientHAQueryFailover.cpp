@@ -55,14 +55,14 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
 
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 class KillServerThread : public ACE_Task_Base {
  public:
   bool m_running;
   KillServerThread() : m_running(false) {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       // CacheHelper::initServer( 2, "cacheserver_remoteoql2.xml");
       // LOG("THREAD STARTED SERVER 2");
@@ -258,13 +258,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
       kst->stop();
     } catch (IllegalStateException &ise) {
-      char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
-      LOG(isemsg);
-      FAIL(isemsg);
+      std::string excpmsg = "IllegalStateException: " + std::string{ise.what()};
+
+      LOG(excpmsg);
+      FAIL(excpmsg);
     } catch (Exception &excp) {
-      char excpmsg[500] = {0};
-      ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
+      std::string excpmsg = "Exception: " + std::string{excp.what()};
+
       LOG(excpmsg);
       FAIL(excpmsg);
     } catch (...) {

@@ -17,26 +17,24 @@
 
 #include <framework/Cluster.h>
 #include <framework/Framework.h>
-#include <framework/Gfsh.h>
 #include <framework/TestConfig.h>
-#include <hacks/range.h>
-
-#include <iostream>
-#include <unordered_map>
 
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
+#include <geode/PartitionResolver.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/QueryService.hpp>
-#include <geode/RegionFactory.hpp>
-#include <geode/RegionShortcut.hpp>
-#include <geode/Struct.hpp>
+#include <geode/Region.hpp>
+
+#include "cpp-integration-test_export.h"
 
 namespace {
 
 using apache::geode::client::Cache;
+using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheXmlException;
+using apache::geode::client::EntryEvent;
+using apache::geode::client::PartitionResolver;
 
 apache::geode::client::Cache createCacheUsingXmlConfig(
     const std::string& xmlFile) {
@@ -44,13 +42,30 @@ apache::geode::client::Cache createCacheUsingXmlConfig(
 
   CacheFactory cacheFactory;
 
-  auto cache = cacheFactory.set("log-level", "debug")
-                   .set("log-file", "geode_native.log")
+  auto cache = cacheFactory.set("log-level", "none")
                    .set("statistic-sampling-enabled", "false")
-                   .set("cache-xml-file", xmlFile.c_str())
+                   .set("cache-xml-file", xmlFile)
                    .create();
 
   return cache;
+}
+
+class TestAppPartitionResolver : public PartitionResolver {
+ public:
+  const std::string& getName() override {
+    static std::string name = "TestAppPartitionResolver";
+    return name;
+  }
+
+  std::shared_ptr<CacheableKey> getRoutingObject(const EntryEvent&) override {
+    return {};
+  }
+};
+}  // namespace
+
+extern "C" CPP_INTEGRATION_TEST_EXPORT PartitionResolver*
+CacheXmlTest_createAppPartitionResolver() {
+  return new TestAppPartitionResolver{};
 }
 
 /**
@@ -91,4 +106,27 @@ TEST(CacheXmlTest, loadCacheWithUnnamedPool) {
       .execute();
   EXPECT_THROW(createCacheUsingXmlConfig(cacheXml), CacheXmlException);
 }
-}  // namespace
+
+TEST(CacheXmlTest, testApplicationPartitionResolver) {
+  auto cache_xml = getFrameworkString(FrameworkVariable::NewTestResourcesDir) +
+                   std::string{"/pr_app_client_cache.xml"};
+  auto cache = createCacheUsingXmlConfig(cache_xml);
+
+  auto region = cache.getRegion("region");
+  auto pr = region->getAttributes().getPartitionResolver();
+
+  EXPECT_TRUE(pr);
+  EXPECT_EQ(pr->getName(), "TestAppPartitionResolver");
+}
+
+TEST(CacheXmlTest, testSharedLibPartitionResolver) {
+  auto cache_xml = getFrameworkString(FrameworkVariable::NewTestResourcesDir) +
+                   std::string{"/pr_lib_client_cache.xml"};
+  auto cache = createCacheUsingXmlConfig(cache_xml);
+
+  auto region = cache.getRegion("region");
+  auto pr = region->getAttributes().getPartitionResolver();
+
+  EXPECT_TRUE(pr);
+  EXPECT_EQ(pr->getName(), "TestLibPartitionResolver");
+}

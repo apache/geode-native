@@ -310,7 +310,7 @@ namespace Apache
       }
 
       generic<class TValue>
-      TValue wrap(std::shared_ptr<native::DataSerializablePrimitive> dataSerializablePrimitive)
+      TValue wrap(std::shared_ptr<native::internal::DataSerializablePrimitive> dataSerializablePrimitive)
       {
         switch (dataSerializablePrimitive->getDsCode())
         {
@@ -463,7 +463,7 @@ namespace Apache
           return TValue();
         }
 
-        if (auto dataSerializablePrimitive = std::dynamic_pointer_cast<native::DataSerializablePrimitive>(val))
+        if (auto dataSerializablePrimitive = std::dynamic_pointer_cast<native::internal::DataSerializablePrimitive>(val))
         {
           switch (dataSerializablePrimitive->getDsCode())
           {

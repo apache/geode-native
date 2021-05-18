@@ -20,13 +20,14 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTSECURITYHELPER_H_
 
-#include <ace/Process.h>
+#include <boost/process.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
 #include "hacks/AceThreadId.h"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::Exception;
@@ -51,7 +52,7 @@ using apache::geode::client::testframework::security::opCodeList;
 bool isLocator = false;
 bool isLocalServer = false;
 
-const char* locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 const char* regionNamesAuth[] = {"DistRegionAck"};
@@ -59,7 +60,7 @@ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char* path = ACE_OS::getenv("TESTSRC");
+  const char* path = std::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -215,36 +216,39 @@ class putThread : public ACE_Task_Base {
     }
   }
 
-  int svc(void) {
+  int svc() override {
     int ops = 0;
-    auto pid = ACE_OS::getpid();
+    std::string key_str;
     std::shared_ptr<CacheableKey> key;
     std::shared_ptr<CacheableString> value;
     std::vector<std::shared_ptr<CacheableKey>> keys0;
-    char buf[20];
-    char valbuf[20];
+
+    auto pid = boost::this_process::get_id();
     if (m_regInt) {
       m_reg->registerAllKeys(false, true);
     }
     if (m_waitTime != 0) {
-      ACE_OS::sleep(m_waitTime);
+      std::this_thread::sleep_for(std::chrono::seconds{m_waitTime});
     }
     while (ops++ < m_numops) {
       if (m_sameKey) {
-        sprintf(buf, "key-%d", 1);
+        key_str = "key-1";
       } else {
-        sprintf(buf, "key-%d", ops);
+        key_str = "key-" + std::to_string(ops);
       }
-      key = CacheableKey::create(buf);
+
+      key = CacheableKey::create(key_str);
       if (m_opcode == 0) {
+        std::string value_str;
+
         if (m_isCallBack) {
           auto boolptr = CacheableBoolean::create("true");
-          sprintf(valbuf, "client1-value%d", ops);
-          value = CacheableString::create(valbuf);
+          value_str = "client1-value" + std::to_string(ops);
+          value = CacheableString::create(value_str);
           m_reg->put(key, value, boolptr);
         } else {
-          sprintf(valbuf, "client2-value%d", ops);
-          value = CacheableString::create(valbuf);
+          value_str = "client2-value" + std::to_string(ops);
+          value = CacheableString::create(value_str);
           m_reg->put(key, value);
         }
       } else if (m_opcode == 1) {
@@ -265,8 +269,9 @@ class putThread : public ACE_Task_Base {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          printf("%d: %" PRIu64 " exception got and exception message = %s\n",
-                 pid, hacks::aceThreadId(ACE_OS::thr_self()), ex.what());
+          auto tid = boost::lexical_cast<std::string>(std::this_thread::get_id());
+          printf("%d: %s exception got and exception message = %s\n",
+                 pid, tid.c_str(), ex.what());
         }
       }
     }

@@ -20,7 +20,7 @@
  * limitations under the License.
  */
 
-#include <fwklib/FwkLog.hpp>
+#include <fwklib/FwkException.hpp>
 #include <string>
 
 #include <ace/Time_Value.h>
@@ -29,6 +29,14 @@
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
 #include "testobject_export.h"
+
+#define FWKEXCEPTION(x)                                              \
+  do {                                                               \
+    std::ostringstream os;                                           \
+    os << x << " In file: " << __FILE__ << " at line: " << __LINE__; \
+    throw apache::geode::client::testframework::FwkException(        \
+        os.str().c_str());                                           \
+  } while (0)
 
 namespace testobject {
 
@@ -49,12 +57,8 @@ class TESTOBJECT_EXPORT ArrayOfByte {
         int32_t index = 1234;
         dos.writeInt(index);
         if (encodeTimestamp) {
-          ACE_Time_Value startTime;
-          startTime = ACE_OS::gettimeofday();
-          ACE_UINT64 tusec = 0;
-          startTime.to_usec(tusec);
-          int64_t timestamp = tusec * 1000;
-          dos.writeInt(timestamp);
+          dos.writeInt(
+              std::chrono::system_clock::now().time_since_epoch().count());
         }
       } catch (Exception &e) {
         FWKEXCEPTION("Unable to write to stream " << e.what());
@@ -110,12 +114,7 @@ class TESTOBJECT_EXPORT ArrayOfByte {
     DataOutputInternal dos;
     try {
       dos.writeInt(index);
-      ACE_Time_Value startTime;
-      startTime = ACE_OS::gettimeofday();
-      ACE_UINT64 tusec = 0;
-      startTime.to_usec(tusec);
-      int64_t timestamp = tusec * 1000;
-      dos.writeInt(timestamp);
+      dos.writeInt(std::chrono::system_clock::now().time_since_epoch().count());
     } catch (Exception &e) {
       FWKEXCEPTION("Unable to write to stream " << e.what());
     }

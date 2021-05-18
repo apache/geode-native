@@ -142,7 +142,7 @@ void ClientProxyMembershipID::initObjectVars(
         static_cast<int32_t>(durableClntTimeOut.count()));
     int32ptr->toData(m_memID);
   }
-  writeVersion(Version::getOrdinal(), m_memID);
+  Version::write(m_memID, Version::current());
   size_t len;
   char* buf =
       reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
@@ -340,25 +340,10 @@ int16_t ClientProxyMembershipID::compareTo(
 }
 
 void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
-  if ((flags & ClientProxyMembershipID::VERSION_MASK) != 0) {
-    int8_t ordinal = input.read();
-    LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ", ordinal);
-    if (ordinal == ClientProxyMembershipID::TOKEN_ORDINAL) {
-      LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
-               input.readInt16());
-    }
-  }
-}
-
-void ClientProxyMembershipID::writeVersion(int16_t ordinal,
-                                           DataOutput& output) {
-  if (ordinal <= SCHAR_MAX) {
-    output.write(static_cast<int8_t>(ordinal));
-    LOGDEBUG("ClientProxyMembershipID::writeVersion ordinal = %d ", ordinal);
-  } else {
-    output.write(ClientProxyMembershipID::TOKEN_ORDINAL);
-    output.writeInt(ordinal);
-    LOGDEBUG("ClientProxyMembershipID::writeVersion ordinal = %d ", ordinal);
+  if (flags & ClientProxyMembershipID::VERSION_MASK) {
+    const auto version = Version::read(input);
+    LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
+             version.getOrdinal());
   }
 }
 

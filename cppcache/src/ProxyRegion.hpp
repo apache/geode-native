@@ -51,7 +51,7 @@ class FunctionService;
  * @class ProxyRegion ProxyRegion.hpp
  * This class wrapper around real region
  */
-class APACHE_GEODE_EXPORT ProxyRegion final : public Region {
+class ProxyRegion final : public Region {
  public:
   const std::string& getName() const final { return m_realRegion->getName(); }
 

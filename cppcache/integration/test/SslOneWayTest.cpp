@@ -80,7 +80,7 @@ TEST_F(SslOneWayTest, PutGetWithValidSslConfiguration) {
       (clientSslKeysDir /
        boost::filesystem::path("client_truststore_chained_root.pem"));
   auto cache = CacheFactory()
-                   .set("log-level", "DEBUG")
+                   .set("log-level", "none")
                    .set("ssl-enabled", "true")
                    .set("ssl-truststore", clientTruststore.string())
                    .create();

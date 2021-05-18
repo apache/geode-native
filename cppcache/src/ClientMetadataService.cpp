@@ -24,6 +24,7 @@
 
 #include <geode/FixedPartitionResolver.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientMetadata.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
@@ -120,6 +121,14 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     if (err == GF_NOERR &&
         reply.getMessageType() ==
             TcrMessage::RESPONSE_CLIENT_PARTITION_ATTRIBUTES) {
+      // By convention, server returns -1 bucket count to indicate replicated
+      // region
+      if (reply.getNumBuckets() == -1) {
+        LOGDEBUG(
+            "ClientMetadataService::getClientPRMetadata: region is"
+            "replicated, not partitioned - no metadata");
+        return;
+      }
       cptr = std::make_shared<ClientMetadata>(reply.getNumBuckets(),
                                               reply.getColocatedWith(), m_pool,
                                               reply.getFpaSet());
@@ -172,8 +181,6 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       new DataOutput(m_cache->createDataOutput(m_pool)), regionPath);
   TcrMessageReply reply(true, nullptr);
   // send this message to server and get metadata from server.
-  LOGFINE("Now sending GET_CLIENT_PR_METADATA for getting from server: %s",
-          regionPath);
   std::shared_ptr<Region> region = nullptr;
   GfErrType err = m_pool->sendSyncRequest(request, reply);
   if (err == GF_NOERR &&
@@ -185,7 +192,9 @@ std::shared_ptr<ClientMetadata> ClientMetadataService::SendClientPRMetadata(
       }
     }
     auto metadata = reply.getMetadata();
-    if (metadata == nullptr) return nullptr;
+    if (metadata == nullptr) {
+      return nullptr;
+    }
     if (metadata->empty()) {
       delete metadata;
       return nullptr;
@@ -357,8 +366,9 @@ ClientMetadataService::getServerToFilterMap(
       clientMetadata->getServerLocation(bucketId, isPrimary, serverLocation,
                                         version);
       if (!(serverLocation && serverLocation->isValid())) {
-        keysWhichLeft.push_back(key);
-        continue;
+        // If we're missing any metadata, give up.  This will cause us to revert
+        // to multi-hop, which is consistent with the Java client.
+        return nullptr;
       }
 
       buckets[bucketId] = serverLocation;

@@ -13,15 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
-
-project(clicache_src)
-
-find_program(NUGET nuget)
-add_custom_target(nuget-restore 
-  COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
-)
-
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(test2)

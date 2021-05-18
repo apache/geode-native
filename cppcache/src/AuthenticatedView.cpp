@@ -22,13 +22,11 @@
 #include <geode/Cache.hpp>
 #include <geode/FunctionService.hpp>
 #include <geode/PoolManager.hpp>
-#include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheXmlParser.hpp"
 #include "DistributedSystemImpl.hpp"
-#include "FunctionServiceImpl.hpp"
 #include "ProxyRegion.hpp"
 #include "ProxyRemoteQueryService.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -163,7 +161,7 @@ AuthenticatedView::AuthenticatedView(std::shared_ptr<Properties> credentials,
       m_remoteQueryService(nullptr),
       m_cacheImpl(cacheImpl) {}
 
-AuthenticatedView::~AuthenticatedView() {}
+AuthenticatedView::~AuthenticatedView() = default;
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
     const std::string& className, bool expectDomainClass) const {

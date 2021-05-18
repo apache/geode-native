@@ -42,8 +42,8 @@ namespace client {
  **/
 class APACHE_GEODE_EXPORT PdxUnreadFields {
  public:
-  PdxUnreadFields() {}
-  virtual ~PdxUnreadFields() {}
+  PdxUnreadFields() = default;
+  virtual ~PdxUnreadFields() = default;
 };
 }  // namespace client
 }  // namespace geode

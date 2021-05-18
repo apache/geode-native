@@ -31,6 +31,7 @@ namespace Apache.Geode.Client.UnitTests
   using QueryCategory = Apache.Geode.Client.Tests.QueryCategory;
   using QueryStrings = Apache.Geode.Client.Tests.QueryStrings;
 
+  [Ignore("flaky")]
   [TestFixture]
   [Category("group1")]
   [Category("unicast_only")]

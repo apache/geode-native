@@ -1,0 +1,181 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("templates.lib.yml",
+#@      "github_resource",
+#@      "gci_resource",
+#@      "registry_image_resource",
+#@      "build_job_name",
+#@      "packer_job",
+#@      "packer_job_name",
+#@      "docker_job",
+#@      "docker_job_name",
+#@      "package_resource",
+#@      "package_resource_name",
+#@      "put_package",
+#@      "version_source_job",
+#@      "version_source_job_name")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.all
+---
+resources:
+  #@overlay/append
+  - #@ registry_image_resource("packer-image", "hashicorp/packer")
+  #@overlay/append
+  - #@ github_resource("packer-source", data.values.github.owner, data.values.github.repository, data.values.repository.branch, ["packer/*"])
+
+  #@ for build in data.values.builds:
+  #@overlay/append
+  - #@ gci_resource(build.source_image_family)
+  #@ for config in data.values.configs:
+  #@ for package in build.packages:
+  #@overlay/append
+  - #@ package_resource(build, config , package)
+  #@ end
+  #@ end
+  #@ end
+  #@overlay/append
+  - name: github-pre-release
+    type: github-release
+    source:
+      owner: #@ data.values.github.owner
+      repository: #@ data.values.github.repository
+      access_token: ((github-pr-access-token))
+      release: false
+      pre_release: true
+    icon: github
+
+#@overlay/match-child-defaults missing_ok=True
+jobs:
+  #@overlay/append
+  - #@ version_source_job()
+  #@overlay/append
+  - #@ docker_job("task-image", "ci-source", "ci/docker/task")
+  #@overlay/append
+  - #@ docker_job("clang-tools-image", "ci-source", "ci/docker/clang-tools")
+
+  #@ for build in data.values.builds:
+  #@overlay/append
+  - #@ packer_job(build)
+  #@ for config in data.values.configs:
+  #@overlay/match by="name"
+  - name: #@ build_job_name(build, config)
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              passed: [ version-source ]
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              passed: [ version-source ]
+      #@overlay/append
+      - #@ put_package(build, config)
+  #@ end
+  #@ end
+  #@overlay/match by="name"
+  - name: check-source
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              passed: [ version-source ]
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              passed: [ version-source ]
+
+  #@overlay/append
+  - name: github-pre-release
+    plan:
+      - in_parallel:
+          fail_fast: true
+          steps:
+            - get: version
+              passed:
+                #@ for build in data.values.builds:
+                #@ for config in data.values.configs:
+                - #@ build_job_name(build, config)
+                #@ end
+                #@ end
+                - check-source
+              trigger: true
+            - get: source
+              passed:
+                #@ for build in data.values.builds:
+                #@ for config in data.values.configs:
+                - #@ build_job_name(build, config)
+                #@ end
+                #@ end
+                - check-source
+              trigger: true
+            #@ for build in data.values.builds:
+            #@ for config in data.values.configs:
+            #@ for package in build.packages:
+            - get: #@ package_resource_name(build, config, package)
+              passed:
+                - #@ build_job_name(build, config)
+              trigger: true
+            #@ end
+            #@ end
+            #@ end
+      - put: github-pre-release
+        params:
+          commitish: source/.git/ref
+          name: version/version
+          tag: version/version
+          tag_prefix: pre-release/v
+          globs:
+            - "package-*-release-*/apache-geode-native-*"
+
+  #@overlay/append
+  - name: bump-minor-version
+    plan:
+      - put: version
+        params:
+          bump: minor
+          pre: #@ data.values.pipeline.pre
+
+#@overlay/match-child-defaults missing_ok=True
+groups:
+  #@overlay/match by="name"
+  - name: images
+    jobs:
+      #@ for/end build in data.values.builds:
+      - #@ packer_job_name(build)
+      - #@ docker_job_name("task-image")
+      - #@ docker_job_name("clang-tools-image")
+  #@overlay/match by="name"
+  - name: all
+    jobs:
+      #@ for build in data.values.builds:
+      #@overlay/append
+      - #@ packer_job_name(build)
+      #@ end
+      #@overlay/append
+      - #@ docker_job_name("task-image")
+      #@overlay/append
+      - #@ docker_job_name("clang-tools-image")
+      #@overlay/append
+      - #@ version_source_job_name()
+      #@overlay/append
+      - bump-minor-version
+      #@overlay/append
+      - github-pre-release
+  #@overlay/match by="name"
+  - name: version
+    jobs:
+      - #@ version_source_job_name()
+      - bump-minor-version

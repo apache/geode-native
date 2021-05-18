@@ -35,7 +35,7 @@ using statistics::StatisticDescriptor;
 using statistics::Statistics;
 using statistics::StatisticsType;
 
-class APACHE_GEODE_EXPORT RegionStats {
+class RegionStats {
  public:
   /** hold statistics for a region.. */
   RegionStats(statistics::StatisticsFactory* factory,

@@ -58,7 +58,8 @@ class APACHE_GEODE_EXPORT Utils {
    * On windows the maximum length of value supported is 8191.
    */
   static std::string getEnv(const char* varName);
-  static int32_t getLastError();
+
+  static std::error_code getLastError();
 
 #ifdef __GNUC__
   inline static char* _gnuDemangledName(const char* typeIdName, size_t& len) {
@@ -157,41 +158,52 @@ class APACHE_GEODE_EXPORT Utils {
 
   static std::string convertHostToCanonicalForm(const char* endpoints);
 
+  static std::string getSystemInfo();
+
   static char* copyString(const char* str);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  static std::string convertBytesToString(const uint8_t* bytes, size_t length,
-                                          size_t maxLength = _GF_MSG_LIMIT);
+  static std::string convertBytesToString(
+      const uint8_t* bytes, size_t length,
+      size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT);
 
   /**
-   * lib should be in the form required by ACE_DLL, typically just like
-   * specifying
-   * a
-   * lib in java System.loadLibrary( "x" ); Where x is a component of the name
-   * lib<x>.so on unix, or <x>.dll on windows.
+   * lib should be in the form originally required by ACE_DLL, typically just
+   * like specifying a lib in java System.loadLibrary( "x" ); Where x is a
+   * component of the name lib<x>.so on unix, or <x>.dll on windows.
    */
-  static void* getFactoryFunction(const std::string& lib,
-                                  const std::string& funcName);
+  template <typename T>
+  static T* getFactoryFunction(const std::string& libraryName,
+                               const std::string& functionName) {
+    return reinterpret_cast<T*>(
+        getFactoryFunctionVoid(libraryName, functionName));
+  }
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
-  static std::string convertBytesToString(const int8_t* bytes, size_t length,
-                                          size_t maxLength = _GF_MSG_LIMIT);
+  static std::string convertBytesToString(
+      const int8_t* bytes, size_t length,
+      size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT);
 
   /**
    * Convert the byte array to a string as "%d %d ...".
    * <code>maxLength</code> as zero implies no limit.
    */
   inline static std::string convertBytesToString(
-      const char* bytes, size_t length, size_t maxLength = _GF_MSG_LIMIT) {
+      const char* bytes, size_t length,
+      size_t maxLength = _GEODE_LOG_MESSAGE_LIMIT) {
     return convertBytesToString(reinterpret_cast<const uint8_t*>(bytes), length,
                                 maxLength);
   }
+
+ private:
+  static void* getFactoryFunctionVoid(const std::string& lib,
+                                      const std::string& funcName);
 };
 
 // Generate random numbers 0 to max-1

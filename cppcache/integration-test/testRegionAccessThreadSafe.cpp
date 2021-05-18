@@ -36,7 +36,7 @@ class GetRegionThread : public ACE_Task_Base {
         m_regionCreateDone(false),
         m_subRegionCreateDone(false),
         m_mutex() {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       SLEEP(40);
       try {
@@ -93,7 +93,7 @@ class GetRegionThread : public ACE_Task_Base {
 static int numberOfLocators = 1;
 bool isLocalServer = true;
 bool isLocator = true;
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 GetRegionThread *getThread = nullptr;
 std::shared_ptr<Region> regionPtr;

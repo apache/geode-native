@@ -18,6 +18,7 @@ cmake_minimum_required(VERSION 3.10)
 project(@PRODUCT_DLL_NAME@.DotNet.Examples LANGUAGES NONE)
 
 add_subdirectory(authinitialize)
+add_subdirectory(classaskey)
 add_subdirectory(continuousquery)
 add_subdirectory(dataserializable)
 add_subdirectory(functionexecution)

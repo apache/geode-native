@@ -63,9 +63,9 @@ void startServer(int instance, const char *xmlfile, const char *lochostport) {
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
-    CacheHelper::initServer(1, "cacheserver_notify_subscription.xml", nullptr,
+    CacheHelper::initServer(1, "cacheserver_notify_subscription.xml", {},
                             nullptr, false, true, true);
-    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml", nullptr,
+    CacheHelper::initServer(2, "cacheserver_notify_subscription2.xml", {},
                             nullptr, false, true, true);
     LOG("SERVER1 and server2 started");
   }
@@ -73,9 +73,9 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER2, CreateServer2)
   {
-    CacheHelper::initServer(3, "cacheserver_notify_subscription3.xml", nullptr,
+    CacheHelper::initServer(3, "cacheserver_notify_subscription3.xml", {},
                             nullptr, false, true, true);
-    CacheHelper::initServer(4, "cacheserver_notify_subscription4.xml", nullptr,
+    CacheHelper::initServer(4, "cacheserver_notify_subscription4.xml", {},
                             nullptr, false, true, true);
     LOG("SERVER2 started");
   }

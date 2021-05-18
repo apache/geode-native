@@ -85,7 +85,7 @@ struct ServerAddress {
 class Server {
  public:
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-         std::string xmlFile, bool useIPv6);
+         std::string xmlFile, bool useIPv6, uint16_t port);
 
   std::string getCacheXMLFile();
 
@@ -98,6 +98,8 @@ class Server {
   void start();
 
   void stop();
+
+  const ServerAddress &getAddress() const;
 
  private:
   Cluster &cluster_;
@@ -121,6 +123,7 @@ using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
+using ConserveSockets = NamedType<bool, struct useConserveSocketsParameter>;
 
 class Cluster {
  public:
@@ -128,19 +131,27 @@ class Cluster {
           UseIpv6 useIPv6);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> &serverPorts);
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          std::vector<uint16_t> &locatorPorts,
+          std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
           ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> &locatorPorts,
+          std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
           CacheXMLFiles cacheXMLFiles);
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          ConserveSockets conserveSockets, CacheXMLFiles cacheXMLFiles);
 
   Cluster(Name name, LocatorCount initialLocators, ServerCount initialServers,
           UseIpv6 useIPv6);
@@ -185,6 +196,9 @@ class Cluster {
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
+  void applyServer(apache::geode::client::PoolFactory &poolFactory,
+                   ServerAddress server);
+
   void useSsl(const bool requireSslAuthentication, const std::string keystore,
               const std::string truststore, const std::string keystorePassword,
               const std::string truststorePassword);
@@ -222,8 +236,9 @@ class Cluster {
 
   bool getUseIPv6();
 
- private:
+  bool getConserveSockets();
 
+ private:
   std::string name_;
   std::string classpath_;
   std::string securityManager_;
@@ -237,6 +252,7 @@ class Cluster {
   std::vector<uint16_t> remoteLocatorsPorts_;
 
   size_t initialServers_;
+  std::vector<uint16_t> serverPorts_;
   std::vector<Server> servers_;
 
   bool started_ = false;
@@ -258,6 +274,7 @@ class Cluster {
   std::string hostName_;
 
   bool useIPv6_ = false;
+  bool conserveSockets_ = false;
 
   uint16_t distributedSystemId_ = 0;
 

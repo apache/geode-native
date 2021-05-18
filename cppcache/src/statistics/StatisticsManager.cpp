@@ -21,6 +21,7 @@
 
 #include <geode/Exception.hpp>
 #include <geode/internal/geode_globals.hpp>
+#include <geode/util/LogLevel.hpp>
 
 #include "../AdminRegion.hpp"
 #include "../util/Log.hpp"
@@ -35,6 +36,7 @@ namespace statistics {
 
 using client::Exception;
 using client::Log;
+using client::LogLevel;
 
 StatisticsManager::StatisticsManager(
     const char* filePath, const std::chrono::milliseconds sampleInterval,
@@ -95,15 +97,15 @@ StatisticsManager::~StatisticsManager() {
       m_statsList.erase(m_statsList.begin(), m_statsList.end());
     }
   } catch (const Exception& ex) {
-    Log::warningCatch("~StatisticsManager swallowing Geode exception", ex);
-
+    Log::logCatch(LogLevel::Warning,
+                  "~StatisticsManager swallowing Geode exception", ex);
   } catch (const std::exception& ex) {
     std::string what = "~StatisticsManager swallowing std::exception: ";
     what += ex.what();
-    Log::warning(what.c_str());
+    LOGWARN(what.c_str());
 
   } catch (...) {
-    Log::error("~StatisticsManager swallowing unknown exception");
+    LOGERROR("~StatisticsManager swallowing unknown exception");
   }
 }
 

@@ -36,6 +36,7 @@
 #include "MemberListForVersionStamp.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "RemoteQueryService.hpp"
+#include "TcrEndpoint.hpp"
 #include "ThreadPool.hpp"
 #include "util/synchronized_map.hpp"
 
@@ -180,20 +181,14 @@ class APACHE_GEODE_EXPORT CacheImpl {
    */
   std::vector<std::shared_ptr<Region>> rootRegions();
 
-  virtual RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
+  RegionFactory createRegionFactory(RegionShortcut preDefinedRegion);
 
   void initializeDeclarativeCache(const std::string& cacheXml);
 
   std::shared_ptr<CacheTransactionManager> getCacheTransactionManager();
 
-  /**
-   * @brief destructor
-   */
-  virtual ~CacheImpl();
+  ~CacheImpl();
 
-  /**
-   * @brief constructors
-   */
   CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
             bool ignorePdxUnreadFields, bool readPdxSerialized,
             const std::shared_ptr<AuthInitialize>& authInitialize);
@@ -234,6 +229,10 @@ class APACHE_GEODE_EXPORT CacheImpl {
 
   //  TESTING: Durable clients. Not thread safe.
   bool getEndpointStatus(const std::string& endpoint);
+
+  // TESTING: Endpoint disconnections
+  int getNumberOfTimeEndpointDisconnected(const std::string& endpoint,
+                                          const std::string& poolName);
 
   void processMarker();
 
@@ -289,14 +288,14 @@ class APACHE_GEODE_EXPORT CacheImpl {
     return *(m_statisticsManager.get());
   }
 
-  virtual DataOutput createDataOutput() const;
+  DataOutput createDataOutput() const;
 
-  virtual DataOutput createDataOutput(Pool* pool) const;
+  DataOutput createDataOutput(Pool* pool) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len) const;
 
-  virtual DataInput createDataInput(const uint8_t* buffer, size_t len,
-                                    Pool* pool) const;
+  DataInput createDataInput(const uint8_t* buffer, size_t len,
+                            Pool* pool) const;
 
   PdxInstanceFactory createPdxInstanceFactory(const std::string& className,
                                               bool expectDomainClass) const;
@@ -306,6 +305,8 @@ class APACHE_GEODE_EXPORT CacheImpl {
       const std::string& poolName);
 
   bool doIfDestroyNotPending(std::function<void()>);
+
+  bool isKeepAlive();
 
  private:
   std::atomic<bool> m_networkhop;
@@ -371,6 +372,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
   ThreadPool m_threadPool;
   const std::shared_ptr<AuthInitialize> m_authInitialize;
   std::unique_ptr<TypeRegistry> m_typeRegistry;
+  bool m_keepAlive;
 
   inline void throwIfClosed() const {
     if (m_closed) {

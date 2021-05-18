@@ -35,7 +35,7 @@ using apache::geode::client::IllegalStateException;
 bool isLocalServer = false;
 bool isLocator = false;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"PoolRegion1"};
 const char *poolName = "__TEST_POOL1__";
@@ -51,7 +51,7 @@ class putThread : public ACE_Task_Base {
  public:
   explicit putThread(const char *name) : regPtr(getHelper()->getRegion(name)) {}
 
-  int svc(void) {
+  int svc(void) override {
     // TODO: No. of connection should be = minConnection
 
     for (int i = 0; i < 10000; i++) {
@@ -227,9 +227,8 @@ END_TASK(StartC1)
 DUNIT_TASK(CLIENT2, StartC2)
   {
     auto props = Properties::create();
-    std::string path = "cacheserver_pool_client.xml";
-    std::string duplicateFile;
-    CacheHelper::createDuplicateXMLFile(duplicateFile, path);
+    auto duplicateFile =
+        CacheHelper::createDuplicateXMLFile("cacheserver_pool_client.xml");
 
     props->insert("cache-xml-file", duplicateFile.c_str());
 
@@ -238,10 +237,10 @@ DUNIT_TASK(CLIENT2, StartC2)
       initClient(true, props);
       LOG(" started client");
       ASSERT(getHelper()
-                     ->getCache()
-                     ->getPoolManager()
-                     .find("clientPoolMultiUser")
-                     ->getMultiuserAuthentication() == true,
+                 ->getCache()
+                 ->getPoolManager()
+                 .find("clientPoolMultiUser")
+                 ->getMultiuserAuthentication(),
              "MultiUser secure mode should be true for Pool");
     } catch (const Exception &excp) {
       LOG("Exception during client 2 XML creation");

@@ -69,11 +69,9 @@ class TallyListener : public CacheListener {
     LOG("TallyListener contructor called");
   }
 
-  virtual ~TallyListener() {}
+  ~TallyListener() noexcept override = default;
 
   void beQuiet(bool v) { m_quiet = v; }
-
-  void ignoreTimeouts(bool ignore) { m_ignoreTimeout = ignore; }
 
   int expectCreates(int expected) {
     int tries = 0;
@@ -99,24 +97,6 @@ class TallyListener : public CacheListener {
     isCallbackCalled = false;
   }
   int getUpdates() { return m_updates; }
-  int expectInvalidates(int expected) {
-    LOG("calling expectInvalidates ");
-    int tries = 0;
-    while ((m_invalidates < expected) && (tries < 200)) {
-      SLEEP(100);
-      tries++;
-    }
-    return m_invalidates;
-  }
-  int expectDestroys(int expected) {
-    LOG("calling expectDestroys ");
-    int tries = 0;
-    while ((m_destroys < expected) && (tries < 200)) {
-      SLEEP(100);
-      tries++;
-    }
-    return m_destroys;
-  }
 
   int getInvalidates() { return m_invalidates; }
   int getDestroys() { return m_destroys; }
@@ -142,23 +122,21 @@ class TallyListener : public CacheListener {
 
   int getClears() { return m_clears; }
 
-  virtual void afterCreate(const EntryEvent& event);
+  void afterCreate(const EntryEvent& event) override;
 
-  virtual void afterUpdate(const EntryEvent& event);
+  void afterUpdate(const EntryEvent& event) override;
 
-  virtual void afterInvalidate(const EntryEvent& event);
+  void afterInvalidate(const EntryEvent& event) override;
 
-  virtual void afterDestroy(const EntryEvent& event);
+  void afterDestroy(const EntryEvent& event) override;
 
-  virtual void afterRegionClear(const RegionEvent& event) {
+  void afterRegionClear(const RegionEvent& event) override {
     CacheListener::afterRegionClear(event);
   }
 
-  virtual void afterRegionClear(const EntryEvent& event);
+  void afterRegionInvalidate(const RegionEvent&) override {}
 
-  virtual void afterRegionInvalidate(const RegionEvent&) {}
-
-  virtual void afterRegionDestroy(const RegionEvent&) {}
+  void afterRegionDestroy(const RegionEvent&) override {}
 
   void showTallies() {
     char buf[1024];
@@ -218,11 +196,6 @@ void TallyListener::afterInvalidate(const EntryEvent& event) {
 }
 void TallyListener::afterDestroy(const EntryEvent& event) {
   m_destroys++;
-  checkcallbackArg(event);
-}
-void TallyListener::afterRegionClear(const EntryEvent& event) {
-  m_clears++;
-  LOGINFO("TallyListener::afterRegionClear m_clears = %d", m_clears);
   checkcallbackArg(event);
 }
 

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_LRUMAPENTRY_H_
-#define GEODE_LRUMAPENTRY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,16 +15,22 @@
  * limitations under the License.
  */
 
+#pragma once
+
+#ifndef GEODE_LRUMAPENTRY_H_
+#define GEODE_LRUMAPENTRY_H_
+
 #include <geode/CacheableKey.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "LRUList.hpp"
-#include "MapEntry.hpp"
+#include "LRUEntryProperties.hpp"
+#include "MapEntryImpl.hpp"
 #include "VersionStamp.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
  * This template class adds the recently used, eviction bits and persistence
  * info to the MapEntry class. The earlier design looked like below:
@@ -60,14 +61,16 @@ namespace client {
  *
  *
  */
-class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
-                                        public LRUEntryProperties {
+class LRUMapEntry : public MapEntryImpl, public LRUEntryProperties {
  public:
-  virtual ~LRUMapEntry() {}
+  LRUMapEntry(const LRUMapEntry&) = delete;
+  LRUMapEntry& operator=(const LRUMapEntry&) = delete;
 
-  virtual LRUEntryProperties& getLRUProperties() { return *this; }
+  ~LRUMapEntry() noexcept override = default;
 
-  virtual void cleanup(const CacheEventFlags eventFlags) {
+  LRUEntryProperties& getLRUProperties() override { return *this; }
+
+  void cleanup(const CacheEventFlags eventFlags) override {
     if (!eventFlags.isEviction()) {
       // TODO:  this needs an implementation of doubly-linked list
       // to remove from the list; also add this to LRUExpMapEntry since MI
@@ -81,42 +84,35 @@ class APACHE_GEODE_EXPORT LRUMapEntry : public MapEntryImpl,
 
   inline explicit LRUMapEntry(const std::shared_ptr<CacheableKey>& key)
       : MapEntryImpl(key) {}
-
- private:
-  // disabled
-  LRUMapEntry(const LRUMapEntry&);
-  LRUMapEntry& operator=(const LRUMapEntry&);
 };
 
-class APACHE_GEODE_EXPORT VersionedLRUMapEntry : public LRUMapEntry,
-                                                 public VersionStamp {
+class VersionedLRUMapEntry : public LRUMapEntry, public VersionStamp {
  public:
-  virtual ~VersionedLRUMapEntry() {}
+  VersionedLRUMapEntry(const VersionedLRUMapEntry&) = delete;
+  VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&) = delete;
 
-  virtual VersionStamp& getVersionStamp() { return *this; }
+  ~VersionedLRUMapEntry() noexcept override = default;
+
+  VersionStamp& getVersionStamp() override { return *this; }
 
  protected:
   inline explicit VersionedLRUMapEntry(bool) : LRUMapEntry(true) {}
 
   inline explicit VersionedLRUMapEntry(const std::shared_ptr<CacheableKey>& key)
       : LRUMapEntry(key) {}
-
- private:
-  // disabled
-  VersionedLRUMapEntry(const VersionedLRUMapEntry&);
-  VersionedLRUMapEntry& operator=(const VersionedLRUMapEntry&);
 };
 
-class APACHE_GEODE_EXPORT LRUEntryFactory : public EntryFactory {
+class LRUEntryFactory : public EntryFactory {
  public:
   using EntryFactory::EntryFactory;
 
-  virtual ~LRUEntryFactory() {}
+  ~LRUEntryFactory() noexcept override = default;
 
-  virtual void newMapEntry(ExpiryTaskManager* expiryTaskManager,
-                           const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<MapEntryImpl>& result) const;
+  void newMapEntry(ExpiryTaskManager* expiryTaskManager,
+                   const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<MapEntryImpl>& result) const override;
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

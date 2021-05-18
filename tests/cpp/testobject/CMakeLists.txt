@@ -61,6 +61,7 @@ add_library(testobject SHARED
   PositionPdx.hpp
   PSTObject.cpp
   PSTObject.hpp
+  TestFactories.cpp
   TestObject1.cpp
   TestObject1.hpp
   TimestampedObject.hpp
@@ -94,6 +95,7 @@ target_link_libraries(testobject
     framework
   PRIVATE
     ACE::ACE
+    Boost::boost
     _WarningsAsError
 )
 

@@ -17,6 +17,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using Xunit;
 using PdxTests;
 using System.Collections;
@@ -25,7 +26,305 @@ using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-    public class Order : IDataSerializable
+	public class TestClassA : IDataSerializable
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public short NumSides { get; set; }
+
+		// A default constructor is required for deserialization
+		public TestClassA() { }
+
+		public TestClassA(int id, string name, short numSides)
+		{
+			Id = id;
+			Name = name;
+			NumSides = numSides;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("TestClassA: [{0}, {1}, {2}]", Id, Name, NumSides);
+		}
+
+		public void ToData(DataOutput output)
+		{
+			output.WriteInt32(Id);
+			output.WriteUTF(Name);
+			output.WriteInt16(NumSides);
+		}
+
+		public void FromData(DataInput input)
+		{
+			Id = input.ReadInt32();
+			Name = input.ReadUTF();
+			NumSides = input.ReadInt16();
+		}
+
+		public ulong ObjectSize
+		{
+			get { return 0; }
+		}
+
+		public static ISerializable CreateDeserializable()
+		{
+			return new TestClassA();
+		}
+
+		public override bool Equals(object obj)
+		{
+            TestClassA other = (TestClassA)obj;
+
+            if (other != null) {
+			    if (Id == other.Id &&
+				    Name == other.Name &&
+				    NumSides == other.NumSides)
+				    return true;
+                else
+                    return false;
+            }
+			else
+				return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+	}
+
+	public class TestClassB : IDataSerializable
+	{
+		public int Width { get; set; }
+		public int Height { get; set; }
+		public string Name { get; set; }
+
+		// A default constructor is required for deserialization
+		public TestClassB() { }
+
+		public TestClassB(int width, int height, string name)
+		{
+			Width = width;
+			Height = height;
+			Name = name;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("TestClassB: [{0}, {1}, {2}]", Width, Height, Name);
+		}
+
+		public void ToData(DataOutput output)
+		{
+			output.WriteInt32(Width);
+			output.WriteInt32(Height);
+			output.WriteUTF(Name);
+		}
+
+		public void FromData(DataInput input)
+		{
+			Width = input.ReadInt32();
+			Height = input.ReadInt32();
+			Name = input.ReadUTF();
+		}
+
+		public ulong ObjectSize
+		{
+			get { return 0; }
+		}
+
+		public static ISerializable CreateDeserializable()
+		{
+			return new TestClassB();
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = (TestClassB)obj;
+
+            if (other != null) {
+			    if (Width == other.Width &&
+				    Name == other.Name &&
+				    Height == other.Height)
+				    return true;
+                else
+                    return false;
+            }
+			else
+				return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+	}
+
+	public class TestClassC : IDataSerializable
+	{
+		public string Color { get; set; }
+		public string Make { get; set; }
+		public int Year { get; set; }
+
+		// A default constructor is required for deserialization
+		public TestClassC() { }
+
+		public TestClassC(string color, string make, int year)
+		{
+			Color = color;
+			Make = make;
+			Year = year;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("TestClassC: [{0}, {1}, {2}]", Color, Make, Year);
+		}
+
+		public void ToData(DataOutput output)
+		{
+			output.WriteUTF(Color);
+			output.WriteUTF(Make);
+			output.WriteInt32(Year);
+		}
+
+		public void FromData(DataInput input)
+		{
+			Color = input.ReadUTF();
+			Make = input.ReadUTF();
+			Year = input.ReadInt32();
+		}
+
+		public ulong ObjectSize
+		{
+			get { return 0; }
+		}
+
+		public static ISerializable CreateDeserializable()
+		{
+			return new TestClassC();
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = (TestClassC)obj;
+
+			if (Color == other.Color &&
+				Make == other.Make &&
+				Year == other.Year)
+				return true;
+			else
+				return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+	}
+
+	public class CompositeClass : IDataSerializable
+    {
+        private TestClassA testclassA;
+		private List<TestClassB> testclassBs;
+		private List<TestClassC> testclassCs;
+
+		public CompositeClass()
+		{
+			testclassA = new TestClassA();
+			testclassBs = new List<TestClassB>();
+			testclassCs = new List<TestClassC>();
+		}
+
+		public TestClassA A
+		{
+			get
+			{
+				return testclassA;
+			}
+			set
+			{
+				testclassA = value;
+			}
+		}
+
+		public List<TestClassB> Bs
+		{
+			get
+			{
+				return testclassBs;
+			}
+			set
+			{
+				testclassBs = value;
+			}
+		}
+
+		public List<TestClassC> Cs
+		{
+			get
+			{
+				return testclassCs;
+			}
+			set
+			{
+				testclassCs = value;
+			}
+		}
+
+		public void ToData(DataOutput output)
+		{
+			testclassA.ToData(output);
+			output.WriteObject(testclassBs);
+			output.WriteObject(testclassCs);
+		}
+
+		public void FromData(DataInput input)
+		{
+			testclassA.FromData(input);
+
+			List<object> bs = (List<object>)input.ReadObject();
+			foreach (var obj in bs)
+			{
+				Bs.Add(obj as TestClassB);
+			}
+				
+			List<object> cs = (List<object>)input.ReadObject();
+			foreach (var obj in cs)
+			{
+				Cs.Add(obj as TestClassC);
+			}
+		}
+
+		public ulong ObjectSize
+		{
+			get { return 0; }
+		}
+
+		public static ISerializable CreateDeserializable()
+		{
+			return new CompositeClass();
+		}
+
+		public override bool Equals(object obj)
+		{
+			var other = (CompositeClass)obj;
+
+			if (testclassA.Equals(other.testclassA)
+				&& testclassBs.Equals(other.testclassBs)
+				&& testclassCs.Equals(other.testclassCs))
+				return true;
+			else
+				return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+    }
+
+	public class Order : IDataSerializable
     {
         public int OrderId { get; set; }
         public string Name { get; set; }
@@ -140,6 +439,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return m_first.GetHashCode() ^ m_second.GetHashCode();
         }
     };
+
     public class OtherType : IDataSerializable
     {
         private CData m_struct;
@@ -401,6 +701,7 @@ namespace Apache.Geode.Client.IntegrationTests
     public class SerializationTests : TestBase
     {
         public SerializationTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+
         {
         }
 
@@ -510,5 +811,180 @@ namespace Apache.Geode.Client.IntegrationTests
                 cache.Close();
             }
         }
-    }
+
+        [Fact]
+        public void ClassAsKey()
+        {
+            using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+            {
+                Assert.Equal(cluster.Start(), true);
+                Assert.Equal(0, cluster.Gfsh.deploy()
+                    .withJar(Config.JavaobjectJarPath)
+                    .execute());
+
+                Assert.Equal(0, cluster.Gfsh.create()
+                    .region()
+                    .withName("testRegion")
+                    .withType("REPLICATE")
+                    .execute());
+
+                Assert.Equal(0, cluster.Gfsh.executeFunction()
+                    .withId("InstantiateDataSerializable")
+                    .withMember("ClassAsKey_server_0")
+                    .execute());
+
+                var cache = cluster.CreateCache();
+
+                cache.TypeRegistry.RegisterType(PositionKey.CreateDeserializable, 21);
+                cache.TypeRegistry.RegisterType(Position.CreateDeserializable, 22);
+
+                var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+                  .SetPoolName("default")
+                  .Create<PositionKey, Position>("testRegion");
+                Assert.NotNull(region);
+
+                var key1 = new PositionKey(1000);
+                var key2 = new PositionKey(1000000);
+                var key3 = new PositionKey(1000000000);
+
+                var pos1 = new Position("GOOG", 23);
+                var pos2 = new Position("IBM", 37);
+                var pos3 = new Position("PVTL", 101);
+
+                region.Put(key1, pos1);
+                region.Put(key2, pos2);
+                region.Put(key3, pos3);
+
+                var res1 = region.Get(key1);
+                var res2 = region.Get(key2);
+                var res3 = region.Get(key3);
+
+                Assert.True(
+                    res1.SecId == pos1.SecId &&
+                    res1.SharesOutstanding == pos1.SharesOutstanding);
+                Assert.True(
+                    res2.SecId == pos2.SecId &&
+                    res2.SharesOutstanding == pos2.SharesOutstanding);
+                Assert.True(
+                    res3.SecId == pos3.SecId &&
+                    res3.SharesOutstanding == pos3.SharesOutstanding);
+
+                cache.Close();
+            }
+        }
+
+        [Fact]
+		public void CompositeClassWithClassAsKey()
+		{
+			using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+			{
+				Assert.Equal(cluster.Start(), true);
+				Assert.Equal(0, cluster.Gfsh.deploy()
+					.withJar(Config.JavaobjectJarPath)
+					.execute());
+
+				Assert.Equal(0, cluster.Gfsh.create()
+					.region()
+					.withName("testRegion")
+					.withType("REPLICATE")
+					.execute());
+
+				Assert.Equal(0, cluster.Gfsh.executeFunction()
+					.withId("InstantiateDataSerializable")
+					.withMember("CompositeClassWithClassAsKey_server_0")
+					.execute());
+
+				var cache = cluster.CreateCache();
+
+				cache.TypeRegistry.RegisterType(PositionKey.CreateDeserializable, 21);
+				cache.TypeRegistry.RegisterType(TestClassA.CreateDeserializable, 100);
+				cache.TypeRegistry.RegisterType(TestClassB.CreateDeserializable, 101);
+				cache.TypeRegistry.RegisterType(TestClassC.CreateDeserializable, 102);
+				cache.TypeRegistry.RegisterType(CompositeClass.CreateDeserializable, 125);
+
+				var region = cache.CreateRegionFactory(RegionShortcut.PROXY)
+				  .SetPoolName("default")
+				  .Create<PositionKey, CompositeClass>("testRegion");
+				Assert.NotNull(region);
+
+				var key1 = new PositionKey(23);
+				var key2 = new PositionKey(37);
+				var key3 = new PositionKey(38);
+
+                ICollection<PositionKey> keys = new List<PositionKey>();
+				keys.Add(key1);
+				keys.Add(key2);
+				keys.Add(key3);
+
+                // First CompositeClass
+
+                var cc1 = new CompositeClass();
+
+				cc1.A = new TestClassA(1, "Square", 4);
+
+				cc1.Bs = new List<TestClassB>() {
+					new TestClassB(10, 20, "Brick"),
+					new TestClassB(11, 21, "Block"),
+					new TestClassB(100, 200, "Stone")};
+
+				cc1.Cs = new List<TestClassC>() {
+					new TestClassC("Red", "Volvo", 2010),
+					new TestClassC("White", "Toyota", 2011),
+					new TestClassC("Blue", "Nissan", 2012)};
+
+                // Second CompositeClass
+
+                var cc2 = new CompositeClass();
+
+				cc2.A = new TestClassA(1, "Triangle", 3);
+
+				cc2.Bs = new List<TestClassB>() {
+					new TestClassB(100, 200, "BiggerBrick"),
+					new TestClassB(110, 210, "BiggerBlock"),
+					new TestClassB(1000, 2000, "BiggerStone")};
+
+				cc2.Cs = new List<TestClassC>() {
+				new TestClassC("Gray", "Volvo", 2010),
+				new TestClassC("Silver", "Toyota", 2011),
+				new TestClassC("Black", "Nissan", 2012)};
+
+                // Third CompositeClass
+
+                var cc3 = new CompositeClass();
+
+                cc3.A = new TestClassA(1, "Hexagon", 6);
+
+                cc3.Bs = new List<TestClassB>() {
+                new TestClassB(1000, 2000, "BiggestBrick"),
+                new TestClassB(1100, 2100, "BiggestBlock"),
+                new TestClassB(10000, 20000, "BiggestStone")};
+
+                cc3.Cs = new List<TestClassC>() {
+                new TestClassC("Orange", "Volvo", 2010),
+                new TestClassC("Yellow", "Toyota", 2011),
+                new TestClassC("Purple", "Nissan", 2012)};
+
+                region.Put(key1, cc1);
+				region.Put(key2, cc2);
+				region.Put(key3, cc3);
+
+                Dictionary<PositionKey, CompositeClass> ccs = new Dictionary<PositionKey, CompositeClass>();
+				Dictionary<PositionKey, Exception> exceptions = new Dictionary<PositionKey, Exception>();
+
+				region.GetAll(keys, ccs, exceptions, false);
+
+				Assert.True(cc1.A.Equals(ccs[key1].A) &&
+							Enumerable.SequenceEqual(cc1.Bs, ccs[key1].Bs) &&
+							Enumerable.SequenceEqual(cc1.Cs, ccs[key1].Cs));
+				Assert.True(cc2.A.Equals(ccs[key2].A) &&
+							Enumerable.SequenceEqual(cc2.Bs, ccs[key2].Bs) &&
+							Enumerable.SequenceEqual(cc2.Cs, ccs[key2].Cs));
+                Assert.True(cc3.A.Equals(ccs[key3].A) &&
+                            Enumerable.SequenceEqual(cc3.Bs, ccs[key3].Bs) &&
+                            Enumerable.SequenceEqual(cc3.Cs, ccs[key3].Cs));
+
+                cache.Close();
+			}
+		}
+	}
 }

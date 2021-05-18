@@ -183,7 +183,7 @@ auto cptr3 = std::make_shared<CustomFixedPartitionResolver3>();
 bool isLocalServer = false;
 
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 std::vector<char *> storeEndPoints(const char *points) {

@@ -242,7 +242,8 @@ extern "C" void warningDebug(void *, const char *msg, ...) {
   char logmsg[2048];
   va_list args;
   va_start(args, msg);
-  vsprintf(logmsg, msg, args);
+  // NOLINTNEXTLINE(clang-analyzer-valist.Uninitialized): clang-tidy bug
+  std::vsnprintf(logmsg, sizeof(logmsg), msg, args);
   va_end(args);
   LOGWARN("SAX.warning during XML declarative client initialization: %s",
           logmsg);
@@ -505,7 +506,7 @@ void CacheXmlParser::create(Cache *cache) {
   }
   cacheCreation_->create(cache);
   delCacheCreation.noDelete();
-  Log::info("Declarative configuration of cache completed successfully");
+  LOGINFO("Declarative configuration of cache completed successfully");
 }
 
 std::string CacheXmlParser::getOptionalAttribute(
@@ -1049,7 +1050,7 @@ void CacheXmlParser::startExpirationAttributes(
 }
 
 std::string CacheXmlParser::getLibraryName(const xercesc::Attributes &attrs) {
-  return getRequiredAttribute(attrs, LIBRARY_NAME);
+  return getOptionalAttribute(attrs, LIBRARY_NAME);
 }
 
 std::string CacheXmlParser::getLibraryFunctionName(

@@ -1,0 +1,188 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("templates.lib.yml",
+#@      "bash_task",
+#@      "build_job_name",
+#@      "resource_type")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:template", "template")
+#@ load("@ytt:overlay", "overlay")
+#@ load("templates.lib.txt",
+#@      "is_source_from_pr_testable_bash_task")
+
+---
+#@ def pr_status(context, status, description = None):
+try:
+  put: #@ "pr-status-" + status
+  resource: source
+  params:
+    path: source
+    status: #@ status
+    context: #@ context
+    description: #@ description
+  get_params:
+    skip_download: true
+  attempts: 5
+#@ end
+
+#@overlay/match by=overlay.all
+---
+resource_types:
+  #@overlay/append
+  - #@ resource_type("github-pr-resource", "teliaoss/github-pr-resource")
+
+resources:
+  #@overlay/match by="name"
+  #@overlay/replace
+  - name: source
+    type: github-pr-resource
+    check_every: 1m
+    icon: github
+    source:
+      repository: #@ data.values.github.owner + "/" + data.values.github.repository
+      access_token: ((github-pr-access-token))
+      base_branch: #@ data.values.repository.branch
+
+#@overlay/match-child-defaults missing_ok=True
+jobs:
+  #@ for build in data.values.builds:
+  #@ for config in data.values.configs:
+  #@ name = build_job_name(build, config)
+  #@overlay/match by="name"
+  - name: #@ name
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              version: every
+              on_success: #@ pr_status(name, "pending")
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              trigger: false
+      #@overlay/match by=overlay.index(0)
+      #@overlay/insert after=True
+      - _: #@ template.replace(bash_task("is-source-change", [{"name":"source"}], [], is_source_from_pr_testable_bash_task()))
+        on_failure:
+          do:
+          #@overlay/append
+          - #@ pr_status(name, "success", "Non-code changes are not compiled.")
+      - #@overlay/match by=overlay.index(2)
+        on_error:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "error")
+        on_abort:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "error", "Build canceled")
+        on_failure:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "failure")
+        on_success:
+          in_parallel:
+            steps:
+              #@overlay/append
+              - #@ pr_status(name, "success")
+
+  #@ end
+  #@ end
+  #@overlay/match by="name"
+  - name: check-source
+    plan:
+      #@overlay/match by=overlay.index(0)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"get": "source"})
+              version: every
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "pending")
+                    - #@ pr_status("clang-tidy", "pending")
+                    - #@ pr_status("rat-check", "pending")
+            - #@overlay/match by=overlay.subset({"get": "version"})
+              trigger: false
+      #@overlay/match by=overlay.index(1)
+      - in_parallel:
+          steps:
+            - #@overlay/match by=overlay.subset({"task": "clang-tidy"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("clang-tidy", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-tidy", "success")
+            - #@overlay/match by=overlay.subset({"task": "clang-format"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("clang-format", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("clang-format", "success")
+            - #@overlay/match by=overlay.subset({"task": "rat-check"})
+              on_error:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "error")
+              on_abort:
+                in_parallel:
+                  steps:
+                    #@overlay/appendxs
+                    - #@ pr_status("rat-check", "error", "Build canceled")
+              on_failure:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "failure")
+              on_success:
+                in_parallel:
+                  steps:
+                    #@overlay/append
+                    - #@ pr_status("rat-check", "success")

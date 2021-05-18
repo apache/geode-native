@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-#include <cstdlib>
 #include <fstream>
 #include <regex>
 #include <list>
 
-#include <ace/OS.h>
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
+
+#include <boost/process.hpp>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
@@ -30,12 +30,13 @@
 #include <geode/RegionShortcut.hpp>
 #include <geode/RegionFactory.hpp>
 
+#include "framework/GfshExecute.h"
+
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "TimeBomb.hpp"
 #include "Utils.hpp"
 #include "CacheImpl.hpp"
-#include "config.h"
 
 #include "CacheHelper.hpp"
 #define __DUNIT_NO_MAIN__
@@ -53,13 +54,9 @@
 #endif
 
 #if defined(WIN32)
-#define GFSH "gfsh.bat"
 #define COPY_COMMAND "copy /y"
-#define DELETE_COMMAND "del /f"
 #define PATH_SEP "\\"
 #else
-#define GFSH "gfsh"
-#define DELETE_COMMAND "rm -f"
 #define PATH_SEP "/"
 #endif
 
@@ -112,16 +109,14 @@ CacheHelper::CacheHelper(const char *,
 }
 
 /** rootRegionPtr will still be null... */
-CacheHelper::CacheHelper(const char *, const char *cachexml,
+CacheHelper::CacheHelper(const char *, const std::string &cachexml,
                          const std::shared_ptr<Properties> &configPtr) {
   auto pp = configPtr;
   if (pp == nullptr) {
     pp = Properties::create();
   }
-  if (cachexml != nullptr) {
-    std::string tmpXmlFile(cachexml);
-    std::string newFile;
-    CacheHelper::createDuplicateXMLFile(newFile, tmpXmlFile);
+  if (!cachexml.empty()) {
+    auto newFile = CacheHelper::createDuplicateXMLFile(cachexml);
     pp->insert("cache-xml-file", newFile.c_str());
   }
   auto cacheFactory = CacheFactory(pp);
@@ -209,8 +204,8 @@ CacheHelper::CacheHelper(const bool, bool pdxIgnoreUnreadFields,
   }
 }
 
-CacheHelper::CacheHelper(const bool, const char *poolName, const char *locators,
-                         const char *serverGroup,
+CacheHelper::CacheHelper(const bool, const char *poolName,
+                         const std::string &locators, const char *serverGroup,
                          const std::shared_ptr<Properties> &configPtr,
                          int redundancy, bool clientNotification,
                          int subscriptionAckInterval, int connections,
@@ -231,7 +226,7 @@ CacheHelper::CacheHelper(const bool, const char *poolName, const char *locators,
     poolFactory.setThreadLocalConnections(threadLocal);
     printf(" Setting pr-single-hop to prSingleHop = %d ", prSingleHop);
     printf("Setting threadLocal to %d ", threadLocal);
-    if (locators) {
+    if (!locators.empty()) {
       addServerLocatorEPs(locators, poolFactory);
       if (serverGroup) {
         poolFactory.setServerGroup(serverGroup);
@@ -278,11 +273,6 @@ CacheHelper::CacheHelper(const int,
 CacheHelper::~CacheHelper() {
   // CacheHelper::cleanupTmpConfigFiles();
   disconnect();
-}
-
-void CacheHelper::closePool(const char *poolName, bool keepAlive) {
-  auto pool = getCache()->getPoolManager().find(poolName);
-  pool->destroy(keepAlive);
 }
 
 void CacheHelper::disconnect(bool keepalive) {
@@ -354,11 +344,6 @@ void CacheHelper::createLRURegion(const char *regionName,
 }
 
 void CacheHelper::createDistRegion(const char *regionName,
-                                   std::shared_ptr<Region> &regionPtr) {
-  createDistRegion(regionName, regionPtr, 10);
-}
-
-void CacheHelper::createDistRegion(const char *regionName,
                                    std::shared_ptr<Region> &regionPtr,
                                    uint32_t size) {
   RegionAttributesFactory regionAttributesFactory;
@@ -376,7 +361,7 @@ std::shared_ptr<Region> CacheHelper::getRegion(const std::string &name) {
   return cachePtr->getRegion(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char *name, bool, bool caching,
+    const std::string &name, bool, bool caching,
     const std::shared_ptr<CacheListener> &listener, bool, bool,
     bool concurrencyCheckEnabled, int32_t) {
   RegionAttributesFactory regionAttributeFactory;
@@ -396,10 +381,10 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createRegion(
-    const char *name, bool, bool caching, const std::chrono::seconds &ettl,
-    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
-    const std::chrono::seconds &rit, int lel, ExpirationAction action,
-    const char *, bool) {
+    const std::string &name, bool, bool caching,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    ExpirationAction action, const std::string &, bool) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -416,15 +401,15 @@ std::shared_ptr<Region> CacheHelper::createRegion(
   return regionPtr;
 }
 std::shared_ptr<Pool> CacheHelper::createPool(
-    const std::string &poolName, const char *locators, const char *serverGroup,
-    int redundancy, bool clientNotification,
+    const std::string &poolName, const std::string &locators,
+    const std::string &serverGroup, int redundancy, bool clientNotification,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     int loadConditioningInterval, bool isMultiuserMode) {
   // printf(" in createPool isMultiuserMode = %d \n", isMultiuserMode);
   auto poolFac = getCache()->getPoolManager().createFactory();
 
   addServerLocatorEPs(locators, poolFac);
-  if (serverGroup) {
+  if (!serverGroup.empty()) {
     poolFac.setServerGroup(serverGroup);
   }
 
@@ -450,17 +435,17 @@ std::shared_ptr<Pool> CacheHelper::createPool(
 
 // this will create pool even endpoints and locatorhost has been not defined
 std::shared_ptr<Pool> CacheHelper::createPool2(
-    const char *poolName, const char *locators, const char *serverGroup,
-    const char *servers, int redundancy, bool clientNotification,
-    int subscriptionAckInterval, int connections) {
+    const std::string &poolName, const std::string &locators,
+    const std::string &serverGroup, const std::string &servers, int redundancy,
+    bool clientNotification, int subscriptionAckInterval, int connections) {
   auto poolFac = getCache()->getPoolManager().createFactory();
 
-  if (servers) {
+  if (!servers.empty()) {
     addServerLocatorEPs(servers, poolFac, false);
     // do region creation with end
-  } else if (locators) {
+  } else if (!locators.empty()) {
     addServerLocatorEPs(locators, poolFac);
-    if (serverGroup) {
+    if (!serverGroup.empty()) {
       poolFac.setServerGroup(serverGroup);
     }
   }
@@ -512,10 +497,10 @@ void CacheHelper::logPoolAttributes(std::shared_ptr<Pool> &pool) {
 }
 
 void CacheHelper::createPoolWithLocators(
-    const std::string &name, const char *locators,
+    const std::string &name, const std::string &locators,
     bool clientNotificationEnabled, int subscriptionRedundancy,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
-    bool isMultiuserMode, const char *serverGroup) {
+    bool isMultiuserMode, const std::string &serverGroup) {
   LOG("createPool() entered.");
   printf(" in createPoolWithLocators isMultiuserMode = %d\n", isMultiuserMode);
   auto poolPtr = createPool(name, locators, serverGroup, subscriptionRedundancy,
@@ -572,8 +557,8 @@ std::shared_ptr<Region> CacheHelper::createRegionAndAttachPool2(
   return regionFactory.create(name);
 }
 
-void CacheHelper::addServerLocatorEPs(const char *epList, PoolFactory &pf,
-                                      bool poolLocators) {
+void CacheHelper::addServerLocatorEPs(const std::string &epList,
+                                      PoolFactory &pf, bool poolLocators) {
   std::unordered_set<std::string> endpointNames;
   Utils::parseEndpointNamesString(epList, endpointNames);
   for (const auto &endpointName : endpointNames) {
@@ -591,8 +576,8 @@ void CacheHelper::addServerLocatorEPs(const char *epList, PoolFactory &pf,
 }
 
 std::shared_ptr<Region> CacheHelper::createPooledRegion(
-    const char *name, bool, const char *locators, const char *poolName,
-    bool caching, bool clientNotificationEnabled,
+    const std::string &name, bool, const std::string &locators,
+    const std::string &poolName, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
     const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     const std::shared_ptr<CacheListener> &cacheListener,
@@ -600,7 +585,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
 
-  if (locators) {
+  if (!locators.empty()) {
     LOG("adding pool locators");
     addServerLocatorEPs(locators, poolFac);
   }
@@ -630,10 +615,11 @@ std::shared_ptr<Region> CacheHelper::createPooledRegion(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
-    const char *name, bool, const char *locators, const char *poolName,
-    bool caching, bool clientNotificationEnabled, bool concurrencyCheckEnabled,
-    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
-    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    const std::string &name, bool, const std::string &locators,
+    const std::string &poolName, bool caching, bool clientNotificationEnabled,
+    bool concurrencyCheckEnabled, const std::chrono::seconds &ettl,
+    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
+    const std::chrono::seconds &rit, int lel,
     const std::shared_ptr<CacheListener> &cacheListener,
     ExpirationAction action) {
   auto poolFac = getCache()->getPoolManager().createFactory();
@@ -668,9 +654,10 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionConcurrencyCheckDisabled(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
-    const char *name, bool caching, bool, const std::chrono::seconds &ettl,
-    const std::chrono::seconds &eit, const std::chrono::seconds &rttl,
-    const std::chrono::seconds &rit, int lel, ExpirationAction action) {
+    const std::string &name, bool caching, bool,
+    const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
+    const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
+    ExpirationAction action) {
   RegionAttributesFactory regionAttributeFactory;
   regionAttributeFactory.setCachingEnabled(caching);
   regionAttributeFactory.setLruEntriesLimit(lel);
@@ -685,7 +672,7 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
+        "SqLiteRegionData" + std::to_string(boost::this_process::get_id());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionAttributeFactory.setPersistenceManager(
         "SqLiteImpl", "createSqLiteInstance", sqLiteProps);
@@ -698,8 +685,8 @@ std::shared_ptr<Region> CacheHelper::createRegionDiscOverFlow(
   return regionPtr;
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
-    const char *name, bool, const char *locators, const char *poolName,
-    bool caching, bool clientNotificationEnabled,
+    const std::string &name, bool, const std::string &locators,
+    const std::string &poolName, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
     const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     const std::shared_ptr<CacheListener> &cacheListener,
@@ -707,7 +694,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   auto poolFac = getCache()->getPoolManager().createFactory();
   poolFac.setSubscriptionEnabled(clientNotificationEnabled);
 
-  if (locators)  // with locator
+  if (!locators.empty())  // with locator
   {
     LOG("adding pool locators");
     addServerLocatorEPs(locators, poolFac);
@@ -742,7 +729,7 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
     sqLiteProps->insert("PageSize", "65536");
     sqLiteProps->insert("MaxPageCount", "1073741823");
     std::string sqlite_dir =
-        "SqLiteRegionData" + std::to_string(ACE_OS::getpid());
+        "SqLiteRegionData" + std::to_string(boost::this_process::get_id());
     sqLiteProps->insert("PersistenceDirectory", sqlite_dir.c_str());
     regionFactory.setPersistenceManager("SqLiteImpl", "createSqLiteInstance",
                                         sqLiteProps);
@@ -752,9 +739,10 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionDiscOverFlow(
   }
   return regionFactory.create(name);
 }
+
 std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
-    const char *name, bool, const char *locators, const char *poolName,
-    bool caching, bool clientNotificationEnabled,
+    const std::string &name, bool, const std::string &locators,
+    const std::string &poolName, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
     const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     const std::shared_ptr<CacheListener> &cacheListener,
@@ -794,8 +782,8 @@ std::shared_ptr<Region> CacheHelper::createPooledRegionSticky(
   return regionFactory.create(name);
 }
 std::shared_ptr<Region> CacheHelper::createPooledRegionStickySingleHop(
-    const char *name, bool, const char *locators, const char *poolName,
-    bool caching, bool clientNotificationEnabled,
+    const std::string &name, bool, const std::string &locators,
+    const std::string &poolName, bool caching, bool clientNotificationEnabled,
     const std::chrono::seconds &ettl, const std::chrono::seconds &eit,
     const std::chrono::seconds &rttl, const std::chrono::seconds &rit, int lel,
     const std::shared_ptr<CacheListener> &cacheListener,
@@ -874,255 +862,139 @@ void CacheHelper::showRegionAttributes(RegionAttributes attributes) {
   printf("Load Factor = %f\n", attributes.getLoadFactor());
   printf("End Points = %s\n", attributes.getEndpoints().c_str());
 }
+
 std::shared_ptr<QueryService> CacheHelper::getQueryService() {
   return cachePtr->getQueryService();
 }
 
 const std::string CacheHelper::getTcrEndpoints(bool &isLocalServer,
                                                int numberOfServers) {
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
-  std::string gfendpoints;
   static bool gflocalserver = false;
-  char tmp[100];
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
 
-  if (gfendpoints.empty()) {
-    ASSERT(gfjavaenv != nullptr,
-           "Environment variable GFJAVA for java build directory is not set.");
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
-      gflocalserver = true;
-      /* Support for multiple servers Max = 10*/
-      switch (numberOfServers) {
-        case 1:
-          // gfendpoints = "localhost:24680";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-          }
-          break;
-        case 2:
-          // gfendpoints = "localhost:24680,localhost:24681";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-            gfendpoints += tmp;
-          }
-          break;
-        case 3:
-          // gfendpoints = "localhost:24680,localhost:24681,localhost:24682";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-            gfendpoints += tmp;
-          }
-          break;
-        default:
-          // ASSERT( ( numberOfServers <= 10 )," More than 10 servers not
-          // supported");
-          // TODO: need to support more servers, need to generate random ports
-          // here
-          ASSERT((numberOfServers <= 4), " More than 4 servers not supported");
+  ASSERT(!gfjavaenv.empty(),
+         "Environment variable GFJAVA for java build directory is not set.");
+
+  std::string gfendpoints;
+  if (gfjavaenv.find(PATH_SEP) != std::string::npos) {
+    gflocalserver = true;
+    /* Support for multiple servers Max = 10*/
+    switch (numberOfServers) {
+      case 1:
+        // gfendpoints = "localhost:24680";
+        {
           gfendpoints = "localhost:";
-          sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-          gfendpoints += tmp;
+          gfendpoints += std::to_string(CacheHelper::staticHostPort1);
+        }
+        break;
+      case 2:
+        // gfendpoints = "localhost:24680,localhost:24681";
+        {
+          gfendpoints = "localhost:";
+          gfendpoints += std::to_string(CacheHelper::staticHostPort1);
           gfendpoints += ",localhost:";
-          sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-          gfendpoints += tmp;
+          gfendpoints += std::to_string(CacheHelper::staticHostPort2);
+        }
+        break;
+      case 3:
+        // gfendpoints = "localhost:24680,localhost:24681,localhost:24682";
+        {
+          gfendpoints = "localhost:";
+          gfendpoints += std::to_string(CacheHelper::staticHostPort1);
           gfendpoints += ",localhost:";
-          sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-          gfendpoints += tmp;
+          gfendpoints += std::to_string(CacheHelper::staticHostPort2);
           gfendpoints += ",localhost:";
-          sprintf(tmp, "%d", CacheHelper::staticHostPort4);
-          gfendpoints += tmp;
-          /*gfendpoints = "localhost:24680";
-          char temp[8];
-          for(int i =1; i <= numberOfServers - 1; i++) {
-           gfendpoints += ",localhost:2468";
-           gfendpoints += ACE_OS::itoa(i,temp,10);
-          }*/
-          break;
-      }
-    } else {
-      gfendpoints = gfjavaenv;
+          gfendpoints += std::to_string(CacheHelper::staticHostPort3);
+        }
+        break;
+      default:
+        // ASSERT( ( numberOfServers <= 10 )," More than 10 servers not
+        // supported");
+        // TODO: need to support more servers, need to generate random ports
+        // here
+        ASSERT((numberOfServers <= 4), " More than 4 servers not supported");
+        gfendpoints = "localhost:";
+        gfendpoints += std::to_string(CacheHelper::staticHostPort1);
+        gfendpoints += ",localhost:";
+        gfendpoints += std::to_string(CacheHelper::staticHostPort2);
+        gfendpoints += ",localhost:";
+        gfendpoints += std::to_string(CacheHelper::staticHostPort3);
+        gfendpoints += ",localhost:";
+        gfendpoints += std::to_string(CacheHelper::staticHostPort4);
+        break;
     }
+  } else {
+    gfendpoints = gfjavaenv;
   }
+
   isLocalServer = gflocalserver;
   printf("getHostPort :: %s \n", gfendpoints.c_str());
-  return (gfendpoints);
+
+  return gfendpoints;
 }
 
-const char *CacheHelper::getstaticLocatorHostPort1() {
+std::string CacheHelper::getstaticLocatorHostPort1() {
   return getLocatorHostPort(staticLocatorHostPort1);
 }
 
-const char *CacheHelper::getstaticLocatorHostPort2() {
+std::string CacheHelper::getstaticLocatorHostPort2() {
   return getLocatorHostPort(staticLocatorHostPort2);
 }
 
-const char *CacheHelper::getLocatorHostPort(int locPort) {
-  char tmp[128];
-  std::string gfendpoints;
-  gfendpoints = "localhost:";
-  sprintf(tmp, "%d", locPort);
-  gfendpoints += tmp;
-  return (new std::string(gfendpoints.c_str()))->c_str();
-  ;
+std::string CacheHelper::getLocatorHostPort(int locPort) {
+  return "localhost:" + std::to_string(locPort);
 }
 
-const std::string CacheHelper::getTcrEndpoints2(bool &isLocalServer,
-                                                int numberOfServers) {
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
-  std::string gfendpoints;
-  static bool gflocalserver = false;
-  char tmp[128];
-
-  if (gfendpoints.empty()) {
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
-      gflocalserver = true;
-      /* Support for multiple servers Max = 10*/
-      switch (numberOfServers) {
-        case 1:
-          // gfendpoints = "localhost:24680";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-          }
-          break;
-        case 2:
-          // gfendpoints = "localhost:24680,localhost:24681";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-            gfendpoints += tmp;
-          }
-          break;
-        case 3:
-          // gfendpoints = "localhost:24680,localhost:24681,localhost:24682";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-            gfendpoints += tmp;
-          }
-          break;
-        case 4:
-          // gfendpoints =
-          // "localhost:24680,localhost:24681,localhost:24682,localhost:24683";
-          {
-            gfendpoints = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-            gfendpoints += tmp;
-            gfendpoints += ",localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticHostPort4);
-            gfendpoints += tmp;
-          }
-          break;
-        default:
-          ASSERT((numberOfServers <= 10),
-                 " More than 10 servers not supported");
-          gfendpoints = "localhost:24680";
-          char temp[8];
-          for (int i = 1; i <= numberOfServers - 1; i++) {
-            gfendpoints += ",localhost:2468";
-            gfendpoints += ACE_OS::itoa(i, temp, 10);
-          }
-          break;
-      }
-    } else {
-      gfendpoints = gfjavaenv;
-    }
-  }
-  ASSERT(gfjavaenv != nullptr,
-         "Environment variable GFJAVA for java build directory is not set.");
-  isLocalServer = gflocalserver;
-  return (gfendpoints);
-}
-
-const char *CacheHelper::getLocatorHostPort(bool &isLocator,
+std::string CacheHelper::getLocatorHostPort(bool &isLocator,
                                             bool &isLocalServer,
                                             int numberOfLocators) {
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
-  static std::string gflchostport;
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
   static bool gflocator = false;
   static bool gflocalserver = false;
-  char tmp[100];
 
-  if (gflchostport.empty()) {
-    if ((ACE_OS::strchr(gfjavaenv, '\\') != nullptr) ||
-        (ACE_OS::strchr(gfjavaenv, '/') != nullptr)) {
-      gflocator = true;
-      gflocalserver = true;
-      switch (numberOfLocators) {
-        case 1:
-          // gflchostport = "localhost:34756";
-          {
-            gflchostport = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
-            gflchostport += tmp;
-          }
-          break;
-        case 2:
-          // gflchostport = "localhost:34756,localhost:34757";
-          {
-            gflchostport = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
-            gflchostport += tmp;
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort2);
-            gflchostport += ",localhost:";
-            gflchostport += tmp;
-          }
-          break;
-        default:
-          // gflchostport = "localhost:34756,localhost:34757,localhost:34758";
-          {
-            gflchostport = "localhost:";
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
-            gflchostport += tmp;
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort2);
-            gflchostport += ",localhost:";
-            gflchostport += tmp;
-            sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort3);
-            gflchostport += ",localhost:";
-            gflchostport += tmp;
-          }
-          break;
-      }
-    } else {
-      gflchostport = "";
+  ASSERT(!gfjavaenv.empty(),
+         "Environment variable GFJAVA for java build directory is not set.");
+
+  std::string gflchostport;
+  if (gfjavaenv.find(PATH_SEP) != std::string::npos) {
+    gflocator = true;
+    gflocalserver = true;
+    switch (numberOfLocators) {
+      case 1:
+        // gflchostport = "localhost:34756";
+        {
+          gflchostport = "localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort1);
+        }
+        break;
+      case 2:
+        // gflchostport = "localhost:34756,localhost:34757";
+        {
+          gflchostport = "localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort1);
+          gflchostport += ",localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort2);
+        }
+        break;
+      default:
+        // gflchostport = "localhost:34756,localhost:34757,localhost:34758";
+        {
+          gflchostport = "localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort1);
+          gflchostport += ",localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort2);
+          gflchostport += ",localhost:";
+          gflchostport += std::to_string(CacheHelper::staticLocatorHostPort3);
+        }
+        break;
     }
   }
-  ASSERT(gfjavaenv != nullptr,
-         "Environment variable GFJAVA for java build directory is not set.");
+
   isLocator = gflocator;
   isLocalServer = gflocalserver;
   printf("getLocatorHostPort  :: %s  \n", gflchostport.c_str());
-  return gflchostport.c_str();
+
+  return gflchostport;
 }
 
 void CacheHelper::cleanupServerInstances() {
@@ -1136,56 +1008,41 @@ void CacheHelper::cleanupServerInstances() {
     }
   }
 }
-void CacheHelper::initServer(int instance, const char *xml,
-                             const char *locHostport, const char *authParam,
-                             bool ssl, bool enableDelta, bool multiDS,
-                             bool testServerGC, bool untrustedCert,
-                             bool useSecurityManager) {
+void CacheHelper::initServer(int instance, const std::string &xml,
+                             const std::string &locHostport,
+                             const char * /*unused*/, bool ssl,
+                             bool enableDelta, bool, bool testServerGC,
+                             bool untrustedCert, bool useSecurityManager) {
   if (!isServerCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
     isServerCleanupCallbackRegistered = true;
     printf("TimeBomb registered server cleanupcallback \n");
   }
   printf("Inside initServer added\n");
-  if (authParam != nullptr) {
-    printf("Inside initServer with authParam = %s\n", authParam);
-  } else {
-    printf("Inside initServer with authParam as nullptr\n");
-    authParam = "";
-  }
-  static const char *gfjavaenv = ACE_OS::getenv("GFJAVA");
-  static const char *gfLogLevel = ACE_OS::getenv("GFE_LOGLEVEL");
-  static const char *gfSecLogLevel = ACE_OS::getenv("GFE_SECLOGLEVEL");
-  static const char *path = ACE_OS::getenv("TESTSRC");
-  static const char *mcastPort = ACE_OS::getenv("MCAST_PORT");
-  static const char *mcastAddr = ACE_OS::getenv("MCAST_ADDR");
-  static char *classpath = ACE_OS::getenv("GF_CLASSPATH");
 
-  char cmd[2048];
-  char tmp[128];
-  char currWDPath[2048];
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
+  static auto gfLogLevel = Utils::getEnv("GFE_LOGLEVEL");
+  static auto gfSecLogLevel = Utils::getEnv("GFE_SECLOGLEVEL");
+  static const auto path = Utils::getEnv("TESTSRC");
+  static const auto classpath = Utils::getEnv("GF_CLASSPATH");
+
   int portNum = 0;
-  std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
+  std::string currDir = boost::filesystem::current_path().string();
 
-  ASSERT(gfjavaenv != nullptr,
+  ASSERT(!gfjavaenv.empty(),
          "Environment variable GFJAVA for java build directory is not set.");
-  ASSERT(path != nullptr,
+  ASSERT(!path.empty(),
          "Environment variable TESTSRC for test source directory is not set.");
-  ASSERT(mcastPort != nullptr,
-         "Environment variable MCAST_PORT for multicast port is not set.");
-  ASSERT(mcastAddr != nullptr,
-         "Environment variable MCAST_ADDR for multicast address is not set.");
-  ASSERT(!currDir.empty(),
-         "Current working directory could not be determined.");
-  if (gfLogLevel == nullptr || gfLogLevel[0] == '\0') {
+
+  if (gfLogLevel.empty()) {
     gfLogLevel = "config";
   }
-  if (gfSecLogLevel == nullptr || gfSecLogLevel[0] == '\0') {
+
+  if (gfSecLogLevel.empty()) {
     gfSecLogLevel = "config";
   }
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
+  if (gfjavaenv.find(PATH_SEP) == std::string::npos) {
     return;
   }
 
@@ -1197,177 +1054,121 @@ void CacheHelper::initServer(int instance, const char *xml,
     case 0:
       // note: this need to take for multiple tests run
       xmlFile += "cacheserver.xml";
-      sname += "0";
-      if (multiDS) {
-        mcastPort = "5431";
-        mcastAddr = "224.10.11.";
-      }
       break;
     case 1:
       xmlFile += "cacheserver.xml";
-      sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-      sname += tmp;  // sname += "1";
       portNum = CacheHelper::staticHostPort1;
-
-      if (multiDS) {
-        mcastPort = "5431";
-        mcastAddr = "224.10.11.";
-      }
       break;
     case 2:
       xmlFile += "cacheserver2.xml";
-      sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-      sname += tmp;  // sname += "3";
       portNum = CacheHelper::staticHostPort2;
-      // sname += "2";
-      if (multiDS) {
-        mcastPort = "5431";
-        mcastAddr = "224.10.11.";
-      }
       break;
     case 3:
       xmlFile += "cacheserver3.xml";
-      sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-      sname += tmp;  // sname += "3";
       portNum = CacheHelper::staticHostPort3;
-      // sname += "3";
-      if (multiDS) {
-        mcastPort = "5433";
-        mcastAddr = "224.10.11.";
-      }
       break;
     case 4:
       xmlFile += "cacheserver4.xml";
-      // sname += "4";
-      sprintf(tmp, "%d", CacheHelper::staticHostPort4);
-      sname += tmp;  // sname += "3";
       portNum = CacheHelper::staticHostPort4;
-      if (multiDS) {
-        mcastPort = "5433";
-        mcastAddr = "224.10.11.";
-      }
       break;
     default: /* Support for any number of servers Max 10*/
       ASSERT((instance <= 10), " More than 10 servers not supported");
-      ASSERT(xml != nullptr,
+      ASSERT(!xml.empty(),
              "xml == nullptr : For server instance > 3 xml file is must");
-      char temp[8];
       portNum = CacheHelper::staticHostPort4;
-      sname += ACE_OS::itoa(CacheHelper::staticHostPort4, temp, 10);
       break;
   }
 
+  sname += std::to_string(portNum);
   currDir += sname;
 
-  if (xml != nullptr) {
+  if (!xml.empty()) {
     xmlFile = xml;
   }
 
   std::string xmlFile_new;
   printf(" xml file name = %s \n", xmlFile.c_str());
-  CacheHelper::createDuplicateXMLFile(xmlFile_new, xmlFile);
-
-  xmlFile = xmlFile_new;
+  xmlFile = CacheHelper::createDuplicateXMLFile(xmlFile);
 
   printf("  creating dir = %s \n", sname.c_str());
-  ACE_OS::mkdir(sname.c_str());
+  boost::filesystem::create_directory(sname);
 
-  sprintf(cmd, "%s/bin/%s stop server --dir=%s 2>&1", gfjavaenv, GFSH,
-          currDir.c_str());
-
-  LOG(cmd);
-  ACE_OS::system(cmd);
-  std::string deltaProperty = "";
-  if (!enableDelta) {
-    deltaProperty = "delta-propagation=false";
-  }
   int64_t defaultTombstone_timeout = 600000;
   int64_t defaultTombstone_gc_threshold = 100000;
   int64_t userTombstone_timeout = 1000;
   int64_t userTombstone_gc_threshold = 10;
   if (testServerGC) {
-    ACE_OS::mkdir("backupDirectory1");
-    ACE_OS::mkdir("backupDirectory2");
-    ACE_OS::mkdir("backupDirectory3");
-    ACE_OS::mkdir("backupDirectory4");
+    boost::filesystem::create_directory("backupDirectory1");
+    boost::filesystem::create_directory("backupDirectory2");
+    boost::filesystem::create_directory("backupDirectory3");
+    boost::filesystem::create_directory("backupDirectory4");
   }
 
-  if (locHostport != nullptr) {  // check number of locator host port.
-    std::string geodeProperties = generateGeodeProperties(
-        currDir, ssl, -1, 0, untrustedCert, useSecurityManager);
+  GfshExecute gfsh;
+  auto server =
+      gfsh.start()
+          .server()
+          .withClasspath(classpath)
+          .withName(sname)
+          .withCacheXMLFile(xmlFile)
+          .withDir(currDir)
+          .withPort(portNum)
+          .withLogLevel(gfLogLevel)
+          .withMaxHeap("1g")
+          .withSystemProperty(
+              "gemfire.tombstone-timeout",
+              std::to_string(testServerGC ? userTombstone_timeout
+                                          : defaultTombstone_timeout))
+          .withSystemProperty(
+              "gemfire.tombstone-gc-hreshold",
+              std::to_string(testServerGC ? userTombstone_gc_threshold
+                                          : defaultTombstone_gc_threshold))
+          .withSystemProperty("gemfire.security-log-level", gfSecLogLevel);
 
-    sprintf(
-        cmd,
-        "%s/bin/%s start server --classpath=%s --name=%s "
-        "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s "
-        "--properties-file=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%" PRId64
-        " "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
-        " "
-        "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
-        gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
-        useSecurityManager ? "--user=root --password=root-password" : "",
-        currDir.c_str(), portNum, gfLogLevel, geodeProperties.c_str(),
-        authParam, deltaProperty.c_str(),
-        testServerGC ? userTombstone_timeout : defaultTombstone_timeout,
-        testServerGC ? userTombstone_gc_threshold
-                     : defaultTombstone_gc_threshold,
-        gfSecLogLevel);
-  } else {
-    sprintf(
-        cmd,
-        "%s/bin/%s start server --classpath=%s --name=%s "
-        "--cache-xml-file=%s %s --dir=%s --server-port=%d --log-level=%s %s %s "
-        "--J=-Dgemfire.tombstone-timeout=%" PRId64
-        " "
-        "--J=-Dgemfire.tombstone-gc-hreshold=%" PRId64
-        " "
-        "--J=-Dgemfire.security-log-level=%s --J=-Xmx1024m --J=-Xms128m 2>&1",
-        gfjavaenv, GFSH, classpath, sname.c_str(), xmlFile.c_str(),
-        useSecurityManager ? "--user=root --password=root-password" : "",
-        currDir.c_str(), portNum, gfLogLevel, authParam, deltaProperty.c_str(),
-        testServerGC ? userTombstone_timeout : defaultTombstone_timeout,
-        testServerGC ? userTombstone_gc_threshold
-                     : defaultTombstone_gc_threshold,
-        gfSecLogLevel);
+  if (useSecurityManager) {
+    server.withUser("root").withPassword("root-password");
   }
 
-  LOG(cmd);
-  int e = ACE_OS::system(cmd);
-  ASSERT(0 == e, "cmd failed");
+  if (!locHostport.empty()) {
+    server.withPropertiesFile(generateGeodeProperties(
+        currDir, ssl, -1, 0, untrustedCert, useSecurityManager));
+  }
+
+  if (!enableDelta) {
+    server.withSystemProperty("gemfire.delta-propagation", "false");
+  }
+
+  server.execute();
 
   staticServerInstanceList.push_back(instance);
   printf("added server instance %d\n", instance);
 }
 
-void CacheHelper::createDuplicateXMLFile(std::string &originalFile,
-                                         int hostport1, int hostport2,
-                                         int locport1, int locport2) {
-  char cmd[1024];
-  char currWDPath[2048];
-  std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
-  currDir += PATH_SEP;
-  std::string testSrc = ACE_OS::getenv("TESTSRC");
-  testSrc += PATH_SEP;
-  testSrc += "resources";
-  testSrc += PATH_SEP;
+std::string CacheHelper::createDuplicateXMLFile(const std::string &source,
+                                                int hostport1, int hostport2,
+                                                int locport1, int locport2) {
+  std::string dest = boost::filesystem::current_path().string();
+  dest += PATH_SEP;
+  dest += boost::filesystem::path{source}.filename().stem().string();
+  dest += '.';
+  dest += std::to_string(hostport1);
+  dest += ".xml";
 
-  // file name will have hostport1.xml(i.e. CacheHelper::staticHostPort1) as
-  // suffix
+  std::string src = Utils::getEnv("TESTSRC");
+  src += PATH_SEP;
+  src += "resources";
+  src += PATH_SEP;
+  src += source;
 
-  replacePortsInFile(
-      hostport1, hostport2, CacheHelper::staticHostPort3,
-      CacheHelper::staticHostPort4, locport1, locport2, testSrc + originalFile,
-      currDir + originalFile + std::to_string(hostport1) + ".xml");
+  replacePortsInFile(hostport1, hostport2, CacheHelper::staticHostPort3,
+                     CacheHelper::staticHostPort4, locport1, locport2, src,
+                     dest);
 
-  // this file need to delete
-  sprintf(cmd, "%s%s%d.xml", currDir.c_str(), originalFile.c_str(), hostport1);
-  std::string s(cmd);
-  CacheHelper::staticConfigFileList.push_back(s);
-
-  printf("createDuplicateXMLFile added file %s %zd", cmd,
+  CacheHelper::staticConfigFileList.push_back(dest);
+  printf("createDuplicateXMLFile added file %s %zd", dest.c_str(),
          CacheHelper::staticConfigFileList.size());
+
+  return dest;
 }
 
 // Need to avoid regex usage in Solaris Studio 12.4.
@@ -1411,7 +1212,7 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                                      int hostPort3, int hostPort4, int locPort1,
                                      int locPort2, const std::string &inFile,
                                      const std::string &outFile) {
-  std::ifstream in(inFile, std::ios::in | std::ios::binary);
+  std::ifstream in(inFile, std::ios::in);
   if (in) {
     std::string contents;
     contents.assign(std::istreambuf_iterator<char>(in),
@@ -1438,38 +1239,22 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
 }
 #endif
 
-void CacheHelper::createDuplicateXMLFile(std::string &duplicateFile,
-                                         std::string &originalFile) {
-  CacheHelper::createDuplicateXMLFile(
-      originalFile, CacheHelper::staticHostPort1, CacheHelper::staticHostPort2,
+std::string CacheHelper::createDuplicateXMLFile(const std::string &source) {
+  return CacheHelper::createDuplicateXMLFile(
+      source, CacheHelper::staticHostPort1, CacheHelper::staticHostPort2,
       CacheHelper::staticLocatorHostPort1, CacheHelper::staticLocatorHostPort2);
-
-  char tmp[32];
-
-  sprintf(tmp, "%d.xml", CacheHelper::staticHostPort1);
-
-  char currWDPath[2048];
-  duplicateFile = ACE_OS::getcwd(currWDPath, 2048);
-  duplicateFile += PATH_SEP;
-  duplicateFile += originalFile + tmp;
 }
 
 void CacheHelper::closeServer(int instance) {
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
+  std::string currDir = boost::filesystem::current_path().string();
 
-  char cmd[2048];
-  char tmp[128];
-  char currWDPath[2048];
-
-  std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
-
-  ASSERT(gfjavaenv != nullptr,
+  ASSERT(!gfjavaenv.empty(),
          "Environment variable GFJAVA for java build directory is not set.");
   ASSERT(!currDir.empty(),
          "Current working directory could not be determined.");
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
+  if (gfjavaenv.find(PATH_SEP) == std::string::npos) {
     return;
   }
 
@@ -1479,31 +1264,27 @@ void CacheHelper::closeServer(int instance) {
       currDir += "0";
       break;
     case 1:
-      sprintf(tmp, "%d", CacheHelper::staticHostPort1);
-      currDir += tmp;  // currDir += "1";
+      currDir += std::to_string(CacheHelper::staticHostPort1);
       break;
     case 2:
-      sprintf(tmp, "%d", CacheHelper::staticHostPort2);
-      currDir += tmp;  // currDir += "2";
+      currDir += std::to_string(CacheHelper::staticHostPort2);
       break;
     case 3:
-      sprintf(tmp, "%d", CacheHelper::staticHostPort3);
-      currDir += tmp;  // currDir += "3";
+      currDir += std::to_string(CacheHelper::staticHostPort3);
       break;
     default: /* Support for any number of servers Max 10*/
       // ASSERT( ( instance <= 10 )," More than 10 servers not supported");
       // TODO: need to support more then three servers
       ASSERT((instance <= 4), " More than 4 servers not supported");
-      char temp[8];
-      currDir += ACE_OS::itoa(CacheHelper::staticHostPort4, temp, 10);
+      currDir += std::to_string(CacheHelper::staticHostPort4);
       break;
   }
 
-  sprintf(cmd, "%s/bin/%s stop server --dir=%s 2>&1", gfjavaenv, GFSH,
-          currDir.c_str());
-
-  LOG(cmd);
-  ACE_OS::system(cmd);
+  try {
+    GfshExecute gfsh;
+    gfsh.stop().server().withDir(currDir).execute();
+  } catch (const GfshExecuteException &) {
+  }
 
   terminate_process_file(currDir + "/vf.gf.server.pid",
                          std::chrono::seconds(10));
@@ -1512,61 +1293,51 @@ void CacheHelper::closeServer(int instance) {
 }
 // closing locator
 void CacheHelper::closeLocator(int instance, bool) {
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
+  static const auto testsrcenv = Utils::getEnv("TESTSRC");
 
-  char cmd[2048];
-  char currWDPath[2048];
-  std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
-  std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
+  auto currDir = boost::filesystem::current_path().string();
 
-  ASSERT(gfjavaenv != nullptr,
+  ASSERT(!gfjavaenv.empty(),
          "Environment variable GFJAVA for java build directory is not set.");
-  ASSERT(!currDir.empty(),
-         "Current working directory could not be determined.");
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
+  ASSERT(!testsrcenv.empty(),
+         "Environment variable TESTSRC for test source directory is not set.");
+
+  std::string keystore = testsrcenv + "/keystore";
+  if (gfjavaenv.find(PATH_SEP) == std::string::npos) {
     return;
   }
 
   currDir += PATH_SEP;
   currDir += "GFELOC";
-  char tmp[100];
 
   switch (instance) {
     case 1:
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
-      currDir += tmp;  // currDir += "1";
+      currDir += std::to_string(CacheHelper::staticLocatorHostPort1);
       break;
     case 2:
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort2);
-      currDir += tmp;
-      // currDir += "2";
+      currDir += std::to_string(CacheHelper::staticLocatorHostPort2);
       break;
     case 3:
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort3);
-      currDir += tmp;
-      // currDir += "3";
+      currDir += std::to_string(CacheHelper::staticLocatorHostPort3);
       break;
     default: /* Support for any number of Locator Max 10*/
       // TODO://
       ASSERT((instance <= 3), " More than 3 servers not supported");
-      char temp[8];
-      currDir += ACE_OS::itoa(instance, temp, 10);
+      currDir += std::to_string(instance);
       break;
   }
 
-  sprintf(cmd, "%s/bin/%s stop locator --dir=%s", gfjavaenv, GFSH,
-          currDir.c_str());
-  LOG(cmd);
-  ACE_OS::system(cmd);
+  try {
+    GfshExecute gfsh;
+    gfsh.stop().locator().withDir(currDir).execute();
+  } catch (const GfshExecuteException &) {
+  }
 
   terminate_process_file(currDir + "/vf.gf.locator.pid",
                          std::chrono::seconds(10));
 
-  sprintf(cmd, "%s .%stest.geode.properties", DELETE_COMMAND, PATH_SEP);
-  LOG(cmd);
-  ACE_OS::system(cmd);
-
+  std::remove("test.geode.properties");
   staticLocatorInstanceList.remove(instance);
 }
 
@@ -1578,32 +1349,37 @@ void CacheHelper::terminate_process_file(
 
   std::string pid;
   read_single_line(pidFileName, pid);
-
-  if (!pid.empty()) {
-    LOG("CacheHelper::terminate_process_file: process running. pidFileName=" +
-        pidFileName + ", pid=" + pid);
-
-    // Wait for process to terminate or timeout
-    auto start = std::chrono::system_clock::now();
-    while (std::chrono::system_clock::now() < timeout) {
-      if (!file_exists(pidFileName)) {
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now() - start);
-        LOG("CacheHelper::terminate_process_file: process exited. "
-            "pidFileName=" +
-            pidFileName + ", pid=" + pid +
-            ", elapsed=" + std::to_string(elapsed.count()) + "ms");
-        return;
-      }
-      std::this_thread::yield();
-    }
-    LOG("CacheHelper::terminate_process_file: timeout. pidFileName=" +
-        pidFileName + ", pid=" + pid);
-
-    // Didn't exit on its own, kill it.
-    LOG("ACE::terminate_process: pid=" + pid);
-    ACE::terminate_process(std::stoi(pid));
+  if (pid.empty()) {
+    return;
   }
+
+  LOG("CacheHelper::terminate_process_file: process running. pidFileName=" +
+      pidFileName + ", pid=" + pid);
+
+  // Wait for process to terminate or timeout
+  auto start = std::chrono::system_clock::now();
+  while (std::chrono::system_clock::now() < timeout) {
+    if (!file_exists(pidFileName)) {
+      auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+          std::chrono::system_clock::now() - start);
+      LOG("CacheHelper::terminate_process_file: process exited. "
+          "pidFileName=" +
+          pidFileName + ", pid=" + pid +
+          ", elapsed=" + std::to_string(elapsed.count()) + "ms");
+      return;
+    }
+    std::this_thread::yield();
+  }
+  LOG("CacheHelper::terminate_process_file: timeout. pidFileName=" +
+      pidFileName + ", pid=" + pid);
+
+  // Didn't exit on its own, kill it.
+  LOG("ACE::terminate_process: pid=" + pid);
+
+  boost::process::pid_t id =
+      static_cast<boost::process::pid_t>(std::stoul(pid));
+  boost::process::child process{id};
+  process.terminate();
 }
 
 bool CacheHelper::file_exists(const std::string &fileName) {
@@ -1618,15 +1394,10 @@ void CacheHelper::read_single_line(const std::string &fileName,
 }
 
 void CacheHelper::cleanupTmpConfigFiles() {
-  std::list<std::string>::const_iterator its;
-
-  char cmd[1024];
-  for (its = CacheHelper::staticConfigFileList.begin();
+  for (auto its = CacheHelper::staticConfigFileList.begin();
        its != CacheHelper::staticConfigFileList.end(); ++its) {
     try {
-      sprintf(cmd, "rm %s", its->c_str());
-      LOG(cmd);
-      ACE_OS::system(cmd);
+      std::remove(its->c_str());
     } catch (...) {
     }
   }
@@ -1648,94 +1419,69 @@ void CacheHelper::cleanupLocatorInstances() {
 void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
                               int remoteLocator, bool untrustedCert,
                               bool useSecurityManager) {
+  static const auto gfjavaenv = Utils::getEnv("GFJAVA");
+
   if (!isLocatorCleanupCallbackRegistered &&
       gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
     isLocatorCleanupCallbackRegistered = true;
   }
-  static char *gfjavaenv = ACE_OS::getenv("GFJAVA");
 
-  char cmd[2048];
-  char currWDPath[2048];
-  std::string currDir = ACE_OS::getcwd(currWDPath, 2048);
-  //    std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) +
-  //    "/keystore";
+  std::string currDir = boost::filesystem::current_path().string();
 
-  ASSERT(gfjavaenv != nullptr,
+  ASSERT(!gfjavaenv.empty(),
          "Environment variable GFJAVA for java build directory is not set.");
-  ASSERT(!currDir.empty(),
-         "Current working directory could not be determined.");
 
-  if ((ACE_OS::strchr(gfjavaenv, '\\') == nullptr) &&
-      (ACE_OS::strchr(gfjavaenv, '/') == nullptr)) {
+  if (gfjavaenv.find(PATH_SEP) == std::string::npos) {
     return;
   }
-  std::string locDirname = "GFELOC";
+
   int portnum = 0;
+  std::string locDirname = "GFELOC";
+
   currDir += PATH_SEP;
-  char tmp[100];
+
   switch (instance) {
     case 1:
-      // portnum = 34756;
       portnum = CacheHelper::staticLocatorHostPort1;
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort1);
-      locDirname += tmp;
-      // locDirname += "1";
       break;
     case 2:
-      // portnum = 34757;
       portnum = CacheHelper::staticLocatorHostPort2;
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort2);
-      locDirname += tmp;
-      // locDirname += "2";
       break;
     default:
-      // portnum = 34758;
       portnum = CacheHelper::staticLocatorHostPort3;
-      sprintf(tmp, "%d", CacheHelper::staticLocatorHostPort3);
-      locDirname += tmp;
-      // locDirname += "3";
       break;
   }
+
+  locDirname += std::to_string(portnum);
 
   int jmxManagerPort = CacheHelper::staticJmxManagerPort;
 
   currDir += locDirname;
-
-  ACE_OS::mkdir(locDirname.c_str());
+  boost::filesystem::create_directory(locDirname);
 
   std::string geodeFile = generateGeodeProperties(
       currDir, ssl, dsId, remoteLocator, untrustedCert, useSecurityManager);
 
-  sprintf(cmd, "%s/bin/%s stop locator --dir=%s --properties-file=%s ",
-          gfjavaenv, GFSH, currDir.c_str(), geodeFile.c_str());
+  auto classpath = Utils::getEnv("GF_CLASSPATH");
 
-  LOG(cmd);
-  ACE_OS::system(cmd);
+  GfshExecute gfsh;
+  auto locator = gfsh.start()
+                     .locator()
+                     .withName(locDirname)
+                     .withPort(portnum)
+                     .withDir(currDir)
+                     .withClasspath(classpath)
+                     .withHttpServicePort(0)
+                     .withJmxManagerPort(jmxManagerPort)
+                     .withMaxHeap("256m");
+  if (useSecurityManager) {
+    locator.withSecurityPropertiesFile(geodeFile);
+  } else {
+    locator.withPropertiesFile(geodeFile);
+  }
+  locator.execute();
 
-  static char *classpath = ACE_OS::getenv("GF_CLASSPATH");
-  std::string propertiesFile =
-      useSecurityManager
-          ? std::string("--security-properties-file=") + geodeFile
-          : std::string("--properties-file=") + geodeFile;
-  sprintf(cmd,
-          "%s/bin/%s start locator --name=%s --port=%d --dir=%s "
-          "%s --http-service-port=0 --classpath=%s "
-          "--J=-Dgemfire.jmx-manager-port=%d",
-          gfjavaenv, GFSH, locDirname.c_str(), portnum, currDir.c_str(),
-          propertiesFile.c_str(), classpath, jmxManagerPort);
-
-  LOG(cmd);
-  ACE_OS::system(cmd);
   staticLocatorInstanceList.push_back(instance);
-}
-
-void CacheHelper::clearSecProp() {
-  auto tmpSecProp = CacheHelper::getHelper()
-                        .getCache()
-                        ->getSystemProperties()
-                        .getSecurityProperties();
-  tmpSecProp->remove("security-username");
-  tmpSecProp->remove("security-password");
 }
 
 void CacheHelper::setJavaConnectionPoolSize(uint32_t size) {
@@ -1746,17 +1492,18 @@ void CacheHelper::setJavaConnectionPoolSize(uint32_t size) {
 }
 
 bool CacheHelper::setSeed() {
-  char *testName = ACE_OS::getenv("TESTNAME");
+  static const auto testnameenv = Utils::getEnv("TESTNAME");
+  ASSERT(!testnameenv.empty(),
+         "Environment variable TESTNAME for test name is not set.");
 
-  int seed = hashcode(testName);
-
+  int seed = std::hash<std::string>{}(testnameenv);
   printf("seed for process %d\n", seed);
   // The integration tests rely on the pseudo-random
   // number generator being seeded with a very particular
   // value specific to the test by way of the test name.
   // Whilst this approach is pessimal, it can not be
   // remedied as the test depend upon it.
-  ACE_OS::srand(seed);
+  std::srand(seed);
   return true;
 }
 
@@ -1776,8 +1523,7 @@ int CacheHelper::hashcode(char *str) {
 }
 
 int CacheHelper::getRandomNumber() {
-  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand)
-  return (ACE_OS::rand() % RANDOM_NUMBER_DIVIDER) + RANDOM_NUMBER_OFFSET;
+  return (std::rand() % RANDOM_NUMBER_DIVIDER) + RANDOM_NUMBER_OFFSET;
 }
 
 int CacheHelper::getRandomAvailablePort() {
@@ -1800,31 +1546,33 @@ int CacheHelper::getRandomAvailablePort() {
 }
 
 std::string CacheHelper::unitTestOutputFile() {
-  char cwd[1024];
-  if (!ACE_OS::getcwd(cwd, sizeof(cwd))) {
-    throw Exception("Failed to get current working directory.");
-  }
+  static const auto testnameenv = Utils::getEnv("TESTNAME");
 
-  std::string outputFile(cwd);
-  outputFile += "/";
-  outputFile += ACE_OS::getenv("TESTNAME");
+  ASSERT(!testnameenv.empty(),
+         "Environment variable TESTNAME for test name is not set.");
+
+  std::string outputFile = boost::filesystem::current_path().string();
+  outputFile += PATH_SEP;
+  outputFile += testnameenv;
   outputFile += ".log";
 
   return outputFile;
 }
 
-int CacheHelper::getNumLocatorListUpdates(const char *s) {
-  std::string searchStr(s);
+int CacheHelper::getNumLocatorListUpdates(const std::string &search) {
   std::string testFile = CacheHelper::unitTestOutputFile();
-  FILE *fp = fopen(testFile.c_str(), "r");
-  ASSERT(nullptr != fp, "Failed to open log file.");
 
-  char buf[512];
+  std::ifstream file{testFile};
+  ASSERT(!file.fail(), "Failed to open log file.");
+
+  std::string line;
   int numMatched = 0;
-  while (fgets(buf, sizeof(buf), fp)) {
-    std::string line(buf);
-    if (line.find(searchStr) != std::string::npos) numMatched++;
+  while (std::getline(file, line)) {
+    if (line.find(search) != std::string::npos) {
+      ++numMatched;
+    }
   }
+
   return numMatched;
 }
 
@@ -1832,29 +1580,29 @@ std::string CacheHelper::generateGeodeProperties(
     const std::string &path, const bool ssl, const int dsId,
     const int remoteLocator, const bool untrustedCert,
     const bool useSecurityManager) {
-  char cmd[2048];
-  std::string keystore = std::string(ACE_OS::getenv("TESTSRC")) + "/keystore";
+  static const auto testnameenv = Utils::getEnv("TESTNAME");
+
+  ASSERT(!testnameenv.empty(),
+         "Environment variable TESTNAME for test name is not set.");
+
+  std::string keystore = testnameenv + "/keystore";
 
   std::string geodeFile = path;
   geodeFile += "/test.geode.properties";
-  sprintf(cmd, "%s %s%stest.geode.properties", DELETE_COMMAND, path.c_str(),
-          PATH_SEP);
-  LOG(cmd);
-  ACE_OS::system(cmd);
-  FILE *urandom = /*ACE_OS::*/
-      fopen(geodeFile.c_str(), "w");
-  char gemStr[258];
-  sprintf(gemStr, "locators=localhost[%d],localhost[%d],localhost[%d]\n",
-          CacheHelper::staticLocatorHostPort1,
-          CacheHelper::staticLocatorHostPort2,
-          CacheHelper::staticLocatorHostPort3);
-  std::string msg = gemStr;
 
-  msg += "log-level=config\n";
-  msg += "mcast-port=0\n";
-  msg += "enable-network-partition-detection=false\n";
+  std::ofstream file{geodeFile};
+
+  file << "locators=localhost[" << CacheHelper::staticLocatorHostPort1
+       << "],localhost[" << CacheHelper::staticLocatorHostPort2
+       << "],localhost[" << CacheHelper::staticLocatorHostPort3 << "]"
+       << std::endl;
+
+  file << "log-level=config" << std::endl;
+  file << "mcast-port=0" << std::endl;
+  file << "enable-network-partition-detection=false" << std::endl;
+
   if (useSecurityManager) {
-    msg += "security-manager=javaobject.SimpleSecurityManager\n";
+    file << "security-manager=javaobject.SimpleSecurityManager" << std::endl;
   }
 
   std::string serverKeystore;
@@ -1871,35 +1619,31 @@ std::string CacheHelper::generateGeodeProperties(
       serverTruststore += "server_truststore_chained_root.jks";
       password += "apachegeode";
     }
-    msg += "jmx-manager-ssl-enabled=false\n";
-    msg += "cluster-ssl-enabled=true\n";
-    msg += "cluster-ssl-require-authentication=false\n";
-    msg += "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA\n";
-    msg += "cluster-ssl-keystore-type=jks\n";
-    msg += "cluster-ssl-keystore=" + keystore + "/" + serverKeystore.c_str() +
-           "\n";
-    msg += "cluster-ssl-keystore-password=" + password + "\n";
-    msg += "cluster-ssl-truststore=" + keystore + "/" +
-           serverTruststore.c_str() + "\n";
-    msg += "cluster-ssl-truststore-password=" + password + "\n";
-    msg += "security-username=xxxx\n";
-    msg += "security-userPassword=yyyy \n";
+    file << "jmx-manager-ssl-enabled=false" << std::endl;
+    file << "cluster-ssl-enabled=true" << std::endl;
+    file << "cluster-ssl-require-authentication=false" << std::endl;
+    file << "cluster-ssl-ciphers=TLS_RSA_WITH_AES_128_CBC_SHA" << std::endl;
+    file << "cluster-ssl-keystore-type=jks" << std::endl;
+    file << "cluster-ssl-keystore=" + keystore + PATH_SEP + serverKeystore
+         << std::endl;
+    file << "cluster-ssl-keystore-password=" + password + "" << std::endl;
+    file << "cluster-ssl-truststore=" + keystore + PATH_SEP +
+                serverTruststore.c_str() + ""
+         << std::endl;
+    file << "cluster-ssl-truststore-password=" + password + "" << std::endl;
+    file << "security-username=xxxx" << std::endl;
+    file << "security-userPassword=yyyy " << std::endl;
   }
-  if (remoteLocator != 0) {
-    sprintf(gemStr, "distributed-system-id=%d\n remote-locators=localhost[%d]",
-            dsId, remoteLocator);
-  } else {
-    sprintf(gemStr, "distributed-system-id=%d\n ", dsId);
-  }
-  msg += gemStr;
 
-  /*ACE_OS::*/
-  fwrite(msg.c_str(), msg.size(), 1, urandom);
-  /*ACE_OS::*/
-  fflush(urandom);
-  /*ACE_OS::*/
-  fclose(urandom);
-  LOG(geodeFile.c_str());
+  file << "distributed-system-id=" << dsId << std::endl;
+
+  if (remoteLocator != 0) {
+    file << "remote-locators=localhost[" << remoteLocator << "]";
+  }
+
+  file.close();
+
+  LOG(geodeFile);
   return geodeFile;
 }
 

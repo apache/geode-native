@@ -125,21 +125,18 @@ void setupCRTOutput();  // disable windows popups.
 
 class TestException {
  public:
-  TestException(const char* msg, int lineno, const char* filename)
-      : m_message(const_cast<char*>(msg)),
+  TestException(const std::string& msg, int lineno, const std::string& filename)
+      : m_message(msg),
         m_lineno(lineno),
-        m_filename(const_cast<char*>(filename)) {}
+        m_filename(filename) {}
 
   void print() {
-    char buf[256];
-    apache::geode::client::Log::formatLogLine(
-        buf, apache::geode::client::LogLevel::Error);
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", buf,
-            m_message.c_str(), m_filename, m_lineno);
+    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", apache::geode::client::Log::formatLogLine(apache::geode::client::LogLevel::Error).c_str(),
+            m_message.c_str(), m_filename.c_str(), m_lineno);
   }
   std::string m_message;
   int m_lineno;
-  char* m_filename;
+  std::string m_filename;
 };
 
 // std::list holding names of all tests that failed.
@@ -236,7 +233,7 @@ int main(int /*argc*/, char** /*argv*/)
     Test_##x() { init(); }                 \
                                            \
    public:                                 \
-    virtual void doTest() {                \
+    void doTest() override {               \
       static const char* fwtest_Name = #x;
 #define END_TEST(x) \
   }                 \

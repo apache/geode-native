@@ -32,6 +32,7 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "SerializationRegistry.hpp"
 #include "testobject/Portfolio.hpp"
 #include "testobject/Position.hpp"
 #include "testobject/PdxType.hpp"
@@ -51,7 +52,7 @@
 #define ROOT_SCOPE LOCAL
 #endif
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableStringArray;
@@ -88,7 +89,7 @@ class QueryHelper {
     positionNumSets = 1;
   }
 
-  virtual ~QueryHelper() { ; }
+  virtual ~QueryHelper() {}
 
   virtual void populatePortfolioData(
       std::shared_ptr<Region>& pregion, size_t setSize, size_t numSets,
@@ -188,10 +189,9 @@ void QueryHelper::populatePortfolioData(
       auto port = std::make_shared<Portfolio>(static_cast<int32_t>(current),
                                               objSize, nm);
 
-      char portname[100] = {0};
-      ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
-
-      auto keyport = CacheableKey::create(portname);
+      std::string key =
+          "port" + std::to_string(set) + '-' + std::to_string(current);
+      auto keyport = CacheableKey::create(key);
       // printf(" QueryHelper::populatePortfolioData creating key = %s and
       // puting data \n",portname);
       rptr->put(keyport, port);
@@ -215,10 +215,9 @@ void QueryHelper::populatePositionData(std::shared_ptr<Region>& rptr,
       auto pos = std::make_shared<Position>(
           secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
-      char posname[100] = {0};
-      ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
-
-      auto keypos = CacheableKey::create(posname);
+      std::string key =
+          "pos" + std::to_string(set) + '-' + std::to_string(current);
+      auto keypos = CacheableKey::create(key);
       rptr->put(keypos, pos);
     }
   }
@@ -235,13 +234,12 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
     for (size_t current = 1; current <= setSize; current++) {
       auto port = std::make_shared<PortfolioPdx>(static_cast<int32_t>(current),
                                                  objSize);
+      std::string key =
+          "port" + std::to_string(set) + '-' + std::to_string(current);
 
-      char portname[100] = {0};
-      ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
-
-      auto keyport = CacheableKey::create(portname);
-
+      auto keyport = CacheableKey::create(key);
       rptr->put(keyport, port);
+
       LOGDEBUG("populatePortfolioPdxData:: Put for iteration current = %d done",
                current);
     }
@@ -261,10 +259,10 @@ void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
       auto pos = std::make_shared<PositionPdx>(
           secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
-      char posname[100] = {0};
-      ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
+      std::string key =
+          "pos" + std::to_string(set) + '-' + std::to_string(current);
 
-      auto keypos = CacheableKey::create(posname);
+      auto keypos = CacheableKey::create(key);
       rptr->put(keypos, pos);
     }
   }

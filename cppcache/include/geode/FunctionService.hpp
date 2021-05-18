@@ -134,7 +134,7 @@ class APACHE_GEODE_EXPORT FunctionService {
     return onServersWithCache(regionService);
   }
 
-  virtual ~FunctionService() {}
+  virtual ~FunctionService() noexcept = default;
 
  private:
   static Execution onServerWithPool(const std::shared_ptr<Pool>& pool);

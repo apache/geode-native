@@ -64,7 +64,7 @@ bool isLocator = false;
 bool isLocalServer = false;
 
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 bool isPoolConfig = false;  // To track if pool case is running
 const char *qRegionNames[] = {"Portfolios", "Positions", "Portfolios2",
@@ -248,7 +248,7 @@ void stepOne() {
   }
 
   isPoolConfig = true;
-  createPool(poolNames[0], locHostPort, nullptr, 0, true);
+  createPool(poolNames[0], locHostPort, {}, 0, true);
   createRegionAndAttachPool(qRegionNames[0], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[1], USE_ACK, poolNames[0]);
   createRegionAndAttachPool(qRegionNames[2], USE_ACK, poolNames[0]);
@@ -349,8 +349,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       auto results = qry->execute();
       if (!qh->verifySS(results, structsetRowCountsOPL[i],
                         structsetFieldCountsOPL[i])) {
-        char failmsg[100] = {0};
-        ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
+        std::string failmsg =
+            "Query verify failed for query index " + std::to_string(i);
         ASSERT(false, failmsg);
       }
 
@@ -372,7 +372,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     SLEEP(100);
-    bool doAnyErrorOccured = false;
     auto qh = &QueryHelper::getHelper();
 
     std::shared_ptr<QueryService> qs = nullptr;
@@ -398,13 +397,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
                      ? structsetRowCounts[i]
                      : structsetRowCounts[i] * qh->getPortfolioNumSets()),
                 structsetFieldCounts[i])) {
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
+          std::string failmsg =
+              "Query verify failed for query index " + std::to_string(i);
           ASSERT(false, failmsg);
         }
 
         auto ssptr = std::dynamic_pointer_cast<StructSet>(results);
-        if ((ssptr) == nullptr) {
+        if (ssptr == nullptr) {
           LOG("Zero records were expected and found. Moving onto next. ");
           continue;
         }
@@ -413,8 +412,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
     }
 
-    if (!doAnyErrorOccured) printf("HURRAY !! We PASSED \n\n");
-
+    printf("HURRAY !! We PASSED \n\n");
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
@@ -461,8 +459,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
                      ? structsetRowCountsPQ[i]
                      : structsetRowCountsPQ[i] * qh->getPortfolioNumSets()),
                 structsetFieldCountsPQ[i])) {
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query verify failed for query index %d", i);
+          std::string failmsg =
+              "Query verify failed for query index " + std::to_string(i);
           ASSERT(false, failmsg);
         }
 
@@ -505,10 +503,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
 
     for (size_t set = 1; set <= numSets; ++set) {
       for (size_t current = 1; current <= setSize; ++current) {
-        char posname[100] = {0};
-        ACE_OS::sprintf(posname, "pos%zd-%zd", set, current);
+        std::string key =
+            "pos" + std::to_string(set) + '-' + std::to_string(current);
 
-        auto posKey(CacheableKey::create(posname));
+        auto posKey = CacheableKey::create(key);
         auto pos = std::make_shared<PositionPdx>(
             secIds[current % numSecIds], static_cast<int32_t>(current * 100));
 
@@ -524,10 +522,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, GetAll)
     numSets = qh.getPortfolioNumSets();
     for (size_t set = 1; set <= numSets; ++set) {
       for (size_t current = 1; current <= setSize; ++current) {
-        char portname[100] = {0};
-        ACE_OS::sprintf(portname, "port%zd-%zd", set, current);
+        std::string key =
+            "port" + std::to_string(set) + '-' + std::to_string(current);
 
-        auto portKey = CacheableKey::create(portname);
+        auto portKey = CacheableKey::create(key);
         auto port =
             std::make_shared<PortfolioPdx>(static_cast<int32_t>(current), 1);
 
@@ -582,10 +580,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
 
         try {
           auto results = qry->execute();
+          std::string failmsg =
+              "Query exception didnt occur for index " + std::to_string(i);
 
-          char failmsg[100] = {0};
-          ACE_OS::sprintf(failmsg, "Query exception didnt occur for index %d",
-                          i);
           LOG(failmsg);
           FAIL(failmsg);
         } catch (apache::geode::client::QueryException &ex) {

@@ -18,9 +18,9 @@
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 
 #include <geode/ExceptionTypes.hpp>
-#include <geode/PoolManager.hpp>
 #include <geode/TransactionId.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheTransactionManagerImpl.hpp"
 #include "TXCleaner.hpp"
@@ -101,7 +101,7 @@ void InternalCacheTransactionManager2PCImpl::prepare() {
     }
   } catch (const Exception& ex) {
     LOGERROR("Unexpected exception during commit in prepare %s", ex.what());
-    throw ex;
+    throw;
   }
 }
 
@@ -200,7 +200,7 @@ void InternalCacheTransactionManager2PCImpl::afterCompletion(int32_t status) {
   } catch (const Exception& ex) {
     LOGERROR("Unexpected exception during completing transaction %s",
              ex.what());
-    throw ex;
+    throw;
   }
 }
 }  // namespace client

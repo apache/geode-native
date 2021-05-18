@@ -657,7 +657,7 @@ namespace Apache
           //Log::Debug("DataInput::ReadInternalObject m_cursor " + m_cursor);
           bool findinternal = false;
           int8_t typeId = ReadByte();
-          System::Int64 compId;
+          System::Int64 compId = 0;
           TypeFactoryMethod^ createType = nullptr;
 
           switch (static_cast<DSCode>(typeId)) 

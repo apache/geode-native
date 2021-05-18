@@ -73,7 +73,7 @@ bool LRUOverFlowToDiskAction::evict(
         "LRU list");
   }
   auto&& lruProps = mePtr->getLRUProperties();
-  auto persistenceInfo = lruProps.getPersistenceInfo();
+  auto persistenceInfo = lruProps.persistence_info();
   bool setInfo = false;
   if (persistenceInfo == nullptr) {
     setInfo = true;
@@ -89,7 +89,7 @@ bool LRUOverFlowToDiskAction::evict(
     return false;
   }
   if (setInfo == true) {
-    lruProps.setPersistenceInfo(persistenceInfo);
+    lruProps.persistence_info(persistenceInfo);
   }
   (m_regionPtr->getRegionStats())->incOverflows();
   (m_regionPtr->getCacheImpl())->getCachePerfStats().incOverflows();

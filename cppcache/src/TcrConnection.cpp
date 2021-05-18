@@ -22,9 +22,11 @@
 #include <geode/AuthInitialize.hpp>
 #include <geode/SystemProperties.hpp>
 
+#include "CacheImpl.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "Connector.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "TcpConn.hpp"
 #include "TcpSslConn.hpp"
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
@@ -33,77 +35,116 @@
 #include "Utils.hpp"
 #include "Version.hpp"
 
-namespace apache {
-namespace geode {
-namespace client {
-
-const int HEADER_LENGTH = 17;
-const int CHUNK_HEADER_LENGTH = 5;
-const int8_t LAST_CHUNK_MASK = 0x1;
-const int64_t INITIAL_CONNECTION_ID = 26739;
-
 #define throwException(ex)                            \
   do {                                                \
     LOGFINEST(ex.getName() + ": " + ex.getMessage()); \
     throw ex;                                         \
   } while (0)
 
+namespace {
+bool useReplyTimeout(const apache::geode::client::TcrMessage& request) {
+  switch (request.getMessageType()) {
+    case apache::geode::client::TcrMessage::QUERY:
+    case apache::geode::client::TcrMessage::QUERY_WITH_PARAMETERS:
+    case apache::geode::client::TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE:
+    case apache::geode::client::TcrMessage::GETDURABLECQS_MSG_TYPE:
+    case apache::geode::client::TcrMessage::EXECUTE_FUNCTION:
+    case apache::geode::client::TcrMessage::EXECUTE_REGION_FUNCTION:
+    case apache::geode::client::TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP:
+      return true;
+    default:
+      break;
+  }
+
+  return false;
+}
+
+int expiryTimeVariancePercentage() {
+  auto nowTimePoint = std::chrono::steady_clock::now().time_since_epoch();
+  auto now_ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint)
+          .count();
+  auto now_s =
+      std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
+
+  srand(static_cast<unsigned int>((now_s * 1000) + (now_ms / 1000)));
+
+  const int numbers = 21;
+  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand): TODO replace
+  int random = rand() % numbers + 1;
+
+  if (random > 10) {
+    random = random - numbers;
+  }
+  return random;
+}
+
+const int HEADER_LENGTH = 17;
+const int CHUNK_HEADER_LENGTH = 5;
+const int8_t LAST_CHUNK_MASK = 0x1;
+const int64_t INITIAL_CONNECTION_ID = 26739;
+
 struct FinalizeProcessChunk {
  private:
-  TcrMessage& m_reply;
+  apache::geode::client::TcrMessage& m_reply;
   uint16_t m_endpointMemId;
 
  public:
-  FinalizeProcessChunk(TcrMessageReply& reply, uint16_t endpointMemId)
+  FinalizeProcessChunk(apache::geode::client::TcrMessageReply& reply,
+                       uint16_t endpointMemId)
       : m_reply(reply), m_endpointMemId(endpointMemId) {}
   ~FinalizeProcessChunk() noexcept(false) {
     // Enqueue a nullptr chunk indicating a wait for processing to complete.
     m_reply.processChunk(std::vector<uint8_t>(), 0, m_endpointMemId);
   }
 };
+}  // namespace
+
+namespace apache {
+namespace geode {
+namespace client {
+
+TcrConnection::TcrConnection(const TcrConnectionManager& connectionManager)
+    : connectionId(0),
+      m_connectionManager(connectionManager),
+      m_expiryTimeVariancePercentage{expiryTimeVariancePercentage()},
+      m_hasServerQueue(NON_REDUNDANT_SERVER),
+      m_queueSize(0),
+      m_port(0),
+      chunks_process_semaphore_(0),
+      m_isBeingUsed(false),
+      m_isUsed(0),
+      m_poolDM(nullptr) {}
 
 bool TcrConnection::initTcrConnection(
-    TcrEndpoint* endpointObj, const char* endpoint,
+    std::shared_ptr<TcrEndpoint> endpointObj,
     synchronized_set<std::unordered_set<uint16_t>>& ports,
     bool isClientNotification, bool isSecondary,
     std::chrono::microseconds connectTimeout) {
-  m_conn = nullptr;
   m_endpointObj = endpointObj;
   m_poolDM = dynamic_cast<ThinClientPoolDM*>(m_endpointObj->getPoolHADM());
-  // add to the connection reference counter of the endpoint
-  m_endpointObj->addConnRefCounter(1);
-  // m_connected = isConnected;
   m_hasServerQueue = NON_REDUNDANT_SERVER;
   m_queueSize = 0;
-  // m_chunksProcessSema = 0;
-  m_creationTime = clock::now();
+  m_lastAccessed = m_creationTime = std::chrono::steady_clock::now();
   connectionId = INITIAL_CONNECTION_ID;
-  m_lastAccessed = clock::now();
   auto cacheImpl = m_poolDM->getConnectionManager().getCacheImpl();
   const auto& distributedSystem = cacheImpl->getDistributedSystem();
   const auto& sysProp = distributedSystem.getSystemProperties();
 
-  LOGDEBUG(
-      "Tcrconnection const isSecondary = %d and isClientNotification = %d, "
-      "this = %p,  conn ref to endopint %d",
-      isSecondary, isClientNotification, this,
-      m_endpointObj->getConnRefCounter());
   bool isPool = false;
   m_isBeingUsed = false;
-  m_endpoint = endpoint;
   // Precondition:
   // 1. isSecondary ==> isClientNotification
 
   // Create TcpConn object which manages a socket connection with the endpoint.
   if (endpointObj && endpointObj->getPoolHADM()) {
-    m_conn = createConnection(
-        m_endpoint, connectTimeout,
-        static_cast<int32_t>(
-            endpointObj->getPoolHADM()->getSocketBufferSize()));
+    createConnection(m_endpointObj->name().c_str(), connectTimeout,
+                     static_cast<int32_t>(
+                         endpointObj->getPoolHADM()->getSocketBufferSize()));
     isPool = true;
   } else {
-    m_conn = createConnection(m_endpoint, connectTimeout,
-                              sysProp.maxSocketBufferSize());
+    createConnection(m_endpointObj->name().c_str(), connectTimeout,
+                     sysProp.maxSocketBufferSize());
   }
 
   auto handShakeMsg = cacheImpl->createDataOutput();
@@ -121,11 +162,8 @@ bool TcrConnection::initTcrConnection(
     handShakeMsg.write(static_cast<int8_t>(CLIENT_TO_SERVER));
   }
 
-  // added for versioned client
-  int8_t versionOrdinal = Version::getOrdinal();
-  handShakeMsg.write(versionOrdinal);
-
-  LOGFINE("Client version ordinal is %d", versionOrdinal);
+  Version::write(handShakeMsg, Version::current());
+  LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
 
   handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
 
@@ -225,7 +263,8 @@ bool TcrConnection::initTcrConnection(
               "invoking getCredentials");
 
           const auto& tmpAuthIniSecurityProperties =
-              authInitialize->getCredentials(tmpSecurityProperties, m_endpoint);
+              authInitialize->getCredentials(tmpSecurityProperties,
+                                             m_endpointObj->name().c_str());
           LOGFINER("TcrConnection: after getCredentials ");
           credentials = tmpAuthIniSecurityProperties;
         }
@@ -252,10 +291,13 @@ bool TcrConnection::initTcrConnection(
   size_t msgLength;
   auto data = reinterpret_cast<char*>(
       const_cast<uint8_t*>(handShakeMsg.getBuffer(&msgLength)));
-  LOGFINE("Attempting handshake with endpoint %s for %s%s connection", endpoint,
+  LOGFINE("Attempting handshake with endpoint %s for %s%s connection",
+          endpointObj->name().c_str(),
           isClientNotification ? (isSecondary ? "secondary " : "primary ") : "",
           isClientNotification ? "subscription" : "client");
-  ConnErrType error = sendData(data, msgLength, connectTimeout, false);
+  LOGDEBUG(std::string("Handshake bytes: (") + std::to_string(msgLength) +
+           "): " + Utils::convertBytesToString(data, msgLength));
+  ConnErrType error = sendData(data, msgLength, connectTimeout);
 
   if (error == CONN_NOERR) {
     auto acceptanceCode = readHandshakeData(1, connectTimeout);
@@ -266,7 +308,7 @@ bool TcrConnection::initTcrConnection(
       LOGERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
           "SSL is enabled on server, enable SSL in client as well");
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       throwException(ex);
     }
 
@@ -299,12 +341,10 @@ bool TcrConnection::initTcrConnection(
     ///////////////////////////////////
     ////////////////////////// 3. Only when handshake is for subscription
     ///////////////////////////////////
-    if (m_poolDM != nullptr) {
-      if ((m_hasServerQueue == PRIMARY_SERVER ||
-           m_hasServerQueue == NON_REDUNDANT_SERVER) &&
-          isClientNotification) {
-        m_poolDM->setPrimaryServerQueueSize(queueSize);
-      }
+    if ((m_hasServerQueue == PRIMARY_SERVER ||
+         m_hasServerQueue == NON_REDUNDANT_SERVER) &&
+        isClientNotification) {
+      m_poolDM->setPrimaryServerQueueSize(queueSize);
     }
 
     if (!isClientNotification) {
@@ -326,7 +366,7 @@ bool TcrConnection::initTcrConnection(
     }
 
     auto recvMsgLenBytes = readHandshakeData(2, connectTimeout);
-    auto dataInput3 = m_connectionManager->getCacheImpl()->createDataInput(
+    auto dataInput3 = m_connectionManager.getCacheImpl()->createDataInput(
         reinterpret_cast<const uint8_t*>(recvMsgLenBytes.data()),
         recvMsgLenBytes.size());
     uint16_t recvMsgLen2 = dataInput3.readInt16();
@@ -334,7 +374,7 @@ bool TcrConnection::initTcrConnection(
 
     if (!isClientNotification) {
       auto deltaEnabledMsg = readHandshakeData(1, connectTimeout);
-      auto di = m_connectionManager->getCacheImpl()->createDataInput(
+      auto di = m_connectionManager.getCacheImpl()->createDataInput(
           reinterpret_cast<const uint8_t*>(deltaEnabledMsg.data()), 1);
       ThinClientBaseDM::setDeltaEnabledOnServer(di.readBoolean());
     }
@@ -349,19 +389,19 @@ bool TcrConnection::initTcrConnection(
       case REPLY_AUTHENTICATION_FAILED: {
         AuthenticationFailedException ex(
             reinterpret_cast<char*>(recvMessage.data()));
-        GF_SAFE_DELETE_CON(m_conn);
+        m_conn.reset();
         throwException(ex);
       }
       case REPLY_AUTHENTICATION_REQUIRED: {
         AuthenticationRequiredException ex(
             reinterpret_cast<char*>(recvMessage.data()));
-        GF_SAFE_DELETE_CON(m_conn);
+        m_conn.reset();
         throwException(ex);
       }
       case REPLY_DUPLICATE_DURABLE_CLIENT: {
         DuplicateDurableClientException ex(
             reinterpret_cast<char*>(recvMessage.data()));
-        GF_SAFE_DELETE_CON(m_conn);
+        m_conn.reset();
         throwException(ex);
       }
       case REPLY_REFUSED:
@@ -374,7 +414,7 @@ bool TcrConnection::initTcrConnection(
                        "Handshake rejected by server: " +
                        reinterpret_cast<char*>(recvMessage.data());
         CacheServerException ex(message);
-        GF_SAFE_DELETE_CON(m_conn);
+        m_conn.reset();
         throw ex;
       }
       default: {
@@ -388,16 +428,13 @@ bool TcrConnection::initTcrConnection(
             " received from server in handshake: " +
             reinterpret_cast<char*>(recvMessage.data());
         MessageException ex(message);
-        GF_SAFE_DELETE_CON(m_conn);
+        m_conn.reset();
         throw ex;
       }
     }
 
   } else {
-    int32_t lastError = ACE_OS::last_error();
-    LOGFINE("Handshake failed, errno: %d: %s", lastError,
-            ACE_OS::strerror(lastError));
-    GF_SAFE_DELETE_CON(m_conn);
+    m_conn.reset();
     if (error & CONN_TIMEOUT) {
       throw TimeoutException(
           "TcrConnection::TcrConnection: "
@@ -424,134 +461,74 @@ bool TcrConnection::initTcrConnection(
   return false;
 }
 
-Connector* TcrConnection::createConnection(
-    const std::string& address, std::chrono::microseconds connectTimeout,
-    int32_t maxBuffSizePool) {
+void TcrConnection::createConnection(const std::string& address,
+                                     std::chrono::microseconds connectTimeout,
+                                     int32_t maxBuffSizePool) {
   Connector* socket = nullptr;
-  auto& systemProperties = m_connectionManager->getCacheImpl()
+  auto& systemProperties = m_connectionManager.getCacheImpl()
                                ->getDistributedSystem()
                                .getSystemProperties();
+
   if (systemProperties.sslEnabled()) {
     auto sniHostname = m_poolDM->getSNIProxyHostname();
     auto sniPort = m_poolDM->getSNIPort();
     if (sniHostname.empty()) {
-      socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
-                              systemProperties.sslTrustStore(),
-                              systemProperties.sslKeyStore(),
-                              systemProperties.sslKeystorePassword());
+      m_conn.reset(new TcpSslConn(address, connectTimeout, maxBuffSizePool,
+                                  systemProperties.sslTrustStore(),
+                                  systemProperties.sslKeyStore(),
+                                  systemProperties.sslKeystorePassword()));
     } else {
-      socket = new TcpSslConn(
+      m_conn.reset(new TcpSslConn(
           address, connectTimeout, maxBuffSizePool, sniHostname, sniPort,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
-          systemProperties.sslKeystorePassword());
+          systemProperties.sslKeystorePassword()));
     }
   } else {
-    socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
+    m_conn.reset(new TcpConn(address, connectTimeout, maxBuffSizePool));
   }
-  // as socket.init() calls throws exception...
-  m_conn = socket;
-  socket->init();
-  return socket;
 }
 
-/* The timeout behaviour for different methods is as follows:
- * receive():
- *   Header: default timeout
- *   Body: default timeout
- * sendRequest()/sendRequestForChunkedResponse():
- *  default timeout during send; for receive:
- *   Header: default timeout * default timeout retries to handle large payload
- *           if a timeout other than default timeout is specified then
- *           that is used instead
- *   Body: default timeout
- */
-inline ConnErrType TcrConnection::receiveData(
-    char* buffer, size_t length, std::chrono::microseconds receiveTimeoutSec,
-    bool checkConnected, bool isNotificationMessage) {
-  std::chrono::microseconds defaultWaitSecs =
-      isNotificationMessage ? std::chrono::seconds(1) : std::chrono::seconds(2);
-  if (defaultWaitSecs > receiveTimeoutSec) defaultWaitSecs = receiveTimeoutSec;
+ConnErrType TcrConnection::receiveData(
+    char* buffer, const size_t length,
+    const std::chrono::microseconds timeout) {
+  try {
+    const auto readBytes = m_conn->receive(
+        buffer, length,
+        std::chrono::duration_cast<std::chrono::milliseconds>(timeout));
 
-  auto startLen = length;
-
-  while (length > 0 && receiveTimeoutSec > std::chrono::microseconds::zero()) {
-    if (checkConnected && !m_connected) {
-      return CONN_IOERR;
+    m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
+  } catch (boost::system::system_error& ex) {
+    switch (ex.code().value()) {
+      case boost::asio::error::eof:
+        return CONN_NODATA;
+      case boost::asio::error::operation_aborted:
+        return CONN_TIMEOUT;
+      default:
+        break;
     }
-    if (receiveTimeoutSec < defaultWaitSecs) {
-      defaultWaitSecs = receiveTimeoutSec;
-    }
-    auto readBytes = m_conn->receive(buffer, length, defaultWaitSecs);
-    int32_t lastError = ACE_OS::last_error();
-    length -= readBytes;
-    if (length > 0 && lastError != ETIME && lastError != ETIMEDOUT) {
-      return CONN_IOERR;
-    }
-    buffer += readBytes;
-    /*
-      Update pools byteRecieved stat here.
-      readMessageChunked, readMessage, readHandshakeData,
-      readHandshakeRawData, readHandShakeBytes, readHandShakeInt,
-      readHandshakeString, all call TcrConnection::receiveData.
-    */
-    LOGDEBUG("TcrConnection::receiveData length = %zu defaultWaitSecs = %s",
-             length, to_string(defaultWaitSecs).c_str());
-    if (m_poolDM != nullptr) {
-      LOGDEBUG("TcrConnection::receiveData readBytes = %zu", readBytes);
-      m_poolDM->getStats().incReceivedBytes(static_cast<int64_t>(readBytes));
-    }
-    receiveTimeoutSec -= defaultWaitSecs;
-    if ((length == startLen) && isNotificationMessage) {  // no data read
-      break;
-    }
-  }
-  //  Postconditions for checking bounds.
-  return (length == 0 ? CONN_NOERR
-                      : (length == startLen ? CONN_NODATA : CONN_TIMEOUT));
-}
-
-inline ConnErrType TcrConnection::sendData(
-    const char* buffer, size_t length, std::chrono::microseconds sendTimeout,
-    bool checkConnected) {
-  std::chrono::microseconds dummy{0};
-  return sendData(dummy, buffer, length, sendTimeout, checkConnected);
-}
-
-inline ConnErrType TcrConnection::sendData(
-    std::chrono::microseconds& timeSpent, const char* buffer, size_t length,
-    std::chrono::microseconds sendTimeout, bool checkConnected) {
-  std::chrono::microseconds defaultWaitSecs = std::chrono::seconds(2);
-  if (defaultWaitSecs > sendTimeout) defaultWaitSecs = sendTimeout;
-  LOGDEBUG(
-      "before send len %zu sendTimeoutSec = %s checkConnected = %d "
-      "m_connected "
-      "%d",
-      length, to_string(sendTimeout).c_str(), checkConnected, m_connected);
-  while (length > 0 && sendTimeout > std::chrono::microseconds::zero()) {
-    if (checkConnected && !m_connected) {
-      return CONN_IOERR;
-    }
-    if (sendTimeout < defaultWaitSecs) {
-      defaultWaitSecs = sendTimeout;
-    }
-    auto sentBytes = m_conn->send(buffer, length, defaultWaitSecs);
-
-    length -= sentBytes;
-    buffer += sentBytes;
-    // we don't want to decrement the remaining time for the last iteration
-    if (length == 0) {
-      break;
-    }
-    int32_t lastError = ACE_OS::last_error();
-    if (length > 0 && lastError != ETIME && lastError != ETIMEDOUT) {
-      return CONN_IOERR;
-    }
-
-    timeSpent += defaultWaitSecs;
-    sendTimeout -= defaultWaitSecs;
+    return CONN_IOERR;
   }
 
-  return (length == 0 ? CONN_NOERR : CONN_TIMEOUT);
+  return CONN_NOERR;
+}
+
+ConnErrType TcrConnection::sendData(const char* buffer, size_t length,
+                                    std::chrono::microseconds timeout) {
+  try {
+    m_conn->send(
+        buffer, length,
+        std::chrono::duration_cast<std::chrono::milliseconds>(timeout));
+  } catch (boost::system::system_error& ex) {
+    switch (ex.code().value()) {
+      case boost::asio::error::operation_aborted:
+        return CONN_TIMEOUT;
+      default:
+        break;
+    }
+    return CONN_IOERR;
+  }
+
+  return CONN_NOERR;
 }
 
 char* TcrConnection::sendRequest(const char* buffer, size_t len,
@@ -559,17 +536,17 @@ char* TcrConnection::sendRequest(const char* buffer, size_t len,
                                  std::chrono::microseconds sendTimeoutSec,
                                  std::chrono::microseconds receiveTimeoutSec,
                                  int32_t request) {
-  LOGDEBUG("TcrConnection::sendRequest");
-  std::chrono::microseconds timeSpent{0};
-
-  send(timeSpent, buffer, len, sendTimeoutSec);
+  const auto start = std::chrono::system_clock::now();
+  send(buffer, len, sendTimeoutSec);
+  const auto timeSpent = start - std::chrono::system_clock::now();
 
   if (timeSpent >= receiveTimeoutSec) {
     throwException(
         TimeoutException("TcrConnection::send: connection timed out"));
   }
 
-  receiveTimeoutSec -= timeSpent;
+  receiveTimeoutSec -=
+      std::chrono::duration_cast<decltype(receiveTimeoutSec)>(timeSpent);
   ConnErrType opErr = CONN_NOERR;
   return readMessage(recvLen, receiveTimeoutSec, true, &opErr, false, request);
 }
@@ -594,29 +571,19 @@ void TcrConnection::sendRequestForChunkedResponse(
   }
 }
 
-bool TcrConnection::useReplyTimeout(const TcrMessage& request) const {
-  auto messageType = request.getMessageType();
-  return ((messageType == TcrMessage::QUERY) ||
-          (messageType == TcrMessage::QUERY_WITH_PARAMETERS) ||
-          (messageType == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE) ||
-          (messageType == TcrMessage::GETDURABLECQS_MSG_TYPE) ||
-          (messageType == TcrMessage::EXECUTE_FUNCTION) ||
-          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION) ||
-          (messageType == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP));
-}
-
 std::chrono::microseconds TcrConnection::sendWithTimeouts(
     const char* data, size_t len, std::chrono::microseconds sendTimeout,
     std::chrono::microseconds receiveTimeout) {
-  std::chrono::microseconds timeSpent{0};
-  send(timeSpent, data, len, sendTimeout, true);
+  const auto start = std::chrono::system_clock::now();
+  send(data, len, sendTimeout, true);
+  const auto timeSpent = start - std::chrono::system_clock::now();
 
   if (timeSpent >= receiveTimeout) {
     throwException(
         TimeoutException("TcrConnection::send: connection timed out"));
   }
 
-  return timeSpent;
+  return std::chrono::duration_cast<std::chrono::microseconds>(timeSpent);
 }
 
 bool TcrConnection::replyHasResult(const TcrMessage& request,
@@ -641,37 +608,23 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
 }
 
 void TcrConnection::send(const char* buffer, size_t len,
-                         std::chrono::microseconds sendTimeoutSec,
-                         bool checkConnected) {
-  std::chrono::microseconds dummy;
-  send(dummy, buffer, len, sendTimeoutSec, checkConnected);
-}
-
-void TcrConnection::send(std::chrono::microseconds& timeSpent,
-                         const char* buffer, size_t len,
                          std::chrono::microseconds sendTimeoutSec, bool) {
-  // LOGINFO("TcrConnection::send: [%p] sending request to endpoint %s;",
-  //:  this, m_endpoint);
-
   LOGDEBUG(
       "TcrConnection::send: [%p] sending request to endpoint %s; bytes: %s",
-      this, m_endpoint, Utils::convertBytesToString(buffer, len).c_str());
+      this, m_endpointObj->name().c_str(),
+      Utils::convertBytesToString(buffer, len).c_str());
 
-  ConnErrType error = sendData(timeSpent, buffer, len, sendTimeoutSec);
-
-  LOGFINER(
-      "TcrConnection::send: completed send request to endpoint %s "
-      "with error: %d",
-      m_endpoint, error);
-
-  if (error != CONN_NOERR) {
-    if (error == CONN_TIMEOUT) {
+  switch (sendData(buffer, len, sendTimeoutSec)) {
+    case CONN_NOERR:
+      break;
+    case CONN_TIMEOUT:
       throwException(
           TimeoutException("TcrConnection::send: connection timed out"));
-    } else {
+    case CONN_NODATA:
+    case CONN_IOERR:
+    case CONN_OTHERERR:
       throwException(
           GeodeIOException("TcrConnection::send: connection failure"));
-    }
   }
 }
 
@@ -694,12 +647,8 @@ char* TcrConnection::readMessage(size_t* recvLen,
     headerTimeout = DEFAULT_READ_TIMEOUT * DEFAULT_TIMEOUT_RETRIES;
   }
 
-  LOGDEBUG("TcrConnection::readMessage: receiving reply from endpoint %s",
-           m_endpoint);
+  error = receiveData(msg_header, HEADER_LENGTH, headerTimeout);
 
-  error = receiveData(msg_header, HEADER_LENGTH, headerTimeout, true,
-                      isNotificationMessage);
-  LOGDEBUG("TcrConnection::readMessage after recieve data");
   if (error != CONN_NOERR) {
     //  the !isNotificationMessage ensures that notification channel
     // gets the TimeoutException when no data was received and is ignored by
@@ -728,12 +677,12 @@ char* TcrConnection::readMessage(size_t* recvLen,
   }
 
   LOGDEBUG(
-      "TcrConnection::readMessage: received header from endpoint %s; "
+      "TcrConnection::readMessage(%p): received header from endpoint %s; "
       "bytes: %s",
-      m_endpoint,
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(msg_header, HEADER_LENGTH).c_str());
 
-  auto input = m_connectionManager->getCacheImpl()->createDataInput(
+  auto input = m_connectionManager.getCacheImpl()->createDataInput(
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
   // ignore msgType
   input.readInt32();
@@ -758,8 +707,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   if (isNotificationMessage) {
     mesgBodyTimeout = receiveTimeoutSec * DEFAULT_TIMEOUT_RETRIES;
   }
-  error = receiveData(fullMessage + HEADER_LENGTH, msgLen, mesgBodyTimeout,
-                      true, isNotificationMessage);
+  error = receiveData(fullMessage + HEADER_LENGTH, msgLen, mesgBodyTimeout);
   if (error != CONN_NOERR) {
     delete[] fullMessage;
     //  the !isNotificationMessage ensures that notification channel
@@ -785,7 +733,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
   LOGDEBUG(
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
-      m_endpoint,
+      m_endpointObj->name().c_str(),
       Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen).c_str());
 
   return fullMessage;
@@ -800,7 +748,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   LOGFINER(
       "TcrConnection::readMessageChunked: receiving reply from "
       "endpoint %s",
-      m_endpoint);
+      m_endpointObj->name().c_str());
 
   auto responseHeader = readResponseHeader(headerTimeout);
 
@@ -808,7 +756,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   reply.setTransId(responseHeader.transactionId);
 
   // Initialize the chunk processing
-  reply.startProcessChunk(m_chunksProcessSema);
+  reply.startProcessChunk(chunks_process_semaphore_);
 
   // indicate an end to chunk processing and wait for processing
   // to end even if reading the chunks fails in middle
@@ -834,7 +782,7 @@ void TcrConnection::readMessageChunked(TcrMessageReply& reply,
   LOGFINER(
       "TcrConnection::readMessageChunked: read full reply "
       "from endpoint %s",
-      m_endpoint);
+      m_endpointObj->name().c_str());
 }
 
 std::chrono::microseconds TcrConnection::calculateHeaderTimeout(
@@ -852,7 +800,7 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   chunkedResponseHeader header;
 
   auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
-                           HEADER_LENGTH, timeout, true, false);
+                           HEADER_LENGTH, timeout);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -866,12 +814,12 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   }
 
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: received header from "
+      "TcrConnection::readResponseHeader(%p): received header from "
       "endpoint %s; bytes: %s",
-      m_endpoint,
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(receiveBuffer, HEADER_LENGTH).c_str());
 
-  auto input = m_connectionManager->getCacheImpl()->createDataInput(
+  auto input = m_connectionManager.getCacheImpl()->createDataInput(
       receiveBuffer, HEADER_LENGTH);
   header.messageType = input.readInt32();
   header.numberOfParts = input.readInt32();
@@ -879,11 +827,11 @@ chunkedResponseHeader TcrConnection::readResponseHeader(
   header.header.chunkLength = input.readInt32();
   header.header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readResponseHeader: "
+      "TcrConnection::readResponseHeader(%p): "
       "messageType=%" PRId32 ", numberOfParts=%" PRId32
       ", transactionId=%" PRId32 ", chunkLength=%" PRId32
       ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.messageType, header.numberOfParts, header.transactionId,
+      this, header.messageType, header.numberOfParts, header.transactionId,
       header.header.chunkLength, header.header.flags);
 
   return header;
@@ -894,7 +842,7 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   chunkHeader header;
 
   auto error = receiveData(reinterpret_cast<char*>(receiveBuffer),
-                           CHUNK_HEADER_LENGTH, timeout, true, false);
+                           CHUNK_HEADER_LENGTH, timeout);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(TimeoutException(
@@ -910,17 +858,17 @@ chunkHeader TcrConnection::readChunkHeader(std::chrono::microseconds timeout) {
   LOGDEBUG(
       "TcrConnection::readChunkHeader: received header from "
       "endpoint %s; bytes: %s",
-      m_endpoint,
+      m_endpointObj->name().c_str(),
       Utils::convertBytesToString(receiveBuffer, CHUNK_HEADER_LENGTH).c_str());
 
-  auto input = m_connectionManager->getCacheImpl()->createDataInput(
+  auto input = m_connectionManager.getCacheImpl()->createDataInput(
       receiveBuffer, CHUNK_HEADER_LENGTH);
   header.chunkLength = input.readInt32();
   header.flags = input.read();
   LOGDEBUG(
-      "TcrConnection::readChunkHeader: "
+      "TcrConnection::readChunkHeader(%p): "
       ", chunkLen=%" PRId32 ", lastChunkAndSecurityFlags=0x%" PRIx8,
-      header.chunkLength, header.flags);
+      this, header.chunkLength, header.flags);
 
   return header;
 }
@@ -929,7 +877,7 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
     std::chrono::microseconds timeout, int32_t chunkLength) {
   std::vector<uint8_t> chunkBody(chunkLength);
   auto error = receiveData(reinterpret_cast<char*>(chunkBody.data()),
-                           chunkLength, timeout, true, false);
+                           chunkLength, timeout);
   if (error != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       throwException(
@@ -943,9 +891,9 @@ std::vector<uint8_t> TcrConnection::readChunkBody(
   }
 
   LOGDEBUG(
-      "TcrConnection::readChunkBody: received chunk body from endpoint "
+      "TcrConnection::readChunkBody(%p): received chunk body from endpoint "
       "%s; bytes: %s",
-      m_endpoint,
+      this, m_endpointObj->name().c_str(),
       Utils::convertBytesToString(chunkBody.data(), chunkLength).c_str());
   return chunkBody;
 }
@@ -970,12 +918,16 @@ bool TcrConnection::processChunk(TcrMessageReply& reply,
 }
 
 void TcrConnection::close() {
-  TcrMessage* closeMsg = TcrMessage::getCloseConnMessage(
-      m_poolDM->getConnectionManager().getCacheImpl());
+  auto cache = m_poolDM->getConnectionManager().getCacheImpl();
+  TcrMessageCloseConnection closeMsg{
+      std::unique_ptr<DataOutput>(
+          new DataOutput(cache->createDataOutput(m_poolDM))),
+      cache->isKeepAlive() || m_poolDM->isKeepAlive()};
+
   try {
     if (!TcrConnectionManager::TEST_DURABLE_CLIENT_CRASH &&
-        !m_connectionManager->isNetDown()) {
-      send(closeMsg->getMsgData(), closeMsg->getMsgLength(),
+        !m_connectionManager.isNetDown()) {
+      send(closeMsg.getMsgData(), closeMsg.getMsgLength(),
            std::chrono::seconds(2), false);
     }
   } catch (Exception& e) {
@@ -997,8 +949,8 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
     return message;
   }
   if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
-                           connectTimeout, false)) != CONN_NOERR) {
-    GF_SAFE_DELETE_CON(m_conn);
+                           connectTimeout)) != CONN_NOERR) {
+    m_conn.reset();
     if (error & CONN_TIMEOUT) {
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
@@ -1013,39 +965,6 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
   }
 }
 
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeRawData(
-    int32_t msgLength, std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  if (msgLength < 0) {
-    msgLength = 0;
-  }
-  if (msgLength == 0) {
-    return nullptr;
-  }
-  std::vector<int8_t> message(msgLength);
-  if ((error = receiveData(reinterpret_cast<char*>(message.data()), msgLength,
-                           connectTimeout, false)) != CONN_NOERR) {
-    GF_SAFE_DELETE_CON(m_conn);
-    if (error & CONN_TIMEOUT) {
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  } else {
-    return CacheableBytes::create(std::move(message));
-  }
-}
-
-std::shared_ptr<CacheableBytes> TcrConnection::readHandshakeByteArray(
-    std::chrono::microseconds connectTimeout) {
-  uint32_t arraySize = readHandshakeArraySize(connectTimeout);
-  return readHandshakeRawData(arraySize, connectTimeout);
-}
-
 // read a byte array
 int32_t TcrConnection::readHandshakeArraySize(
     std::chrono::microseconds connectTimeout) {
@@ -1054,13 +973,13 @@ int32_t TcrConnection::readHandshakeArraySize(
   int32_t arrayLength = static_cast<uint8_t>(arrayLenHeader[0]);
   if (static_cast<int8_t>(arrayLenHeader[0]) == -2) {
     auto arrayLengthBytes = readHandshakeData(2, connectTimeout);
-    auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
+    auto dataInput2 = m_connectionManager.getCacheImpl()->createDataInput(
         reinterpret_cast<const uint8_t*>(arrayLengthBytes.data()),
         arrayLengthBytes.size());
     arrayLength = dataInput2.readInt16();
   } else if (static_cast<int8_t>(arrayLenHeader[0]) == -3) {
     auto arrayLengthBytes = readHandshakeData(4, connectTimeout);
-    auto dataInput2 = m_connectionManager->getCacheImpl()->createDataInput(
+    auto dataInput2 = m_connectionManager.getCacheImpl()->createDataInput(
         reinterpret_cast<const uint8_t*>(arrayLengthBytes.data()),
         arrayLengthBytes.size());
     arrayLength = dataInput2.readInt32();
@@ -1105,16 +1024,16 @@ void TcrConnection::readHandShakeBytes(
   _GEODE_NEW(recvMessage, uint8_t[numberOfBytes]);
 
   if ((error = receiveData(reinterpret_cast<char*>(recvMessage), numberOfBytes,
-                           connectTimeout, false)) != CONN_NOERR) {
+                           connectTimeout)) != CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
       _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake"));
     } else {
       _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure"));
@@ -1122,38 +1041,6 @@ void TcrConnection::readHandShakeBytes(
   }
 
   _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-}
-
-int32_t TcrConnection::readHandShakeInt(
-    std::chrono::microseconds connectTimeout) {
-  ConnErrType error = CONN_NOERR;
-  uint8_t* recvMessage;
-  _GEODE_NEW(recvMessage, uint8_t[4]);
-
-  if ((error = receiveData(reinterpret_cast<char*>(recvMessage), 4,
-                           connectTimeout, false)) != CONN_NOERR) {
-    if (error & CONN_TIMEOUT) {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
-      throwException(
-          TimeoutException("TcrConnection::TcrConnection: "
-                           "Timeout in handshake"));
-    } else {
-      _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-      GF_SAFE_DELETE_CON(m_conn);
-      throwException(
-          GeodeIOException("TcrConnection::TcrConnection: "
-                           "Handshake failure"));
-    }
-  }
-
-  auto di =
-      m_connectionManager->getCacheImpl()->createDataInput(recvMessage, 4);
-  int32_t val = di.readInt32();
-
-  _GEODE_SAFE_DELETE_ARRAY(recvMessage);
-
-  return val;
 }
 
 std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
@@ -1161,8 +1048,8 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   ConnErrType error = CONN_NOERR;
 
   char cstypeid;
-  if (receiveData(&cstypeid, 1, connectTimeout, false) != CONN_NOERR) {
-    GF_SAFE_DELETE_CON(m_conn);
+  if (receiveData(&cstypeid, 1, connectTimeout) != CONN_NOERR) {
+    m_conn.reset();
     if (error & CONN_TIMEOUT) {
       LOGFINE("Timeout receiving string typeid");
       throwException(
@@ -1185,7 +1072,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     }
     case DSCode::CacheableASCIIString: {
       auto lenBytes = readHandshakeData(2, connectTimeout);
-      auto lenDI = m_connectionManager->getCacheImpl()->createDataInput(
+      auto lenDI = m_connectionManager.getCacheImpl()->createDataInput(
           reinterpret_cast<const uint8_t*>(lenBytes.data()), lenBytes.size());
       length = lenDI.readInt16();
 
@@ -1241,7 +1128,7 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     case DSCode::CacheableUserData:
     case DSCode::CacheableUserData4:
     case DSCode::PDX: {
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
                            "Handshake failure: Unexpected string type ID"));
@@ -1257,16 +1144,16 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
   std::vector<char> recvMessage(length + 1);
   recvMessage[length] = '\0';
 
-  if ((error = receiveData(recvMessage.data(), length, connectTimeout,
-                           false)) != CONN_NOERR) {
+  if ((error = receiveData(recvMessage.data(), length, connectTimeout)) !=
+      CONN_NOERR) {
     if (error & CONN_TIMEOUT) {
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       LOGFINE("Timeout receiving string data");
       throwException(
           TimeoutException("TcrConnection::TcrConnection: "
                            "Timeout in handshake reading string bytes"));
     } else {
-      GF_SAFE_DELETE_CON(m_conn);
+      m_conn.reset();
       LOGFINE("IO error receiving string data");
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
@@ -1279,13 +1166,15 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     return retval;
   }
 }
+
 bool TcrConnection::hasExpired(const std::chrono::milliseconds& expiryTime) {
   if (expiryTime <= std::chrono::milliseconds::zero()) {
     return false;
   }
   auto variadicExpiryTime =
       expiryTime + (expiryTime * m_expiryTimeVariancePercentage) / 100;
-  return (clock::now() - m_creationTime) > variadicExpiryTime;
+  return (std::chrono::steady_clock::now() - m_creationTime) >
+         variadicExpiryTime;
 }
 
 bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
@@ -1293,12 +1182,14 @@ bool TcrConnection::isIdle(const std::chrono::milliseconds& idleTime) {
     return false;
   }
 
-  return (clock::now() - m_lastAccessed) > idleTime;
+  return (std::chrono::steady_clock::now() - m_lastAccessed) > idleTime;
 }
 
-void TcrConnection::touch() { m_lastAccessed = clock::now(); }
+void TcrConnection::touch() {
+  m_lastAccessed = std::chrono::steady_clock::now();
+}
 
-TcrConnection::time_point TcrConnection::getLastAccessed() {
+std::chrono::steady_clock::time_point TcrConnection::getLastAccessed() {
   return m_lastAccessed;
 }
 
@@ -1316,20 +1207,11 @@ uint8_t TcrConnection::getOverrides(const SystemProperties* props) {
 }
 
 void TcrConnection::updateCreationTime() {
-  m_creationTime = clock::now();
+  m_creationTime = std::chrono::steady_clock::now();
   touch();
 }
 
-TcrConnection::~TcrConnection() {
-  LOGDEBUG("Tcrconnection destructor %p . conn ref to endopint %d", this,
-           m_endpointObj->getConnRefCounter());
-  m_endpointObj->addConnRefCounter(-1);
-  if (m_conn != nullptr) {
-    LOGDEBUG("closing the connection");
-    m_conn->close();
-    GF_SAFE_DELETE_CON(m_conn);
-  }
-}
+TcrConnection::~TcrConnection() {}
 
 bool TcrConnection::setAndGetBeingUsed(volatile bool isBeingUsed,
                                        bool forTransaction) {

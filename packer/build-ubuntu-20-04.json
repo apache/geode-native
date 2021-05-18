@@ -1,0 +1,132 @@
+{
+  "variables": {
+    "aws_region": "",
+    "googlecompute_zone": "",
+    "googlecompute_project": "",
+    "image_family": "build-ubuntu-20-04",
+    "image_name_prefix": "{{user `image_family`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "instance_type": "t2.micro",
+      "ami_virtualization_type": "hvm",
+      "ami_name": "{{user `image_family`}}-{{timestamp}}",
+      "region": "{{user `aws_region`}}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": [
+          "099720109477"
+        ],
+        "most_recent": true
+      },
+      "subnet_id": "{{user `subnet_id`}}",
+      "vpc_id": "{{user `vpc_id`}}",
+      "tags": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "ssh_username": "ubuntu",
+      "ssh_pty": true
+    },
+    {
+      "type": "googlecompute",
+      "machine_type": "n1-standard-1",
+      "project_id": "{{user `googlecompute_project`}}",
+      "zone": "{{user `googlecompute_zone`}}",
+      "source_image_family": "ubuntu-2004-lts",
+      "image_name": "{{user `image_name_prefix`}}-{{timestamp}}",
+      "image_family": "{{user `image_family`}}",
+      "image_labels": {
+        "owner": "{{user `owner`}}",
+        "repository": "{{user `repository`}}",
+        "branch": "{{user `branch`}}"
+      },
+      "ssh_username": "packer"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "linux/aws/wait-for-cloud-init.sh",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "ubuntu/update.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "linux/files",
+      "destination": "/tmp"
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "linux/setup-files.sh"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "linux/aws/files",
+      "destination": "/tmp",
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "linux/aws/setup-files.sh"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "ubuntu/install-clang-format.sh",
+        "linux/install-cmake.sh",
+        "ubuntu/install-jdk-11.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "ubuntu/aws/add-user-build.sh"
+      ],
+      "only": [
+        "amazon-ebs"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "inline": [
+        "apt-get -y install build-essential libc++-dev libc++abi-dev zlib1g-dev libssl-dev wget doxygen graphviz"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "ubuntu/cleanup.sh"
+      ]
+    }
+  ]
+}

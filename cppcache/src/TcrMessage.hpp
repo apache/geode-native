@@ -37,22 +37,26 @@
 #include <geode/Serializable.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "BucketServerLocation.hpp"
-#include "EventId.hpp"
 #include "EventIdMap.hpp"
-#include "FixedPartitionAttributesImpl.hpp"
 #include "InterestResultPolicy.hpp"
-#include "SerializationRegistry.hpp"
-#include "TcrChunkedContext.hpp"
-#include "VersionTag.hpp"
-#include "VersionedCacheableObjectPartList.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class ThinClientBaseDM;
 class TcrConnection;
 class TcrMessagePing;
+class BucketServerLocation;
+class EventId;
+class FixedPartitionAttributesImpl;
+class SerializationRegistry;
+class VersionTag;
+class VersionedCacheableObjectPartList;
+class MemberListForVersionStamp;
+class TcrChunkedResult;
+class DSMemberForVersionStamp;
 
 class TcrMessage {
  public:
@@ -170,7 +174,6 @@ class TcrMessage {
 
   } MsgType;
 
-  static bool isKeepAlive();
   static bool isUserInitiativeOps(const TcrMessage& msg);
 
   static std::shared_ptr<VersionTag> readVersionTagPart(
@@ -182,7 +185,7 @@ class TcrMessage {
                const SerializationRegistry& serializationRegistry,
                MemberListForVersionStamp& memberListForVersionStamp);
 
-  void startProcessChunk(ACE_Semaphore& finalizeSema);
+  void startProcessChunk(binary_semaphore& finalizeSema);
   // nullptr chunk means that this is the last chunk
   void processChunk(const std::vector<uint8_t>& chunk, int32_t chunkLen,
                     uint16_t endpointmemId,
@@ -230,10 +233,11 @@ class TcrMessage {
   Region* getRegion() const;
   int32_t getMessageType() const;
   void setMessageType(int32_t msgType);
-  void setMessageTypeRequest(int32_t msgType);  // the msgType of the request
-                                                // that was made if this is a
-                                                // reply
-  int32_t getMessageTypeRequest() const;
+
+  /**
+   * Set the msgType of the request that was made if this is a reply.
+   */
+  void setMessageTypeRequest(int32_t msgType);
   std::shared_ptr<CacheableKey> getKey() const;
   const std::shared_ptr<CacheableKey>& getKeyRef() const;
   std::shared_ptr<Cacheable> getValue() const;
@@ -246,10 +250,7 @@ class TcrMessage {
   const std::string& getException();
 
   const char* getMsgData() const;
-  const char* getMsgHeader() const;
-  const char* getMsgBody() const;
   size_t getMsgLength() const;
-  size_t getMsgBodyLength() const;
   std::shared_ptr<EventId> getEventId() const;
 
   int32_t getTransId() const;
@@ -258,19 +259,10 @@ class TcrMessage {
   std::chrono::milliseconds getTimeout() const;
   void setTimeout(std::chrono::milliseconds timeout);
 
-  /* we need a static method to generate ping */
-  /* The caller should not delete the message since it is global. */
-  static TcrMessagePing* getPingMessage(CacheImpl* cacheImpl);
-  static TcrMessage* getAllEPDisMess();
-  /* we need a static method to generate close connection message */
-  /* The caller should not delete the message since it is global. */
-  static TcrMessage* getCloseConnMessage(CacheImpl* cacheImpl);
-  static void setKeepAlive(bool keepalive);
   bool isDurable() const;
   bool receiveValues() const;
   bool hasCqPart() const;
   uint32_t getMessageTypeForCq() const;
-  bool isInterestListPassed() const;
   bool shouldIgnore() const;
   int8_t getMetaDataVersion() const;
   uint32_t getEntryNotFound() const;
@@ -283,19 +275,14 @@ class TcrMessage {
   // set the chunked response handler
   void setChunkedResultHandler(TcrChunkedResult* chunkedResult);
   TcrChunkedResult* getChunkedResultHandler();
-  void setVersionedObjectPartList(
-      std::shared_ptr<VersionedCacheableObjectPartList> versionObjPartListptr);
 
-  std::shared_ptr<VersionedCacheableObjectPartList>
-  getVersionedObjectPartList();
-
-  DataInput* getDelta();
+  DataInput* getDelta() const;
   //  getDeltaBytes( ) is called *only* by CqService, returns a CacheableBytes
   //  that
   // takes ownership of delta bytes.
   std::shared_ptr<CacheableBytes> getDeltaBytes();
 
-  bool hasDelta();
+  bool hasDelta() const;
 
   void addSecurityPart(int64_t connectionId, int64_t unique_id,
                        TcrConnection* conn);
@@ -321,8 +308,6 @@ class TcrMessage {
 
   const std::string& getColocatedWith() const;
 
-  const std::string& getPartitionResolver() const;
-
   std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>*
   getMetadata();
 
@@ -334,10 +319,8 @@ class TcrMessage {
 
   void setCallBackArguement(bool aCallBackArguement);
 
-  void setBucketServerLocation(
-      std::shared_ptr<BucketServerLocation> serverLocation);
   void setVersionTag(std::shared_ptr<VersionTag> versionTag);
-  std::shared_ptr<VersionTag> getVersionTag();
+  std::shared_ptr<VersionTag> getVersionTag() const;
   uint8_t hasResult() const;
   std::shared_ptr<CacheableHashMap> getTombstoneVersions() const;
   std::shared_ptr<CacheableHashSet> getTombstoneKeys() const;
@@ -368,7 +351,6 @@ class TcrMessage {
   void readKeyPart(DataInput& input);
   void readBooleanPartAsObject(DataInput& input, bool* boolVal);
   void readIntPart(DataInput& input, uint32_t* intValue);
-  void readLongPart(DataInput& input, uint64_t* intValue);
   bool readExceptionPart(DataInput& input, uint8_t isLastChunk,
                          bool skipFirstPart = true);
   void readVersionTag(DataInput& input, uint16_t endpointMemId,
@@ -429,20 +411,14 @@ class TcrMessage {
   std::shared_ptr<Cacheable> m_callbackArgument;
   std::shared_ptr<VersionTag> m_versionTag;
   std::shared_ptr<EventId> m_eventid;
-  std::shared_ptr<CacheableVector> m_vectorPtr;
-  std::shared_ptr<BucketServerLocation> m_bucketServerLocation;
   std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
   std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
-  std::shared_ptr<VersionedCacheableObjectPartList> m_versionObjPartListptr;
   std::string m_exceptionMessage;
   std::string m_regionName;
   std::string m_regex;
-  std::vector<std::shared_ptr<BucketServerLocation>> m_bucketServerLocations;
   std::string m_colocatedWith;
-  std::string m_partitionResolverName;
   int32_t m_securityHeaderLength;
   int32_t m_msgType;
-  int32_t m_msgLength;
   /** the msgType of the request if this TcrMessage is  a reply msg */
   int32_t m_msgTypeRequest;
   int32_t m_txId;
@@ -452,7 +428,7 @@ class TcrMessage {
   int32_t m_deltaBytesLen;
   uint32_t m_entryNotFound;
   bool m_feAnotherHop;
-  bool isSecurityOn;
+  bool m_isSecurityOn;
   uint8_t m_isLastChunkAndisSecurityHeader;
   bool m_isSecurityHeaderAdded;
   bool m_isMetaRegion;
@@ -469,11 +445,6 @@ class TcrMessage {
   bool m_boolValue;
   bool m_isCallBackArguement;
   uint8_t m_hasResult;
-
-  static std::atomic<int32_t> m_transactionId;
-  static uint8_t* m_keepAlive;
-  const static int m_flag_empty;
-  const static int m_flag_concurrency_checks;
 
   friend class TcrMessageHelper;
 };
@@ -581,6 +552,7 @@ class TcrMessageDestroy : public TcrMessage {
   TcrMessageDestroy(DataOutput* dataOutput, const Region* region,
                     const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Cacheable>& value,
+                    bool isUserNullValue,
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 
@@ -911,14 +883,15 @@ class TcrMessageExecuteFunction : public TcrMessage {
 
 class TcrMessagePing : public TcrMessage {
  public:
-  TcrMessagePing(DataOutput* dataOutput, bool decodeAll);
+  explicit TcrMessagePing(std::unique_ptr<DataOutput> dataOutput);
 
   ~TcrMessagePing() override = default;
 };
 
 class TcrMessageCloseConnection : public TcrMessage {
  public:
-  TcrMessageCloseConnection(DataOutput* dataOutput, bool decodeAll);
+  TcrMessageCloseConnection(std::unique_ptr<DataOutput> dataOutput,
+                            bool keepAlive);
 
   ~TcrMessageCloseConnection() override = default;
 };
@@ -935,6 +908,11 @@ class TcrMessageReply : public TcrMessage {
   TcrMessageReply(bool decodeAll, ThinClientBaseDM* connectionDM);
 
   ~TcrMessageReply() override = default;
+};
+
+class TcrMessageAllEndpointsDisconnectedMarker : public TcrMessage {
+ public:
+  TcrMessageAllEndpointsDisconnectedMarker() = default;
 };
 
 /**

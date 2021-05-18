@@ -39,9 +39,9 @@ namespace client {
 const char* TcrEndpoint::NC_Notification = "NC Notification";
 
 TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
-                         ACE_Semaphore& failoverSema,
-                         ACE_Semaphore& cleanupSema,
-                         ACE_Semaphore& redundancySema, ThinClientBaseDM* DM,
+                         binary_semaphore& failoverSema,
+                         binary_semaphore& cleanupSema,
+                         binary_semaphore& redundancySema, ThinClientBaseDM* DM,
                          bool isMultiUserMode)
     : m_notifyConnection(nullptr),
       m_notifyReceiver(nullptr),
@@ -53,12 +53,12 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_needToConnectInLock(false),
       m_isQueueHosted(false),
       m_uniqueId(0),
-      m_failoverSema(failoverSema),
-      m_cleanupSema(cleanupSema),
-      m_redundancySema(redundancySema),
+      failover_semaphore_(failoverSema),
+      cleanup_semaphore_(cleanupSema),
+      redundancy_semaphore_(redundancySema),
       m_baseDM(DM),
       m_name(name),
-      m_notificationCleanupSema(0),
+      notification_cleanup_semaphore_(0),
       m_numberOfTimesFailed(0),
       m_numRegions(0),
       m_pingTimeouts(0),
@@ -68,20 +68,20 @@ TcrEndpoint::TcrEndpoint(const std::string& name, CacheImpl* cacheImpl,
       m_msgSent(false),
       m_pingSent(false),
       m_isMultiUserMode(isMultiUserMode),
-      m_connected(false),
+      connected_(false),
       m_isActiveEndpoint(false),
       m_serverQueueStatus(NON_REDUNDANT_SERVER),
       m_queueSize(0),
-      m_noOfConnRefs(0),
       m_distributedMemId(0),
-      m_isServerQueueStatusSet(false) {
+      m_isServerQueueStatusSet(false),
+      m_connCreatedWhenMaxConnsIsZero(false) {
   /*
   m_name = Utils::convertHostToCanonicalForm(m_name.c_str() );
   */
 }
 
 TcrEndpoint::~TcrEndpoint() {
-  m_connected = false;
+  connected_ = false;
   m_isActiveEndpoint = false;
   closeConnections();
   {
@@ -94,13 +94,15 @@ TcrEndpoint::~TcrEndpoint() {
           m_name.c_str());
       // fail in dev build to track #295 better in regressions
       m_numRegionListener = 0;
+      // TODO suspect
+      // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
       closeNotification();
     }
   }
   while (m_notifyCount > 0) {
     LOGDEBUG("TcrEndpoint::~TcrEndpoint(): reducing notify count at %d",
              m_notifyCount);
-    m_notificationCleanupSema.acquire();
+    notification_cleanup_semaphore_.acquire();
     m_notifyCount--;
   }
   LOGFINE("Connection to %s deleted", m_name.c_str());
@@ -144,9 +146,8 @@ GfErrType TcrEndpoint::createNewConnectionWL(
     if (locked) {
       try {
         LOGFINE("TcrEndpoint::createNewConnectionWL got lock");
-        newConn =
-            new TcrConnection(m_cacheImpl->tcrConnectionManager(), m_connected);
-        newConn->initTcrConnection(this, m_name.c_str(), m_ports,
+        newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager());
+        newConn->initTcrConnection(shared_from_this(), m_ports,
                                    isClientNotification, isSecondary,
                                    connectTimeout);
 
@@ -193,10 +194,9 @@ GfErrType TcrEndpoint::createNewConnection(
     try {
       if (newConn == nullptr) {
         if (!needtoTakeConnectLock() || !appThreadRequest) {
-          newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager(),
-                                      m_connected);
+          newConn = new TcrConnection(m_cacheImpl->tcrConnectionManager());
           bool authenticate = newConn->initTcrConnection(
-              this, m_name.c_str(), m_ports, isClientNotification, isSecondary,
+              shared_from_this(), m_ports, isClientNotification, isSecondary,
               connectTimeout);
           if (authenticate) {
             authenticateEndpoint(newConn);
@@ -209,7 +209,6 @@ GfErrType TcrEndpoint::createNewConnection(
             break;
           }
         }
-        // m_connected = true;
       }
       err = GF_NOERR;
       break;
@@ -354,7 +353,7 @@ ServerQueueStatus TcrEndpoint::getFreshServerQueueStatus(
       } else {
         statusConn = newConn;
       }
-      m_connected = true;
+      setConnected(true);
       return status;
     } else {
       //  remove port from ports list (which is sent to server in notification
@@ -393,12 +392,12 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
   } else if (!m_isActiveEndpoint) {
     int maxConnections = 0;
     if (isActiveEndpoint) {
-      if (m_connected) {
+      if (connected_) {
         maxConnections = m_maxConnections - 1;
       } else {
         maxConnections = m_maxConnections;
       }
-    } else if (!m_connected) {
+    } else if (!connected_) {
       maxConnections = 1;
     }
     if (maxConnections > 0) {
@@ -412,8 +411,8 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                        m_cacheImpl->getDistributedSystem()
                                            .getSystemProperties()
                                            .connectTimeout(),
-                                       0, m_connected)) != GF_NOERR) {
-          m_connected = false;
+                                       0, connected_)) != GF_NOERR) {
+          setConnected(false);
           m_isActiveEndpoint = false;
           closeConnections();
           return err;
@@ -424,12 +423,12 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
               (isSecondary ? "secondary server "
                            : (isActiveEndpoint ? "" : "primary server ")),
               m_name.c_str());
-      m_connected = true;
+      setConnected(true);
       m_isActiveEndpoint = isActiveEndpoint;
     }
   }
 
-  if (m_connected || connected) {
+  if (connected_ || connected) {
     if (clientNotification) {
       if (distMgr != nullptr) {
         std::lock_guard<decltype(m_distMgrsLock)> guardDistMgrs(m_distMgrsLock);
@@ -449,7 +448,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
                                                .connectTimeout() *
                                            3,
                                        0)) != GF_NOERR) {
-          m_connected = false;
+          setConnected(false);
           m_isActiveEndpoint = false;
           closeConnections();
           LOGWARN("Failed to start subscription channel for endpoint %s",
@@ -464,7 +463,7 @@ GfErrType TcrEndpoint::registerDM(bool clientNotification, bool isSecondary,
       ++m_numRegionListener;
       LOGFINEST("Incremented notification region count for endpoint %s to %d",
                 m_name.c_str(), m_numRegionListener);
-      m_connected = true;
+      setConnected(true);
     }
   }
 
@@ -499,20 +498,21 @@ void TcrEndpoint::unregisterDM(bool clientNotification,
 
 void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
   LOGDEBUG("Sending ping message to endpoint %s", m_name.c_str());
-  if (!m_connected || m_noOfConnRefs == 0) {
+  if (!connected_) {
     LOGFINER("Skipping ping task for disconnected endpoint %s", m_name.c_str());
     return;
   }
 
   if (!m_msgSent && !m_pingSent) {
-    TcrMessagePing* pingMsg = TcrMessage::getPingMessage(m_cacheImpl);
+    TcrMessagePing pingMsg(std::unique_ptr<DataOutput>(
+        new DataOutput(m_cacheImpl->createDataOutput())));
     TcrMessageReply reply(true, nullptr);
     LOGFINEST("Sending ping message to endpoint %s", m_name.c_str());
     GfErrType error;
     if (poolDM != nullptr) {
-      error = poolDM->sendRequestToEP(*pingMsg, reply, this);
+      error = poolDM->sendRequestToEP(pingMsg, reply, this);
     } else {
-      error = send(*pingMsg, reply);
+      error = send(pingMsg, reply);
     }
     LOGFINEST("Sent ping message to endpoint %s with error code %d%s",
               m_name.c_str(), error, error == GF_NOERR ? " (no error)" : "");
@@ -532,7 +532,7 @@ void TcrEndpoint::pingServer(ThinClientPoolDM* poolDM) {
       bool connected = (error == GF_NOERR)
                            ? (reply.getMessageType() == TcrMessage::REPLY)
                            : false;
-      if (m_connected != connected) {
+      if (connected_ != connected) {
         setConnectionStatus(connected);
       }
     }
@@ -550,7 +550,6 @@ bool TcrEndpoint::checkDupAndAdd(std::shared_ptr<EventId> eventid) {
 void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
-    TcrMessageReply* msg = nullptr;
     try {
       size_t dataLen;
       ConnErrType opErr = CONN_NOERR;
@@ -576,34 +575,32 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       }
 
       if (data) {
-        msg = new TcrMessageReply(true, m_baseDM);
-        msg->initCqMap();
-        msg->setData(data, static_cast<int32_t>(dataLen),
-                     getDistributedMemberID(),
-                     *(m_cacheImpl->getSerializationRegistry()),
-                     *(m_cacheImpl->getMemberListForVersionStamp()));
+        TcrMessageReply msg(true, m_baseDM);
+        msg.initCqMap();
+        msg.setData(data, static_cast<int32_t>(dataLen),
+                    getDistributedMemberID(),
+                    *(m_cacheImpl->getSerializationRegistry()),
+                    *(m_cacheImpl->getMemberListForVersionStamp()));
         handleNotificationStats(static_cast<int64_t>(dataLen));
-        LOGDEBUG("receive notification %d", msg->getMessageType());
+        LOGDEBUG("receive notification %d", msg.getMessageType());
 
         if (!isRunning) {
-          _GEODE_SAFE_DELETE(msg);
           break;
         }
 
-        if (msg->getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
+        if (msg.getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
           LOGFINE("Received ping from server subscription channel.");
         }
 
         // ignore some message types like REGISTER_INSTANTIATORS
-        if (msg->shouldIgnore()) {
-          _GEODE_SAFE_DELETE(msg);
+        if (msg.shouldIgnore()) {
           continue;
         }
 
-        bool isMarker = (msg->getMessageType() == TcrMessage::CLIENT_MARKER);
-        if (!msg->hasCqPart()) {
-          if (msg->getMessageType() != TcrMessage::CLIENT_MARKER) {
-            const std::string& regionFullPath1 = msg->getRegionName();
+        bool isMarker = (msg.getMessageType() == TcrMessage::CLIENT_MARKER);
+        if (!msg.hasCqPart()) {
+          if (msg.getMessageType() != TcrMessage::CLIENT_MARKER) {
+            const std::string& regionFullPath1 = msg.getRegionName();
             auto region1 = m_cacheImpl->getRegion(regionFullPath1);
 
             if (region1 != nullptr &&
@@ -614,18 +611,16 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
               // checking
               LOGFINER("Endpoint %s dropping event for region %s",
                        m_name.c_str(), regionFullPath1.c_str());
-              _GEODE_SAFE_DELETE(msg);
               continue;
             }
           }
         }
 
-        if (!checkDupAndAdd(msg->getEventId())) {
+        if (!checkDupAndAdd(msg.getEventId())) {
           m_dupCount++;
           if (m_dupCount % 100 == 1) {
             LOGFINE("Dropped %dst duplicate notification message", m_dupCount);
           }
-          _GEODE_SAFE_DELETE(msg);
           continue;
         }
 
@@ -633,11 +628,10 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
           LOGFINE("Got a marker message on endpont %s", m_name.c_str());
           m_cacheImpl->processMarker();
           processMarker();
-          _GEODE_SAFE_DELETE(msg);
         } else {
-          if (!msg->hasCqPart())  // || msg->isInterestListPassed())
+          if (!msg.hasCqPart())  // || msg.isInterestListPassed())
           {
-            const std::string& regionFullPath = msg->getRegionName();
+            const std::string& regionFullPath = msg.getRegionName();
             auto region = m_cacheImpl->getRegion(regionFullPath);
 
             if (region != nullptr) {
@@ -650,7 +644,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
                   regionFullPath.c_str());
             }
           } else {
-            LOGDEBUG("receive cq notification %d", msg->getMessageType());
+            LOGDEBUG("receive cq notification %d", msg.getMessageType());
             auto queryService = getQueryService();
             if (queryService != nullptr) {
               static_cast<RemoteQueryService*>(queryService.get())
@@ -673,7 +667,7 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       LOGFINER(
           "IO exception while receiving subscription event for endpoint %s: %s",
           m_name.c_str(), e.what());
-      if (m_connected) {
+      if (connected_) {
         setConnectionStatus(false);
         // close notification channel
         std::lock_guard<decltype(m_notifyReceiverLock)> guard(
@@ -685,13 +679,11 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
       }
       break;
     } catch (const Exception& ex) {
-      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Exception while receiving subscription event for endpoint %s:: %s: "
           "%s",
           m_name.c_str(), ex.getName().c_str(), ex.what());
     } catch (...) {
-      _GEODE_SAFE_DELETE(msg);
       LOGERROR(
           "Unexpected exception while "
           "receiving subscription event from endpoint %s",
@@ -721,19 +713,23 @@ inline bool TcrEndpoint::compareTransactionIds(int32_t reqTransId,
 
 inline bool TcrEndpoint::handleIOException(const std::string& message,
                                            TcrConnection*& conn, bool) {
-  int32_t lastError = ACE_OS::last_error();
-  if (lastError == ECONNRESET || lastError == EPIPE) {
+  auto last_error = Utils::getLastError();
+  auto last_error_val = last_error.value();
+  if (last_error_val == ECONNRESET || last_error_val == EPIPE ||
+      last_error_val == ENOTCONN) {
     _GEODE_SAFE_DELETE(conn);
   } else {
     closeConnection(conn);
   }
+
   LOGFINE(
       "IO error during send for endpoint %s "
       "[errno: %d: %s]: %s",
-      m_name.c_str(), lastError, ACE_OS::strerror(lastError), message.c_str());
+      m_name.c_str(), last_error.value(), last_error.message().c_str(),
+      message.c_str());
   // EAGAIN =11, EWOULDBLOCK = 10035L, EPIPE = 32, ECONNRESET =10054L(An
   // existing connection was forcibly closed by the remote host.)
-  if (!(lastError == EAGAIN || lastError == EWOULDBLOCK /*||
+  if (!(last_error_val == EAGAIN || last_error_val == EWOULDBLOCK /*||
         lastError == ECONNRESET */
         /*|| lastError == EPIPE*/)) {
     // break from enclosing loop without retries
@@ -741,6 +737,7 @@ inline bool TcrEndpoint::handleIOException(const std::string& message,
     m_needToConnectInLock = true;
     return false;
   }
+
   std::this_thread::sleep_for(std::chrono::milliseconds(10));
   return true;
 }
@@ -806,7 +803,6 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
       }
     }
     size_t dataLen;
-    LOGDEBUG("sendRequestConn: calling sendRequest");
     auto data = conn->sendRequest(request.getMsgData(), request.getMsgLength(),
                                   &dataLen, request.getTimeout(),
                                   reply.getTimeout(), request.getMessageType());
@@ -887,9 +883,9 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
     auto timeout = requestedTimeout;
     epFailure = false;
     if (useEPPool) {
-      if (m_maxConnections == 0) {
+      if (m_maxConnections == 0 && !m_connCreatedWhenMaxConnsIsZero) {
         std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
-        if (m_maxConnections == 0) {
+        if (m_maxConnections == 0 && !m_connCreatedWhenMaxConnsIsZero) {
           LOGFINE(
               "Creating a new connection when connection-pool-size system "
               "property set to 0");
@@ -901,7 +897,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
             epFailure = true;
             continue;
           }
-          m_maxConnections = 1;
+          m_connCreatedWhenMaxConnsIsZero = true;
         }
       }
     }
@@ -909,7 +905,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
              m_name.c_str());
     if (createNewConn) {
       createNewConn = false;
-      if (!m_connected) {
+      if (!connected_) {
         return GF_NOTCON;
       } else if ((error =
                       createNewConnection(conn, false, false,
@@ -928,7 +924,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
       // max wait time to get a connection
       conn = m_opConnections.getUntil(timeout);
     }
-    if (!m_connected) {
+    if (!connected_) {
       return GF_NOTCON;
     }
     if (conn != nullptr) {
@@ -996,9 +992,7 @@ GfErrType TcrEndpoint::sendRequestWithRetry(
                 failReason.c_str());
         if (compareTransactionIds(reqTransId, reply.getTransId(), failReason,
                                   conn)) {
-          if (Log::warningEnabled()) {
-            LOGWARN("Stack trace: %s", ex.getStackTrace().c_str());
-          }
+          LOGWARN("Stack trace: %s", ex.getStackTrace().c_str());
           error = GF_MSG;
           if (useEPPool) {
             m_opConnections.put(conn, false);
@@ -1134,6 +1128,17 @@ GfErrType TcrEndpoint::sendRequestConnWithRetry(const TcrMessage& request,
   return error;
 }
 
+void TcrEndpoint::setConnected(bool status) {
+  bool flag = !status;
+  if (connected_.compare_exchange_strong(flag, status)) {
+    if (status) {
+      m_baseDM->incConnectedEndpoints();
+    } else {
+      m_baseDM->decConnectedEndpoints();
+    }
+  }
+}
+
 void TcrEndpoint::setConnectionStatus(bool status) {
   // : Store the original value of m_isActiveEndpoint.
   // This is to try make failover more resilient for the case when
@@ -1147,17 +1152,18 @@ void TcrEndpoint::setConnectionStatus(bool status) {
   // bool wasActive = m_isActiveEndpoint;
   // Then after taking the lock:
   // If ( !wasActive && isActiveEndpoint ) { return; }
-  std::lock_guard<decltype(m_connectionLock)> guard(m_connectionLock);
-  if (m_connected != status) {
-    bool connected = m_connected;
-    m_connected = status;
-    if (connected) {
+  bool flag = !status;
+  if (connected_.compare_exchange_strong(flag, status)) {
+    if (status) {
+      m_baseDM->incConnectedEndpoints();
+    } else {
       m_numberOfTimesFailed += 1;
       m_isAuthenticated = false;
       // disconnected
       LOGFINE("Disconnecting from endpoint %s", m_name.c_str());
       closeConnections();
       m_isActiveEndpoint = false;
+      m_baseDM->decConnectedEndpoints();
       LOGFINE("Disconnected from endpoint %s", m_name.c_str());
       triggerRedundancyThread();
     }
@@ -1165,22 +1171,23 @@ void TcrEndpoint::setConnectionStatus(bool status) {
 }
 
 void TcrEndpoint::triggerRedundancyThread() {
-  m_failoverSema.release();
-  m_redundancySema.release();
+  failover_semaphore_.release();
+  redundancy_semaphore_.release();
 }
 
 void TcrEndpoint::closeConnection(TcrConnection*& conn) {
   conn->close();
   m_ports.erase(conn->getPort());
-  _GEODE_SAFE_DELETE(conn);
+  try {
+    _GEODE_SAFE_DELETE(conn);
+  } catch (...) {
+  }
 }
 
 void TcrEndpoint::closeConnections() {
   m_opConnections.close();
   m_ports.clear();
-  m_maxConnections = m_cacheImpl->getDistributedSystem()
-                         .getSystemProperties()
-                         .connectionPoolSize();
+  m_connCreatedWhenMaxConnsIsZero = false;
 }
 
 /*
@@ -1199,9 +1206,9 @@ void TcrEndpoint::closeNotification() {
   m_notifyReceiver->stopNoblock();
   TcrConnectionManager& tccm = m_cacheImpl->tcrConnectionManager();
   tccm.addNotificationForDeletion(m_notifyReceiver.get(), m_notifyConnection,
-                                  m_notificationCleanupSema);
+                                  notification_cleanup_semaphore_);
   m_notifyCount++;
-  m_cleanupSema.release();
+  cleanup_semaphore_.release();
   m_isQueueHosted = false;
   LOGFINEST(
       "Added susbcription channel for deletion and "

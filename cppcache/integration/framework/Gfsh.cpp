@@ -29,6 +29,8 @@ Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
 
 Gfsh::Deploy Gfsh::deploy() { return Deploy(*this); }
 
+Gfsh::ExecuteFunction Gfsh::executeFunction() { return ExecuteFunction(*this); }
+
 Gfsh::Verb::Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Start::Start(Gfsh &gfsh) : gfsh_(gfsh) {}
@@ -60,16 +62,17 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withPort(const uint16_t &port) {
   return *this;
 }
 
-Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(const std::vector<uint16_t> &locatorPorts) {
+Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(
+    const std::vector<uint16_t> &locatorPorts) {
   // Example: --J='-Dgemfire.remote-locators=localhost[9009],localhost[9010]'
-  if ( !locatorPorts.empty() ) {
+  if (!locatorPorts.empty()) {
     command_ += " --J='-Dgemfire.remote-locators=";
-    bool firstLocator=true;
+    bool firstLocator = true;
     for (uint16_t locatorPort : locatorPorts) {
-      if (firstLocator){
+      if (firstLocator) {
         command_ += "localhost[" + std::to_string(locatorPort) + "]";
-        firstLocator=false;
-      }else{
+        firstLocator = false;
+      } else {
         command_ += ",localhost[" + std::to_string(locatorPort) + "]";
       }
     }
@@ -78,9 +81,10 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(const std::vector
   return *this;
 }
 
-Gfsh::Start::Locator &Gfsh::Start::Locator::withDistributedSystemId(const uint16_t &dsId) {
-  if ( dsId != 0 ){
-    command_ += " --J=-Dgemfire.distributed-system-id="+std::to_string(dsId);
+Gfsh::Start::Locator &Gfsh::Start::Locator::withDistributedSystemId(
+    const uint16_t &dsId) {
+  if (dsId != 0) {
+    command_ += " --J=-Dgemfire.distributed-system-id=" + std::to_string(dsId);
   }
   return *this;
 }
@@ -123,12 +127,6 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withSecurityManager(
   if (!securityManager.empty()) {
     command_ += " --J=-Dgemfire.security-manager=" + securityManager;
   }
-  return *this;
-}
-
-Gfsh::Start::Locator &Gfsh::Start::Locator::withConnect(
-    const std::string connect) {
-  command_ += " --connect=" + connect;
   return *this;
 }
 
@@ -349,6 +347,20 @@ Gfsh::Start::Server &Gfsh::Start::Server::withHostNameForClients(
   return *this;
 }
 
+Gfsh::Start::Server &Gfsh::Start::Server::withSystemProperty(
+    const std::string &key, const std::string &value) {
+  command_ += " --J=-D" + key + "=" + value;
+  return *this;
+}
+
+Gfsh::Start::Server &Gfsh::Start::Server::withConserveSockets(
+    bool conserveSockets) {
+  if (conserveSockets) {
+    command_ += " --J=-Dgemfire.conserve-sockets=true";
+  }
+  return *this;
+}
+
 Gfsh::Stop::Stop(Gfsh &gfsh) : gfsh_(gfsh) {}
 
 Gfsh::Stop::Server Gfsh::Stop::server() { return Server{gfsh_}; }
@@ -395,38 +407,55 @@ Gfsh::Create::Region &Gfsh::Create::Region::withType(const std::string &type) {
   return *this;
 }
 
-Gfsh::Create::Region &Gfsh::Create::Region::withRedundantCopies(const std::string &copies) {
+Gfsh::Create::Region &Gfsh::Create::Region::withRedundantCopies(
+    const std::string &copies) {
   command_ += " --redundant-copies=" + copies;
   return *this;
 }
 
-Gfsh::Create::Region &Gfsh::Create::Region::withBuckets(const std::string &totalNumBuckets) {
+Gfsh::Create::Region &Gfsh::Create::Region::withBuckets(
+    const std::string &totalNumBuckets) {
   command_ += " --total-num-buckets=" + totalNumBuckets;
   return *this;
 }
 
-Gfsh::Create::Region &Gfsh::Create::Region::withGatewaySenderId(const std::string &gatewaySenderId) {
+Gfsh::Create::Region &Gfsh::Create::Region::withGatewaySenderId(
+    const std::string &gatewaySenderId) {
   command_ += " --gateway-sender-id=" + gatewaySenderId;
   return *this;
 }
 
-Gfsh::Create::GatewaySender Gfsh::Create::gatewaySender() { return GatewaySender{gfsh_}; }
+Gfsh::Create::GatewaySender Gfsh::Create::gatewaySender() {
+  return GatewaySender{gfsh_};
+}
 
-Gfsh::Create::GatewaySender::GatewaySender(Gfsh &gfsh) : Command(gfsh, "create gateway-sender") {}
+Gfsh::Create::Region &Gfsh::Create::Region::withPartitionResolver(
+    const std::string &partitionResolver) {
+  command_ += " --partition-resolver=" + partitionResolver;
+  return *this;
+}
 
-Gfsh::Create::GatewaySender &Gfsh::Create::GatewaySender::withId(const std::string &id){
+Gfsh::Create::GatewaySender::GatewaySender(Gfsh &gfsh)
+    : Command(gfsh, "create gateway-sender") {}
+
+Gfsh::Create::GatewaySender &Gfsh::Create::GatewaySender::withId(
+    const std::string &id) {
   command_ += " --id=" + id;
   return *this;
 }
 
-Gfsh::Create::GatewaySender &Gfsh::Create::GatewaySender::withRemoteDSId(const std::string &remoteDSId){
+Gfsh::Create::GatewaySender &Gfsh::Create::GatewaySender::withRemoteDSId(
+    const std::string &remoteDSId) {
   command_ += " --remote-distributed-system-id=" + remoteDSId;
   return *this;
 }
 
-Gfsh::Create::GatewayReceiver Gfsh::Create::gatewayReceiver() { return GatewayReceiver{gfsh_}; }
+Gfsh::Create::GatewayReceiver Gfsh::Create::gatewayReceiver() {
+  return GatewayReceiver{gfsh_};
+}
 
-Gfsh::Create::GatewayReceiver::GatewayReceiver(Gfsh &gfsh) : Command(gfsh, "create gateway-receiver") {}
+Gfsh::Create::GatewayReceiver::GatewayReceiver(Gfsh &gfsh)
+    : Command(gfsh, "create gateway-receiver") {}
 
 Gfsh::Connect::Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
@@ -508,4 +537,21 @@ void Gfsh::Command<void>::execute(const std::string &user,
 template <>
 void Gfsh::Command<void>::execute() {
   gfsh_.execute(command_, "", "", "", "", "", "");
+}
+
+Gfsh::ExecuteFunction::ExecuteFunction(Gfsh &gfsh)
+    : Command{gfsh, "execute function"} {}
+
+Gfsh::ExecuteFunction &Gfsh::ExecuteFunction::withId(
+    const std::string &functionId) {
+  command_ += " --id=" + functionId;
+
+  return *this;
+}
+
+Gfsh::ExecuteFunction &Gfsh::ExecuteFunction::withMember(
+    const std::string &memberName) {
+  command_ += " --member=" + memberName;
+
+  return *this;
 }

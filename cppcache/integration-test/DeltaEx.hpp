@@ -68,7 +68,7 @@ class DeltaEx : public DataSerializable, public Delta {
     int32_t val = in.readInt32();
     if (fromDeltaCount == 1) {
       fromDeltaCount++;
-      LOG("Invalid Delta expetion thrown");
+      LOG("Invalid Delta exception thrown");
       throw InvalidDeltaException("aaannn");
     }
     counter += val;
@@ -120,7 +120,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
     int32_t val = in.readInt32();
     if (m_fromDeltaCount == 1) {
       m_fromDeltaCount++;
-      LOG("Invalid Delta expetion thrown");
+      LOG("Invalid Delta exception thrown");
       throw InvalidDeltaException("aaannn");
     }
     m_counter += val;

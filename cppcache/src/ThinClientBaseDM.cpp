@@ -21,6 +21,7 @@
 
 #include <geode/AuthenticatedView.hpp>
 
+#include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
@@ -41,7 +42,7 @@ ThinClientBaseDM::ThinClientBaseDM(TcrConnectionManager& connManager,
       m_chunks(true),
       m_chunkProcessor(nullptr) {}
 
-ThinClientBaseDM::~ThinClientBaseDM() = default;
+ThinClientBaseDM::~ThinClientBaseDM() noexcept = default;
 
 void ThinClientBaseDM::init() {
   const auto& systemProperties = m_connManager.getCacheImpl()
@@ -72,8 +73,7 @@ void ThinClientBaseDM::destroy(bool) {
 GfErrType ThinClientBaseDM::sendSyncRequestRegisterInterest(
     TcrMessage& request, TcrMessageReply& reply, bool attemptFailover,
     ThinClientRegion*, TcrEndpoint* endpoint) {
-  GfErrType err = GF_NOERR;
-
+  GfErrType err;
   if (endpoint == nullptr) {
     err = sendSyncRequest(request, reply, attemptFailover);
   } else {
@@ -130,7 +130,11 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
       const auto& exceptStr = reply.getException();
       if (!exceptStr.empty()) {
         bool markServerDead = unrecoverableServerError(exceptStr);
-        bool doFailover = (markServerDead || nonFatalServerError(exceptStr));
+        bool cacheClosedEx =
+            (exceptStr.find("org.apache.geode.cache.CacheClosedException") !=
+             std::string::npos);
+        bool doFailover =
+            (markServerDead || cacheClosedEx || nonFatalServerError(exceptStr));
         if (doFailover) {
           LOGFINE(
               "ThinClientDistributionManager::sendRequestToEP: retrying for "
@@ -150,10 +154,9 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
 GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
                                                   TcrMessageReply& reply,
                                                   TcrEndpoint* ep) {
-  GfErrType error = GF_NOERR;
   LOGDEBUG("ThinClientBaseDM::sendRequestToEP: invoking endpoint send for: %s",
            ep->name().c_str());
-  error = ep->send(request, reply);
+  auto error = ep->send(request, reply);
   LOGDEBUG(
       "ThinClientBaseDM::sendRequestToEP: completed endpoint send for: %s "
       "[error:%d]",
@@ -169,9 +172,7 @@ GfErrType ThinClientBaseDM::sendRequestToEndPoint(const TcrMessage& request,
  * This method is for exceptions when server should be marked as dead.
  */
 bool ThinClientBaseDM::unrecoverableServerError(const std::string& exceptStr) {
-  return ((exceptStr.find("org.apache.geode.cache.CacheClosedException") !=
-           std::string::npos) ||
-          (exceptStr.find("org.apache.geode.distributed.ShutdownException") !=
+  return ((exceptStr.find("org.apache.geode.distributed.ShutdownException") !=
            std::string::npos) ||
           (exceptStr.find("java.lang.OutOfMemoryError") != std::string::npos));
 }
@@ -219,13 +220,23 @@ void ThinClientBaseDM::processChunks(std::atomic<bool>& isRunning) {
   TcrChunkedContext* chunk;
   LOGFINE("Starting chunk process thread for region %s",
           (m_region ? m_region->getFullPath().c_str() : "(null)"));
+
+  std::chrono::milliseconds wait_for_chunk{100};
+  chunk = m_chunks.getFor(wait_for_chunk);
+
   while (isRunning) {
-    chunk = m_chunks.getFor(std::chrono::microseconds(100000));
     if (chunk) {
       chunk->handleChunk(false);
       _GEODE_SAFE_DELETE(chunk);
     }
+
+    chunk = m_chunks.getFor(wait_for_chunk);
   }
+
+  if (chunk) {
+    _GEODE_SAFE_DELETE(chunk);
+  }
+
   LOGFINE("Ending chunk process thread for region %s",
           (m_region ? m_region->getFullPath().c_str() : "(null)"));
 }
@@ -262,9 +273,8 @@ void ThinClientBaseDM::beforeSendingRequest(const TcrMessage& request,
       this->isSecurityOn(), this->isMultiUserMode(), request.getMessageType());
   if (!(request.isMetaRegion()) && TcrMessage::isUserInitiativeOps(request) &&
       (this->isSecurityOn() || this->isMultiUserMode())) {
-    int64_t connId = 0;
+    int64_t connId;
     int64_t uniqueId = 0;
-
     if (!this->isMultiUserMode()) {
       connId = conn->getConnectionId();
       uniqueId = conn->getEndpointObject()->getUniqueId();

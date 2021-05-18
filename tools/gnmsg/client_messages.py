@@ -17,20 +17,19 @@ import sys
 import json
 
 from read_values import (
-    read_number_from_hex_string,
-    read_byte_value,
-    read_number_from_hex_string,
-    read_short_value,
-    read_number_from_hex_string,
-    read_int_value,
-    read_long_value,
-    read_string_value,
-    read_jmutf8_string_value,
-    read_number_from_hex_string,
     call_reader_function,
-    read_cacheable,
     parse_key_or_value,
+    read_byte_value,
+    read_cacheable,
+    read_int_value,
+    read_jmutf8_string_value,
+    read_long_value,
+    read_short_value,
+    read_string_value,
+    read_unsigned_byte_value,
 )
+from read_parts import read_object_header, read_int_part
+from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
 
 CHARS_IN_MESSAGE_HEADER = 34
 
@@ -265,6 +264,16 @@ def read_close_connection_message(properties, message_bytes, offset):
     properties["ObjectPart"] = object_part
 
 
+def read_contains_key_message(properties, message_bytes, offset):
+    (properties["RegionPart"], offset) = parse_region_part(message_bytes, offset)
+    (properties["Key"], offset) = parse_key_or_value(message_bytes, offset)
+    (request_type, offset) = parse_raw_int_part(message_bytes, offset)
+    if request_type["Value"] == 1:
+        properties["RequestType"] == "ContainsValueForKey"
+    else:
+        properties["RequestType"] = "ContainsKey"
+
+
 def read_destroy_message(properties, message_bytes, offset):
     if properties["Parts"] > 5:
         raise Exception(
@@ -372,38 +381,67 @@ def read_execute_function_message(properties, message_bytes, offset):
     (properties["FunctionName"], offset) = parse_region_part(message_bytes, offset)
     (properties["Arguments"], offset) = parse_object_part(message_bytes, offset)
 
+
 def parse_getall_optional_callback_arguments(message_bytes, offset):
     (local_object, local_offset) = parse_object_part(message_bytes, offset)
-    if (local_object["IsObject"] == 0):
+    if local_object["IsObject"] == 0:
         (local_object, local_offset) = parse_raw_int_part(message_bytes, offset)
     return (local_object, local_offset)
+
 
 def read_get_all_70_message(properties, message_bytes, offset):
     (properties["Region"], offset) = parse_region_part(message_bytes, offset)
     (properties["KeyList"], offset) = parse_key_or_value(message_bytes, offset)
-    (properties["CallbackArguments"], offset) = parse_getall_optional_callback_arguments(message_bytes, offset)
+    (
+        properties["CallbackArguments"],
+        offset,
+    ) = parse_getall_optional_callback_arguments(message_bytes, offset)
+
 
 def read_key_set(properties, message_bytes, offset):
     (properties["Region"], offset) = parse_region_part(message_bytes, offset)
 
+
+def read_object_as_raw_bytes(message_bytes, offset):
+    raw_bytes_part, offset = read_object_header(message_bytes, offset)
+
+    bytes_string = ""
+    for i in range(raw_bytes_part["Size"]):
+        if i:
+            bytes_string += " "
+        byte_val, offset = call_reader_function(
+            message_bytes, offset, read_unsigned_byte_value
+        )
+        bytes_string += decimal_string_to_hex_string(str(byte_val))
+    raw_bytes_part["Bytes"] = bytes_string
+    return raw_bytes_part, offset
+
+
+def read_add_pdx_type_message(properties, message_bytes, offset):
+    properties["PdxType"], offset = read_object_as_raw_bytes(message_bytes, offset)
+    properties["TypeId"], offset = read_int_part(message_bytes, offset)
+
+
 client_message_parsers = {
-    "PUT": read_put_message,
-    "REQUEST": read_request_message,
+    "ADD_PDX_TYPE": read_add_pdx_type_message,
+    "CLOSECQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
     "CLOSE_CONNECTION": read_close_connection_message,
+    "CONTAINS_KEY": read_contains_key_message,
     "DESTROY": read_destroy_message,
-    "GET_CLIENT_PARTITION_ATTRIBUTES": read_get_client_partition_attributes_message,
-    "GET_CLIENT_PR_METADATA": read_get_client_pr_metadata_message,
-    "QUERY": read_query_message,
-    "USER_CREDENTIAL_MESSAGE": read_user_credential_message,
     "EXECUTECQ_MSG_TYPE": read_executecq_msg_type_message,
     "EXECUTECQ_WITH_IR_MSG_TYPE": read_executecq_with_ir_msg_type_message,
-    "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
-    "CLOSECQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
-    "GET_ALL_70": read_get_all_70_message,
-    "KEY_SET": read_key_set,
-    "GET_PDX_ID_FOR_TYPE": read_get_pdx_id_for_type_message,
-    "GET_FUNCTION_ATTRIBUTES": read_get_function_attributes_message,
     "EXECUTE_FUNCTION": read_execute_function_message,
+    "GET_ALL_70": read_get_all_70_message,
+    "GET_CLIENT_PARTITION_ATTRIBUTES": read_get_client_partition_attributes_message,
+    "GET_CLIENT_PR_METADATA": read_get_client_pr_metadata_message,
+    "GET_FUNCTION_ATTRIBUTES": read_get_function_attributes_message,
+    "GET_PDX_ID_FOR_TYPE": read_get_pdx_id_for_type_message,
+    "KEY_SET": read_key_set,
+    "PUT": read_put_message,
+    "QUERY": read_query_message,
+    "REQUEST": read_request_message,
+    "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
+    "USER_CREDENTIAL_MESSAGE": read_user_credential_message,
 }
 
 
@@ -411,7 +449,9 @@ def parse_client_message(properties, message_bytes):
     offset = CHARS_IN_MESSAGE_HEADER
     if properties["Type"] in client_message_parsers.keys():
         try:
-            client_message_parsers[properties["Type"]](properties, message_bytes, offset)
+            client_message_parsers[properties["Type"]](
+                properties, message_bytes, offset
+            )
         except:
             properties["ERROR"] = "Exception reading message - probably incomplete"
             return

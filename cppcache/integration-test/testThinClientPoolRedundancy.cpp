@@ -30,7 +30,7 @@
 
 bool isLocalServer = false;
 bool isLocator = false;
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 const char *poolRegNames[] = {"PoolRegion1", "PoolRegion2", "PoolRegion3"};
 const char *poolNames[] = {"Pool1", "Pool2", "Pool3"};

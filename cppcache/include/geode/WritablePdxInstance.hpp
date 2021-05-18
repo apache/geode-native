@@ -39,10 +39,7 @@ class CacheableObjectArray;
  */
 class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
  public:
-  /**
-   * @brief destructor
-   */
-  virtual ~WritablePdxInstance() = default;
+  ~WritablePdxInstance() noexcept override = default;
 
   /**
    * Set the existing named field to the given value.

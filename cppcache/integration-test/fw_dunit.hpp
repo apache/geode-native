@@ -117,21 +117,23 @@ END_TASK(validate)
 
 #include <string>
 
-#include <ace/ACE.h>
-#include <signal.h>
+#include <boost/interprocess/managed_shared_memory.hpp>
 
-#define ASSERT(x, y)                                   \
-  do {                                                 \
-  if (!(x)) {                                          \
-    throw dunit::TestException(y, __LINE__, __FILE__); \
-  }                                                    \
-  } while(false)
-#define XASSERT(x)                                      \
-  do {                                                  \
-  if (!(x)) {                                           \
-    throw dunit::TestException(#x, __LINE__, __FILE__); \
-  }                                                     \
-  } while(false)
+#include <signal.h>
+#include "TimeBomb.hpp"
+
+#define ASSERT(x, y)                                     \
+  do {                                                   \
+    if (!(x)) {                                          \
+      throw dunit::TestException(y, __LINE__, __FILE__); \
+    }                                                    \
+  } while (false)
+#define XASSERT(x)                                        \
+  do {                                                    \
+    if (!(x)) {                                           \
+      throw dunit::TestException(#x, __LINE__, __FILE__); \
+    }                                                     \
+  } while (false)
 #define FAIL(y) throw dunit::TestException(y, __LINE__, __FILE__)
 #define LOG(y) dunit::log(y, __LINE__, __FILE__)
 #define LOGCOORDINATOR(y) dunit::logCoordinator(y, __LINE__, __FILE__)
@@ -155,7 +157,7 @@ END_TASK(validate)
     DCLASSNAME(y)() { init(x); }                               \
                                                                \
    public:                                                     \
-    virtual void doTask() {                                    \
+    void doTask() override {                                   \
       static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 // Close the class definition produced by DUNIT_TASK macro.
@@ -200,10 +202,10 @@ END_TASK(validate)
 #define DUNIT_TASK_DEFINITION(x, y)                            \
   class DCLASSDEF(y) : virtual public dunit::Task {            \
    public:                                                     \
-    DCLASSDEF(y)() { init(x, true); }                                \
+    DCLASSDEF(y)() { init(x, true); }                          \
                                                                \
    public:                                                     \
-    virtual void doTask() {                                    \
+    void doTask() override {                                   \
       static const char* fwtest_Name = DTASKDESC(y, __LINE__); \
       try {
 #define END_TASK_DEFINITION                       \
@@ -224,7 +226,9 @@ END_TASK(validate)
   }                                               \
   }                                               \
   ;
-#define CALL_TASK(y); DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)()
+#define CALL_TASK(y) \
+  ;                  \
+  DCLASSDEF(y) * DVARNAME(y) = new DCLASSDEF(y)()
 
 #define DUNIT_MAIN         \
   class DCLASSNAME(Main) { \
@@ -255,7 +259,7 @@ END_TASK(validate)
 #define s1p2 2
 #define s2p1 3
 #define s2p2 4
-
+extern ClientCleanup gClientCleanup;
 namespace dunit {
 
 void logCoordinator(std::string s, int lineno, const char* filename);
@@ -277,7 +281,7 @@ class Task {
   bool m_isHeapAllocated;
 
   Task() {}
-  virtual ~Task() { }
+  virtual ~Task() {}
 
   /** register task with worker. */
   void init(int sId);
@@ -292,47 +296,7 @@ class Task {
   std::string typeName();
 };
 
-/** Shared naming context for storing ints and strings between processes.
- *  To acquire the naming context, use the globals() function which
- *  returns a pointer for the naming context.
- */
-class NamingContext {
- public:
-  /**
-   * Share a string value, return -1 if there is a failure to store value,
-   * otherwise returns 0.
-   */
-  virtual int rebind(const char* key, const char* value) = 0;
-
-  /**
-   * Share an int value, return -1 if there is a failure to store value,
-   * otherwise returns 0.
-   */
-  virtual int rebind(const char* key, int value) = 0;
-
-  /**
-   * retreive a value by key, storing the result in the users buf. If the key
-   * is not found, the buf will contain the empty string "". Make sure the
-   * buffer is big enough to hold whatever has have bound.
-   */
-  virtual void getValue(const char* key, char* buf, size_t sizeOfBuf) = 0;
-
-  /**
-   * return the value by key, as an int using the string to int conversion
-   * rules of atoi.
-   */
-  virtual int getIntValue(const char* key) = 0;
-
-  /** dump the entire context in LOG messages. */
-  virtual void dump() = 0;
-
-  virtual ~NamingContext() noexcept = default;
-};
-
-extern "C" {
-
-NamingContext* globals();
-}
+extern boost::interprocess::managed_shared_memory& globals();
 
 /**
  * Exception type to use when test framework has trouble or if ASSERT and FAIL
@@ -343,19 +307,19 @@ NamingContext* globals();
  */
 class TestException {
  public:
-  TestException(const char* msg, int lineno, const char* filename)
-      : m_message(const_cast<char*>(msg)),
+  TestException(const std::string& msg, int lineno, const std::string& filename)
+      : m_message(msg),
         m_lineno(lineno),
-        m_filename(const_cast<char*>(filename)) {}
+        m_filename(filename) {}
 
   void print() {
     fprintf(stdout, "#### TestException: %s in %s at line %d\n",
-            m_message.c_str(), m_filename, m_lineno);
+            m_message.c_str(), m_filename.c_str(), m_lineno);
     fflush(stdout);
   }
   std::string m_message;
   int m_lineno;
-  char* m_filename;
+  std::string m_filename;
 };
 
 int dmain(int argc, char* argv[]);
@@ -364,11 +328,9 @@ int dmain(int argc, char* argv[]);
 
 #ifndef __DUNIT_NO_MAIN__
 
-int ACE_TMAIN(int argc, ACE_TCHAR* argv[]) { return dunit::dmain(argc, argv); }
+int main(int argc, char* argv[]) { return dunit::dmain(argc, argv); }
 
 #endif  // __DUNIT_NO_MAIN__
-
-#include "fw_perf.hpp"
 
 namespace test {}  // namespace test
 #endif             // GEODE_INTEGRATION_TEST_FW_DUNIT_H_

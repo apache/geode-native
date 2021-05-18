@@ -28,7 +28,7 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "ExpiryTaskManager.hpp"
+#include "ExpiryTask.hpp"
 #include "Queue.hpp"
 #include "Task.hpp"
 #include "ThinClientRedundancyManager.hpp"
@@ -50,6 +50,10 @@ class ThinClientRegion;
  */
 class TcrConnectionManager {
  public:
+  using endpoint_map_type = synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>;
+
   explicit TcrConnectionManager(CacheImpl* cache);
   ~TcrConnectionManager();
   void init(bool isPool = false);
@@ -59,10 +63,8 @@ class TcrConnectionManager {
   void disconnect(ThinClientBaseDM* distMng,
                   std::vector<TcrEndpoint*>& endpoints,
                   bool keepEndpoints = false);
-  int checkConnection(const ACE_Time_Value&, const void*);
-  int checkRedundancy(const ACE_Time_Value&, const void*);
-  int processEventIdMap(const ACE_Time_Value&, const void*);
-  ExpiryTaskManager::id_type getPingTaskId();
+
+  void ping_endpoints();
   void close();
 
   void readyForEvents();
@@ -74,11 +76,7 @@ class TcrConnectionManager {
   void setClientCrashTEST() { TEST_DURABLE_CLIENT_CRASH = true; }
   volatile static bool TEST_DURABLE_CLIENT_CRASH;
 
-  inline synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                          std::recursive_mutex>&
-  getGlobalEndpoints() {
-    return m_endpoints;
-  }
+  inline endpoint_map_type& getGlobalEndpoints() { return m_endpoints; }
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
   int getNumEndPoints();
@@ -90,15 +88,13 @@ class TcrConnectionManager {
 
   void addNotificationForDeletion(Task<TcrEndpoint>* notifyReceiver,
                                   TcrConnection* notifyConnection,
-                                  ACE_Semaphore& notifyCleanupSema);
+                                  binary_semaphore& notifyCleanupSema);
 
   void processMarker();
 
   bool getEndpointStatus(const std::string& endpoint);
 
-  void addPoolEndpoints(TcrEndpoint* endpoint) {
-    m_poolEndpointList.push_back(endpoint);
-  }
+  int getNumberOfTimeEndpointDisconnected(const std::string& endpoint);
 
   bool isDurable() { return m_isDurable; }
   bool haEnabled() { return m_redundancyManager->m_HAenabled; }
@@ -112,7 +108,7 @@ class TcrConnectionManager {
       TcrHADistributionManager* theHADM = nullptr,
       ThinClientRegion* region = nullptr);
 
-  inline void triggerRedundancyThread() { m_redundancySema.release(); }
+  inline void triggerRedundancyThread() { redundancy_semaphore_.release(); }
 
   inline void acquireRedundancyLock() {
     m_redundancyManager->acquireRedundancyLock();
@@ -141,16 +137,13 @@ class TcrConnectionManager {
  private:
   CacheImpl* m_cache;
   volatile bool m_initGuard;
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>
-      m_endpoints;
-  std::list<TcrEndpoint*> m_poolEndpointList;
+  endpoint_map_type m_endpoints;
 
   // key is hostname:port
   std::list<ThinClientBaseDM*> m_distMngrs;
   std::recursive_mutex m_distMngrsLock;
 
-  ACE_Semaphore m_failoverSema;
+  binary_semaphore failover_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_failoverTask;
 
   bool removeRefToEndpoint(TcrEndpoint* ep, bool keepEndpoint = false);
@@ -160,16 +153,15 @@ class TcrConnectionManager {
   void initializeHAEndpoints(const char* endpointsStr);
   void removeHAEndpoints();
 
-  ACE_Semaphore m_cleanupSema;
+  binary_semaphore cleanup_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_cleanupTask;
 
-  ExpiryTaskManager::id_type m_pingTaskId;
-  ExpiryTaskManager::id_type m_servermonitorTaskId;
+  ExpiryTask::id_t ping_task_id_;
   Queue<Task<TcrEndpoint>*> m_receiverReleaseList;
   Queue<TcrConnection*> m_connectionReleaseList;
-  Queue<ACE_Semaphore*> m_notifyCleanupSemaList;
+  Queue<binary_semaphore*> notify_cleanup_semaphore_list_;
 
-  ACE_Semaphore m_redundancySema;
+  binary_semaphore redundancy_semaphore_;
   std::unique_ptr<Task<TcrConnectionManager>> m_redundancyTask;
   std::recursive_mutex m_notificationLock;
   bool m_isDurable;
@@ -192,7 +184,6 @@ class TcrConnectionManager {
   friend class DistManagersLockGuard;
   friend class ThinClientPoolDM;
   friend class ThinClientPoolHADM;
-  static const char* NC_Redundancy;
   static const char* NC_Failover;
   static const char* NC_CleanUp;
 };

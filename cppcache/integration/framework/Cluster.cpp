@@ -17,8 +17,6 @@
 
 #include "Cluster.h"
 
-#include <signal.h>
-
 #include <future>
 
 #include <boost/filesystem.hpp>
@@ -47,14 +45,14 @@ Locator::Locator(Cluster &cluster, std::vector<Locator> &locators,
       name_(std::move(name)),
       locators_(locators),
       jmxManagerPort_(jmxManagerPort),
-      distributedSystemId_(distributedSystemId){
+      distributedSystemId_(distributedSystemId) {
   auto hostname = "localhost";
   if (useIPv6) {
     hostname = "ip6-localhost";
   }
   locatorAddress_ = LocatorAddress{hostname, port};
 
-  for (uint16_t remotePort : remotePorts){
+  for (uint16_t remotePort : remotePorts) {
     remoteLocatorsPorts_.push_back(remotePort);
   }
 }
@@ -76,7 +74,7 @@ Locator::Locator(Locator &&move)
       remoteLocatorsPorts_(move.remoteLocatorsPorts_),
       jmxManagerPort_(move.jmxManagerPort_),
       started_(move.started_),
-      distributedSystemId_(move.distributedSystemId_){
+      distributedSystemId_(move.distributedSystemId_) {
   move.started_ = false;
 }
 
@@ -150,8 +148,11 @@ void Locator::stop() {
   started_ = false;
 }
 
+const ServerAddress &Server::getAddress() const { return serverAddress_; }
+
 Server::Server(Cluster &cluster, std::vector<Locator> &locators,
-               std::string name, std::string xmlFile, bool useIPv6)
+               std::string name, std::string xmlFile, bool useIPv6,
+               uint16_t port)
     : cluster_(cluster),
       locators_(locators),
       name_(std::move(name)),
@@ -161,7 +162,6 @@ Server::Server(Cluster &cluster, std::vector<Locator> &locators,
     hostname = "ip6-localhost";
   }
 
-  auto port = static_cast<uint16_t>(0);
   serverAddress_ = ServerAddress{hostname, port};
 }
 
@@ -205,6 +205,7 @@ void Server::start() {
           .withClasspath(cluster_.getClasspath())
           .withSecurityManager(cluster_.getSecurityManager())
           .withCacheXMLFile(getCacheXMLFile())
+          .withConserveSockets(cluster_.getConserveSockets())
           .withPreferIPv6(cluster_.getUseIPv6());
 
   if (!cluster_.getUser().empty()) {
@@ -232,21 +233,26 @@ void Server::stop() {
 }
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
-                 std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
-                 uint16_t distributedSystemId) : Cluster(
-    Name(std::string(::testing::UnitTest::GetInstance()
-                         ->current_test_info()
-                         ->test_case_name()) +
-         "/DS" + std::to_string(distributedSystemId) + "/" +
-         ::testing::UnitTest::GetInstance()->current_test_info()->name()), Classpath(""),
-         SecurityManager(""), User(""), Password(""), initialLocators, initialServers,
-         CacheXMLFiles({}), locatorPorts, remoteLocatorPort, distributedSystemId) {}
+                 std::vector<uint16_t> &locatorPorts,
+                 std::vector<uint16_t> &remoteLocatorPort,
+                 uint16_t distributedSystemId)
+    : Cluster(
+          Name(std::string(::testing::UnitTest::GetInstance()
+                               ->current_test_info()
+                               ->test_suite_name()) +
+               "/DS" + std::to_string(distributedSystemId) + "/" +
+               ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+          Classpath(""), SecurityManager(""), User(""), Password(""),
+          initialLocators, initialServers, CacheXMLFiles({}), locatorPorts,
+          remoteLocatorPort, distributedSystemId) {}
 
 Cluster::Cluster(Name name, Classpath classpath,
                  SecurityManager securityManager, User user, Password password,
                  LocatorCount initialLocators, ServerCount initialServers,
-                 CacheXMLFiles cacheXMLFiles, std::vector<uint16_t> &locatorPorts,
-                 std::vector<uint16_t> &remoteLocatorPort, uint16_t distributedSystemId)
+                 CacheXMLFiles cacheXMLFiles,
+                 std::vector<uint16_t> &locatorPorts,
+                 std::vector<uint16_t> &remoteLocatorPort,
+                 uint16_t distributedSystemId)
     : name_(name.get()),
       classpath_(classpath.get()),
       securityManager_(securityManager.get()),
@@ -255,15 +261,14 @@ Cluster::Cluster(Name name, Classpath classpath,
       initialLocators_(initialLocators.get()),
       initialServers_(initialServers.get()),
       jmxManagerPort_(Framework::getAvailablePort()),
-      distributedSystemId_(distributedSystemId)
-      {
+      distributedSystemId_(distributedSystemId) {
   cacheXMLFiles_ = cacheXMLFiles.get();
   useIPv6_ = false;
 
-  for(uint16_t port : locatorPorts){
+  for (uint16_t port : locatorPorts) {
     locatorsPorts_.push_back(port);
   }
-  for(uint16_t port : remoteLocatorPort){
+  for (uint16_t port : remoteLocatorPort) {
     remoteLocatorsPorts_.push_back(port);
   }
   removeServerDirectory();
@@ -274,7 +279,7 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
     : Cluster(
           Name(std::string(::testing::UnitTest::GetInstance()
                                ->current_test_info()
-                               ->test_case_name()) +
+                               ->test_suite_name()) +
                "/" +
                ::testing::UnitTest::GetInstance()->current_test_info()->name()),
           initialLocators, initialServers, useIPv6) {}
@@ -286,7 +291,7 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
                  CacheXMLFiles cacheXMLFiles)
     : name_(std::string(::testing::UnitTest::GetInstance()
                             ->current_test_info()
-                            ->test_case_name()) +
+                            ->test_suite_name()) +
             "/" +
             ::testing::UnitTest::GetInstance()->current_test_info()->name()),
       initialLocators_(initialLocators.get()),
@@ -294,6 +299,36 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
       jmxManagerPort_(Framework::getAvailablePort()) {
   removeServerDirectory();
   cacheXMLFiles_ = cacheXMLFiles.get();
+}
+
+Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
+                 ConserveSockets conserveSockets, CacheXMLFiles cacheXMLFiles)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()) {
+  jmxManagerPort_ = Framework::getAvailablePort();
+  cacheXMLFiles_ = cacheXMLFiles.get();
+  conserveSockets_ = conserveSockets.get();
+}
+
+Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
+                 std::vector<uint16_t> &serverPorts)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()),
+      jmxManagerPort_(Framework::getAvailablePort()) {
+  for (uint16_t port : serverPorts) {
+    serverPorts_.push_back(port);
+  }
+  removeServerDirectory();
 }
 
 Cluster::Cluster(Name name, LocatorCount initialLocators,
@@ -393,6 +428,11 @@ void Cluster::applyLocators(apache::geode::client::PoolFactory &poolFactory) {
   }
 }
 
+void Cluster::applyServer(apache::geode::client::PoolFactory &poolFactory,
+                          ServerAddress oneServer) {
+  poolFactory.addServer(oneServer.address, oneServer.port);
+}
+
 Gfsh &Cluster::getGfsh() { return gfsh_; }
 
 std::vector<Server> &Cluster::getServers() { return servers_; }
@@ -411,16 +451,18 @@ std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
 
+bool Cluster::getConserveSockets() { return conserveSockets_; }
+
 void Cluster::start() { start(std::function<void()>()); }
 
 void Cluster::start(std::function<void()> extraGfshCommands) {
   locators_.reserve(initialLocators_);
   for (size_t i = 0; i < initialLocators_; i++) {
     uint16_t port;
-    if(locatorsPorts_.empty()){
-      port=Framework::getAvailablePort();
-    }else{
-      port=locatorsPorts_.at(i);
+    if (locatorsPorts_.empty()) {
+      port = Framework::getAvailablePort();
+    } else {
+      port = locatorsPorts_.at(i);
     }
 
     locators_.push_back({*this, locators_,
@@ -432,14 +474,20 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   servers_.reserve(initialServers_);
   std::string xmlFile;
   for (size_t i = 0; i < initialServers_; i++) {
-    xmlFile = (cacheXMLFiles_.size() == 0)
-                  ? ""
-                  : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
-                                               : cacheXMLFiles_[i];
+    xmlFile = (cacheXMLFiles_.size() == 0) ? ""
+              : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
+                                           : cacheXMLFiles_[i];
+
+    uint16_t serverPort;
+    if (serverPorts_.empty()) {
+      serverPort = static_cast<uint16_t>(0);
+    } else {
+      serverPort = serverPorts_.at(i);
+    }
 
     servers_.push_back({*this, locators_,
                         name_ + "/server/" + std::to_string(i), xmlFile,
-                        getUseIPv6()});
+                        getUseIPv6(), serverPort});
   }
 
   startLocators();
@@ -524,13 +572,13 @@ void Cluster::usePropertiesFile(const std::string propertiesFile) {
   propertiesFile_ = propertiesFile;
 }
 
-void Cluster::useSecurityPropertiesFile(const std::string securityPropertiesFile) {
+void Cluster::useSecurityPropertiesFile(
+    const std::string securityPropertiesFile) {
   useSecurityPropertiesFile_ = true;
   securityPropertiesFile_ = securityPropertiesFile;
 }
 
-void Cluster::useHostNameForClients(
-    const std::string hostName) {
+void Cluster::useHostNameForClients(const std::string hostName) {
   usePropertiesFile_ = true;
   hostName_ = hostName;
 }

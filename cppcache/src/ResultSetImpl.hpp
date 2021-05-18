@@ -30,7 +30,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class APACHE_GEODE_EXPORT ResultSetImpl : public ResultSet {
+class ResultSetImpl : public ResultSet {
  public:
   explicit ResultSetImpl(const std::shared_ptr<CacheableVector>& response);
   ~ResultSetImpl() noexcept override = default;

@@ -44,7 +44,7 @@ namespace statistics {
  * {@link StatisticsFactory}.
  *
  */
-class APACHE_GEODE_EXPORT StatisticsType {
+class StatisticsType {
  public:
   /**
    * Returns the name of this statistics type.

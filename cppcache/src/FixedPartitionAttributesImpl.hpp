@@ -24,7 +24,7 @@
 #include <geode/CacheableString.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/Serializable.hpp>
+#include <geode/internal/DataSerializableInternal.hpp>
 
 namespace apache {
 namespace geode {
@@ -39,8 +39,7 @@ class FixedPartitionAttributesImpl : public internal::DataSerializableInternal {
 
  public:
   FixedPartitionAttributesImpl()
-      : Serializable(),
-        m_partitionName(nullptr),
+      : m_partitionName(),
         m_isPrimary(false),
         m_numBuckets(1),
         m_startingBucketId(-1) {}

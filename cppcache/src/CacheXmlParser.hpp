@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_CACHEXMLPARSER_H_
-#define GEODE_CACHEXMLPARSER_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -19,6 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+#pragma once
+
+#ifndef GEODE_CACHEXMLPARSER_H_
+#define GEODE_CACHEXMLPARSER_H_
 
 #include <map>
 #include <stack>
@@ -53,10 +53,11 @@ using FactoryLoaderFn = std::function<T*(const char*, const char*)>;
 
 class CacheXmlParser : public xercesc::DefaultHandler {
   void startElement(const XMLCh* const uri, const XMLCh* const localname,
-                    const XMLCh* const qname, const xercesc::Attributes& attrs);
+                    const XMLCh* const qname,
+                    const xercesc::Attributes& attrs) override;
   void endElement(const XMLCh* const uri, const XMLCh* const localname,
-                  const XMLCh* const qname);
-  void fatalError(const xercesc::SAXParseException&);
+                  const XMLCh* const qname) override;
+  void fatalError(const xercesc::SAXParseException&) override;
 
   std::map<std::string,
            std::function<void(CacheXmlParser&, const xercesc::Attributes&)>>
@@ -80,7 +81,7 @@ class CacheXmlParser : public xercesc::DefaultHandler {
 
  public:
   explicit CacheXmlParser(Cache* cache);
-  ~CacheXmlParser();
+  ~CacheXmlParser() override;
   static CacheXmlParser* parse(const char* cachexml, Cache* cache);
   void parseFile(const char* filename);
   void parseMemory(const char* buffer, int size);
@@ -162,14 +163,15 @@ class CacheXmlParser : public xercesc::DefaultHandler {
         // this is a managed library
         (loader)(libraryName.c_str(), functionName.c_str());
       } else {
-        apache::geode::client::Utils::getFactoryFunction(libraryName,
-                                                         functionName);
+        apache::geode::client::Utils::getFactoryFunction<void*()>(libraryName,
+                                                                  functionName);
       }
     } catch (IllegalArgumentException& ex) {
       throw CacheXmlException(ex.what());
     }
   }
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

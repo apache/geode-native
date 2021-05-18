@@ -53,7 +53,7 @@ using apache::geode::client::Exception;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 
-const char *locHostPort =
+const std::string locHostPort =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 #define CLIENT1 s1p1
@@ -139,7 +139,7 @@ class MyCqListener : public CqListener {
 
 std::string getXmlPath() {
   char xmlPath[1000] = {'\0'};
-  const char *path = ACE_OS::getenv("TESTSRC");
+  const char *path = std::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
   strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
@@ -188,7 +188,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateServer1)
           "authenticator:authorizer:authorizerPP", getXmlPath());
       printf("string %s", cmdServerAuthenticator.c_str());
       CacheHelper::initServer(
-          1, "remotequery.xml", nullptr,
+          1, "remotequery.xml", {},
           const_cast<char *>(cmdServerAuthenticator.c_str()));
       LOG("Server1 started");
     }

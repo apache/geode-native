@@ -46,7 +46,7 @@ CacheHelper* cacheHelper = nullptr;
 #define SERVER2 s2p2
 static bool isLocator = false;
 // static int numberOfLocators = 0;
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 #include "LocatorHelper.hpp"
 void initClient(const bool isthinClient) {
@@ -188,12 +188,13 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -291,7 +292,7 @@ const char* vals[] = {"Value-1", "Value-2", "Value-3", "Value-4"};
 const char* nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char* regionNames[] = {"DistRegionAck", "DistRegionNoAck"};
+const char* regionNames[] = {"DistRegionAck"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
@@ -310,10 +311,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
-
-    createEntry(regionNames[1], keys[1], vals[1]);
 
     LOG("StepOne complete.");
   }
@@ -324,13 +321,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TEST_POOL1__",
                        true);
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
-
-    createEntry(regionNames[1], keys[1], nvals[1]);
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
 
     /*
      auto keyPtr0 = CacheableKey::create(keys[0]);
@@ -344,7 +336,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     */
 
     regPtr0->registerRegex(regkeys[0]);
-    regPtr1->registerRegex(regkeys[2]);
 
     LOG("StepTwo complete.");
   }
@@ -353,14 +344,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     createEntry(regionNames[0], keys[0], vals[0]);
-    createEntry(regionNames[1], keys[2], vals[2]);
-
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr1->registerRegex(regkeys[1], false);
-
-    doNetsearch(
-        regionNames[1], keys[1],
-        nvals[1]);  // this should verify due to registerRegex() call before
 
     LOG("StepThree complete.");
   }
@@ -371,22 +354,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
     LOG("StepFour start.");
 
     verifyCreated(regionNames[0], keys[0]);
-    verifyCreated(regionNames[1], keys[2]);
     verifyEntry(regionNames[0], keys[0], vals[0]);
-    verifyEntry(regionNames[1], keys[2], vals[2]);
-
-    updateEntry(regionNames[1], keys[1], vals[1]);
-
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr1->unregisterRegex(regkeys[2]);
-
-    /*
-     auto regPtr1 = getHelper()->getRegion( regionNames[1] );
-     auto keyPtr2 = CacheableKey::create(keys[2]);
-      std::vector<std::shared_ptr<CacheableKey>>  keys2;
-      keys2.push_back(keyPtr2);
-      regPtr1->unregisterKeys(keys2, nullptr);
-      */
 
     LOG("StepFour complete.");
   }
@@ -412,11 +380,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     updateEntry(regionNames[0], keys[0], nvals[0]);
-    updateEntry(regionNames[1], keys[2], nvals[2]);
 
-    verifyEntry(
-        regionNames[1], keys[1],
-        vals[1]);  // this should verify due to registerRegex() call before
     SLEEP(1000);
 
     LOG("StepFive complete.");
@@ -426,10 +390,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     LOG("StepSix start.");
     verifyEntry(regionNames[0], keys[0], nvals[0]);
-    verifyEntry(regionNames[1], keys[2],
-                vals[2]);  // this key-regex was unregistered before failover
-
-    updateEntry(regionNames[1], keys[1], nvals[1]);  // for client1 to verify
 
     LOG("StepSix complete.");
   }
@@ -440,9 +400,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSeven)
     LOG("StepSeven start.");
 
     updateEntry(regionNames[0], keys[0], vals[0]);
-    updateEntry(regionNames[1], keys[2], vals[2]);
-
-    verifyEntry(regionNames[1], keys[1], nvals[1]);
 
     LOG("StepSeven complete.");
   }
@@ -453,9 +410,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
     LOG("StepEight start.");
     verifyEntry(regionNames[0], keys[0],
                 vals[0]);  // this should verify now (registered after failover)
-    verifyEntry(
-        regionNames[1], keys[2],
-        vals[2]);  // this should verify now (not registered after failover)
     LOG("StepEight complete.");
   }
 END_TASK_DEFINITION

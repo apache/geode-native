@@ -68,7 +68,6 @@ namespace Apache.Geode.DUnitFramework
     #region Private members
 
     private static int m_clientId = 0;
-    private static int m_clientPort = Util.RandPort(20000, 40000) - 1;
     
     internal static Dictionary<string, ManualResetEvent> ProcessIDMap =
       new Dictionary<string, ManualResetEvent>();
@@ -206,8 +205,7 @@ namespace Apache.Geode.DUnitFramework
 
     public static int GetClientPort()
     {
-      Interlocked.Increment(ref m_clientPort);
-      return m_clientPort;
+      return Util.GetAvailablePort();
     }
 
     private UnitProcess(string clientId)

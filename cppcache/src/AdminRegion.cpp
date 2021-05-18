@@ -21,9 +21,9 @@
 
 #include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
+#include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
-#include "statistics/StatisticsManager.hpp"
 #include "util/exception.hpp"
 
 namespace apache {
@@ -51,14 +51,8 @@ std::shared_ptr<AdminRegion> AdminRegion::create(CacheImpl* cache,
 }
 
 void AdminRegion::init() {
-  /*TryWriteGuard _guard(m_rwLock, m_destroyPending);
-  if (m_destroyPending) {
-    return;
-  }
-  */
   // Init distribution manager if it is not a pool
-  ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == nullptr) {
+  if (m_distMngr && !dynamic_cast<ThinClientPoolDM*>(m_distMngr)) {
     m_distMngr->init();
   }
 }

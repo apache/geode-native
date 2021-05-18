@@ -47,7 +47,7 @@ using apache::geode::client::testing::TallyListener;
 std::shared_ptr<TallyListener> reg1Listener1;
 bool isLocalServer = false;
 static bool isLocator = false;
-const char *locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, 1);
 
 void setCacheListener(const char *regName,
@@ -82,8 +82,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Client1)
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG);
     getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
                                            "__TEST_POOL1__");
-    getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
-                                           "__TEST_POOL1__");
 
     reg1Listener1 = std::make_shared<TallyListener>();
     setCacheListener(regionNames[0], reg1Listener1);
@@ -98,8 +96,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepOne_Pooled_Locator_Client2)
     getHelper()->createPoolWithLocators("__TEST_POOL1__", locatorsG, true, 2);
     getHelper()->createRegionAndAttachPool(regionNames[0], USE_ACK,
                                            "__TEST_POOL1__");
-    getHelper()->createRegionAndAttachPool(regionNames[1], NO_ACK,
-                                           "__TEST_POOL1__");
 
     reg1Listener1 = std::make_shared<TallyListener>();
     setCacheListener(regionNames[0], reg1Listener1);
@@ -111,8 +107,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_RegisterAllKeys)
   {
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->registerAllKeys();
-    auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    regPtr1->registerAllKeys();
     LOG("StepTwo_Pooled_EndPoint_RegisterAllKeys complete.");
   }
 END_TASK_DEFINITION

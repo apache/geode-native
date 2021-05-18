@@ -17,25 +17,29 @@
 
 #include "LocalRegion.hpp"
 
-#include <sstream>
+#include <regex>
 #include <vector>
 
 #include <geode/PoolManager.hpp>
 #include <geode/SystemProperties.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
-#include "EntryExpiryHandler.hpp"
+#include "EntriesMapFactory.hpp"
+#include "EntryExpiryTask.hpp"
 #include "ExpiryTaskManager.hpp"
+#include "InterestResultPolicy.hpp"
 #include "LRUEntriesMap.hpp"
-#include "RegionExpiryHandler.hpp"
+#include "RegionExpiryTask.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "SerializableHelper.hpp"
 #include "TXState.hpp"
 #include "TcrConnectionManager.hpp"
 #include "Utils.hpp"
 #include "VersionTag.hpp"
+#include "VersionedCacheableObjectPartList.hpp"
 #include "util/Log.hpp"
 #include "util/bounds.hpp"
 #include "util/exception.hpp"
@@ -43,6 +47,8 @@
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DataSerializablePrimitive;
 
 LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
                          const std::shared_ptr<RegionInternal>& rPtr,
@@ -53,6 +59,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
       m_name(name),
       m_parentRegion(rPtr),
       m_destroyPending(false),
+      expiry_task_id_(ExpiryTask::invalid()),
       m_listener(nullptr),
       m_writer(nullptr),
       m_loader(nullptr),
@@ -93,7 +100,7 @@ LocalRegion::LocalRegion(const std::string& name, CacheImpl* cacheImpl,
 
   m_regionStats = new RegionStats(
       cacheImpl->getStatisticsManager().getStatisticsFactory(), m_fullPath);
-  auto p = cacheImpl->getPoolManager().find(getAttributes().getPoolName());
+  auto p = cacheImpl->getPoolManager().find(m_regionAttributes.getPoolName());
   setPool(p);
 }
 
@@ -108,24 +115,27 @@ std::shared_ptr<Region> LocalRegion::getParentRegion() const {
 
 void LocalRegion::updateAccessAndModifiedTime(bool modified) {
   // locking not required since setters use atomic operations
-  if (regionExpiryEnabled()) {
-    auto now = std::chrono::system_clock::now();
-    auto timeStr = to_string(now.time_since_epoch());
-    LOGDEBUG("Setting last accessed time for region %s to %s",
+  if (!regionExpiryEnabled()) {
+    return;
+  }
+
+  auto now = std::chrono::steady_clock::now();
+  auto timeStr = to_string(now.time_since_epoch());
+  LOGDEBUG("Setting last accessed time for region %s to %s",
+           getFullPath().c_str(), timeStr.c_str());
+  m_cacheStatistics->setLastAccessedTime(now);
+  if (modified) {
+    LOGDEBUG("Setting last modified time for region %s to %s",
              getFullPath().c_str(), timeStr.c_str());
-    m_cacheStatistics->setLastAccessedTime(now);
-    if (modified) {
-      LOGDEBUG("Setting last modified time for region %s to %s",
-               getFullPath().c_str(), timeStr.c_str());
-      m_cacheStatistics->setLastModifiedTime(now);
-    }
-    // TODO:  should we really touch the parent region??
-    RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
-    if (ri != nullptr) {
-      ri->updateAccessAndModifiedTime(modified);
-    }
+    m_cacheStatistics->setLastModifiedTime(now);
+  }
+  // TODO:  should we really touch the parent region??
+  RegionInternal* ri = dynamic_cast<RegionInternal*>(m_parentRegion.get());
+  if (ri != nullptr) {
+    ri->updateAccessAndModifiedTime(modified);
   }
 }
+
 std::shared_ptr<CacheStatistics> LocalRegion::getStatistics() const {
   CHECK_DESTROY_PENDING(TryReadGuard, LocalRegion::getStatistics);
 
@@ -442,6 +452,13 @@ void LocalRegion::destroy(
   throwExceptionIfError("Region::destroy", err);
 }
 
+GfErrType LocalRegion::localDestroyNoCallbacks(
+    const std::shared_ptr<CacheableKey>& key) {
+  return destroyNoThrow(key, nullptr, -1,
+                        CacheEventFlags::LOCAL | CacheEventFlags::NOCALLBACKS,
+                        nullptr);
+}
+
 void LocalRegion::localDestroy(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
@@ -686,53 +703,53 @@ void LocalRegion::setPersistenceManager(
 }
 
 void LocalRegion::setRegionExpiryTask() {
-  if (regionExpiryEnabled()) {
-    auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
-    const auto& duration = getRegionExpiryDuration();
-    auto handler =
-        new RegionExpiryHandler(rptr, getRegionExpiryAction(), duration);
-    auto expiryTaskId =
-        rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-            handler, duration, std::chrono::seconds::zero());
-    handler->setExpiryTaskId(expiryTaskId);
-    auto durationStr = to_string(duration);
-    auto expiryTaskIdStr = std::to_string(expiryTaskId);
-    LOGFINE(
-        "expiry for region [%s], expiry task id = %s, duration = %s, "
-        "action = %d",
-        m_fullPath.c_str(), expiryTaskIdStr.c_str(), durationStr.c_str(),
-        getRegionExpiryAction());
+  if (!regionExpiryEnabled()) {
+    return;
   }
+
+  auto& manager = getCacheImpl()->getExpiryTaskManager();
+  auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
+  const auto& duration = getRegionExpiryDuration();
+  auto&& task = std::make_shared<RegionExpiryTask>(
+      manager, rptr, getRegionExpiryAction(), duration);
+  expiry_task_id_ = manager.schedule(task, duration);
+  LOGFINE(
+      "expiry for region [%s], expiry task id = %zu, duration = %s, "
+      "action = %d",
+      m_fullPath.c_str(), expiry_task_id_, to_string(duration).c_str(),
+      getRegionExpiryAction());
 }
 
 void LocalRegion::registerEntryExpiryTask(
     std::shared_ptr<MapEntryImpl>& entry) {
   // locking is not required here since only the thread that creates
   // the entry will register the expiry task for that entry
+
   ExpEntryProperties& expProps = entry->getExpProperties();
-  expProps.initStartTime();
-  auto rptr = std::static_pointer_cast<RegionInternal>(shared_from_this());
   const auto& duration = getEntryExpiryDuration();
-  auto handler =
-      new EntryExpiryHandler(rptr, entry, getEntryExpirationAction(), duration);
-  auto id = rptr->getCacheImpl()->getExpiryTaskManager().scheduleExpiryTask(
-      handler, duration, std::chrono::seconds::zero());
-  if (Log::finestEnabled()) {
+  auto& manager = getCacheImpl()->getExpiryTaskManager();
+  auto region = std::static_pointer_cast<RegionInternal>(shared_from_this());
+  auto task = std::make_shared<EntryExpiryTask>(
+      manager, region, entry, getEntryExpirationAction(), duration);
+  auto id = manager.schedule(std::move(task), duration);
+  expProps.task_id(id);
+
+  if (Log::enabled(LogLevel::Finest)) {
     std::shared_ptr<CacheableKey> key;
     entry->getKeyI(key);
     LOGFINEST(
-        "entry expiry in region [%s], key [%s], task id = %d, "
+        "entry expiry in region [%s], key [%s], task id = %zu, "
         "duration = %s, action = %d",
-        m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(),
-        static_cast<int32_t>(id), to_string(duration).c_str(),
-        getEntryExpirationAction());
+        m_fullPath.c_str(), Utils::nullSafeToString(key).c_str(), id,
+        to_string(duration).c_str(), getEntryExpirationAction());
   }
-  expProps.setExpiryTaskId(id);
 }
 
 LocalRegion::~LocalRegion() noexcept {
   TryWriteGuard guard(m_rwLock, m_destroyPending);
   if (!m_destroyPending) {
+    // TODO suspect
+    // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
     release(false);
   }
   m_listener = nullptr;
@@ -1745,12 +1762,16 @@ GfErrType LocalRegion::updateNoThrow(
       m_entries->removeTrackerForEntry(key);
     }
   }
-  // invokeCacheListenerForEntryEvent method has the check that if oldValue
-  // is a CacheableToken then it sets it to nullptr; also determines if it
-  // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
-  err =
-      invokeCacheListenerForEntryEvent(key, oldValue, value, aCallbackArgument,
-                                       eventFlags, TAction::s_afterEventType);
+
+  if (!eventFlags.isNoCallbacks()) {
+    // invokeCacheListenerForEntryEvent method has the check that if oldValue
+    // is a CacheableToken then it sets it to nullptr; also determines if it
+    // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
+    err = invokeCacheListenerForEntryEvent(key, oldValue, value,
+                                           aCallbackArgument, eventFlags,
+                                           TAction::s_afterEventType);
+  }
+
   return err;
 }
 
@@ -2491,7 +2512,7 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
              Utils::nullSafeToString(value).c_str());
     // entry/region expiration
     if (entryExpiryEnabled()) {
-      if (isUpdate && entry->getExpProperties().getExpiryTaskId() != -1) {
+      if (isUpdate && entry->getExpProperties().task_scheduled()) {
         updateAccessAndModifiedTimeForEntry(entry, true);
       } else {
         registerEntryExpiryTask(entry);
@@ -2810,22 +2831,22 @@ void LocalRegion::updateAccessAndModifiedTimeForEntry(
   // locking is not required since setters use atomic operations
   if (ptr != nullptr && entryExpiryEnabled()) {
     ExpEntryProperties& expProps = ptr->getExpProperties();
-    auto currTime = std::chrono::system_clock::now();
+    auto now = std::chrono::steady_clock::now();
     std::string keyStr;
-    if (Log::debugEnabled()) {
+    if (Log::enabled(LogLevel::Debug)) {
       std::shared_ptr<CacheableKey> key;
       ptr->getKeyI(key);
       keyStr = Utils::nullSafeToString(key);
     }
     LOGDEBUG("Setting last accessed time for key [%s] in region %s to %s",
              keyStr.c_str(), getFullPath().c_str(),
-             to_string(currTime.time_since_epoch()).c_str());
-    expProps.updateLastAccessTime(currTime);
+             to_string(now.time_since_epoch()).c_str());
+    expProps.last_accessed(now);
     if (modified) {
       LOGDEBUG("Setting last modified time for key [%s] in region %s to %s",
                keyStr.c_str(), getFullPath().c_str(),
-               to_string(currTime.time_since_epoch()).c_str());
-      expProps.updateLastModifiedTime(currTime);
+               to_string(now.time_since_epoch()).c_str());
+      expProps.last_modified(now);
     }
   }
 }
@@ -3124,12 +3145,12 @@ void LocalRegion::adjustCacheWriter(const std::string& lib,
   m_writer = m_regionAttributes.getCacheWriter();
 }
 
-void LocalRegion::evict(int32_t percentage) {
+void LocalRegion::evict(float percentage) {
   TryReadGuard guard(m_rwLock, m_destroyPending);
   if (m_released || m_destroyPending) return;
   if (m_entries != nullptr) {
     int32_t size = m_entries->size();
-    int32_t entriesToEvict = (percentage * size) / 100;
+    int32_t entriesToEvict = static_cast<int32_t>(percentage * size);
     // only invoked from EvictionController so static_cast is always safe
     LRUEntriesMap* lruMap = static_cast<LRUEntriesMap*>(m_entries);
     LOGINFO("Evicting %d entries. Current entry count is %d", entriesToEvict,
@@ -3196,6 +3217,58 @@ void LocalRegion::updateStatOpTime(Statistics* statistics, int32_t statId,
 void LocalRegion::acquireGlobals(bool) {}
 
 void LocalRegion::releaseGlobals(bool) {}
+
+void LocalRegion::clearKeysOfInterest(
+    const std::unordered_map<std::shared_ptr<CacheableKey>,
+                             InterestResultPolicy>& interest_list) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  for (const auto& kv : interest_list) {
+    auto err = localDestroyNoCallbacks(kv.first);
+    // It could happen that interest was registered for a key for which
+    // there is not an entry right now
+    if (err != GF_CACHE_ENTRY_NOT_FOUND) {
+      throwExceptionIfError("LocalRegion::clearKeysOfInterest", err);
+    }
+  }
+}
+
+void LocalRegion::clearKeysOfInterestRegex(const std::string& pattern) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  std::regex expression{pattern};
+  for (const auto& key : keys()) {
+    if (std::regex_search(key->toString(), expression)) {
+      auto err = localDestroyNoCallbacks(key);
+      if (err != GF_CACHE_ENTRY_NOT_FOUND) {
+        throwExceptionIfError("LocalRegion::clearKeysOfInterest", err);
+      }
+    }
+  }
+}
+
+void LocalRegion::clearKeysOfInterestRegex(
+    const std::unordered_map<std::string, InterestResultPolicy>&
+        interest_list) {
+  if (m_entries->empty()) {
+    return;
+  }
+
+  static const std::string ALL_KEYS_REGEX = ".*";
+  for (const auto& kv : interest_list) {
+    const auto& regex = kv.first;
+    if (regex == ALL_KEYS_REGEX) {
+      localClear();
+      break;
+    } else {
+      clearKeysOfInterestRegex(kv.first);
+    }
+  }
+}
 
 }  // namespace client
 }  // namespace geode

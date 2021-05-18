@@ -73,8 +73,8 @@ void setCacheListener(const char* regName,
   attrMutator->setCacheListener(regListener);
 }
 
-const char* locHostPort1 = nullptr;
-const char* locHostPort2 = nullptr;
+std::string locHostPort1;
+std::string locHostPort2;
 DUNIT_TASK_DEFINITION(SERVER1, StartLocator1)
   {
     CacheHelper::initLocator(1, false, true, 1,

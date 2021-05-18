@@ -43,7 +43,7 @@ using apache::geode::client::RegionShortcut;
 static bool isLocalServer = false;
 static bool isLocator = false;
 
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer);
 
 #include "LocatorHelper.hpp"

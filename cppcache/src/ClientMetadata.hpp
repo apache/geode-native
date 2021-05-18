@@ -47,7 +47,7 @@ typedef std::vector<std::shared_ptr<BucketServerLocation>>
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
 typedef std::map<std::string, std::vector<int>> FixedMapType;
 
-class APACHE_GEODE_EXPORT ClientMetadata {
+class ClientMetadata {
  private:
   void setPartitionNames();
   std::shared_ptr<CacheableHashSet> m_partitionNames;

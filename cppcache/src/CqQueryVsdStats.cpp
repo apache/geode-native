@@ -62,7 +62,7 @@ CqQueryVsdStats::CqQueryVsdStats(StatisticsFactory* factory,
   m_cqQueryVsdStats->setInt(m_numEventsId, 0);
 }
 
-CqQueryVsdStats::~CqQueryVsdStats() {
+CqQueryVsdStats::~CqQueryVsdStats() noexcept {
   if (m_cqQueryVsdStats != nullptr) {
     // Don't Delete, Already closed, Just set nullptr
     // delete m_CqQueryVsdStats;

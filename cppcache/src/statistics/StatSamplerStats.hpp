@@ -36,7 +36,7 @@ class StatisticsFactory;
 /**
  * Statistics related to the statistic sampler.
  */
-class APACHE_GEODE_EXPORT StatSamplerStats {
+class StatSamplerStats {
   StatisticsType* samplerType;
   Statistics* samplerStats;
   int32_t sampleCountId;

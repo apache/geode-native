@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+#include <list>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -22,19 +23,23 @@
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 #include <geode/DataSerializable.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/TypeRegistry.hpp>
 
+#include "Position.hpp"
+#include "PositionKey.hpp"
 #include "framework/Cluster.h"
 
-namespace {
+namespace DataSerializableTest {
 
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableStringArray;
 using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;
 using apache::geode::client::DataSerializable;
+using apache::geode::client::FunctionService;
 using apache::geode::client::RegionShortcut;
 
 class Simple : public DataSerializable {
@@ -162,4 +167,62 @@ TEST(DataSerializableTest, isSerializableAndDeserializable) {
               returnedArray->operator[](index)->toString());
   }
 }
-}  // namespace
+
+TEST(DataSerializableTest, ClassAsKey) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  cluster.getGfsh()
+      .deploy()
+      .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+      .execute();
+
+  cluster.getGfsh()
+      .executeFunction()
+      .withId("InstantiateDataSerializable")
+      .withMember("DataSerializableTest_ClassAsKey_server_0")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("default")
+                    .create("region");
+
+  cache.getTypeRegistry().registerType(PositionKey::createDeserializable, 21);
+  cache.getTypeRegistry().registerType(Position::createDeserializable, 22);
+
+  auto key1 = std::make_shared<PositionKey>(1000);
+  auto key2 = std::make_shared<PositionKey>(1000000);
+  auto key3 = std::make_shared<PositionKey>(1000000000);
+
+  auto pos1 = std::make_shared<Position>("GOOG", 23);
+  auto pos2 = std::make_shared<Position>("IBM", 37);
+  auto pos3 = std::make_shared<Position>("PVTL", 101);
+
+  region->put(key1, pos1);
+  region->put(key2, pos2);
+  region->put(key3, pos3);
+
+  auto res1 = std::dynamic_pointer_cast<Position>(region->get(key1));
+  auto res2 = std::dynamic_pointer_cast<Position>(region->get(key2));
+  auto res3 = std::dynamic_pointer_cast<Position>(region->get(key3));
+
+  EXPECT_EQ(res1->getSecurityId(), pos1->getSecurityId());
+  EXPECT_EQ(res1->getSharesOutstanding(), pos1->getSharesOutstanding());
+
+  EXPECT_EQ(res2->getSecurityId(), pos2->getSecurityId());
+  EXPECT_EQ(res2->getSharesOutstanding(), pos2->getSharesOutstanding());
+
+  EXPECT_EQ(res3->getSecurityId(), pos3->getSecurityId());
+  EXPECT_EQ(res3->getSharesOutstanding(), pos3->getSharesOutstanding());
+}
+
+}  // namespace DataSerializableTest

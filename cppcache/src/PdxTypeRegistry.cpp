@@ -21,6 +21,8 @@
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "PreservedDataExpiryTask.hpp"
+#include "SerializationRegistry.hpp"
 #include "ThinClientPoolDM.hpp"
 
 namespace apache {
@@ -39,7 +41,7 @@ PdxTypeRegistry::PdxTypeRegistry(CacheImpl* cache)
 PdxTypeRegistry::~PdxTypeRegistry() {}
 
 size_t PdxTypeRegistry::testNumberOfPreservedData() const {
-  return preserveData_.size();
+  return preserved_data_.size();
 }
 
 int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type, Pool* pool,
@@ -111,7 +113,7 @@ void PdxTypeRegistry::clear() {
   }
   {
     WriteGuard guard(getPreservedDataLock());
-    preserveData_.clear();
+    preserved_data_.clear();
   }
 }
 
@@ -163,28 +165,29 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(
 
 void PdxTypeRegistry::setPreserveData(
     std::shared_ptr<PdxSerializable> obj,
-    std::shared_ptr<PdxRemotePreservedData> pData,
+    std::shared_ptr<PdxRemotePreservedData> data,
     ExpiryTaskManager& expiryTaskManager) {
   WriteGuard guard(getPreservedDataLock());
-  pData->setOwner(obj);
-  if (preserveData_.find(obj) != preserveData_.end()) {
-    // reset expiry task
-    // TODO: check value for nullptr
-    auto expTaskId = preserveData_[obj]->getPreservedDataExpiryTaskId();
-    expiryTaskManager.resetTask(expTaskId, 5);
-    LOGDEBUG("PdxTypeRegistry::setPreserveData Reset expiry task Done");
-    pData->setPreservedDataExpiryTaskId(expTaskId);
-    preserveData_[obj] = pData;
+  data->setOwner(obj);
+
+  auto&& iter = preserved_data_.find(obj);
+  if (iter != preserved_data_.end()) {
+    auto expires_at =
+        std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    data->task_id(iter->second->task_id());
+    data->expires_at(expires_at);
+    iter->second = data;
   } else {
-    // schedule new expiry task
-    auto handler = new PreservedDataExpiryHandler(shared_from_this(), obj);
-    auto id = expiryTaskManager.scheduleExpiryTask(
-        handler, std::chrono::seconds(20), std::chrono::seconds::zero(), false);
-    pData->setPreservedDataExpiryTaskId(id);
+    auto task = std::make_shared<PreservedDataExpiryTask>(
+        expiryTaskManager, shared_from_this(), obj);
+    auto id =
+        expiryTaskManager.schedule(std::move(task), std::chrono::seconds(20));
+    data->task_id(id);
+
     LOGDEBUG(
-        "PdxTypeRegistry::setPreserveData Schedule new expirt task with id=%ld",
+        "PdxTypeRegistry::setPreserveData Schedule new expiry task with id=%zu",
         id);
-    preserveData_.emplace(obj, pData);
+    preserved_data_.emplace_hint(iter, std::move(obj), std::move(data));
   }
 
   LOGDEBUG(
@@ -194,8 +197,8 @@ void PdxTypeRegistry::setPreserveData(
 std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
     std::shared_ptr<PdxSerializable> pdxobj) const {
   ReadGuard guard(getPreservedDataLock());
-  const auto& iter = preserveData_.find((pdxobj));
-  if (iter != preserveData_.end()) {
+  const auto& iter = preserved_data_.find((pdxobj));
+  if (iter != preserved_data_.end()) {
     return iter->second;
   }
   return nullptr;

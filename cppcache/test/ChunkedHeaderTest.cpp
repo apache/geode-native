@@ -34,7 +34,7 @@ namespace {
 class TcrMessageTestFixture : public TcrMessage {
  public:
   TcrMessageTestFixture() : TcrMessage() {}
-  virtual ~TcrMessageTestFixture() {}
+  ~TcrMessageTestFixture() noexcept override = default;
 };
 }  // namespace
 

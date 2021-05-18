@@ -22,14 +22,18 @@
 #include <geode/Cache.hpp>
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/PdxReader.hpp>
+#include <geode/internal/DataSerializablePrimitive.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "PdxHelper.hpp"
+#include "Utils.hpp"
 #include "util/string.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+using internal::DataSerializablePrimitive;
 
 int8_t PdxInstanceImpl::m_BooleanDefaultBytes[] = {0};
 int8_t PdxInstanceImpl::m_ByteDefaultBytes[] = {0};
@@ -1417,6 +1421,11 @@ void PdxInstanceImpl::toData(PdxWriter& writer) const {
 
 void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
   auto pt = getPdxType();
+  if (pt == nullptr) {
+    m_typeId = 0;
+    throw UnknownPdxTypeException("Unknown pdx type while serializing");
+  }
+
   std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList =
       pt->getPdxFieldTypes();
   int position = 0;  // ignore typeid and length
@@ -1483,12 +1492,8 @@ const std::string& PdxInstanceImpl::getClassName() const {
 }
 
 void PdxInstanceImpl::setPdxId(int32_t typeId) {
-  if (m_typeId == 0) {
-    m_typeId = typeId;
-    m_pdxType = nullptr;
-  } else {
-    throw IllegalStateException("PdxInstance's typeId is already set.");
-  }
+  m_pdxType->setTypeId(typeId);
+  m_typeId = typeId;
 }
 
 std::vector<std::shared_ptr<PdxFieldType>>

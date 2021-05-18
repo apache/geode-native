@@ -27,44 +27,32 @@
 
 #include "ConcurrentEntriesMap.hpp"
 #include "LRUAction.hpp"
-#include "LRUList.hpp"
 #include "LRUMapEntry.hpp"
+#include "LRUQueue.hpp"
 #include "MapEntryT.hpp"
 #include "util/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
 class EvictionController;
 
 /**
  * @brief Concurrent entries map with LRU behavior.
  * Not designed for subclassing...
  */
+class LRUEntriesMap : public ConcurrentEntriesMap {
+ protected:
+  using spinlock_mutex = ::apache::geode::util::concurrent::spinlock_mutex;
 
-/* adongre
- * CID 28728: Other violation (MISSING_COPY)
- * Class "apache::geode::client::LRUEntriesMap" owns resources that are managed
- * in its
- * constructor and destructor but has no user-written copy constructor.
- *
- * FIX : Make the class non copyable
- *
- * CID 28714: Other violation (MISSING_ASSIGN)
- * Class "apache::geode::client::LRUEntriesMap" owns resources that are managed
- * in
- * its constructor and destructor but has no user-written assignment operator.
- * Fix : Make the class Non Assinable
- */
-class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
  protected:
   LRUAction* m_action;
-  LRUList<MapEntryImpl, MapEntryT<LRUMapEntry, 0, 0> > m_lruList;
+  LRUQueue lru_queue_;
   uint32_t m_limit;
   std::shared_ptr<PersistenceManager> m_pmPtr;
   EvictionController* m_evictionControllerPtr;
-  int64_t m_currentMapSize;
-  spinlock_mutex m_mapInfoLock;
+  std::atomic<int64_t> m_currentMapSize;
   std::string m_name;
   std::atomic<uint32_t> m_validEntries;
   bool m_heapLRUEnabled;
@@ -78,32 +66,31 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
                 const uint32_t limit, bool concurrencyChecksEnabled,
                 const uint8_t concurrency = 16, bool heapLRUEnabled = false);
 
-  virtual ~LRUEntriesMap();
+  ~LRUEntriesMap() noexcept override;
 
-  virtual GfErrType put(const std::shared_ptr<CacheableKey>& key,
-                        const std::shared_ptr<Cacheable>& newValue,
-                        std::shared_ptr<MapEntryImpl>& me,
-                        std::shared_ptr<Cacheable>& oldValue, int updateCount,
-                        int destroyTracker,
-                        std::shared_ptr<VersionTag> versionTag,
-                        bool& isUpdate = EntriesMap::boolVal,
-                        DataInput* delta = nullptr);
-  virtual GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
-                               std::shared_ptr<MapEntryImpl>& me,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               std::shared_ptr<VersionTag> versionTag);
-  virtual GfErrType create(const std::shared_ptr<CacheableKey>& key,
-                           const std::shared_ptr<Cacheable>& newValue,
-                           std::shared_ptr<MapEntryImpl>& me,
-                           std::shared_ptr<Cacheable>& oldValue,
-                           int updateCount, int destroyTracker,
-                           std::shared_ptr<VersionTag> versionTag);
-  virtual bool get(const std::shared_ptr<CacheableKey>& key,
-                   std::shared_ptr<Cacheable>& returnPtr,
-                   std::shared_ptr<MapEntryImpl>& me);
-  virtual std::shared_ptr<Cacheable> getFromDisk(
+  GfErrType put(const std::shared_ptr<CacheableKey>& key,
+                const std::shared_ptr<Cacheable>& newValue,
+                std::shared_ptr<MapEntryImpl>& me,
+                std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                int destroyTracker, std::shared_ptr<VersionTag> versionTag,
+                bool& isUpdate = EntriesMap::boolVal,
+                DataInput* delta = nullptr) override;
+  GfErrType invalidate(const std::shared_ptr<CacheableKey>& key,
+                       std::shared_ptr<MapEntryImpl>& me,
+                       std::shared_ptr<Cacheable>& oldValue,
+                       std::shared_ptr<VersionTag> versionTag) override;
+  GfErrType create(const std::shared_ptr<CacheableKey>& key,
+                   const std::shared_ptr<Cacheable>& newValue,
+                   std::shared_ptr<MapEntryImpl>& me,
+                   std::shared_ptr<Cacheable>& oldValue, int updateCount,
+                   int destroyTracker,
+                   std::shared_ptr<VersionTag> versionTag) override;
+  bool get(const std::shared_ptr<CacheableKey>& key,
+           std::shared_ptr<Cacheable>& value,
+           std::shared_ptr<MapEntryImpl>& me) override;
+  std::shared_ptr<Cacheable> getFromDisk(
       const std::shared_ptr<CacheableKey>& key,
-      std::shared_ptr<MapEntryImpl>& me) const;
+      std::shared_ptr<MapEntryImpl>& me) const override;
   GfErrType processLRU();
   void processLRU(int32_t numEntriesToEvict);
   GfErrType evictionHelper();
@@ -113,16 +100,12 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
     m_pmPtr = pmPtr;
   }
 
-  /**
-   * @brief remove an entry, marking it evicted for LRUList maintainance.
-   */
-  virtual GfErrType remove(const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<Cacheable>& result,
-                           std::shared_ptr<MapEntryImpl>& me, int updateCount,
-                           std::shared_ptr<VersionTag> versionTag,
-                           bool afterRemote);
-
-  virtual void close();
+  GfErrType remove(const std::shared_ptr<CacheableKey>& key,
+                   std::shared_ptr<Cacheable>& result,
+                   std::shared_ptr<MapEntryImpl>& me, int updateCount,
+                   std::shared_ptr<VersionTag> versionTag,
+                   bool afterRemote) override;
+  void close() override;
 
   inline bool mustEvict() const {
     if (m_action == nullptr) {
@@ -142,9 +125,10 @@ class APACHE_GEODE_EXPORT LRUEntriesMap : public ConcurrentEntriesMap {
 
   inline void adjustLimit(uint32_t limit) { m_limit = limit; }
 
-  virtual void clear();
+  void clear() override;
 
 };  // class LRUEntriesMap
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

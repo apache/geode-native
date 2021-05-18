@@ -41,7 +41,7 @@ const std::string regionName = "my_region";
 
 std::shared_ptr<Cache> createCache() {
   auto cache = CacheFactory()
-                   .set("log-level", "debug")
+                   .set("log-level", "none")
                    .setPdxReadSerialized(true)
                    .create();
   return std::make_shared<Cache>(std::move(cache));

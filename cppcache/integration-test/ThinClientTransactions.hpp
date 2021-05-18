@@ -34,7 +34,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -58,7 +58,7 @@ static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 0;
 
-const char* locatorsG =
+const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
 void initClient(const bool isthinClient) {
@@ -144,7 +144,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
 
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
@@ -179,12 +180,14 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const char* name, bool ackMode, const char* locators,
-                        const char* poolname,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -193,12 +196,14 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
   LOG("Pooled Region created.");
 }
 
-void createPooledRegionSticky(const char* name, bool ackMode,
-                              const char* locators, const char* poolname,
+void createPooledRegionSticky(const std::string& name, bool ackMode,
+                              const std::string& locators,
+                              const std::string& poolname,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
@@ -360,11 +365,13 @@ const bool USE_ACK = true;
 const bool NO_ACK = false;
 #include "LocatorHelper.hpp"
 #define THREADERRORCHECK(x, y) \
-  if (!(x)) {                  \
-    m_isFailed = true;         \
-    sprintf(m_error, y);       \
-    return -1;                 \
-  }
+  do {                         \
+    if (!(x)) {                \
+      m_isFailed = true;       \
+      sprintf(m_error, y);     \
+      return -1;               \
+    }                          \
+  } while (0)
 
 class SuspendTransactionThread : public ACE_Task_Base {
  private:
@@ -376,7 +383,7 @@ class SuspendTransactionThread : public ACE_Task_Base {
   SuspendTransactionThread(bool sleep, ACE_Auto_Event* txEvent)
       : m_suspendedTransaction(nullptr), m_sleep(sleep), m_txEvent(txEvent) {}
 
-  int svc(void) {
+  int svc(void) override {
     char buf[1024];
     sprintf(buf, " In SuspendTransactionThread");
     LOG(buf);
@@ -392,7 +399,7 @@ class SuspendTransactionThread : public ACE_Task_Base {
 
     if (m_sleep) {
       m_txEvent->wait();
-      ACE_OS::sleep(5);
+      std::this_thread::sleep_for(std::chrono::seconds(5));
     }
 
     m_suspendedTransaction = &txManager->suspend();
@@ -429,7 +436,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
         m_isFailed(false),
         m_txEvent(txEvent) {}
 
-  int svc(void) {
+  int svc(void) override {
     char buf[1024];
     sprintf(buf, "In ResumeTransactionThread");
     LOG(buf);
@@ -674,7 +681,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendTimeOut)
     ASSERT(txManager->exists(tid2),
            "In SuspendTimeOut - the transaction should exist");
 
-    ACE_OS::sleep(65);
+    std::this_thread::sleep_for(std::chrono::seconds(65));
     ASSERT(!txManager->tryResume(tid2),
            "In SuspendTimeOut - the transaction should NOT have been resumed");
     ASSERT(!txManager->isSuspended(tid2),
@@ -788,7 +795,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     SuspendTransactionThread* suspendTh =
         new SuspendTransactionThread(false, &txEvent);
     suspendTh->activate();
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     ResumeTransactionThread* resumeTh = new ResumeTransactionThread(
         suspendTh->getSuspendedTx(), false, false, &txEvent);
     resumeTh->activate();
@@ -805,7 +812,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     LOG(buf);
     suspendTh = new SuspendTransactionThread(false, &txEvent);
     suspendTh->activate();
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     resumeTh = new ResumeTransactionThread(suspendTh->getSuspendedTx(), true,
                                            false, &txEvent);
     resumeTh->activate();
@@ -825,7 +832,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     LOG(buf);
     suspendTh = new SuspendTransactionThread(true, &txEvent);
     suspendTh->activate();
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     resumeTh = new ResumeTransactionThread(suspendTh->getSuspendedTx(), false,
                                            true, &txEvent);
     resumeTh->activate();
@@ -844,7 +851,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
     LOG(buf);
     suspendTh = new SuspendTransactionThread(true, &txEvent);
     suspendTh->activate();
-    ACE_OS::sleep(2);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     sprintf(buf, "suspendTh->activate();");
     LOG(buf);
 

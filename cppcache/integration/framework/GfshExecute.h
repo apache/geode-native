@@ -57,6 +57,7 @@ class GfshExecuteException : public apache::geode::client::Exception {
 
 class GfshExecute : public Gfsh {
   std::string connection_;
+  std::string maxHeap_ = "256m";
 
   void execute(const std::string &command, const std::string &user,
                const std::string &password, const std::string &keyStorePath,
@@ -80,6 +81,8 @@ class GfshExecute : public Gfsh {
  public:
   GfshExecute() = default;
   virtual ~GfshExecute() override = default;
+
+  GfshExecute &withMaxHeap(std::string maxHeap);
 };
 
 #endif  // INTEGRATION_TEST_FRAMEWORK_GFSHEXECUTE_H

@@ -50,7 +50,7 @@ typedef std::vector<EventIdMapEntry> EventIdMapEntryList;
  * provides the operations for duplicate checking and
  * expiry of idle event IDs from notifications.
  */
-class APACHE_GEODE_EXPORT EventIdMap {
+class EventIdMap {
  private:
   typedef std::unordered_map<std::shared_ptr<EventSource>,
                              std::shared_ptr<EventSequence>,
@@ -127,7 +127,7 @@ class APACHE_GEODE_EXPORT EventIdMap {
  * EventSequence is the combination of SequenceNum from EventId, a timestamp and
  * a flag indicating whether or not it is ACKed
  */
-class APACHE_GEODE_EXPORT EventSequence {
+class EventSequence {
  public:
   using clock = std::chrono::steady_clock;
   using time_point = clock::time_point;

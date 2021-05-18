@@ -41,7 +41,7 @@ namespace client {
 /**
  * @brief Concurrent entries map. Not designed for subclassing...
  */
-class APACHE_GEODE_EXPORT EntriesMap {
+class EntriesMap {
  public:
   explicit EntriesMap(std::unique_ptr<EntryFactory> entryFactory)
       : m_entryFactory(std::move(entryFactory)) {}
@@ -125,6 +125,9 @@ class APACHE_GEODE_EXPORT EntriesMap {
    */
   virtual void getValues(
       std::vector<std::shared_ptr<Cacheable>>& result) const = 0;
+
+  /** @brief return whether there are no entryies. */
+  virtual bool empty() const = 0;
 
   /** @brief return the number of entries in the map. */
   virtual uint32_t size() const = 0;

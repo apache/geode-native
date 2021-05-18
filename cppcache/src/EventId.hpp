@@ -20,11 +20,15 @@
 #ifndef GEODE_EVENTID_H_
 #define GEODE_EVENTID_H_
 
+#include <inttypes.h>
+
 #include <string>
 
 #include <geode/DataOutput.hpp>
 #include <geode/internal/DataSerializableFixedId.hpp>
 #include <geode/internal/geode_globals.hpp>
+
+#include "util/Log.hpp"
 
 /** @file
  */
@@ -39,24 +43,23 @@ using internal::DSFid;
  * EventID "token" with a Distributed Member ID, Thread ID and per-thread
  * Sequence ID
  */
-class APACHE_GEODE_EXPORT EventId
-    : public internal::DataSerializableFixedId_t<DSFid::EventId> {
+class EventId : public internal::DataSerializableFixedId_t<DSFid::EventId> {
  private:
-  char m_eidMem[512];
-  int32_t m_eidMemLen;
-  int64_t m_eidThr;
-  int64_t m_eidSeq;
-  int32_t m_bucketId;
-  int8_t m_breadcrumbCounter;
+  char clientId_[512];
+  int32_t clientIdLength_;
+  int64_t threadId_;
+  int64_t sequenceId_;
+  int32_t bucketId_;
+  int8_t breadcrumbCounter_;
 
  public:
   /**
    *@brief Accessor methods
    **/
-  const char* getMemId() const;
-  int32_t getMemIdLen() const;
-  int64_t getThrId() const;
-  int64_t getSeqNum() const;
+  const char* clientId() const;
+  int32_t clientIdLength() const;
+  int64_t threadId() const;
+  int64_t sequenceNumber() const;
 
   void toData(DataOutput& output) const override;
 
@@ -96,9 +99,11 @@ class APACHE_GEODE_EXPORT EventId
     output.write(static_cast<uint8_t>(0));
     char longCode = 3;
     output.write(static_cast<uint8_t>(longCode));
-    output.writeInt(m_eidThr);
+    output.writeInt(threadId_);
     output.write(static_cast<uint8_t>(longCode));
-    output.writeInt(m_eidSeq);
+    output.writeInt(sequenceId_);
+    LOGDEBUG("%s(%p): Wrote tid=%" PRId64 ", seqid=%" PRId64, __FUNCTION__,
+             this, threadId_, sequenceId_);
   }
 
   /** Constructor, given the values. */

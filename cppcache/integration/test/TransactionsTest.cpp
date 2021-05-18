@@ -18,6 +18,7 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
+#include <random>
 #include <thread>
 
 #include <geode/Cache.hpp>
@@ -32,30 +33,46 @@ using apache::geode::client::Cache;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheTransactionManager;
+using apache::geode::client::CommitConflictException;
+using apache::geode::client::Exception;
+using apache::geode::client::IllegalStateException;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-std::shared_ptr<Cache> createCache() {
-  auto cache = CacheFactory().set("log-level", "debug").create();
-  return std::make_shared<Cache>(std::move(cache));
+const std::string regionName = "region";
+
+Cache createCache() {
+  return CacheFactory()
+      .set("statistic-sampling-enabled", "false")
+      .set("log-level", "none")
+      .create();
 }
 
-std::shared_ptr<Pool> createPool(Cluster& cluster,
-                                 std::shared_ptr<Cache> cache) {
-  auto poolFactory = cache->getPoolManager().createFactory();
+std::shared_ptr<Pool> createPool(Cluster& cluster, Cache& cache) {
+  auto poolFactory = cache.getPoolManager().createFactory();
   cluster.applyLocators(poolFactory);
   poolFactory.setPRSingleHopEnabled(true);
   return poolFactory.create("default");
 }
 
-void runClientOperations(std::shared_ptr<Cache> cache,
-                         std::shared_ptr<Region> region, int minEntryKey,
-                         int maxEntryKey, int numTx) {
-  auto transactionManager = cache->getCacheTransactionManager();
+std::shared_ptr<Region> setupRegion(Cache& cache) {
+  return cache.createRegionFactory(RegionShortcut::PROXY)
+      .setPoolName("default")
+      .create(regionName);
+}
+
+void runClientOperations(Cache& cache, std::shared_ptr<Region> region,
+                         int minEntryKey, int maxEntryKey, int numTx) {
+  std::random_device randomDevice;
+  std::default_random_engine randomEngine(randomDevice());
+  std::uniform_int_distribution<decltype(maxEntryKey)> distribution(
+      minEntryKey, maxEntryKey);
+
+  auto transactionManager = cache.getCacheTransactionManager();
 
   for (int i = 0; i < numTx; i++) {
-    auto theKey = (rand() % (maxEntryKey - minEntryKey)) + minEntryKey;
+    auto theKey = distribution(randomEngine);
     std::string theValue = "theValue";
     try {
       transactionManager->begin();
@@ -86,15 +103,13 @@ TEST(TransactionsTest, ExceptionWhenRollingBackTx) {
 
   auto cache = createCache();
   auto pool = createPool(cluster, cache);
-  auto region = cache->createRegionFactory(RegionShortcut::PROXY)
-                    .setPoolName("default")
-                    .create("region");
+  auto region = setupRegion(cache);
 
   std::vector<std::thread> clientThreads;
   for (int i = 0; i < NUM_THREADS; i++) {
     auto minKey = (i * keyRangeSize);
     auto maxKey = minKey + keyRangeSize - 1;
-    std::thread th(runClientOperations, cache, region, minKey, maxKey,
+    std::thread th(runClientOperations, std::ref(cache), region, minKey, maxKey,
                    TX_PER_CLIENT);
     clientThreads.push_back(std::move(th));
   }
@@ -107,6 +122,88 @@ TEST(TransactionsTest, ExceptionWhenRollingBackTx) {
     }
   }
 
+}  // TEST
+
+TEST(TransactionsTest, IlegalStateExceptionNoTx) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  // Create regions
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName(regionName)
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = createCache();
+  auto txm = cache.getCacheTransactionManager();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache);
+
+  EXPECT_THROW(txm->prepare(), IllegalStateException);
+  EXPECT_THROW(txm->commit(), IllegalStateException);
+  EXPECT_THROW(txm->rollback(), IllegalStateException);
+}  // TEST
+
+TEST(TransactionsTest, ExceptionConflictOnPrepare) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  // Create regions
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName(regionName)
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = createCache();
+  auto txm = cache.getCacheTransactionManager();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache);
+
+  txm->begin();
+  region->put("key", "A");
+  auto& tx_first_id = txm->suspend();
+  txm->begin();
+  region->put("key", "B");
+  txm->prepare();
+  auto& tx_second_id = txm->suspend();
+  txm->resume(tx_first_id);
+
+  EXPECT_THROW(txm->prepare(), CommitConflictException);
+  txm->resume(tx_second_id);
+  txm->rollback();
+
+}  // TEST
+
+TEST(TransactionsTest, ExceptionConflictOnCommit) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+
+  // Create regions
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName(regionName)
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = createCache();
+  auto txm = cache.getCacheTransactionManager();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache);
+
+  txm->begin();
+  region->put("key", "A");
+  auto& tx_id = txm->suspend();
+  txm->begin();
+  region->put("key", "B");
+  txm->commit();
+  txm->resume(tx_id);
+
+  EXPECT_THROW(txm->commit(), CommitConflictException);
 }  // TEST
 
 }  // namespace

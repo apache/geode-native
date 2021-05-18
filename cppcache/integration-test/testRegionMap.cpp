@@ -121,53 +121,6 @@ BEGIN_TEST(TestRegionLRULocal)
 #endif
 END_TEST(TestRegionLRULocal)
 
-BEGIN_TEST(TestRecentlyUsedBit)
-  // Put twenty items in region. LRU is set to 10.
-  // So 10 through 19 should be in region (started at 0)
-  // get 15 so it is marked recently used.
-  // put 9 more...  check that 15 was skipped for eviction.
-  // put 1 more...  15 should then have been evicted.
-  CacheHelper& cacheHelper = CacheHelper::getHelper();
-  std::shared_ptr<Region> regionPtr;
-  cacheHelper.createLRURegion(fwtest_Name, regionPtr);
-  std::cout << regionPtr->getFullPath() << std::endl;
-  // put more than 10 items... verify limit is held.
-  uint32_t i;
-  char buf[100];
-  for (i = 0; i < 20; i++) {
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
-    regionPtr->put(key, valuePtr);
-  }
-  sprintf(buf, "%d", 15);
-  std::shared_ptr<CacheableString> value2Ptr;
-  auto key2 = CacheableKey::create(buf);
-  value2Ptr = std::dynamic_pointer_cast<CacheableString>(regionPtr->get(key2));
-  ASSERT(value2Ptr != nullptr, "expected to find key 15 in cache.");
-  for (i = 20; i < 35; i++) {
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    auto valuePtr = cacheHelper.createCacheable(buf);
-    regionPtr->put(key, valuePtr);
-    auto&& vecKeys = regionPtr->keys();
-    cacheHelper.showKeys(vecKeys);
-    ASSERT(vecKeys.size() == 10, "expected more entries");
-  }
-  ASSERT(regionPtr->containsKey(key2), "expected to find key 15 in cache.");
-  {
-    sprintf(buf, "%d", 35);
-    auto key = CacheableKey::create(buf);
-    auto valuePtr = cacheHelper.createCacheable(buf);
-    regionPtr->put(key, valuePtr);
-    auto&& vecKeys = regionPtr->keys();
-    cacheHelper.showKeys(vecKeys);
-    ASSERT(vecKeys.size() == 10, "expected more entries");
-  }
-  ASSERT(regionPtr->containsKey(key2) == false, "15 should have been evicted.");
-END_TEST(TestRecentlyUsedBit)
-
 BEGIN_TEST(TestEmptiedMap)
   CacheHelper& cacheHelper = CacheHelper::getHelper();
   std::shared_ptr<Region> regionPtr;

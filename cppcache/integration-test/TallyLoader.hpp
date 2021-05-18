@@ -38,10 +38,11 @@ class TallyLoader : virtual public CacheLoader {
 
  public:
   TallyLoader() : CacheLoader(), m_loads(0) {}
-  virtual ~TallyLoader() = default;
+  ~TallyLoader() noexcept override = default;
 
-  std::shared_ptr<Cacheable> load(Region&, const std::shared_ptr<CacheableKey>&,
-                                  const std::shared_ptr<Serializable>&) {
+  std::shared_ptr<Cacheable> load(
+      Region&, const std::shared_ptr<CacheableKey>&,
+      const std::shared_ptr<Serializable>&) override {
     LOGDEBUG("TallyLoader::load invoked for %d.", m_loads);
     char buf[1024];
     sprintf(buf, "TallyLoader state: (loads = %d)", m_loads);
@@ -49,26 +50,11 @@ class TallyLoader : virtual public CacheLoader {
     return CacheableInt32::create(m_loads++);
   }
 
-  virtual void close(Region&) { LOG("TallyLoader::close"); }
-
-  int expectLoads(int expected) {
-    int tries = 0;
-    while ((m_loads < expected) && (tries < 200)) {
-      SLEEP(100);
-      tries++;
-    }
-    return m_loads;
-  }
+  virtual void close(Region&) override { LOG("TallyLoader::close"); }
 
   int getLoads() { return m_loads; }
 
   void reset() { m_loads = 0; }
-
-  void showTallies() {
-    char buf[1024];
-    sprintf(buf, "TallyLoader state: (loads = %d)", getLoads());
-    LOG(buf);
-  }
 };
 
 }  // namespace testing

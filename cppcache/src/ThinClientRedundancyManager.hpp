@@ -34,6 +34,7 @@
 #include "ServerLocation.hpp"
 #include "Task.hpp"
 #include "TcrMessage.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 #include "util/synchronized_map.hpp"
 
 namespace apache {
@@ -78,7 +79,7 @@ class ThinClientRedundancyManager {
   void netDown();
   void acquireRedundancyLock() { m_redundantEndpointsLock.lock(); }
   void releaseRedundancyLock() { m_redundantEndpointsLock.unlock(); }
-  bool allEndPointDiscon() { return m_IsAllEpDisCon; }
+  bool allEndPointDiscon() { return m_allEndpointsDisconnected; }
   void removeCallbackConnection(TcrEndpoint*);
 
   std::recursive_mutex& getRedundancyLock() { return m_redundantEndpointsLock; }
@@ -91,7 +92,7 @@ class ThinClientRedundancyManager {
   using time_point = clock::time_point;
 
   // for selectServers
-  volatile bool m_IsAllEpDisCon;
+  volatile bool m_allEndpointsDisconnected;
   int m_server;
   bool m_sentReadyForEvents;
   int m_redundancyLevel;
@@ -118,8 +119,9 @@ class ThinClientRedundancyManager {
   void moveEndpointToLast(std::vector<TcrEndpoint*>& epVector,
                           TcrEndpoint* targetEp);
 
-  synchronized_map<std::unordered_map<std::string, TcrEndpoint*>,
-                   std::recursive_mutex>&
+  synchronized_map<
+      std::unordered_map<std::string, std::shared_ptr<TcrEndpoint>>,
+      std::recursive_mutex>&
   updateAndSelectEndpoints();
 
   void getAllEndpoints(std::vector<TcrEndpoint*>& endpoints);
@@ -133,16 +135,15 @@ class ThinClientRedundancyManager {
                               TcrMessageReply* reply, bool isPrimary);
 
   inline bool isDurable();
-  int processEventIdMap(const ACE_Time_Value&, const void*);
+
   std::unique_ptr<Task<ThinClientRedundancyManager>> m_periodicAckTask;
-  ACE_Semaphore m_periodicAckSema;
-  ExpiryTaskManager::id_type
-      m_processEventIdMapTaskId;  // periodic check eventid map for notify ack
-                                  // and/or expiry
+  binary_semaphore periodic_ack_semaphore_;
+  ExpiryTask::id_t process_event_id_map_task_id_{ExpiryTask::invalid()};
+
   void periodicAck(std::atomic<bool>& isRunning);
   void doPeriodicAck();
-  time_point m_nextAck;                    // next ack time
-  std::chrono::milliseconds m_nextAckInc;  // next ack time increment
+  time_point m_nextAck;                     // next ack time
+  std::chrono::milliseconds next_ack_inc_;  // next ack time increment
   volatile bool m_HAenabled;
   EventIdMap m_eventidmap;
 

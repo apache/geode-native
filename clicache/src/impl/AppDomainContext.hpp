@@ -20,8 +20,11 @@
 
 #include <functional>
 #include <vcclr.h>
+#include <msclr/marshal_cppstd.h>
+#include <debugapi.h>
 #include "../begin_native.hpp"
 #include <AppDomainContext.hpp>
+#include <geode/ExceptionTypes.hpp>
 #include "../end_native.hpp"
 
 namespace Apache
@@ -61,7 +64,11 @@ public:
   }
   
   void run(runnable func) {
-    functionPointer(func);
+    try {
+      functionPointer(func);
+    } catch (AppDomainUnloadedException^) {
+      // if AppDomain has unloaded then we are shutting down so we can ignore.
+    }
   }
 
 private:

@@ -23,12 +23,12 @@
 #include <memory>
 #include <string>
 
+#include <ace/RW_Thread_Mutex.h>
+
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "CqService.hpp"
-#include "ThinClientCacheDistributionManager.hpp"
-#include "statistics/StatisticsManager.hpp"
 
 namespace apache {
 namespace geode {
@@ -37,7 +37,7 @@ namespace client {
 class CacheImpl;
 class ThinClientPoolDM;
 typedef std::map<std::string, bool> CqPoolsConnected;
-class APACHE_GEODE_EXPORT RemoteQueryService
+class RemoteQueryService
     : public QueryService,
       public std::enable_shared_from_this<RemoteQueryService> {
  public:
@@ -87,7 +87,7 @@ class APACHE_GEODE_EXPORT RemoteQueryService
    * execute all cqs on the endpoint after failover
    */
   GfErrType executeAllCqs(TcrEndpoint* endpoint);
-  void receiveNotification(TcrMessage* msg);
+  void receiveNotification(TcrMessage& msg);
   void invokeCqConnectedListeners(ThinClientPoolDM* pool, bool connected);
   // For Lazy Cq Start-no use, no start
   inline void initCqService() {

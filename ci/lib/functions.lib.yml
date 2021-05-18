@@ -1,0 +1,45 @@
+#! Licensed to the Apache Software Foundation (ASF) under one or more
+#! contributor license agreements.  See the NOTICE file distributed with
+#! this work for additional information regarding copyright ownership.
+#! The ASF licenses this file to You under the Apache License, Version 2.0
+#! (the "License"); you may not use this file except in compliance with
+#! the License.  You may obtain a copy of the License at
+#!
+#!      http://www.apache.org/licenses/LICENSE-2.0
+#!
+#! Unless required by applicable law or agreed to in writing, software
+#! distributed under the License is distributed on an "AS IS" BASIS,
+#! WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#! See the License for the specific language governing permissions and
+#! limitations under the License.
+
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:struct", "struct")
+
+---
+#@ def hyphenated(value):
+#! TODO [a-z0-9-]
+#@ return value.lower().replace(".", "-").replace("/", "-")
+#@ end
+
+---
+#@ def gci_label_value(value):
+#! TODO [a-z0-9_-]
+#@ return hyphenated(value[0:62])
+#@ end
+
+---
+#@ def image_family_name(family):
+#@ return (data.values.pipeline.name + "-" + family)[0:62]
+#@ end
+
+---
+#@ def initial_version():
+#@ return data.values.pipeline.version + ("-" + data.values.pipeline.pre + ".0" if data.values.pipeline.pre else "")
+#@ end
+
+---
+#@ def version_pattern():
+#@ return (data.values.pipeline.version + ("-" + data.values.pipeline.pre + "." if data.values.pipeline.pre else "")).replace(".", "\.") + ".*"
+#@ end

@@ -94,7 +94,7 @@ class KillServerThread : public ACE_Task_Base {
   MyCqListener *m_listener;
   explicit KillServerThread(MyCqListener *listener)
       : m_running(false), m_listener(listener) {}
-  int svc(void) {
+  int svc(void) override {
     while (m_running == true) {
       CacheHelper::closeServer(1);
       LOG("THREAD CLOSED SERVER 1");
@@ -227,13 +227,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
       SLEEP(15000);
     } catch (IllegalStateException &ise) {
-      char isemsg[500] = {0};
-      ACE_OS::snprintf(isemsg, 499, "IllegalStateException: %s", ise.what());
-      LOG(isemsg);
-      FAIL(isemsg);
+      std::string excpmsg = "IllegalStateException: " + std::string{ise.what()};
+
+      LOG(excpmsg);
+      FAIL(excpmsg);
     } catch (Exception &excp) {
-      char excpmsg[500] = {0};
-      ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
+      std::string excpmsg = "Exception: " + std::string{excp.what()};
+
       LOG(excpmsg);
       FAIL(excpmsg);
     } catch (...) {
@@ -287,8 +287,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
     } catch (Exception &excp) {
-      char excpmsg[500] = {0};
-      ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
+      std::string excpmsg = "Exception: " + std::string{excp.what()};
+
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }
@@ -374,8 +374,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
       auto vl = cqAttr->getCqListeners();
       cqLstner = vl[0];
     } catch (Exception &excp) {
-      char excpmsg[500] = {0};
-      ACE_OS::snprintf(excpmsg, 499, "Exception: %s", excp.what());
+      std::string excpmsg = "Exception: " + std::string{excp.what()};
+
       LOG(excpmsg);
       ASSERT(false, "get listener failed");
     }

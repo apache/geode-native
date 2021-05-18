@@ -453,9 +453,9 @@ namespace Apache
           obj = ReadSBytes();
         }        
 
-        void DataInput::ReadObject(array<UInt16>^% obj);
-        void DataInput::ReadObject(array<UInt32>^% obj);
-        void DataInput::ReadObject(array<UInt64>^% obj);
+        void ReadObject(array<UInt16>^% obj);
+        void ReadObject(array<UInt32>^% obj);
+        void ReadObject(array<UInt64>^% obj);
 
         template <typename mType>
         void ReadObject(array<mType>^ %objArray)
