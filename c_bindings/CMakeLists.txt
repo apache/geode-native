@@ -25,7 +25,17 @@ add_library(${PROJECT_NAME} SHARED "src/auth_initialize.cpp"
 "src/pool/manager.cpp"
 "src/region/factory.cpp")
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+# add_library(${PROJECT_NAME} SHARED "src/auth_initialize.cpp"
+# "src/cache.cpp"
+# "src/client.cpp"
+# "src/pool.cpp"
+# "src/region.cpp"
+# "src/cache/factory.cpp"
+# "src/pool/factory.cpp"
+# "src/pool/manager.cpp"
+# "src/region/factory.cpp")
+
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE apache-geode-static)
 

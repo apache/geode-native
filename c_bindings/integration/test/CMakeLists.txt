@@ -19,7 +19,7 @@ add_executable(${PROJECT_NAME}
   ExampleTest.cpp
 )
 
-target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 target_compile_definitions(${PROJECT_NAME}
   PUBLIC
@@ -51,7 +51,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 if(WIN32)
-  foreach (_target apache-geode-c testobject)
+  foreach (_target apache-geode-c apache-geode testobject)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:${_target}>"
         "$<$<CONFIG:Debug>:$<TARGET_PDB_FILE:${_target}>>"
@@ -67,4 +67,4 @@ add_clangformat(${PROJECT_NAME})
 
 enable_testing()
 include(GoogleTest)
-gtest_discover_tests(${PROJECT_NAME})
+gtest_discover_tests(${PROJECT_NAME} DISCOVERY_TIMEOUT 60)

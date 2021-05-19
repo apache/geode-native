@@ -23,8 +23,12 @@
 #include "geode/AuthInitialize.hpp"
 #include "geode/auth_initialize.h"
 
-namespace apache::geode::client {
+namespace apache {
+  namespace geode {
+    namespace client {
       class Properties;
+    }
+  }
 }
 
 class AuthInitializeWrapper : public apache::geode::client::AuthInitialize {

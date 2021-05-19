@@ -19,6 +19,10 @@
 #include <memory>
 #include <string>
 
+#ifdef _WIN32
+#include <objbase.h>
+#endif // _WIN32
+
 // C++ client public headers
 #include "geode/CacheableString.hpp"
 #include "geode/Region.hpp"

@@ -24,8 +24,10 @@
    extern template declarations of these templates to reduce object bloat and
    compile time.
 */
-namespace testing::internal {
-extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
+namespace testing {
+  namespace internal {
+    extern void ColoredPrintf(GTestColor color, const char* fmt, ...);
+  }
 }  // namespace testing
 
 namespace util {

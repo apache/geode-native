@@ -21,9 +21,13 @@
 #include "client.hpp"
 
 
-namespace apache::geode::client {
+namespace apache {
+  namespace geode {
+    namespace client {
 enum class RegionShortcut;
-}  // namespace apache
+    }
+  }
+}
 
 class PoolManagerWrapper;
 class RegionFactoryWrapper;
