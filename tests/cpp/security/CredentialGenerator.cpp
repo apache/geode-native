@@ -37,6 +37,7 @@
 #include "LdapUserCredentialGenerator.hpp"
 #include "NoopCredentialGenerator.hpp"
 #include "PkcsCredentialGenerator.hpp"
+#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
@@ -93,6 +94,15 @@ void CredentialGenerator::getAuthInit(std::shared_ptr<Properties>& prop) {
     prop->insert("security-client-auth-library",
                  getClientAuthInitLoaderLibrary().c_str());
   }
+}
+
+std::string CredentialGenerator::getPublickeyfile() {
+  auto path = Utils::getEnv("TESTSRC");
+  if (path.empty()) {
+    path = Utils::getEnv("BUILDDIR") + "/framework/data";
+  }
+
+  return path + "/keystore/publickeyfile";
 }
 
 std::string CredentialGenerator::getServerCmdParams(std::string securityParams,
