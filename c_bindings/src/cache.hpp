@@ -24,7 +24,7 @@
 namespace apache {
   namespace geode {
     namespace client {
-enum class RegionShortcut;
+      enum class RegionShortcut;
     }
   }
 }

@@ -16,6 +16,7 @@
 project(apache-geode-c-integration-test)
 
 add_executable(${PROJECT_NAME}
+  CAuthInitialize.cpp
   CCacheCreationTest.cpp
   ExampleTest.cpp
 )
