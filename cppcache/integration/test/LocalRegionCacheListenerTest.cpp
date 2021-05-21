@@ -78,12 +78,12 @@ class LocalRegionCacheListenerTest : public ::testing::Test {
             .create("region");
   }
 
-  void TearDown() {
+  void TearDown() override {
     ::testing::Mock::VerifyAndClearExpectations(
         listener_.get());  // Just to make sure it's clean for the next test.
-  };
+  }
 
-  ~LocalRegionCacheListenerTest() = default;
+  ~LocalRegionCacheListenerTest() override = default;
 };
 
 ::std::shared_ptr<::apache::geode::client::Nice_MockListener>

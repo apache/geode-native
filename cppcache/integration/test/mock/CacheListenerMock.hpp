@@ -46,16 +46,16 @@ namespace client {
 */
 class CacheListenerMock : public CacheListener {
  public:
-  MOCK_METHOD(void, afterCreate, (const EntryEvent&), (override));
-  MOCK_METHOD(void, afterUpdate, (const EntryEvent&), (override));
-  MOCK_METHOD(void, afterInvalidate, (const EntryEvent&), (override));
-  MOCK_METHOD(void, afterDestroy, (const EntryEvent&), (override));
-  MOCK_METHOD(void, afterRegionInvalidate, (const RegionEvent&), (override));
-  MOCK_METHOD(void, afterRegionDestroy, (const RegionEvent&), (override));
-  MOCK_METHOD(void, afterRegionClear, (const RegionEvent&), (override));
-  MOCK_METHOD(void, afterRegionLive, (const RegionEvent&), (override));
-  MOCK_METHOD(void, close, (Region&), (override));
-  MOCK_METHOD(void, afterRegionDisconnected, (Region&), (override));
+  MOCK_METHOD1(afterCreate, void(const EntryEvent&));
+  MOCK_METHOD1(afterUpdate, void(const EntryEvent&));
+  MOCK_METHOD1(afterInvalidate, void(const EntryEvent&));
+  MOCK_METHOD1(afterDestroy, void(const EntryEvent&));
+  MOCK_METHOD1(afterRegionInvalidate, void(const RegionEvent&));
+  MOCK_METHOD1(afterRegionDestroy, void(const RegionEvent&));
+  MOCK_METHOD1(afterRegionClear, void(const RegionEvent&));
+  MOCK_METHOD1(afterRegionLive, void(const RegionEvent&));
+  MOCK_METHOD1(close, void(Region&));
+  MOCK_METHOD1(afterRegionDisconnected, void(Region&));
 };
 
 using Nice_MockListener =

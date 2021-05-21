@@ -62,6 +62,10 @@ add_executable(cpp-integration-test
   DisconnectEndPointAtException.cpp
   ContainsKeyOnServerExceptionTest.cpp
   ThinClientHARegionCacheListenerTest.cpp
+  ThinClientHARegionCacheListenerWithClusterRegionTest.cpp
+  ThinClientHARegionCacheListenerARLEPDTest.cpp
+  ThinClientHARegionCacheListenerARLTest.cpp
+  ThinClientHARegionCacheListenerKeyValueTest.cpp
   LocalRegionCacheListenerTest.cpp
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
