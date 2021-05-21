@@ -1013,9 +1013,12 @@ void CacheHelper::initServer(int instance, const std::string &xml,
                              const char * /*unused*/, bool ssl,
                              bool enableDelta, bool, bool testServerGC,
                              bool untrustedCert, bool useSecurityManager) {
-  if (!isServerCleanupCallbackRegistered &&
-      gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
+  if (!isServerCleanupCallbackRegistered) {
     isServerCleanupCallbackRegistered = true;
+
+    gClientCleanup.registerCallback(
+        []() { CacheHelper::cleanupServerInstances(); });
+
     printf("TimeBomb registered server cleanupcallback \n");
   }
   printf("Inside initServer added\n");
@@ -1421,9 +1424,11 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
                               bool useSecurityManager) {
   static const auto gfjavaenv = Utils::getEnv("GFJAVA");
 
-  if (!isLocatorCleanupCallbackRegistered &&
-      gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
+  if (!isLocatorCleanupCallbackRegistered) {
     isLocatorCleanupCallbackRegistered = true;
+
+    gClientCleanup.registerCallback(
+        []() { CacheHelper::cleanupLocatorInstances(); });
   }
 
   std::string currDir = boost::filesystem::current_path().string();

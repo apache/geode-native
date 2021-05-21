@@ -18,9 +18,12 @@ project(nativeclient.tests.cppcache LANGUAGES CXX)
 
 add_library(test-cppcache-utils STATIC
   fw_dunit.cpp
+  ClientCleanup.cpp
   CacheHelper.cpp
   CacheableWrapper.cpp
+  TimeBomb.cpp
 )
+
 target_link_libraries(test-cppcache-utils
   PRIVATE
     integration-framework

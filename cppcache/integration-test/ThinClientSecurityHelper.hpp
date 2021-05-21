@@ -177,20 +177,20 @@ void initClientAuth(char UserType) {
   }
 }
 
-// This putThread class is used in
+// This PutThread class is used in
 // testThinClientTracking,testThinClientTicket304, testThinClientTicket317
 
-class putThread : public ACE_Task_Base {
+class PutThread {
  public:
-  explicit putThread(std::shared_ptr<Region> r, bool regInt = false,
-                     int waitTime = 0) {
-    m_reg = r;
-    m_regInt = regInt;
-    m_numthreads = 1;
-    m_numops = 0;
-    m_isCallBack = false;
-    m_sameKey = false;
-    m_waitTime = waitTime;
+  explicit PutThread(std::shared_ptr<Region> r, bool regInt = false,
+                     int waitTime = 0)
+      : m_reg{r},
+        m_numops{0},
+        m_numthreads{1},
+        m_isCallBack{false},
+        m_sameKey{false},
+        m_regInt{regInt},
+        m_waitTime{waitTime} {
   }
 
   void setParams(int opcode, int numofops, int numthreads,
@@ -205,18 +205,26 @@ class putThread : public ACE_Task_Base {
   }
 
   void start() {
-    m_run = true;
-    activate(THR_NEW_LWP | THR_JOINABLE, m_numthreads);
-  }
-
-  void stop() {
-    if (m_run) {
-      m_run = false;
-      wait();
+    for(auto i = 0; i < m_numthreads; ++i) {
+      threads_.emplace_back([this](){
+        run();
+      });
     }
   }
 
-  int svc() override {
+  void wait() {
+    for(auto& thread : threads_) {
+      if(thread.joinable()) {
+        thread.join();
+      }
+    }
+  }
+
+  void stop() {
+      wait();
+  }
+
+  void run() {
     int ops = 0;
     std::string key_str;
     std::shared_ptr<CacheableKey> key;
@@ -275,11 +283,11 @@ class putThread : public ACE_Task_Base {
         }
       }
     }
-    return 0;
   }
 
+ protected:
   std::shared_ptr<Region> m_reg;
-  bool m_run;
+
   int m_opcode;
   int m_numops;
   int m_numthreads;
@@ -287,6 +295,8 @@ class putThread : public ACE_Task_Base {
   bool m_sameKey;
   bool m_regInt;
   int m_waitTime;
+
+  std::vector<std::thread> threads_;
 };
 
 }  // namespace
