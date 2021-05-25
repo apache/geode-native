@@ -32,7 +32,7 @@
 #include "geode/region/factory.h"
 #include "geode/region/shortcut.h"
 
-auto credentialsRequested_ = 0;
+static auto credentialsRequested_ = 0;
 
 void simpleGetCredentials(apache_geode_properties_t* props) {
   apache_geode_AuthInitialize_AddProperty(props, "security-username", "root");

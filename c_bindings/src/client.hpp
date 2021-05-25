@@ -67,4 +67,6 @@ class ClientWrapper : public Client {
 
  public:
   int checkForLeaks();
+
+  virtual ~ClientWrapper();
 };

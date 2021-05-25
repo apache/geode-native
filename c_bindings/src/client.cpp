@@ -18,6 +18,7 @@
 // Standard headers
 #include <string>
 #include <utility>
+#include <iostream>
 
 // C++ client public headers
 #include "geode/Exception.hpp"
@@ -31,19 +32,25 @@
 // C client private headers
 #include "client.hpp"
 
+class PermaClient {
+ public:
+  static std::shared_ptr<ClientWrapper>& instance() {
+    static auto client_ = std::make_shared<ClientWrapper>();
+    return client_;
+  }
+};
+
 apache_geode_client_t* apache_geode_ClientInitialize() {
-  return reinterpret_cast<apache_geode_client_t*>(new ClientWrapper());
+  return reinterpret_cast<apache_geode_client_t*>(PermaClient::instance().get());
 }
 
 int apache_geode_ClientUninitialize(apache_geode_client_t* client) {
-  if(auto wrapper = reinterpret_cast<ClientWrapper*>(client)) {
-    const int result = wrapper->checkForLeaks();
-
-    delete wrapper;
-
+  try {
+    const int result = PermaClient::instance()->checkForLeaks();
     return result;
+  } catch (...) {
+    return -1;
   }
-
   return 0;
 }
   
@@ -88,3 +95,7 @@ void ClientWrapper::do_AddRecord(void* value, const std::string& className) {
 }
 
 void ClientWrapper::do_RemoveRecord(void* value) { registry_.erase(value); }
+
+ClientWrapper::~ClientWrapper() {
+  std::cout << "Geode client shut down...\n";
+}
