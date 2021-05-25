@@ -22,14 +22,16 @@
 #include <cstdlib>
 #include <iomanip>
 
-#include <ace/INET_Addr.h>
-#include <ace/OS.h>
 #include <boost/asio.hpp>
 #include <boost/dll/import.hpp>
 #include <boost/dll/runtime_symbol_info.hpp>
 #include <boost/process/detail/config.hpp>
 
 #include "config.h"
+
+#if defined(HAVE_uname)
+#include <sys/utsname.h>
+#endif
 
 namespace apache {
 namespace geode {
@@ -81,44 +83,36 @@ void Utils::parseEndpointString(const char* endpoints, std::string& host,
   port = atoi(endpointsStr.c_str());
 }
 
-std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
-  if (endpoints == nullptr) return nullptr;
-  std::string hostString("");
-  uint16_t port = 0;
-  std::string endpointsStr(endpoints);
-  std::string endpointsStr1(endpoints);
-  // Parse this string to get all hostnames and port numbers.
-  std::string endpoint;
-  std::string::size_type length = endpointsStr.size();
-  std::string::size_type pos = 0;
-  ACE_TCHAR hostName[256], fullName[512];
-  pos = endpointsStr.find(':', 0);
-  if (pos != std::string::npos) {
-    endpoint = endpointsStr.substr(0, pos);
-    pos += 1;  // skip ':'
-    length -= (pos);
-    endpointsStr = endpointsStr.substr(pos, length);
-  } else {
-    hostString = "";
-    return "";
+std::string Utils::convertHostToCanonicalForm(const std::string& endpoints) {
+  using boost::asio::io_service;
+  using boost::asio::ip::tcp;
+
+  if (endpoints.empty()) {
+    return {};
   }
-  hostString = endpoint;
-  port = std::stoi(endpointsStr);
-  if (hostString == "localhost") {
-    auto hostname = boost::asio::ip::host_name();
-    if (auto host = ::gethostbyname(hostname.c_str())) {
-      return std::string{host->h_name} + ':' + std::to_string(port);
-    }
-  } else {
-    pos = endpointsStr1.find('.', 0);
-    if (pos != std::string::npos) {
-      ACE_INET_Addr addr(endpoints);
-      addr.get_host_name(hostName, 256);
-      std::snprintf(fullName, sizeof(fullName), "%s:%d", hostName, port);
-      return fullName;
-    }
+
+  auto pos = endpoints.rfind(':');
+  if (pos == std::string::npos) {
+    return {};
   }
-  return endpoints;
+
+  auto hostname = endpoints.substr(0, pos);
+  auto port = endpoints.substr(pos);
+
+  if (hostname == "localhost") {
+    hostname = boost::asio::ip::host_name();
+  }
+
+  io_service svc;
+  boost::system::error_code ec;
+  tcp::resolver resolver{svc};
+  auto results = resolver.resolve(hostname, ec);
+
+  if (!ec) {
+    hostname = results->host_name();
+  }
+
+  return hostname + port;
 }
 
 void Utils::parseEndpointNamesString(
