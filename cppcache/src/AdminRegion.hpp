@@ -23,11 +23,11 @@
 #include <memory>
 #include <string>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/Serializable.hpp>
 
 #include "ErrType.hpp"
-#include "ReadWriteLock.hpp"
-
 namespace apache {
 namespace geode {
 
@@ -48,7 +48,7 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
   ThinClientBaseDM* m_distMngr;
   std::string m_fullPath;
   TcrConnectionManager* m_connectionMgr;
-  ACE_RW_Thread_Mutex m_rwLock;
+  boost::shared_mutex m_rwMutex;
   bool m_destroyPending;
 
   GfErrType putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
@@ -67,7 +67,7 @@ class AdminRegion : public std::enable_shared_from_this<AdminRegion> {
 
   static std::shared_ptr<AdminRegion> create(
       CacheImpl* cache, ThinClientBaseDM* distMan = nullptr);
-  ACE_RW_Thread_Mutex& getRWLock();
+  boost::shared_mutex& getMutex();
   const bool& isDestroyed();
   void close();
   void init();

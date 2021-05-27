@@ -199,7 +199,6 @@ set_tests_properties(
     testThinClientPutAllWithCallBackArgWithoutConcurrency
     testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
-    testTimedSemaphore
     # broken
     testThinClientCqDurable
     testThinClientGatewayTest

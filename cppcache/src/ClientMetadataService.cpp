@@ -308,8 +308,8 @@ void ClientMetadataService::enqueueForMetadataRefresh(
   if (region != nullptr) {
     auto tcrRegion = dynamic_cast<ThinClientRegion*>(region.get());
     {
-      TryWriteGuard guardRegionMetaDataRefresh(
-          tcrRegion->getMataDataMutex(), tcrRegion->getMetaDataRefreshed());
+      boost::unique_lock<boost::shared_mutex> guard{
+          tcrRegion->getMetadataMutex()};
       if (tcrRegion->getMetaDataRefreshed()) {
         return;
       }

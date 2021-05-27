@@ -17,6 +17,8 @@
 
 #include "AdminRegion.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
@@ -114,15 +116,17 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
 }
 
 void AdminRegion::close() {
-  TryWriteGuard _guard(m_rwLock, m_destroyPending);
+  boost::unique_lock<decltype(m_rwMutex)> guard{m_rwMutex};
+
   if (m_destroyPending) {
     return;
   }
+
   m_destroyPending = true;
 
   // Close distribution manager if it is not a pool
-  ThinClientPoolDM* pool = dynamic_cast<ThinClientPoolDM*>(m_distMngr);
-  if (pool == nullptr) {
+  if (m_distMngr != nullptr &&
+      dynamic_cast<ThinClientPoolDM*>(m_distMngr) == nullptr) {
     m_distMngr->destroy();
     _GEODE_SAFE_DELETE(m_distMngr);
   }
@@ -136,7 +140,8 @@ AdminRegion::~AdminRegion() {
 }
 
 const bool& AdminRegion::isDestroyed() { return m_destroyPending; }
-ACE_RW_Thread_Mutex& AdminRegion::getRWLock() { return m_rwLock; }
+
+boost::shared_mutex& AdminRegion::getMutex() { return m_rwMutex; }
 
 }  // namespace client
 }  // namespace geode

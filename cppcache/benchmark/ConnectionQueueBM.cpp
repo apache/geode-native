@@ -20,9 +20,6 @@
 #include <mutex>
 #include <thread>
 
-#include <ace/Condition_Recursive_Thread_Mutex.h>
-#include <ace/Recursive_Thread_Mutex.h>
-
 #include "ConnectionQueue.hpp"
 
 class TestObject {

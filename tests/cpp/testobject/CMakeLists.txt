@@ -17,6 +17,7 @@ cmake_minimum_required(VERSION 3.10)
 project(testobject LANGUAGES CXX)
 
 add_library(testobject SHARED 
+  ArrayOfByte.cpp
   ArrayOfByte.hpp
   BatchObject.cpp
   BatchObject.hpp

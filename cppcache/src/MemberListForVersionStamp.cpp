@@ -16,6 +16,8 @@
  */
 #include "MemberListForVersionStamp.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "util/Log.hpp"
 
 namespace apache {
@@ -33,7 +35,7 @@ MemberListForVersionStamp::~MemberListForVersionStamp() {}
 // This function is protected  using readers/writer lock
 uint16_t MemberListForVersionStamp::add(
     std::shared_ptr<DSMemberForVersionStamp> member) {
-  WriteGuard guard(m_mapLock);
+  boost::unique_lock<decltype(mutex_)> guard(mutex_);
   std::unordered_map<std::string, DistributedMemberWithIntIdentifier>::iterator
       it = m_members2.find(member->getHashKey());
   if (it != m_members2.end()) return (*it).second.m_identifier;
@@ -50,7 +52,7 @@ uint16_t MemberListForVersionStamp::add(
 // This function is protected  using readers/writer lock
 std::shared_ptr<DSMemberForVersionStamp> MemberListForVersionStamp::getDSMember(
     uint16_t memberId) {
-  ReadGuard guard(m_mapLock);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   std::unordered_map<uint32_t,
                      std::shared_ptr<DSMemberForVersionStamp>>::iterator it =
       m_members1.find(memberId);

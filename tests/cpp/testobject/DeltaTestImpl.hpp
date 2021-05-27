@@ -20,10 +20,11 @@
 #ifndef GEODE_TESTOBJECT_DELTATESTIMPL_H_
 #define GEODE_TESTOBJECT_DELTATESTIMPL_H_
 
+#include <mutex>
+
 #include <ace/ACE.h>
 #include <ace/Condition_T.h>
 #include <ace/OS.h>
-#include <ace/Recursive_Thread_Mutex.h>
 #include <ace/Task.h>
 
 #include <geode/DataSerializable.hpp>
@@ -61,7 +62,7 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
   uint8_t deltaBits;
   mutable int64_t toDeltaCounter;
   int64_t fromDeltaCounter;
-  ACE_Recursive_Thread_Mutex m_lock;
+  mutable std::recursive_mutex mutex_;
 
  public:
   DeltaTestImpl();

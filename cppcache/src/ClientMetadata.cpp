@@ -164,7 +164,6 @@ void ClientMetadata::getServerLocation(
 
 void ClientMetadata::updateBucketServerLocations(
     int bucketId, BucketServerLocationsType bucketServerLocations) {
-  // WriteGuard guard( m_readWriteLock );
   checkBucketId(bucketId);
 
   auto&& serverGroup = m_tcrdm->getServerGroup();

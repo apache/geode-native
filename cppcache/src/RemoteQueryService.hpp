@@ -23,7 +23,7 @@
 #include <memory>
 #include <string>
 
-#include <ace/RW_Thread_Mutex.h>
+#include <boost/thread/shared_mutex.hpp>
 
 #include <geode/QueryService.hpp>
 #include <geode/internal/geode_globals.hpp>
@@ -47,7 +47,7 @@ class RemoteQueryService
 
   void init();
 
-  inline ACE_RW_Thread_Mutex& getLock() { return m_rwLock; }
+  boost::shared_mutex& getMutex();
 
   inline const volatile bool& invalid() { return m_invalid; }
 
@@ -100,7 +100,7 @@ class RemoteQueryService
 
  private:
   volatile bool m_invalid;
-  mutable ACE_RW_Thread_Mutex m_rwLock;
+  mutable boost::shared_mutex mutex_;
 
   ThinClientBaseDM* m_tccdm;
   std::shared_ptr<CqService> m_cqService;

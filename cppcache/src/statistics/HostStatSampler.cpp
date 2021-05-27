@@ -28,6 +28,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
 #include <boost/range/adaptors.hpp>
+#include <boost/thread/lock_types.hpp>
 
 #include <geode/CacheFactory.hpp>
 #include <geode/ExceptionTypes.hpp>
@@ -275,7 +276,8 @@ void HostStatSampler::putStatsInAdminRegion() {
     if (conn_man->isNetDown()) {
       return;
     }
-    client::TryReadGuard _guard(adminRgn->getRWLock(), adminRgn->isDestroyed());
+
+    boost::shared_lock<boost::shared_mutex> guard{adminRgn->getMutex()};
     if (!adminRgn->isDestroyed()) {
       if (conn_man->getNumEndPoints() > 0) {
         if (!initDone) {

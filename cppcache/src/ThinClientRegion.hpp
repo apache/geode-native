@@ -170,7 +170,7 @@ class ThinClientRegion : public LocalRegion {
   GfErrType getFuncAttributes(const std::string& func,
                               std::shared_ptr<std::vector<int8_t>>* attr);
 
-  ACE_RW_Thread_Mutex& getMataDataMutex() { return m_RegionMutex; }
+  boost::shared_mutex& getMetadataMutex();
 
   bool const& getMetaDataRefreshed() { return m_isMetaDataRefreshed; }
 
@@ -277,7 +277,7 @@ class ThinClientRegion : public LocalRegion {
   bool isDurableClient() { return m_isDurableClnt; }
   std::shared_ptr<ThinClientBaseDM> m_tcrdm;
   std::recursive_mutex m_keysLock;
-  mutable ACE_RW_Thread_Mutex m_rwDestroyLock;
+  mutable boost::shared_mutex destroy_mutex_;
   std::unordered_map<std::shared_ptr<CacheableKey>, InterestResultPolicy>
       m_interestList;
   std::unordered_map<std::string, InterestResultPolicy> m_interestListRegex;
@@ -348,7 +348,7 @@ class ThinClientRegion : public LocalRegion {
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
 
-  ACE_RW_Thread_Mutex m_RegionMutex;
+  boost::shared_mutex region_mutex_;
   bool m_isMetaDataRefreshed;
 
   typedef std::unordered_map<

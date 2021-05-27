@@ -23,6 +23,8 @@
 
 #include "PdxType.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "PdxFieldType.hpp"
 #include "PdxHelper.hpp"
 #include "PdxTypeRegistry.hpp"
@@ -371,7 +373,6 @@ int32_t* PdxType::getLocalToRemoteMap() {
     return m_localToRemoteFieldMap;
   }
 
-  ReadGuard guard(m_lockObj);
   if (m_localToRemoteFieldMap != nullptr) {
     return m_localToRemoteFieldMap;
   }
@@ -385,7 +386,6 @@ int32_t* PdxType::getRemoteToLocalMap() {
     return m_remoteToLocalFieldMap;
   }
 
-  ReadGuard guard(m_lockObj);
   if (m_remoteToLocalFieldMap != nullptr) {
     return m_remoteToLocalFieldMap;
   }

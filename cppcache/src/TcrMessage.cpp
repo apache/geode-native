@@ -23,6 +23,7 @@
 
 #include "AutoDelete.hpp"
 #include "BucketServerLocation.hpp"
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
@@ -494,7 +495,8 @@ void TcrMessage::readSecureObjectPart(DataInput& input, bool defaultString,
                                       bool isChunk,
                                       uint8_t isLastChunkWithSecurity) {
   LOGDEBUG(
-      "TcrMessage::readSecureObjectPart isChunk = %d isLastChunkWithSecurity = "
+      "TcrMessage::readSecureObjectPart isChunk = %d isLastChunkWithSecurity "
+      "= "
       "%d",
       isChunk, isLastChunkWithSecurity);
   if (isChunk) {
@@ -718,7 +720,8 @@ void TcrMessage::writeObjectPart(
   } else {
     // TODO::
     // CacheableBytes* rawByteArray = static_cast<CacheableBytes*>(se.get());
-    // m_request->writeBytesOnly(rawByteArray->value(), rawByteArray->length());
+    // m_request->writeBytesOnly(rawByteArray->value(),
+    // rawByteArray->length());
     writeBytesOnly(se);
   }
   auto sizeAfterWritingObj = m_request->getBufferLength();
@@ -850,9 +853,9 @@ void TcrMessage::writeMessageLength() {
       totalLen -
       4);  // msg len is written after the msg type which is of 4 bytes ...
   m_request->writeInt(static_cast<int32_t>(msgLen));
-  m_request->advanceCursor(totalLen - 8);  // after writing 4 bytes for msg len
-                                           // you are already 8 bytes ahead from
-                                           // the beginning.
+  m_request->advanceCursor(totalLen - 8);  // after writing 4 bytes for msg
+                                           // len you are already 8 bytes
+                                           // ahead from the beginning.
 }
 
 void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
@@ -894,7 +897,8 @@ void TcrMessage::startProcessChunk(binary_semaphore& finalizeSema) {
           "response",
           m_msgTypeRequest);
       throw IllegalStateException(
-          "Got unexpected request msg type while starting to process response");
+          "Got unexpected request msg type while starting to process "
+          "response");
     }
   }
   m_chunkedResult->setFinalizeSemaphore(&finalizeSema);
@@ -918,7 +922,8 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
                               const uint8_t isLastChunkAndisSecurityHeader) {
   // TODO: see if security header is there
   LOGDEBUG(
-      "TcrMessage::processChunk isLastChunkAndisSecurityHeader = %d chunklen = "
+      "TcrMessage::processChunk isLastChunkAndisSecurityHeader = %d chunklen "
+      "= "
       "%d m_msgType = %d",
       isLastChunkAndisSecurityHeader, len, m_msgType);
 
@@ -1096,7 +1101,8 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       // TODO: how many parts what should we do here
       if (chunk.empty()) {
         LOGWARN(
-            "Got unhandled message type %d while processing response, possible "
+            "Got unhandled message type %d while processing response, "
+            "possible "
             "serialization mismatch",
             m_msgType);
         throw MessageException(
@@ -1145,7 +1151,8 @@ void TcrMessage::handleByteArrayResponse(
   m_txId = input.readInt32();
   auto earlyack = input.read();
   LOGDEBUG(
-      "handleByteArrayResponse m_msgType = %d m_isSecurityOn = %d requesttype "
+      "handleByteArrayResponse m_msgType = %d m_isSecurityOn = %d "
+      "requesttype "
       "=%d",
       m_msgType, m_isSecurityOn, m_msgTypeRequest);
   LOGDEBUG(
