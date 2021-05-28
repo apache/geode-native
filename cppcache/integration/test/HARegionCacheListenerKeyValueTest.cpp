@@ -52,7 +52,7 @@ MATCHER_P(CashableEq, value, "") {
   return arg->toString() == value->toString();
 }
 
-class ThinClientHARegionCacheListenerKeyValueTest : public ::testing::Test {
+class HARegionCacheListenerKeyValueTest : public ::testing::Test {
  protected:
   static ::std::unique_ptr<::Cluster> cluster_;
   /* Cache listener mocks make a circular reference to the region, and the
@@ -97,16 +97,16 @@ class ThinClientHARegionCacheListenerKeyValueTest : public ::testing::Test {
         listener_.get());  // Just to make sure it's clean for the next test.
   }
 
-  ThinClientHARegionCacheListenerKeyValueTest()
+  HARegionCacheListenerKeyValueTest()
       : verified_{false},
         verify_the_regionevent_callback{::testing::Invoke(
-            this, &ThinClientHARegionCacheListenerKeyValueTest::
-                      verify_regionevent_callback)},
+            this,
+            &HARegionCacheListenerKeyValueTest::verify_regionevent_callback)},
         verify_the_entryevent_callback{::testing::Invoke(
-            this, &ThinClientHARegionCacheListenerKeyValueTest::
-                      verify_entryevent_callback)},
-        the_verification_condition{std::bind(
-            &ThinClientHARegionCacheListenerKeyValueTest::is_verified, this)},
+            this,
+            &HARegionCacheListenerKeyValueTest::verify_entryevent_callback)},
+        the_verification_condition{
+            std::bind(&HARegionCacheListenerKeyValueTest::is_verified, this)},
         key_{std::make_shared<::apache::geode::client::CacheableString>("key")},
         value_{std::make_shared<::apache::geode::client::CacheableString>(
             "value")} {
@@ -114,9 +114,7 @@ class ThinClientHARegionCacheListenerKeyValueTest : public ::testing::Test {
     region_->put(key_, value_);
   }
 
-  ~ThinClientHARegionCacheListenerKeyValueTest() override {
-    destroy_any_test_region();
-  }
+  ~HARegionCacheListenerKeyValueTest() override { destroy_any_test_region(); }
 
   // void clear_marker_processed_flag() {
   //   /* As of this writing, you typically only get afterRegionLive once. This
@@ -172,14 +170,13 @@ class ThinClientHARegionCacheListenerKeyValueTest : public ::testing::Test {
     listener_ =
         ::std::make_shared<::apache::geode::client::Nice_MockListener>();
 
-    cluster_ = make_unique<::Cluster>(
-        Name{"ThinClientHARegionCacheListenerKeyValueTest"}, LocatorCount{1},
-        ServerCount{1});
+    cluster_ = make_unique<::Cluster>(Name{"HARegionCacheListenerKeyValueTest"},
+                                      LocatorCount{1}, ServerCount{1});
 
     cluster_->start();
 
     cache_ = make_unique<::apache::geode::client::Cache>(
-        cluster_->createCache({}, ::Cluster::Subscription_State::Enabled));
+        cluster_->createCache({}, ::Cluster::SubscriptionState::Enabled));
 
     region_ = cache_
                   ->createRegionFactory(
@@ -196,16 +193,15 @@ class ThinClientHARegionCacheListenerKeyValueTest : public ::testing::Test {
   }
 };
 
-::std::unique_ptr<::Cluster>
-    ThinClientHARegionCacheListenerKeyValueTest::cluster_{};
+::std::unique_ptr<::Cluster> HARegionCacheListenerKeyValueTest::cluster_{};
 
 ::std::shared_ptr<::apache::geode::client::Nice_MockListener>
-    ThinClientHARegionCacheListenerKeyValueTest::listener_{};
+    HARegionCacheListenerKeyValueTest::listener_{};
 
 ::std::unique_ptr<::apache::geode::client::Cache>
-    ThinClientHARegionCacheListenerKeyValueTest::cache_{};
+    HARegionCacheListenerKeyValueTest::cache_{};
 ::std::shared_ptr<::apache::geode::client::Region>
-    ThinClientHARegionCacheListenerKeyValueTest::region_{};
+    HARegionCacheListenerKeyValueTest::region_{};
 }  // namespace
 
 using ::testing::AllOf;
@@ -216,7 +212,7 @@ using ::apache::geode::client::CacheableString;
 using ::apache::geode::client::EntryEvent;
 using ::apache::geode::client::RegionEvent;
 
-TEST_F(ThinClientHARegionCacheListenerKeyValueTest, DISABLED_afterUpdate) {
+TEST_F(HARegionCacheListenerKeyValueTest, DISABLED_afterUpdate) {
   auto new_value = std::make_shared<CacheableString>("new_value");
   auto with_these_properties =
       AllOf(Property(&EntryEvent::getRegion, Eq(region_)),
@@ -236,8 +232,7 @@ TEST_F(ThinClientHARegionCacheListenerKeyValueTest, DISABLED_afterUpdate) {
   ::testing::Mock::VerifyAndClearExpectations(listener_.get());
 }
 
-TEST_F(ThinClientHARegionCacheListenerKeyValueTest,
-       afterInvalidateSingleThreaded) {
+TEST_F(HARegionCacheListenerKeyValueTest, afterInvalidateSingleThreaded) {
   auto with_these_properties =
       AllOf(Property(&EntryEvent::getRegion, Eq(region_)),
             Property(&EntryEvent::getKey, CashableEq(key_)));
@@ -249,8 +244,7 @@ TEST_F(ThinClientHARegionCacheListenerKeyValueTest,
   ::testing::Mock::VerifyAndClearExpectations(listener_.get());
 }
 
-TEST_F(ThinClientHARegionCacheListenerKeyValueTest,
-       afterDestroySingleThreaded) {
+TEST_F(HARegionCacheListenerKeyValueTest, afterDestroySingleThreaded) {
   auto with_these_properties =
       AllOf(Property(&EntryEvent::getRegion, Eq(region_)),
             Property(&EntryEvent::getKey, CashableEq(key_)));

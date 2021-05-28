@@ -48,11 +48,11 @@ template <typename T, typename... Args>
 }
 
 // A simple comparator for cachables wrapped in shared pointers.
-// MATCHER_P(CashableEq, value, "") {
-//   return arg->toString() == value->toString();
-// }
+MATCHER_P(CashableEq, value, "") {
+  return arg->toString() == value->toString();
+}
 
-class ThinClientHARegionCacheListenerARLEPDTest : public ::testing::Test {
+class HARegionCacheListenerWithClusterRegionTest : public ::testing::Test {
  protected:
   static ::std::unique_ptr<::Cluster> cluster_;
   /* Cache listener mocks make a circular reference to the region, and the
@@ -95,40 +95,34 @@ class ThinClientHARegionCacheListenerARLEPDTest : public ::testing::Test {
         listener_.get());  // Just to make sure it's clean for the next test.
   }
 
-  ThinClientHARegionCacheListenerARLEPDTest()
+  HARegionCacheListenerWithClusterRegionTest()
       : verified_{false},
-        verify_the_regionevent_callback{
-            ::testing::Invoke(this, &ThinClientHARegionCacheListenerARLEPDTest::
-                                        verify_regionevent_callback)},
-        verify_the_entryevent_callback{
-            ::testing::Invoke(this, &ThinClientHARegionCacheListenerARLEPDTest::
-                                        verify_entryevent_callback)},
+        verify_the_regionevent_callback{::testing::Invoke(
+            this, &HARegionCacheListenerWithClusterRegionTest::
+                      verify_regionevent_callback)},
+        verify_the_entryevent_callback{::testing::Invoke(
+            this, &HARegionCacheListenerWithClusterRegionTest::
+                      verify_entryevent_callback)},
         the_verification_condition{std::bind(
-            &ThinClientHARegionCacheListenerARLEPDTest::is_verified, this)} {
+            &HARegionCacheListenerWithClusterRegionTest::is_verified, this)} {
     create_the_test_region();
-
-    // Assure we've already received an afterRegionLive event by creating the
-    // region. Then destroy it for the test.
-    cluster_->getGfsh().destroy().region().withName("region").execute();
-
-    // Cycle the endpoint to flush the client-internal process marker.
-    // We should be able to get a second afterRegionLive after this.
-    clear_marker_processed_flag();
   }
 
-  ~ThinClientHARegionCacheListenerARLEPDTest() override {
+  ~HARegionCacheListenerWithClusterRegionTest() override {
     destroy_any_test_region();
   }
 
-  void clear_marker_processed_flag() {
-    /* As of this writing, you typically only get afterRegionLive once. This
-     * means, if almost any any prior test runs, you'll likely have already
-     * processed this event. But there is an exception: the state is reset if
-     * the endpoint disconnects.
-     */
-    cluster_->getServers()[0].stop();
-    cluster_->getServers()[0].start();
-  }
+  //   void clear_marker_processed_flag() {
+  //     /* As of this writing, you typically only get afterRegionLive once.
+  //     This
+  //      * means, if almost any any prior test runs, you'll likely have already
+  //      * processed this event. But there is an exception: the state is reset
+  //      if
+  //      * the endpoint disconnects.
+  //      */
+  //     cluster_->getServers()[0].stop();
+  //     cluster_->getServers()[0].start();
+  //   }
 
   void create_the_test_region() {
     cluster_->getGfsh()
@@ -175,13 +169,13 @@ class ThinClientHARegionCacheListenerARLEPDTest : public ::testing::Test {
         ::std::make_shared<::apache::geode::client::Nice_MockListener>();
 
     cluster_ = make_unique<::Cluster>(
-        Name{"ThinClientHARegionCacheListenerARLEPDTest"}, LocatorCount{1},
+        Name{"HARegionCacheListenerWithClusterRegionTest"}, LocatorCount{1},
         ServerCount{1});
 
     cluster_->start();
 
     cache_ = make_unique<::apache::geode::client::Cache>(
-        cluster_->createCache({}, ::Cluster::Subscription_State::Enabled));
+        cluster_->createCache({}, ::Cluster::SubscriptionState::Enabled));
 
     region_ = cache_
                   ->createRegionFactory(
@@ -199,15 +193,15 @@ class ThinClientHARegionCacheListenerARLEPDTest : public ::testing::Test {
 };
 
 ::std::unique_ptr<::Cluster>
-    ThinClientHARegionCacheListenerARLEPDTest::cluster_{};
+    HARegionCacheListenerWithClusterRegionTest::cluster_{};
 
 ::std::shared_ptr<::apache::geode::client::Nice_MockListener>
-    ThinClientHARegionCacheListenerARLEPDTest::listener_{};
+    HARegionCacheListenerWithClusterRegionTest::listener_{};
 
 ::std::unique_ptr<::apache::geode::client::Cache>
-    ThinClientHARegionCacheListenerARLEPDTest::cache_{};
+    HARegionCacheListenerWithClusterRegionTest::cache_{};
 ::std::shared_ptr<::apache::geode::client::Region>
-    ThinClientHARegionCacheListenerARLEPDTest::region_{};
+    HARegionCacheListenerWithClusterRegionTest::region_{};
 }  // namespace
 
 using ::testing::AllOf;
@@ -218,16 +212,31 @@ using ::apache::geode::client::CacheableString;
 using ::apache::geode::client::EntryEvent;
 using ::apache::geode::client::RegionEvent;
 
-TEST_F(ThinClientHARegionCacheListenerARLEPDTest,
-       DISABLED_afterRegionLiveAfterEPDisconnect) {
+TEST_F(HARegionCacheListenerWithClusterRegionTest, afterCreateSingleThreaded) {
+  auto key = std::make_shared<CacheableString>("key");
+  auto value = std::make_shared<CacheableString>("value");
+  auto with_these_properties =
+      AllOf(Property(&EntryEvent::getRegion, Eq(region_)),
+            Property(&EntryEvent::getKey, CashableEq(key)),
+            Property(&EntryEvent::getNewValue, CashableEq(value)));
+
+  EXPECT_CALL(*listener_, afterCreate(with_these_properties));
+
+  region_->put(key, value);
+
+  ::testing::Mock::VerifyAndClearExpectations(listener_.get());
+}
+
+TEST_F(HARegionCacheListenerWithClusterRegionTest,
+       DISABLED_afterRegionDestroy) {
   auto with_these_properties = Property(&RegionEvent::getRegion, Eq(region_));
 
-  EXPECT_CALL(*listener_, afterRegionLive(with_these_properties))
+  EXPECT_CALL(*listener_, afterRegionDestroy(with_these_properties))
       .WillOnce(verify_the_regionevent_callback);
 
   auto lk = std::unique_lock<std::mutex>(cv_m_);
 
-  create_the_test_region();
+  cluster_->getGfsh().destroy().region().withName("region").execute();
 
   cv_.wait_for(lk, ::std::chrono::seconds{5}, the_verification_condition);
 

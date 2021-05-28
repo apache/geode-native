@@ -61,11 +61,11 @@ add_executable(cpp-integration-test
   WanDeserializationTest.cpp
   DisconnectEndPointAtException.cpp
   ContainsKeyOnServerExceptionTest.cpp
-  ThinClientHARegionCacheListenerTest.cpp
-  ThinClientHARegionCacheListenerWithClusterRegionTest.cpp
-  ThinClientHARegionCacheListenerARLEPDTest.cpp
-  ThinClientHARegionCacheListenerARLTest.cpp
-  ThinClientHARegionCacheListenerKeyValueTest.cpp
+  HARegionCacheListenerTest.cpp
+  HARegionCacheListenerWithClusterRegionTest.cpp
+  HARegionCacheListenerARLEPDTest.cpp
+  HARegionCacheListenerARLTest.cpp
+  HARegionCacheListenerKeyValueTest.cpp
   LocalRegionCacheListenerTest.cpp
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")

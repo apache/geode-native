@@ -127,7 +127,7 @@ using ConserveSockets = NamedType<bool, struct useConserveSocketsParameter>;
 
 class Cluster {
  public:
-  enum class Subscription_State { Enabled, Disabled };
+  enum class SubscriptionState { Enabled, Disabled };
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
           UseIpv6 useIPv6);
@@ -194,7 +194,7 @@ class Cluster {
 
   apache::geode::client::Cache createCache(
       const std::unordered_map<std::string, std::string> &properties,
-      Subscription_State);
+      SubscriptionState);
 
   void applyLocators(apache::geode::client::PoolFactory &poolFactory);
 
