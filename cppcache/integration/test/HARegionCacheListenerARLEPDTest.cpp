@@ -39,19 +39,9 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "mock/CacheListenerMock.hpp"
+#include "utility/make_unique.hpp"
 
 namespace {
-// Until we get C++14 support...
-template <typename T, typename... Args>
-::std::unique_ptr<T> make_unique(Args &&... args) {
-  return ::std::unique_ptr<T>(new T(::std::forward<Args>(args)...));
-}
-
-// A simple comparator for cachables wrapped in shared pointers.
-// MATCHER_P(CashableEq, value, "") {
-//   return arg->toString() == value->toString();
-// }
-
 class HARegionCacheListenerARLEPDTest : public ::testing::Test {
  protected:
   static ::std::unique_ptr<::Cluster> cluster_;
