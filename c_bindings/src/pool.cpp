@@ -33,11 +33,11 @@ void apache_geode_DestroyPool(apache_geode_pool_t* pool) {
   delete poolWrapper;
 }
 
-PoolWrapper::PoolWrapper(PoolFactoryWrapper &pool_factory, std::shared_ptr<apache::geode::client::Pool> pool)
-    : pool_(pool), pool_factory{pool_factory} {
-      pool_factory.AddRecord(this, "PoolWrapper");
-    }
+PoolWrapper::PoolWrapper(std::shared_ptr<apache::geode::client::Pool> pool)
+    : pool_(pool) {
+  AddRecord(this, "PoolWrapper");
+}
 
 PoolWrapper::~PoolWrapper() {
-  pool_factory.RemoveRecord(this);
+  RemoveRecord(this);
 }

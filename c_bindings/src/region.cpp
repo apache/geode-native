@@ -36,12 +36,12 @@
 #include "region.hpp"
 #include "region/factory.hpp"
 
-RegionWrapper::RegionWrapper(RegionFactoryWrapper &region_factory, std::shared_ptr<apache::geode::client::Region> region)
-    : region_(region), region_factory{region_factory} {
-      region_factory.AddRecord(this, "RegionWrapper");
+RegionWrapper::RegionWrapper(std::shared_ptr<apache::geode::client::Region> region)
+    : region_(region) {
+      AddRecord(this, "RegionWrapper");
     }
 
-RegionWrapper::~RegionWrapper() { region_factory.RemoveRecord(this); }
+RegionWrapper::~RegionWrapper() { RemoveRecord(this); }
 
 void RegionWrapper::PutString(const std::string& key,
                               const std::string& value) {

@@ -48,7 +48,7 @@ TEST(ExampleTest, putGetAndUpdateWith1Server) {
       .execute();
 
   auto client = apache_geode_ClientInitialize();
-  auto cache_factory = apache_geode_CreateCacheFactory(client);
+  auto cache_factory = apache_geode_CreateCacheFactory();
 
   apache_geode_CacheFactory_SetProperty(cache_factory, "log-level", "none");
   apache_geode_CacheFactory_SetProperty(cache_factory,

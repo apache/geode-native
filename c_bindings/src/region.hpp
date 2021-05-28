@@ -20,17 +20,17 @@
 #include <string>
 #include <memory>
 
+#include "client.hpp"
 #include "geode/Region.hpp"
 
 class RegionFactoryWrapper;
 
-class RegionWrapper {
+class RegionWrapper : public ClientKeeper {
   std::shared_ptr<apache::geode::client::Region> region_;
   std::string lastValue_;
-  RegionFactoryWrapper &region_factory;
 
  public:
-  RegionWrapper(RegionFactoryWrapper &region_factory, std::shared_ptr<apache::geode::client::Region> region);
+  RegionWrapper(std::shared_ptr<apache::geode::client::Region> region);
   ~RegionWrapper();
 
   void PutString(const std::string& key, const std::string& value);

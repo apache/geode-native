@@ -32,13 +32,10 @@
 // C client private headers
 #include "client.hpp"
 
-class PermaClient {
- public:
-  static std::shared_ptr<ClientWrapper>& instance() {
+std::shared_ptr<ClientWrapper>& PermaClient::instance() {
     static auto client_ = std::make_shared<ClientWrapper>();
     return client_;
-  }
-};
+}
 
 apache_geode_client_t* apache_geode_ClientInitialize() {
   return reinterpret_cast<apache_geode_client_t*>(PermaClient::instance().get());
@@ -63,14 +60,12 @@ void Client::RemoveRecord(void *value) {
 }
 
 void ClientKeeper::do_AddRecord(void *value, const std::string &className) {
-  client->AddRecord(value, className);
+  PermaClient::instance()->AddRecord(value, className);
 }
 
 void ClientKeeper::do_RemoveRecord(void *value) {
-  client->RemoveRecord(value);
+  PermaClient::instance()->RemoveRecord(value);
 }
-
-ClientKeeper::ClientKeeper(Client *client):client{client} {}
 
 int ClientWrapper::checkForLeaks() {
   int result = 0;

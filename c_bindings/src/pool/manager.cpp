@@ -40,7 +40,7 @@ void apache_geode_DestroyPoolManager(apache_geode_pool_manager_t* poolManager) {
 
 PoolManagerWrapper::PoolManagerWrapper(CacheWrapper *cache,
     apache::geode::client::PoolManager& poolManager)
-    : ClientKeeper{cache}, poolManager_(poolManager) {
+    : poolManager_(poolManager) {
       AddRecord(this, "PoolManagerWrapper");
     }
 
@@ -49,5 +49,5 @@ PoolManagerWrapper::~PoolManagerWrapper() {
 }
 
 PoolFactoryWrapper* PoolManagerWrapper::CreatePoolFactory() {
-  return new PoolFactoryWrapper(this, poolManager_.createFactory());
+  return new PoolFactoryWrapper(poolManager_.createFactory());
 }

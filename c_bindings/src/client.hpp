@@ -19,6 +19,7 @@
 
 #include <map>
 #include <string>
+#include <memory>
 
 #include "geode/internal/geode_base.h"
 
@@ -38,13 +39,8 @@ class Client {
 // Anything that creates another wrapper derives from this.
 // Adding and removing from this defers to the parent retained within.
 class ClientKeeper : public Client {
-  Client *client;
-
   void do_AddRecord(void *, const std::string &) final override;
   void do_RemoveRecord(void *) final override;
-
- public:
-  ClientKeeper(Client *);
 };
 
 // This is the top level parent. Adding and removing from any client will
@@ -69,4 +65,9 @@ class ClientWrapper : public Client {
   int checkForLeaks();
 
   virtual ~ClientWrapper();
+};
+
+class PermaClient {
+ public:
+    static std::shared_ptr<ClientWrapper> &PermaClient::instance();
 };

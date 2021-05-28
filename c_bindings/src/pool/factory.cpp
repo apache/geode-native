@@ -49,16 +49,15 @@ void apache_geode_DestroyPoolFactory(apache_geode_pool_factory_t* poolFactory) {
   delete poolFactoryWrapper;
 }
 
-PoolFactoryWrapper::PoolFactoryWrapper(
-    PoolManagerWrapper* manager, apache::geode::client::PoolFactory poolFactory)
-    : ClientKeeper{manager}, poolFactory_(poolFactory) {
+PoolFactoryWrapper::PoolFactoryWrapper(apache::geode::client::PoolFactory poolFactory)
+    : poolFactory_(poolFactory) {
   AddRecord(this, "PoolFactoryWrapper");
 }
 
 PoolFactoryWrapper::~PoolFactoryWrapper() { RemoveRecord(this); }
 
 PoolWrapper* PoolFactoryWrapper::CreatePool(const char* name) {
-  return new PoolWrapper(*this, poolFactory_.create(name));
+  return new PoolWrapper(poolFactory_.create(name));
 }
 
 void PoolFactoryWrapper::AddLocator(const std::string& hostname,

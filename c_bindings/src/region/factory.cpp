@@ -33,7 +33,7 @@
 
 RegionFactoryWrapper::RegionFactoryWrapper(CacheWrapper *cache,
     apache::geode::client::RegionFactory regionFactory)
-    : ClientKeeper{cache}, regionFactory_(std::move(regionFactory)) {
+    : regionFactory_(std::move(regionFactory)) {
       AddRecord(this, "RegionFactoryWrapper");
     }
 
@@ -47,7 +47,7 @@ void RegionFactoryWrapper::setPoolName(const std::string& poolName) {
 
 RegionWrapper* RegionFactoryWrapper::createRegion(
     const std::string& regionName) {
-  return new RegionWrapper(*this, regionFactory_.create(regionName));
+  return new RegionWrapper(regionFactory_.create(regionName));
 }
 
 void apache_geode_DestroyRegionFactory(

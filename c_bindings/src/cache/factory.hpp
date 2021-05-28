@@ -34,7 +34,7 @@ class CacheFactoryWrapper : public ClientKeeper {
   std::shared_ptr<AuthInitializeWrapper> authInit_;
 
  public:
-  CacheFactoryWrapper(apache_geode_client_t *client);
+  CacheFactoryWrapper();
 
   ~CacheFactoryWrapper();
 

@@ -37,8 +37,7 @@
 #include "client.hpp"
 #include "factory.hpp"
 
-CacheFactoryWrapper::CacheFactoryWrapper(apache_geode_client_t* client)
-    : ClientKeeper{reinterpret_cast<ClientWrapper*>(client)} {
+CacheFactoryWrapper::CacheFactoryWrapper() {
   AddRecord(this, "CacheFactoryWrapper");
   cacheFactory_.set("log-level", "debug");
   std::cout << __FUNCTION__ << " " << static_cast<void*>(this) << "\n";
@@ -78,12 +77,11 @@ void CacheFactoryWrapper::setProperty(const std::string& key,
 
 CacheWrapper* CacheFactoryWrapper::createCache() {
   std::cout << __FUNCTION__ << " " << static_cast<void*>(this) << "\n";
-  return new CacheWrapper(this, cacheFactory_.create());
+  return new CacheWrapper(cacheFactory_.create());
 }
 
-apache_geode_cache_factory_t* apache_geode_CreateCacheFactory(
-    apache_geode_client_t* client) {
-  auto factory = new CacheFactoryWrapper(client);
+apache_geode_cache_factory_t* apache_geode_CreateCacheFactory() {
+  auto factory = new CacheFactoryWrapper();
   std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory) << "\n";
   LOGDEBUG("%s: factory=%p", __FUNCTION__, factory);
   return reinterpret_cast<apache_geode_cache_factory_t*>(factory);

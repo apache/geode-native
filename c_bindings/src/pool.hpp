@@ -19,14 +19,14 @@
 
 #include <memory>
 
+#include "client.hpp"
 #include "geode/Pool.hpp"
 
 class PoolFactoryWrapper;
-class PoolWrapper {
+class PoolWrapper : public ClientKeeper {
   std::shared_ptr<apache::geode::client::Pool> pool_;
-  PoolFactoryWrapper &pool_factory;
 
  public:
-  PoolWrapper(PoolFactoryWrapper &pool_factory, std::shared_ptr<apache::geode::client::Pool> pool);
+  PoolWrapper(std::shared_ptr<apache::geode::client::Pool> pool);
   ~PoolWrapper();
 };

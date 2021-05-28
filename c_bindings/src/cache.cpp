@@ -87,8 +87,8 @@ bool apache_geode_Cache_IsClosed(apache_geode_cache_t* cache) {
   return cacheWrapper->isClosed();
 }
 
-CacheWrapper::CacheWrapper(CacheFactoryWrapper *cache_factory, apache::geode::client::Cache cache)
-    : ClientKeeper{cache_factory}, cache_(std::move(cache)) {
+CacheWrapper::CacheWrapper(apache::geode::client::Cache cache)
+    : cache_(std::move(cache)) {
       AddRecord(this, "CacheWrapper");
     }
     

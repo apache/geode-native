@@ -37,7 +37,7 @@ class CacheWrapper: public ClientKeeper {
   apache::geode::client::Cache cache_;
 
  public:
-  CacheWrapper(CacheFactoryWrapper *, apache::geode::client::Cache);
+  CacheWrapper(apache::geode::client::Cache);
   ~CacheWrapper();
 
   bool getPdxIgnoreUnreadFields();

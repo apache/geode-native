@@ -43,7 +43,7 @@ struct apache_geode_properties_s;
 typedef struct apache_geode_properties_s apache_geode_properties_t;
 
 APACHE_GEODE_C_EXPORT apache_geode_cache_factory_t*
-apache_geode_CreateCacheFactory(apache_geode_client_t *);
+apache_geode_CreateCacheFactory();
 
 APACHE_GEODE_C_EXPORT apache_geode_cache_t* apache_geode_CacheFactory_CreateCache(
     apache_geode_cache_factory_t* factory);
