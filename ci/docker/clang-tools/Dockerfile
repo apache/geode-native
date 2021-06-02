@@ -18,7 +18,7 @@ FROM ubuntu:groovy
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 LABEL description="Minimal image for building with clang toolset."
 
-ARG CLANG_VERSION=11
+ARG CLANG_VERSION=12
 RUN apt-get update \
     && apt-get install -y \
         bash \
