@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:groovy
+FROM ubuntu:latest
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 LABEL description="Minimal image for building with clang toolset."
 
