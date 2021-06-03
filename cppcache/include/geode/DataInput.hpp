@@ -381,7 +381,7 @@ class APACHE_GEODE_EXPORT DataInput {
     } else {
       int8_t** tmpArray;
       int32_t* tmpLengtharr;
-      _GEODE_NEW(tmpArray, int8_t * [arrLen]);
+      _GEODE_NEW(tmpArray, int8_t* [arrLen]);
       _GEODE_NEW(tmpLengtharr, int32_t[arrLen]);
       for (int i = 0; i < arrLen; i++) {
         readBytes(&tmpArray[i], &tmpLengtharr[i]);

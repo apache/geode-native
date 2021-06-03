@@ -73,8 +73,8 @@ using apache::geode::client::UnknownException;
   throw NotConnectedException{message};
 }
 
-    [[noreturn]] void messageException(std::string message, std::string& exMsg,
-                                       GfErrType, std::string) {
+[[noreturn]] void messageException(std::string message, std::string& exMsg,
+                                   GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": message from server could not be handled");
   throw MessageException{message};
@@ -93,8 +93,8 @@ using apache::geode::client::UnknownException;
   throw CacheServerException{message};
 }
 
-    [[noreturn]] void notOwnerException(std::string message, std::string& exMsg,
-                                        GfErrType, std::string) {
+[[noreturn]] void notOwnerException(std::string message, std::string& exMsg,
+                                    GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": not own the lock");
   throw NotOwnerException{message};
 }
@@ -110,9 +110,9 @@ using apache::geode::client::UnknownException;
   throw IllegalStateException{message};
 }
 
-    [[noreturn]] void illegalArgumentException(std::string message,
-                                               std::string& exMsg,
-                                               GfErrType err, std::string) {
+[[noreturn]] void illegalArgumentException(std::string message,
+                                           std::string& exMsg, GfErrType err,
+                                           std::string) {
   if (err == GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION) {
     message.append(!exMsg.empty() ? exMsg : ": illegal argument");
   }
@@ -140,9 +140,8 @@ using apache::geode::client::UnknownException;
   throw CacheWriterException{message};
 }
 
-    [[noreturn]] void cacheLoaderException(std::string message,
-                                           std::string& exMsg, GfErrType,
-                                           std::string) {
+[[noreturn]] void cacheLoaderException(std::string message, std::string& exMsg,
+                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": exception in CacheLoader");
   throw CacheLoaderException{message};
 }
@@ -154,9 +153,9 @@ using apache::geode::client::UnknownException;
   throw CacheListenerException{message};
 }
 
-    [[noreturn]] void regionDestroyedException(std::string message,
-                                               std::string& exMsg,
-                                               GfErrType err, std::string) {
+[[noreturn]] void regionDestroyedException(std::string message,
+                                           std::string& exMsg, GfErrType err,
+                                           std::string) {
   if (err == GF_CACHE_REGION_INVALID) {
     message.append(!exMsg.empty() ? exMsg : ": region not valid");
   }
@@ -172,8 +171,8 @@ using apache::geode::client::UnknownException;
   throw CacheProxyException{message};
 }
 
-    [[noreturn]] void geodeIOException(std::string message, std::string& exMsg,
-                                       GfErrType, std::string) {
+[[noreturn]] void geodeIOException(std::string message, std::string& exMsg,
+                                   GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Input/Output error in operation");
   throw GeodeIOException{message};
 }
@@ -184,8 +183,8 @@ using apache::geode::client::UnknownException;
   throw NoSystemException{message};
 }
 
-    [[noreturn]] void timeoutException(std::string message, std::string& exMsg,
-                                       GfErrType err, std::string) {
+[[noreturn]] void timeoutException(std::string message, std::string& exMsg,
+                                   GfErrType err, std::string) {
   if (err == GF_CLIENT_WAIT_TIMEOUT) {
     message.append(!exMsg.empty()
                        ? exMsg
@@ -202,9 +201,9 @@ using apache::geode::client::UnknownException;
   throw OutOfMemoryException{message};
 }
 
-    [[noreturn]] void bufferSizeExceededException(std::string message,
-                                                  std::string& exMsg, GfErrType,
-                                                  std::string) {
+[[noreturn]] void bufferSizeExceededException(std::string message,
+                                              std::string& exMsg, GfErrType,
+                                              std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Buffer Size Exceeded");
   throw BufferSizeExceededException{message};
 }
@@ -215,9 +214,8 @@ using apache::geode::client::UnknownException;
   throw LeaseExpiredException{message};
 }
 
-    [[noreturn]] void regionExistsException(std::string message,
-                                            std::string& exMsg, GfErrType,
-                                            std::string) {
+[[noreturn]] void regionExistsException(std::string message, std::string& exMsg,
+                                        GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Named Region Exists");
   throw RegionExistsException{message};
 }
@@ -229,9 +227,8 @@ using apache::geode::client::UnknownException;
   throw EntryNotFoundException{message};
 }
 
-    [[noreturn]] void entryExistsException(std::string message,
-                                           std::string& exMsg, GfErrType,
-                                           std::string) {
+[[noreturn]] void entryExistsException(std::string message, std::string& exMsg,
+                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Entry already exists in the region");
   throw EntryExistsException{message};
@@ -244,9 +241,8 @@ using apache::geode::client::UnknownException;
   throw EntryDestroyedException{message};
 }
 
-    [[noreturn]] void cacheClosedException(std::string message,
-                                           std::string& exMsg, GfErrType,
-                                           std::string) {
+[[noreturn]] void cacheClosedException(std::string message, std::string& exMsg,
+                                       GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Cache has been closed");
   throw CacheClosedException{message};
 }
@@ -260,9 +256,9 @@ using apache::geode::client::UnknownException;
   throw StatisticsDisabledException{message};
 }
 
-    [[noreturn]] void concurrentModificationException(std::string message,
-                                                      std::string& exMsg,
-                                                      GfErrType, std::string) {
+[[noreturn]] void concurrentModificationException(std::string message,
+                                                  std::string& exMsg, GfErrType,
+                                                  std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Concurrent modification in the cache");
   throw ConcurrentModificationException{message};
@@ -275,9 +271,9 @@ using apache::geode::client::UnknownException;
   throw NotAuthorizedException{message};
 }
 
-    [[noreturn]] void authenticationFailedException(std::string message,
-                                                    std::string& exMsg,
-                                                    GfErrType, std::string) {
+[[noreturn]] void authenticationFailedException(std::string message,
+                                                std::string& exMsg, GfErrType,
+                                                std::string) {
   message.append(!exMsg.empty() ? exMsg : ": authentication failed");
   throw AuthenticationFailedException{message};
 }
@@ -289,9 +285,9 @@ using apache::geode::client::UnknownException;
   throw AuthenticationRequiredException{message};
 }
 
-    [[noreturn]] void duplicateDurableClientException(std::string message,
-                                                      std::string& exMsg,
-                                                      GfErrType, std::string) {
+[[noreturn]] void duplicateDurableClientException(std::string message,
+                                                  std::string& exMsg, GfErrType,
+                                                  std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Duplicate Durable Client Id");
   throw DuplicateDurableClientException{message};
 }
@@ -302,10 +298,8 @@ using apache::geode::client::UnknownException;
   throw QueryException{message};
 }
 
-    [[noreturn]] void noAvailableLocatorsException(std::string,
-                                                   std::string& exMsg,
-                                                   GfErrType,
-                                                   std::string func) {
+[[noreturn]] void noAvailableLocatorsException(std::string, std::string& exMsg,
+                                               GfErrType, std::string func) {
   try {
     throw NoAvailableLocatorsException{
         func + (!exMsg.empty() ? exMsg : ": No locators available")};
@@ -322,9 +316,9 @@ using apache::geode::client::UnknownException;
   throw AllConnectionsInUseException{message};
 }
 
-    [[noreturn]] void functionExecutionException(std::string message,
-                                                 std::string& exMsg, GfErrType,
-                                                 std::string) {
+[[noreturn]] void functionExecutionException(std::string message,
+                                             std::string& exMsg, GfErrType,
+                                             std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Function execution failed");
   throw FunctionExecutionException{message};
 }
@@ -335,8 +329,8 @@ using apache::geode::client::UnknownException;
   throw DiskFailureException{message};
 }
 
-    [[noreturn]] void rollbackException(std::string message, std::string& exMsg,
-                                        GfErrType, std::string) {
+[[noreturn]] void rollbackException(std::string message, std::string& exMsg,
+                                    GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Transaction rolled back");
   throw RollbackException{message};
 }
@@ -348,10 +342,9 @@ using apache::geode::client::UnknownException;
   throw CommitConflictException{message};
 }
 
-    [[noreturn]] void transactionDataRebalancedException(std::string message,
-                                                         std::string& exMsg,
-                                                         GfErrType,
-                                                         std::string) {
+[[noreturn]] void transactionDataRebalancedException(std::string message,
+                                                     std::string& exMsg,
+                                                     GfErrType, std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Transaction data rebalanced exception");
   throw TransactionDataRebalancedException{message};
@@ -367,9 +360,9 @@ using apache::geode::client::UnknownException;
   throw TransactionDataNodeHasDepartedException{message};
 }
 
-    [[noreturn]] void putAllPartialResultException(std::string message,
-                                                   std::string& exMsg,
-                                                   GfErrType, std::string) {
+[[noreturn]] void putAllPartialResultException(std::string message,
+                                               std::string& exMsg, GfErrType,
+                                               std::string) {
   message.append(!exMsg.empty() ? exMsg : ": PutAll Partial exception");
   throw PutAllPartialResultException{message};
 }
@@ -380,9 +373,9 @@ using apache::geode::client::UnknownException;
   throw LowMemoryException{message};
 }
 
-    [[noreturn]] void queryLowMemoryException(std::string message,
-                                              std::string& exMsg, GfErrType,
-                                              std::string) {
+[[noreturn]] void queryLowMemoryException(std::string message,
+                                          std::string& exMsg, GfErrType,
+                                          std::string) {
   message.append(!exMsg.empty() ? exMsg
                                 : ": Query execution low memory exception");
   throw QueryExecutionLowMemoryException{message};
