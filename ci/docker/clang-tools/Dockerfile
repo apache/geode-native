@@ -14,12 +14,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM ubuntu:groovy
+FROM ubuntu:focal
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 LABEL description="Minimal image for building with clang toolset."
 
-ARG CLANG_VERSION=11
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CLANG_VERSION=12
 RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        software-properties-common \
+    && curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
+    && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VERSION} main" \
+    && apt-get update \
     && apt-get install -y \
         bash \
         libssl-dev \
@@ -28,7 +35,6 @@ RUN apt-get update \
         doxygen \
         openjdk-8-jdk-headless \
         jq \
-        curl \
         make \
         clang-${CLANG_VERSION} \
         lld-${CLANG_VERSION} \
