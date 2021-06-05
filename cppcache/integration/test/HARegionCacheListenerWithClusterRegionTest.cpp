@@ -163,13 +163,13 @@ class HARegionCacheListenerWithClusterRegionTest : public ::testing::Test {
     listener_ =
         ::std::make_shared<::apache::geode::client::Nice_MockListener>();
 
-    cluster_ = make_unique<::Cluster>(
+    cluster_ = ::make_unique<::Cluster>(
         Name{"HARegionCacheListenerWithClusterRegionTest"}, LocatorCount{1},
         ServerCount{1});
 
     cluster_->start();
 
-    cache_ = make_unique<::apache::geode::client::Cache>(
+    cache_ = ::make_unique<::apache::geode::client::Cache>(
         cluster_->createCache({}, ::Cluster::SubscriptionState::Enabled));
 
     region_ = cache_

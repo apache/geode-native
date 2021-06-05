@@ -198,8 +198,8 @@ class HARegionCacheListenerTest : public ::testing::Test {
           std::cout << "afterRegionDisconnected callback.\n";
         });
     */
-    cluster_ = make_unique<::Cluster>(Name{"HARegionCacheListenerTest"},
-                                      LocatorCount{1}, ServerCount{1});
+    cluster_ = ::make_unique<::Cluster>(Name{"HARegionCacheListenerTest"},
+                                        LocatorCount{1}, ServerCount{1});
 
     cluster_->start();
 

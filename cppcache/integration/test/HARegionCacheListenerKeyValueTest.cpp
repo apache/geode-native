@@ -165,8 +165,9 @@ class HARegionCacheListenerKeyValueTest : public ::testing::Test {
     listener_ =
         ::std::make_shared<::apache::geode::client::Nice_MockListener>();
 
-    cluster_ = make_unique<::Cluster>(Name{"HARegionCacheListenerKeyValueTest"},
-                                      LocatorCount{1}, ServerCount{1});
+    cluster_ =
+        ::make_unique<::Cluster>(Name{"HARegionCacheListenerKeyValueTest"},
+                                 LocatorCount{1}, ServerCount{1});
 
     cluster_->start();
 
