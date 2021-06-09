@@ -23,6 +23,8 @@ Gfsh::Stop Gfsh::stop() { return Stop{*this}; }
 
 Gfsh::Create Gfsh::create() { return Create{*this}; }
 
+Gfsh::Destroy Gfsh::destroy() { return Destroy(*this); }
+
 Gfsh::Connect Gfsh::connect() { return Connect{*this}; }
 
 Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
@@ -456,6 +458,23 @@ Gfsh::Create::GatewayReceiver Gfsh::Create::gatewayReceiver() {
 
 Gfsh::Create::GatewayReceiver::GatewayReceiver(Gfsh &gfsh)
     : Command(gfsh, "create gateway-receiver") {}
+
+Gfsh::Destroy::Destroy(Gfsh &gfsh) : Verb{gfsh} {}
+
+Gfsh::Destroy::Region Gfsh::Destroy::region() { return Region{gfsh_}; }
+
+Gfsh::Destroy::Region::Region(Gfsh &gfsh) : Command(gfsh, "destroy region") {}
+
+Gfsh::Destroy::Region &Gfsh::Destroy::Region::withName(
+    const std::string &name) {
+  command_ += " --name=" + name;
+  return *this;
+}
+
+Gfsh::Destroy::Region &Gfsh::Destroy::Region::ifExists() {
+  command_ += " --if-exists";
+  return *this;
+}
 
 Gfsh::Connect::Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 

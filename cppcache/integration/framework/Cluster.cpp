@@ -394,27 +394,28 @@ apache::geode::client::Cache Cluster::createCache() { return createCache({}); }
 
 apache::geode::client::Cache Cluster::createCache(
     const std::unordered_map<std::string, std::string> &properties) {
-  return createCache(properties, false);
+  return createCache(properties, SubscriptionState::Disabled);
 }
 
 apache::geode::client::Cache Cluster::createCache(
     const std::unordered_map<std::string, std::string> &properties,
-    bool subscriptionEnabled) {
+    SubscriptionState state) {
   using apache::geode::client::CacheFactory;
 
   CacheFactory cacheFactory;
+
+  cacheFactory.set("log-level", "none")
+      .set("statistic-sampling-enabled", "false");
 
   for (auto &&property : properties) {
     cacheFactory.set(property.first, property.second);
   }
 
-  auto cache = cacheFactory.set("log-level", "none")
-                   .set("statistic-sampling-enabled", "false")
-                   .create();
+  auto cache = cacheFactory.create();
 
   auto poolFactory =
       cache.getPoolManager().createFactory().setSubscriptionEnabled(
-          subscriptionEnabled);
+          state == SubscriptionState::Enabled);
   applyLocators(poolFactory);
   poolFactory.create("default");
 
