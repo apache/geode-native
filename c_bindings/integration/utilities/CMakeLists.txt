@@ -21,3 +21,5 @@ target_link_libraries(${PROJECT_NAME}
   PUBLIC
     GTest::gtest
 )
+
+add_clangformat(apache-geode-c-integration-utilities)
