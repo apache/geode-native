@@ -21,8 +21,11 @@ namespace util {
    these template instances here, and we can extern them everywhere they are
    in use to reduce object bloat and compile time.
  */
-template void print_message<::testing::internal::COLOR_DEFAULT>(const char* fmt...);
-template void print_message<::testing::internal::COLOR_GREEN>(const char* fmt...);
-template void print_message<::testing::internal::COLOR_YELLOW>(const char* fmt...);
+template void print_message<::testing::internal::COLOR_DEFAULT>(
+    const char* fmt...);
+template void print_message<::testing::internal::COLOR_GREEN>(
+    const char* fmt...);
+template void print_message<::testing::internal::COLOR_YELLOW>(
+    const char* fmt...);
 template void print_message<::testing::internal::COLOR_RED>(const char* fmt...);
 }  // namespace util
