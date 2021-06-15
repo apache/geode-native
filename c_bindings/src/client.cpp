@@ -16,9 +16,9 @@
  */
 
 // Standard headers
+#include <iostream>
 #include <string>
 #include <utility>
-#include <iostream>
 
 // C++ client public headers
 #include "geode/Exception.hpp"
@@ -33,12 +33,13 @@
 #include "client.hpp"
 
 std::shared_ptr<ClientWrapper>& PermaClient::instance() {
-    static auto client_ = std::make_shared<ClientWrapper>();
-    return client_;
+  static auto client_ = std::make_shared<ClientWrapper>();
+  return client_;
 }
 
 apache_geode_client_t* apache_geode_ClientInitialize() {
-  return reinterpret_cast<apache_geode_client_t*>(PermaClient::instance().get());
+  return reinterpret_cast<apache_geode_client_t*>(
+      PermaClient::instance().get());
 }
 
 int apache_geode_ClientUninitialize(apache_geode_client_t* client) {
@@ -50,20 +51,18 @@ int apache_geode_ClientUninitialize(apache_geode_client_t* client) {
   }
   return 0;
 }
-  
-void Client::AddRecord(void *value, const std::string &className) {
+
+void Client::AddRecord(void* value, const std::string& className) {
   do_AddRecord(value, className);
 }
 
-void Client::RemoveRecord(void *value) {
-  do_RemoveRecord(value);
-}
+void Client::RemoveRecord(void* value) { do_RemoveRecord(value); }
 
-void ClientKeeper::do_AddRecord(void *value, const std::string &className) {
+void ClientKeeper::do_AddRecord(void* value, const std::string& className) {
   PermaClient::instance()->AddRecord(value, className);
 }
 
-void ClientKeeper::do_RemoveRecord(void *value) {
+void ClientKeeper::do_RemoveRecord(void* value) {
   PermaClient::instance()->RemoveRecord(value);
 }
 
@@ -91,6 +90,4 @@ void ClientWrapper::do_AddRecord(void* value, const std::string& className) {
 
 void ClientWrapper::do_RemoveRecord(void* value) { registry_.erase(value); }
 
-ClientWrapper::~ClientWrapper() {
-  std::cout << "Geode client shut down...\n";
-}
+ClientWrapper::~ClientWrapper() { std::cout << "Geode client shut down...\n"; }

@@ -19,10 +19,10 @@
 #include "geode/pool/manager.h"
 
 // C client private headers
+#include "cache.hpp"
 #include "client.hpp"
 #include "pool/factory.hpp"
 #include "pool/manager.hpp"
-#include "cache.hpp"
 
 apache_geode_pool_factory_t* apache_geode_PoolManager_CreateFactory(
     apache_geode_pool_manager_t* poolManager) {
@@ -38,15 +38,13 @@ void apache_geode_DestroyPoolManager(apache_geode_pool_manager_t* poolManager) {
   delete poolManagerWrapper;
 }
 
-PoolManagerWrapper::PoolManagerWrapper(CacheWrapper *cache,
-    apache::geode::client::PoolManager& poolManager)
+PoolManagerWrapper::PoolManagerWrapper(
+    CacheWrapper* cache, apache::geode::client::PoolManager& poolManager)
     : poolManager_(poolManager) {
-      AddRecord(this, "PoolManagerWrapper");
-    }
-
-PoolManagerWrapper::~PoolManagerWrapper() {
-  RemoveRecord(this);
+  AddRecord(this, "PoolManagerWrapper");
 }
+
+PoolManagerWrapper::~PoolManagerWrapper() { RemoveRecord(this); }
 
 PoolFactoryWrapper* PoolManagerWrapper::CreatePoolFactory() {
   return new PoolFactoryWrapper(poolManager_.createFactory());

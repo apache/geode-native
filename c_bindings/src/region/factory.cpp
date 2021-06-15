@@ -23,23 +23,21 @@
 #include "geode/RegionFactory.hpp"
 
 // C client public headers
-#include "geode/region/factory.h"
 #include "geode/region.h"
+#include "geode/region/factory.h"
 
 // C client private headers
+#include "cache.hpp"
 #include "region.hpp"
 #include "region/factory.hpp"
-#include "cache.hpp"
 
-RegionFactoryWrapper::RegionFactoryWrapper(CacheWrapper *cache,
-    apache::geode::client::RegionFactory regionFactory)
+RegionFactoryWrapper::RegionFactoryWrapper(
+    CacheWrapper* cache, apache::geode::client::RegionFactory regionFactory)
     : regionFactory_(std::move(regionFactory)) {
-      AddRecord(this, "RegionFactoryWrapper");
-    }
+  AddRecord(this, "RegionFactoryWrapper");
+}
 
-    RegionFactoryWrapper::~RegionFactoryWrapper() {
-      RemoveRecord(this);
-    }
+RegionFactoryWrapper::~RegionFactoryWrapper() { RemoveRecord(this); }
 
 void RegionFactoryWrapper::setPoolName(const std::string& poolName) {
   regionFactory_.setPoolName(poolName);

@@ -38,6 +38,4 @@ PoolWrapper::PoolWrapper(std::shared_ptr<apache::geode::client::Pool> pool)
   AddRecord(this, "PoolWrapper");
 }
 
-PoolWrapper::~PoolWrapper() {
-  RemoveRecord(this);
-}
+PoolWrapper::~PoolWrapper() { RemoveRecord(this); }

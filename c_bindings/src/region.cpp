@@ -21,7 +21,7 @@
 
 #ifdef _WIN32
 #include <objbase.h>
-#endif // _WIN32
+#endif  // _WIN32
 
 // C++ client public headers
 #include "geode/CacheableString.hpp"
@@ -36,10 +36,11 @@
 #include "region.hpp"
 #include "region/factory.hpp"
 
-RegionWrapper::RegionWrapper(std::shared_ptr<apache::geode::client::Region> region)
+RegionWrapper::RegionWrapper(
+    std::shared_ptr<apache::geode::client::Region> region)
     : region_(region) {
-      AddRecord(this, "RegionWrapper");
-    }
+  AddRecord(this, "RegionWrapper");
+}
 
 RegionWrapper::~RegionWrapper() { RemoveRecord(this); }
 
@@ -113,7 +114,8 @@ const char* apache_geode_Region_GetString(apache_geode_region_t* region,
 }
 
 void apache_geode_Region_GetByteArray(apache_geode_region_t* region,
-                                             const char* key, char** value, size_t* size) {
+                                      const char* key, char** value,
+                                      size_t* size) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
   return regionWrapper->GetByteArray(key, value, size);
 }

@@ -29,9 +29,9 @@
 
 // C client private headers
 #include "cache.hpp"
+#include "cache/factory.hpp"
 #include "pool/manager.hpp"
 #include "region/factory.hpp"
-#include "cache/factory.hpp"
 
 void apache_geode_DestroyCache(apache_geode_cache_t* cache) {
   CacheWrapper* cacheWrapper = reinterpret_cast<CacheWrapper*>(cache);
@@ -89,12 +89,10 @@ bool apache_geode_Cache_IsClosed(apache_geode_cache_t* cache) {
 
 CacheWrapper::CacheWrapper(apache::geode::client::Cache cache)
     : cache_(std::move(cache)) {
-      AddRecord(this, "CacheWrapper");
-    }
-    
-CacheWrapper::~CacheWrapper() {
-  RemoveRecord(this);
+  AddRecord(this, "CacheWrapper");
 }
+
+CacheWrapper::~CacheWrapper() { RemoveRecord(this); }
 
 bool CacheWrapper::getPdxIgnoreUnreadFields() {
   return cache_.getPdxIgnoreUnreadFields();
@@ -110,7 +108,8 @@ PoolManagerWrapper* CacheWrapper::getPoolManager() {
 
 RegionFactoryWrapper* CacheWrapper::createRegionFactory(
     apache::geode::client::RegionShortcut regionShortcut) {
-  return new RegionFactoryWrapper(this, cache_.createRegionFactory(regionShortcut));
+  return new RegionFactoryWrapper(this,
+                                  cache_.createRegionFactory(regionShortcut));
 }
 
 const char* CacheWrapper::getName() { return cache_.getName().c_str(); }

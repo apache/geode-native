@@ -16,9 +16,9 @@
  */
 
 // Standard headers
+#include <iostream>
 #include <memory>
 #include <string>
-#include <iostream>
 
 // C++ client public headers
 #include "geode/CacheFactory.hpp"
@@ -43,9 +43,7 @@ CacheFactoryWrapper::CacheFactoryWrapper() {
   std::cout << __FUNCTION__ << " " << static_cast<void*>(this) << "\n";
 }
 
-CacheFactoryWrapper::~CacheFactoryWrapper() {
-  RemoveRecord(this);
-}
+CacheFactoryWrapper::~CacheFactoryWrapper() { RemoveRecord(this); }
 
 const char* CacheFactoryWrapper::getVersion() {
   return cacheFactory_.getVersion().c_str();
@@ -82,7 +80,8 @@ CacheWrapper* CacheFactoryWrapper::createCache() {
 
 apache_geode_cache_factory_t* apache_geode_CreateCacheFactory() {
   auto factory = new CacheFactoryWrapper();
-  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory) << "\n";
+  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory)
+            << "\n";
   LOGDEBUG("%s: factory=%p", __FUNCTION__, factory);
   return reinterpret_cast<apache_geode_cache_factory_t*>(factory);
 }
@@ -91,7 +90,8 @@ apache_geode_cache_t* apache_geode_CacheFactory_CreateCache(
     apache_geode_cache_factory_t* factory) {
   auto cacheFactory = reinterpret_cast<CacheFactoryWrapper*>(factory);
   CacheWrapper* cache = cacheFactory->createCache();
-  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory) << "cache: " << static_cast<void*>(cache) << "\n";
+  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory)
+            << "cache: " << static_cast<void*>(cache) << "\n";
   LOGDEBUG("%s: factory=%p, cache=%p", __FUNCTION__, factory, cache);
   return reinterpret_cast<apache_geode_cache_t*>(cache);
 }
@@ -112,10 +112,10 @@ const char* apache_geode_CacheFactory_GetProductDescription(
 
 void apache_geode_CacheFactory_SetPdxIgnoreUnreadFields(
     apache_geode_cache_factory_t* factory, bool pdxIgnoreUnreadFields) {
-  auto cacheFactory =
-      reinterpret_cast<CacheFactoryWrapper*>(factory);
+  auto cacheFactory = reinterpret_cast<CacheFactoryWrapper*>(factory);
   auto ignoreUnreadFields = pdxIgnoreUnreadFields ? "true" : "false";
-  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory) << "\n";
+  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory)
+            << "\n";
   LOGDEBUG("%s: factory=%p, ignoreUnreadFields=%s", __FUNCTION__, factory,
            ignoreUnreadFields);
   cacheFactory->setPdxIgnoreUnreadFields(pdxIgnoreUnreadFields);
@@ -148,6 +148,7 @@ void apache_geode_CacheFactory_SetProperty(
 }
 
 void apache_geode_DestroyCacheFactory(apache_geode_cache_factory_t* factory) {
-  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory) << "\n";
+  std::cout << __FUNCTION__ << " factory: " << static_cast<void*>(factory)
+            << "\n";
   delete reinterpret_cast<CacheFactoryWrapper*>(factory);
 }

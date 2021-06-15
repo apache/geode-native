@@ -49,7 +49,8 @@ void apache_geode_DestroyPoolFactory(apache_geode_pool_factory_t* poolFactory) {
   delete poolFactoryWrapper;
 }
 
-PoolFactoryWrapper::PoolFactoryWrapper(apache::geode::client::PoolFactory poolFactory)
+PoolFactoryWrapper::PoolFactoryWrapper(
+    apache::geode::client::PoolFactory poolFactory)
     : poolFactory_(poolFactory) {
   AddRecord(this, "PoolFactoryWrapper");
 }

@@ -59,3 +59,5 @@ install(DIRECTORY "include/geode/" DESTINATION "c/include/geode")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apache-geode-c_export.h DESTINATION c/include/geode/internal)
 
 add_subdirectory(integration)
+
+add_clangformat(apache-geode-c)
