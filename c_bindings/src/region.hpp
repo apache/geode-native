@@ -30,7 +30,7 @@ class RegionWrapper : public ClientKeeper {
   std::string lastValue_;
 
  public:
-  RegionWrapper(std::shared_ptr<apache::geode::client::Region> region);
+  explicit RegionWrapper(std::shared_ptr<apache::geode::client::Region> region);
   ~RegionWrapper();
 
   void PutString(const std::string& key, const std::string& value);

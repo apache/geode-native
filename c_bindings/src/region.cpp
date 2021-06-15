@@ -71,16 +71,17 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 
   auto bytes =
       std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(val);
-  const int8_t* p = bytes->value().data();
   int valSize = val->objectSize();
 #if defined(_WIN32)
-  int8_t* byteArray = (int8_t*)CoTaskMemAlloc(valSize);
+  int8_t* byteArray = static_cast<int8_t*>(CoTaskMemAlloc(valSize));
 #else
-  int8_t* byteArray = (int8_t*)malloc(valSize);
+  int8_t* byteArray = static_cast<int8_t*>(malloc(valSize));
 #endif
-  memcpy(byteArray, bytes->value().data(), valSize);
-  *value = (char*)byteArray;
-  *size = valSize;
+  if (bytes) {
+    memcpy(byteArray, bytes->value().data(), valSize);
+    *value = (char*)byteArray;
+    *size = valSize;
+  }
 }
 
 void RegionWrapper::Remove(const std::string& key) { region_->remove(key); }

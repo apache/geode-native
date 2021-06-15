@@ -27,6 +27,6 @@ class PoolWrapper : public ClientKeeper {
   std::shared_ptr<apache::geode::client::Pool> pool_;
 
  public:
-  PoolWrapper(std::shared_ptr<apache::geode::client::Pool> pool);
+  explicit PoolWrapper(std::shared_ptr<apache::geode::client::Pool> pool);
   ~PoolWrapper();
 };

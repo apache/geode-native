@@ -30,7 +30,7 @@ class PoolFactoryWrapper: public ClientKeeper {
   apache::geode::client::PoolFactory poolFactory_;
 
  public:
-  PoolFactoryWrapper(apache::geode::client::PoolFactory poolFactory);
+  explicit PoolFactoryWrapper(apache::geode::client::PoolFactory poolFactory);
   ~PoolFactoryWrapper();
 
   PoolWrapper* CreatePool(const char* name);
