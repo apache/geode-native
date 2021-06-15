@@ -69,5 +69,5 @@ class ClientWrapper : public Client {
 
 class PermaClient {
  public:
-    static std::shared_ptr<ClientWrapper> &PermaClient::instance();
+    static std::shared_ptr<ClientWrapper> &instance();
 };

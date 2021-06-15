@@ -25,16 +25,6 @@ add_library(${PROJECT_NAME} SHARED "src/auth_initialize.cpp"
 "src/pool/manager.cpp"
 "src/region/factory.cpp")
 
-# add_library(${PROJECT_NAME} SHARED "src/auth_initialize.cpp"
-# "src/cache.cpp"
-# "src/client.cpp"
-# "src/pool.cpp"
-# "src/region.cpp"
-# "src/cache/factory.cpp"
-# "src/pool/factory.cpp"
-# "src/pool/manager.cpp"
-# "src/region/factory.cpp")
-
 target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE apache-geode-static)
@@ -56,7 +46,7 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     LINK_FLAGS "-exported_symbols_list \"${CMAKE_CURRENT_SOURCE_DIR}/symbols\"")
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set_target_properties(${PROJECT_NAME} PROPERTIES
-    LINK_FLAGS "--version-script \"${CMAKE_CURRENT_SOURCE_DIR}/symbols.version\"")
+    LINK_FLAGS "-Wl,--version-script=\"${CMAKE_CURRENT_SOURCE_DIR}/symbols.version\"")
 endif()
 
 install(TARGETS ${PROJECT_NAME}

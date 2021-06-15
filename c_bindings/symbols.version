@@ -1,6 +1,6 @@
 V0 {
   global:
-    _apache_geode_*;
+    apache_geode_*;
   local:
     *;
 };
