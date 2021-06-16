@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GemfireDotNetTest": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

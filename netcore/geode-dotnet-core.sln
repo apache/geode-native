@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30001.183
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore", "NetCore\NetCore.csproj", "{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Test", "NetCore.Test\NetCore.Test.csproj", "{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|x64.ActiveCfg = Debug|x64
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|x64.Build.0 = Debug|x64
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|x64.ActiveCfg = Release|x64
+		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|x64.Build.0 = Release|x64
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|x64.ActiveCfg = Debug|x64
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|x64.Build.0 = Debug|x64
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|x64.ActiveCfg = Release|x64
+		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B30A49F0-1C96-4D6C-A222-0088B1D7FBBE}
+	EndGlobalSection
+EndGlobal
