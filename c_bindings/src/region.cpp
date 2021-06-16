@@ -79,7 +79,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 #endif
   if (bytes) {
     memcpy(byteArray, bytes->value().data(), valSize);
-    *value = (char*)byteArray;
+    *value = reinterpret_cast<char*>(byteArray);
     *size = valSize;
   }
 }
