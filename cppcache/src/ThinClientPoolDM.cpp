@@ -1189,7 +1189,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
 
 std::shared_ptr<TcrEndpoint> ThinClientPoolDM::getEndpoint(
     const std::string& endpointName) {
-  m_endpoints.make_lock();
+  const auto& ignored = m_endpoints.make_lock();
   const auto& find = m_endpoints.find(endpointName);
   if (find == m_endpoints.end()) {
     return {};
