@@ -11,7 +11,7 @@ namespace Apache
         {
             public class Cache : GeodeNativeObject, IGeodeCache
             {
-                private string _name = String.Empty;
+                private static string _name = String.Empty;
                 private PoolManager _poolManager = null;
                 private PoolFactory _poolFactory = null;
                 private IAuthInitialize _authInitialize;
@@ -21,20 +21,17 @@ namespace Apache
                 internal delegate void GetCredentialsDelegateInternal(IntPtr cache);
 
                 internal delegate void CloseDelegateInternal();
-            
+
                 [DllImport(Constants.libPath, CallingConvention = CallingConvention.Cdecl)]
                 private static extern void apache_geode_CacheFactory_SetAuthInitialize(IntPtr factory, GetCredentialsDelegateInternal getCredentials, CloseDelegateInternal close);
                 
-                [DllImport(Constants.libPath,
-                    CharSet = CharSet.Auto)]
+                [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern IntPtr apache_geode_CacheFactory_CreateCache(IntPtr factory);
                 
-                [DllImport(Constants.libPath,
-                    CharSet = CharSet.Auto)]
+                [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern bool apache_geode_Cache_GetPdxIgnoreUnreadFields(IntPtr cache);
                 
-                [DllImport(Constants.libPath,
-                    CharSet = CharSet.Auto)]
+                [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern bool apache_geode_Cache_GetPdxReadSerialized(IntPtr cache);
                     
                 [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
@@ -46,12 +43,10 @@ namespace Apache
                 [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern bool apache_geode_Cache_IsClosed(IntPtr cache);
                 
-                [DllImport(Constants.libPath,
-                    CharSet = CharSet.Auto)]
+                [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern bool apache_geode_AuthInitialize_AddProperty(IntPtr properties, IntPtr key, IntPtr value);
          
-                [DllImport(Constants.libPath,
-                    CharSet = CharSet.Auto)]
+                [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
                 private static extern void apache_geode_DestroyCache(IntPtr cache);
                 
                 internal Cache(IntPtr cacheFactory, IAuthInitialize authInitialize)
