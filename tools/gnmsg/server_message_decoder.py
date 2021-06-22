@@ -1,4 +1,5 @@
-#!/usr/local/bin/python3
+# get_send_trace_parts_functionsrse
+# !/usr/local/bin/python3
 
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -38,46 +39,16 @@ class ServerMessageDecoder(DecoderBase):
         self.connection_states_ = {}
         self.headers_ = {}
         self.nc_version_ = None
-        self.get_receive_trace_parts_functions_ = {
-            "0.0.42": self.get_receive_trace_header_base,
-            "10.0.3": self.get_receive_trace_header_base,
-            "10.1.1": self.get_receive_trace_header_base,
-            "10.1.2": self.get_receive_trace_header_base,
-            "10.1.3": self.get_receive_trace_header_base,
-            "10.1.4": self.get_receive_trace_header_base,
-            "10.2.0": self.get_receive_trace_header_base,
-            "10.2.1": self.get_receive_trace_header_base,
-            "9.1.1": self.get_receive_trace_header_v911,
-        }
-        self.receive_trace_parsers_ = {
-            "0.0.42": self.parse_response_fields_base,
-            "10.0.3": self.parse_response_fields_base,
-            "10.1.1": self.parse_response_fields_base,
-            "10.1.2": self.parse_response_fields_base,
-            "10.1.3": self.parse_response_fields_base,
-            "10.1.4": self.parse_response_fields_base,
-            "10.2.0": self.parse_response_fields_base,
-            "10.2.1": self.parse_response_fields_base,
-            "9.1.1": self.parse_response_fields_v911,
-        }
+        self.get_receive_trace_parts_functions_ = [
+            self.get_receive_trace_header_base,
+            self.get_receive_trace_header_v911,
+        ]
+        self.receive_trace_parsers_ = [
+            self.parse_response_fields_base,
+            self.parse_response_fields_v911,
+        ]
         self.chunk_decoder = ChunkedResponseDecoder()
         self.threads_connections_ = {}
-
-    def search_for_version(self, line):
-        if self.nc_version_ == None:
-            expression = re.compile(r"Product version:.*Native (\d+)\.(\d+)\.(\d+)-")
-            match = expression.search(line)
-            if match:
-                major = match.group(1)
-                minor = match.group(2)
-                patch = match.group(3)
-                self.nc_version_ = major + "." + minor + "." + patch
-                self.receive_trace_parts_retriever_ = (
-                    self.get_receive_trace_parts_functions_[self.nc_version_]
-                )
-                self.receive_trace_parser_ = self.receive_trace_parsers_[
-                    self.nc_version_
-                ]
 
     def associate_connection_to_tid(self, line):
         result = False
@@ -96,11 +67,11 @@ class ServerMessageDecoder(DecoderBase):
     def get_receive_trace_header_with_pointer(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
-            date_time = match.group(1)
+            date_time = parser.parse(match.group(1))
             tid = match.group(2)
             connection = match.group(3)
             bytes = match.group(4)
@@ -116,12 +87,12 @@ class ServerMessageDecoder(DecoderBase):
     def get_receive_trace_header_without_pointer(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
             tid = match.group(2)
-            parts.append(match.group(1))
+            parts.append(parser.parse(match.group(1)))
             parts.append(tid)
             if tid in self.threads_connections_.keys():
                 parts.append(self.threads_connections_[tid])
@@ -142,7 +113,7 @@ class ServerMessageDecoder(DecoderBase):
     def get_receive_trace_header_v911(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readMessage: received header from endpoint.*bytes:\s*([\d| ]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readMessage: received header from endpoint.*bytes:\s*([\d| ]+)"
         )
         match = expression.search(line)
         if match:
@@ -179,11 +150,21 @@ class ServerMessageDecoder(DecoderBase):
     def get_receive_trace_parts(self, line, parts):
         if self.receive_trace_parts_retriever_ is not None:
             return self.receive_trace_parts_retriever_(line, parts)
+        else:
+            for retriever in self.get_receive_trace_parts_functions_:
+                if retriever(line, parts):
+                    self.receive_trace_parts_retriever_ = retriever
+                    self.receive_trace_parser_ = self.receive_trace_parsers_[
+                        self.get_receive_trace_parts_functions_.index(retriever)
+                    ]
+                    return True
+            else:
+                return False
 
     def get_add_security_trace_parts(self, line, parts):
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -201,7 +182,7 @@ class ServerMessageDecoder(DecoderBase):
         result = False
 
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
         )
         match = expression.search(line)
         if match:
@@ -217,7 +198,7 @@ class ServerMessageDecoder(DecoderBase):
 
         if not result:
             expression = re.compile(
-                r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+                r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
             )
             match = expression.search(line)
             if match:
@@ -234,7 +215,7 @@ class ServerMessageDecoder(DecoderBase):
         # Check if this is a header for a chunked message
         result = False
         expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader\(([0-9|a-f|A-F|x]+)\):\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader\(([0-9|a-f|A-F|x]+)\):\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
         )
         match = expression.search(line)
         if match:
@@ -250,7 +231,7 @@ class ServerMessageDecoder(DecoderBase):
 
         if not result:
             expression = re.compile(
-                r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+                r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
             )
             match = expression.search(line)
             if match:
@@ -285,7 +266,7 @@ class ServerMessageDecoder(DecoderBase):
 
         if not result:
             expression = re.compile(
-                r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+                r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
             )
             match = expression.search(line)
             if match:
@@ -354,8 +335,6 @@ class ServerMessageDecoder(DecoderBase):
         chunk_bytes = None
         tid = None
 
-        self.search_for_version(line)
-
         parts = []
         if self.associate_connection_to_tid(line):
             pass
@@ -393,7 +372,7 @@ class ServerMessageDecoder(DecoderBase):
             self.chunk_decoder.add_chunk(parts[3])
             if self.chunk_decoder.is_complete_message():
                 self.output_queue_.put(
-                    {"message": self.chunk_decoder.get_decoded_message()}
+                    {"message": self.chunk_decoder.get_decoded_message(parts[0])}
                 )
                 self.chunk_decoder.reset()
         else:
