@@ -47,7 +47,7 @@ namespace GemfireDotNetTest
             using var poolFactory = poolManager.CreatePoolFactory();
 
             poolFactory.AddLocator("localhost", 10334);
-            using var pool = poolFactory.CreatePool("myPool");
+            using var pool = poolFactory.CreatePool("myPool"); // lgtm[cs / useless - assignment - to - local]
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace GemfireDotNetTest
             using var poolFactory = cache.PoolFactory;
             
             poolFactory.AddLocator("localhost", 10334);
-            using var pool = poolFactory.CreatePool("myPool");
+            using var pool = poolFactory.CreatePool("myPool"); // lgtm[cs / useless - assignment - to - local] 
         }
     }
 }

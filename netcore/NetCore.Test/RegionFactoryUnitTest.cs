@@ -51,7 +51,7 @@ namespace GemfireDotNetTest
             using var poolManager = cache.PoolManager;
             using var poolFactory = poolManager.CreatePoolFactory()
                 .AddLocator("localhost", port);
-            using var pool = poolFactory.CreatePool("myPool");
+            using var pool = poolFactory.CreatePool("myPool"); // lgtm[cs / useless - assignment - to - local]
         }
 
         private void doPutsAndGets(Region region)

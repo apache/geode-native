@@ -29,7 +29,7 @@ namespace GemfireDotNetTest
             using var cacheFactory = CacheFactory.Create();
             using var cache = cacheFactory.CreateCache();
             using var poolManager = cache.PoolManager;
-            using var poolFactory = poolManager.CreatePoolFactory();
+            using var poolFactory = poolManager.CreatePoolFactory(); // lgtm[cs / useless - assignment - to - local]
         }
     }
 }

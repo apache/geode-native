@@ -73,7 +73,7 @@ namespace GemfireDotNetTest
                 .SetProperty("log-file", "geode_native.log");
 
             cacheFactory.PdxIgnoreUnreadFields = true;
-            using var cache = cacheFactory.CreateCache();
+            using var cache = cacheFactory.CreateCache(); // lgtm [cs/useless-assignment-to-local]
             using var poolManager = cache.PoolManager;
         }
         
@@ -85,7 +85,7 @@ namespace GemfireDotNetTest
                 .SetProperty("log-file", "geode_native.log");
             cacheFactory.PdxIgnoreUnreadFields = true;
             using var cache = cacheFactory.CreateCache();
-            using var regionFactory = cache.CreateRegionFactory(RegionShortcut.Proxy);
+            using var regionFactory = cache.CreateRegionFactory(RegionShortcut.Proxy); // lgtm[cs / useless - assignment - to - local]
         }
 
         [Fact]

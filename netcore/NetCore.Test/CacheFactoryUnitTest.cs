@@ -77,7 +77,7 @@ namespace GemfireDotNetTest
         {
             using (var cacheFactory = CacheFactory.Create())
             {
-                using (var cache = cacheFactory.CreateCache())
+                using (var cache = cacheFactory.CreateCache()) // lgtm[cs / useless - assignment - to - local]
                 {
                     ;
                 }

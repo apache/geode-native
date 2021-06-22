@@ -43,7 +43,7 @@ namespace Apache
 
                 [DllImport(Constants.libPath,
                     CharSet = CharSet.Auto)]
-                private static extern IntPtr apache_geode_Region_GetByteArray(IntPtr region, IntPtr key, ref IntPtr value, ref int size);
+                private static extern void apache_geode_Region_GetByteArray(IntPtr region, IntPtr key, ref IntPtr value, ref int size);
 
                 [DllImport(Constants.libPath,
                     CharSet = CharSet.Auto)]
@@ -96,7 +96,7 @@ namespace Apache
                     IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
                     IntPtr valPtr = (IntPtr)0;
                     int size = 0;
-                    var result = apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
+                    apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
                     if (size > 0)
                     {
                       Byte[] byteArray = new Byte[size];
