@@ -120,7 +120,7 @@ PdxWriter& PdxWriterWithTypeCollector::writeBoolean(
 PdxWriter& PdxWriterWithTypeCollector::writeByte(const std::string& fieldName,
                                                  int8_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                     PdxTypes::BYTE_SIZE);
+                                     PdxTypes::BYTE_SIZE_BYTES);
   PdxLocalWriter::writeByte(fieldName, value);
   return *this;
 }

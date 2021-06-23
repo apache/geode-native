@@ -28,7 +28,7 @@ namespace client {
 
 class PdxTypes {
  public:
-  static const int8_t BYTE_SIZE = 1;
+  static const int8_t BYTE_SIZE_BYTES = 1;
 
   static const int8_t BOOLEAN_SIZE = 1;
 

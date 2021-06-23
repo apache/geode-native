@@ -87,7 +87,7 @@ PdxInstanceFactory& PdxInstanceFactory::writeByte(const std::string& fieldName,
                                                   int8_t value) {
   isFieldAdded(fieldName);
   m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                     PdxTypes::BYTE_SIZE);
+                                     PdxTypes::BYTE_SIZE_BYTES);
   auto cacheableObject = CacheableByte::create(value);
   m_FieldVsValues.emplace(fieldName, cacheableObject);
   return *this;

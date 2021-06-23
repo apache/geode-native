@@ -166,7 +166,7 @@ namespace Apache
           switch (m_typeId)
           {
           case PdxFieldTypes::BYTE:
-            return PdxTypes::BYTE_SIZE;
+            return PdxTypes::BYTE_SIZE_BYTES;
           case PdxFieldTypes::BOOLEAN:
             return PdxTypes::BOOLEAN_SIZE;
           case PdxFieldTypes::SHORT:

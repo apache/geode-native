@@ -49,7 +49,7 @@ namespace Apache
         SByte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE_BYTES);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -65,7 +65,7 @@ namespace Apache
         SByte PdxReaderWithTypeCollector::ReadSByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE_BYTES);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {

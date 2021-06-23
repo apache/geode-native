@@ -80,7 +80,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteByte(String^ fieldName, SByte value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE_BYTES);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }

@@ -92,7 +92,7 @@ bool PdxReaderWithTypeCollector::readBoolean(const std::string& fieldName) {
 int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::BYTE, "byte");
   m_newPdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                        PdxTypes::BYTE_SIZE);
+                                        PdxTypes::BYTE_SIZE_BYTES);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readByte(): position = %d", position);
@@ -100,7 +100,7 @@ int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
     m_dataInput->advanceCursor(position);
     int8_t retVal;
     retVal = PdxLocalReader::readByte(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::BYTE_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::BYTE_SIZE_BYTES);
     return retVal;
   } else {
     return 0;
