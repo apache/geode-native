@@ -28,11 +28,8 @@ else
     fi
 fi
 
-if [ "$BUILD_HOME" == "" ]; then
-    SAVED="`pwd`"
-    cd "`dirname \"$PRG\"`/../.." >&-
-    BUILD_HOME="`pwd -P`"
-    cd "$SAVED" >&-
+if [ "$NETCORE_JAVA_BUILD_HOME" == "" ]; then
+    NETCORE_JAVA_BUILD_HOME="`pwd -P`"/utility/build
 fi
 
 
@@ -41,7 +38,7 @@ fi
 
 AUTH_OPTS="--J=-Dgemfire.security-username=server"
 AUTH_OPTS="${AUTH_OPTS} --J=-Dgemfire.security-password=server"
-AUTH_OPTS="${AUTH_OPTS} --classpath=${BUILD_HOME}/utilities/example.jar"
+AUTH_OPTS="${AUTH_OPTS} --classpath=${NETCORE_JAVA_BUILD_HOME}/example.jar"
 
 AUTH_LOCATOR_OPTS="${AUTH_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
 
