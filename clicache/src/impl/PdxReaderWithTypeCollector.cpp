@@ -49,7 +49,7 @@ namespace Apache
         SByte PdxReaderWithTypeCollector::ReadByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE_BYTES);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::PDX_BYTE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -65,7 +65,7 @@ namespace Apache
         SByte PdxReaderWithTypeCollector::ReadSByte(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BYTE, "byte");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE_BYTES);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::PDX_BYTE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -80,7 +80,7 @@ namespace Apache
         Boolean PdxReaderWithTypeCollector::ReadBoolean(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::BOOLEAN, "boolean");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::BOOLEAN_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::PDX_BOOLEAN_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           m_dataInput->AdvanceCursorPdx(position);
           bool retVal = PdxLocalReader::ReadBoolean(fieldName);
@@ -91,7 +91,7 @@ namespace Apache
         Char PdxReaderWithTypeCollector::ReadChar(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::CHAR, "char");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::CHAR_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::PDX_CHAR_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           m_dataInput->AdvanceCursorPdx(position);
           Char retVal = PdxLocalReader::ReadChar(fieldName);
@@ -102,7 +102,7 @@ namespace Apache
         System::UInt16 PdxReaderWithTypeCollector::ReadUInt16(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::SHORT, "short");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::PDX_SHORT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -117,7 +117,7 @@ namespace Apache
         System::UInt32 PdxReaderWithTypeCollector::ReadUInt32(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::INT, "int");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::PDX_INTEGER_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -132,7 +132,7 @@ namespace Apache
         System::UInt64 PdxReaderWithTypeCollector::ReadUInt64(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::LONG, "long");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::PDX_LONG_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -147,7 +147,7 @@ namespace Apache
         short PdxReaderWithTypeCollector::ReadShort(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::SHORT, "short");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::PDX_SHORT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -162,7 +162,7 @@ namespace Apache
         Int32 PdxReaderWithTypeCollector::ReadInt(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::INT, "int");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::PDX_INTEGER_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -177,7 +177,7 @@ namespace Apache
         Int64 PdxReaderWithTypeCollector::ReadLong(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::LONG, "long");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::PDX_LONG_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -192,7 +192,7 @@ namespace Apache
         float PdxReaderWithTypeCollector::ReadFloat(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::FLOAT, "float");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::FLOAT_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::PDX_FLOAT_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -207,7 +207,7 @@ namespace Apache
         double PdxReaderWithTypeCollector::ReadDouble(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::DOUBLE, "double");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::DOUBLE_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::PDX_DOUBLE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
@@ -284,7 +284,7 @@ namespace Apache
         System::DateTime PdxReaderWithTypeCollector::ReadDate(String^ fieldName)
         {
           checkType(fieldName, PdxFieldTypes::DATE, "Date");
-          m_newPdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::DATE_SIZE);
+          m_newPdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::PDX_DATE_SIZE);
           int position = m_pdxType->GetFieldPosition(fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
           if (position != -1)
           {
