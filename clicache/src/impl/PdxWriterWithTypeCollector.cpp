@@ -117,7 +117,7 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteBoolean(String^ fieldName, bool value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN,  native::PdxTypes::kBooleanSize);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN,  native::PdxTypes::kPdxBooleanSize);
           PdxLocalWriter::WriteBoolean(fieldName, value);
           return this;
         }
