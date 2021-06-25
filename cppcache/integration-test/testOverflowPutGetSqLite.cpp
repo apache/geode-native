@@ -53,9 +53,9 @@ using apache::geode::client::RegionShortcut;
 uint32_t numOfEnt;
 std::string sqlite_dir = "SqLiteRegionData";
 
-static constexpr char const *MAX_PAGE_COUNT_STR = "MaxPageCount";
-static constexpr char const *PAGE_SIZE_STR = "PageSize";
-static constexpr char const *PERSISTENCE_DIR_STR = "PersistenceDirectory";
+static constexpr char const *kMaxPageCountStr = "MaxPageCount";
+static constexpr char const *kPageSizeStr = "PageSize";
+static constexpr char const *kPersistenceDirStr = "PersistenceDirectory";
 
 // Return the number of keys and values in entries map.
 void getNumOfEntries(std::shared_ptr<Region> &regionPtr, uint32_t num) {
@@ -345,9 +345,9 @@ void setSqLiteProperties(std::shared_ptr<Properties> &sqliteProperties,
                          int maxPageCount = 1073741823, int pageSize = 65536,
                          std::string pDir = sqlite_dir) {
   sqliteProperties = Properties::create();
-  sqliteProperties->insert(MAX_PAGE_COUNT_STR, maxPageCount);
-  sqliteProperties->insert(PAGE_SIZE_STR, pageSize);
-  sqliteProperties->insert(PERSISTENCE_DIR_STR, pDir.c_str());
+  sqliteProperties->insert(kMaxPageCountStr, maxPageCount);
+  sqliteProperties->insert(kPageSizeStr, pageSize);
+  sqliteProperties->insert(kPersistenceDirStr, pDir.c_str());
   ASSERT(sqliteProperties != nullptr,
          "Expected sqlite properties to be NON-nullptr");
 }

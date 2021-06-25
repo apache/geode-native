@@ -106,63 +106,63 @@ PdxWriter& PdxWriterWithTypeCollector::writeUnreadFields(
 PdxWriter& PdxWriterWithTypeCollector::writeChar(const std::string& fieldName,
                                                  char16_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
-                                     PdxTypes::PDX_CHAR_SIZE);
+                                     PdxTypes::kPdxCharSize);
   PdxLocalWriter::writeChar(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeBoolean(
     const std::string& fieldName, bool value) {
   m_pdxType->addFixedLengthTypeField(
-      fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::PDX_BOOLEAN_SIZE);
+      fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::kPdxBooleanSize);
   PdxLocalWriter::writeBoolean(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeByte(const std::string& fieldName,
                                                  int8_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                     PdxTypes::PDX_BYTE_SIZE);
+                                     PdxTypes::kPdxByteSize);
   PdxLocalWriter::writeByte(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeShort(const std::string& fieldName,
                                                   int16_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,
-                                     PdxTypes::PDX_SHORT_SIZE);
+                                     PdxTypes::kPdxShortSize);
   PdxLocalWriter::writeShort(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeInt(const std::string& fieldName,
                                                 int32_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
-                                     PdxTypes::PDX_INTEGER_SIZE);
+                                     PdxTypes::kPdxIntegerSize);
   PdxLocalWriter::writeInt(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeLong(const std::string& fieldName,
                                                  int64_t value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,
-                                     PdxTypes::PDX_LONG_SIZE);
+                                     PdxTypes::kPdxLongSize);
   PdxLocalWriter::writeLong(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeFloat(const std::string& fieldName,
                                                   float value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,
-                                     PdxTypes::PDX_FLOAT_SIZE);
+                                     PdxTypes::kPdxFloatSize);
   PdxLocalWriter::writeFloat(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeDouble(const std::string& fieldName,
                                                    double value) {
   m_pdxType->addFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,
-                                     PdxTypes::PDX_DOUBLE_SIZE);
+                                     PdxTypes::kPdxDoubleSize);
   PdxLocalWriter::writeDouble(fieldName, value);
   return *this;
 }
 PdxWriter& PdxWriterWithTypeCollector::writeDate(
     const std::string& fieldName, std::shared_ptr<CacheableDate> date) {
   m_pdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
-                                     PdxTypes::PDX_DATE_SIZE);
+                                     PdxTypes::kPdxDateSize);
   PdxLocalWriter::writeDate(fieldName, date);
   return *this;
 }

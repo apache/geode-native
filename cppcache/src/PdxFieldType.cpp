@@ -32,15 +32,15 @@ namespace geode {
 namespace client {
 
 static const int32_t kFixedTypeSizes[] = {
-    PdxTypes::PDX_BOOLEAN_SIZE,  // BOOLEAN
-    PdxTypes::PDX_BOOLEAN_SIZE,  // BYTE
-    PdxTypes::PDX_CHAR_SIZE,     // CHAR
-    PdxTypes::PDX_CHAR_SIZE,     // SHORT
-    PdxTypes::PDX_INTEGER_SIZE,  // INT
-    PdxTypes::PDX_LONG_SIZE,     // LONG
-    PdxTypes::PDX_INTEGER_SIZE,  // FLOAT
-    PdxTypes::PDX_LONG_SIZE,     // DOUBLE
-    PdxTypes::PDX_DATE_SIZE,     // DATE
+    PdxTypes::kPdxBooleanSize,  // BOOLEAN
+    PdxTypes::kPdxBooleanSize,  // BYTE
+    PdxTypes::kPdxCharSize,     // CHAR
+    PdxTypes::kPdxCharSize,     // SHORT
+    PdxTypes::kPdxIntegerSize,  // INT
+    PdxTypes::kPdxLongSize,     // LONG
+    PdxTypes::kPdxIntegerSize,  // FLOAT
+    PdxTypes::kPdxLongSize,     // DOUBLE
+    PdxTypes::kPdxDateSize,     // DATE
     -1,                          // STRING
     -1,                          // OBJECT
     -1,                          // BOOLEAN_ARRAY
