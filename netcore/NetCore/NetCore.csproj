@@ -4,7 +4,7 @@
         <TargetFramework>netcoreapp5.0</TargetFramework>
         <RootNamespace>Apache.Geode.NetCore</RootNamespace>
         <AssemblyName>Apache.Geode.NetCore</AssemblyName>
-        <Platforms>AnyCPU;x64</Platforms>
+        <Platforms>x64</Platforms>
     </PropertyGroup>
 
 </Project>

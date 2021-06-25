@@ -9,22 +9,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Test", "NetCore.Tes
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
-		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|x64.ActiveCfg = Debug|x64
 		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Debug|x64.Build.0 = Debug|x64
-		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|x64.ActiveCfg = Release|x64
 		{09ABBCE7-B217-43F1-A51B-CC5BDCD8EE98}.Release|x64.Build.0 = Release|x64
-		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|x64.ActiveCfg = Debug|x64
 		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Debug|x64.Build.0 = Debug|x64
-		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|x64.ActiveCfg = Release|x64
 		{501DEA7E-8985-42A8-8BC9-C073E1B6DFE0}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
