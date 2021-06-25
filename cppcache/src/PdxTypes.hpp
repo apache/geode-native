@@ -28,23 +28,23 @@ namespace client {
 
 class PdxTypes {
  public:
-  static const int8_t BYTE_SIZE_BYTES = 1;
+  static const int8_t PDX_BYTE_SIZE = 1;
 
-  static const int8_t BOOLEAN_SIZE = 1;
+  static const int8_t PDX_BOOLEAN_SIZE = 1;
 
-  static const int8_t CHAR_SIZE = 2;
+  static const int8_t PDX_CHAR_SIZE = 2;
 
-  static const int8_t SHORT_SIZE = 2;
+  static const int8_t PDX_SHORT_SIZE = 2;
 
-  static const int8_t INTEGER_SIZE = 4;
+  static const int8_t PDX_INTEGER_SIZE = 4;
 
-  static const int8_t FLOAT_SIZE = 4;
+  static const int8_t PDX_FLOAT_SIZE = 4;
 
-  static const int8_t LONG_SIZE = 8;
+  static const int8_t PDX_LONG_SIZE = 8;
 
-  static const int8_t DOUBLE_SIZE = 8;
+  static const int8_t PDX_DOUBLE_SIZE = 8;
 
-  static const int8_t DATE_SIZE = 8;
+  static const int8_t PDX_DATE_SIZE = 8;
 };
 
 }  // namespace client
