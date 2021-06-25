@@ -41,19 +41,19 @@ static const int32_t kFixedTypeSizes[] = {
     PdxTypes::kPdxIntegerSize,  // FLOAT
     PdxTypes::kPdxLongSize,     // DOUBLE
     PdxTypes::kPdxDateSize,     // DATE
-    -1,                          // STRING
-    -1,                          // OBJECT
-    -1,                          // BOOLEAN_ARRAY
-    -1,                          // CHAR_ARRAY
-    -1,                          // BYTE_ARRAY
-    -1,                          // SHORT_ARRAY
-    -1,                          // INT_ARRAY
-    -1,                          // LONG_ARRAY
-    -1,                          // FLOAT_ARRAY
-    -1,                          // DOUBLE_ARRAY
-    -1,                          // STRING_ARRAY
-    -1,                          // OBJECT_ARRAY
-    -1,                          // ARRAY_OF_BYTE_ARRAYS
+    -1,                         // STRING
+    -1,                         // OBJECT
+    -1,                         // BOOLEAN_ARRAY
+    -1,                         // CHAR_ARRAY
+    -1,                         // BYTE_ARRAY
+    -1,                         // SHORT_ARRAY
+    -1,                         // INT_ARRAY
+    -1,                         // LONG_ARRAY
+    -1,                         // FLOAT_ARRAY
+    -1,                         // DOUBLE_ARRAY
+    -1,                         // STRING_ARRAY
+    -1,                         // OBJECT_ARRAY
+    -1,                         // ARRAY_OF_BYTE_ARRAYS
 };
 
 PdxFieldType::PdxFieldType()
