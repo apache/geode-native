@@ -103,84 +103,84 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::kPdxByteSize);
           PdxLocalWriter::WriteByte(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteSByte(String^ fieldName, SByte value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,  native::PdxTypes::kPdxByteSize);
           PdxLocalWriter::WriteSByte(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteBoolean(String^ fieldName, bool value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN,  native::PdxTypes::BOOLEAN_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN,  native::PdxTypes::kPdxBooleanSize);
           PdxLocalWriter::WriteBoolean(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteChar(String^ fieldName, Char value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,  native::PdxTypes::CHAR_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,  native::PdxTypes::kPdxCharSize);
           PdxLocalWriter::WriteChar(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt16(String^ fieldName, System::UInt16 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::kPdxShortSize);
           PdxLocalWriter::WriteUInt16(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt32(String^ fieldName, System::UInt32 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::kPdxIntegerSize);
           PdxLocalWriter::WriteUInt32(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteUInt64(String^ fieldName, System::UInt64 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::kPdxLongSize);
           PdxLocalWriter::WriteUInt64(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteShort(String^ fieldName, System::Int16 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,  native::PdxTypes::kPdxShortSize);
           PdxLocalWriter::WriteShort(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteInt(String^ fieldName, System::Int32 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,  native::PdxTypes::kPdxIntegerSize);
           PdxLocalWriter::WriteInt(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteLong(String^ fieldName, Int64 value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,  native::PdxTypes::kPdxLongSize);
           PdxLocalWriter::WriteLong(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteFloat(String^ fieldName, float value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,  native::PdxTypes::FLOAT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,  native::PdxTypes::kPdxFloatSize);
           PdxLocalWriter::WriteFloat(fieldName, value);
           return this;
         }
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDouble(String^ fieldName, double value)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,  native::PdxTypes::DOUBLE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,  native::PdxTypes::kPdxDoubleSize);
           PdxLocalWriter::WriteDouble(fieldName, value);
           return this;
         }
@@ -215,7 +215,7 @@ namespace Apache
 
         IPdxWriter^ PdxWriterWithTypeCollector::WriteDate(String^ fieldName, System::DateTime date)
         {
-          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,  native::PdxTypes::DATE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,  native::PdxTypes::kPdxDateSize);
           PdxLocalWriter::WriteDate(fieldName, date);
           return this;
         }
