@@ -28,8 +28,8 @@
 
 #include <ace/Get_Opt.h>
 
-#include <boost/asio.hpp>
 #include <boost/process.hpp>
+#include <boost/program_options.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
 #ifdef _WIN32
@@ -38,13 +38,14 @@
 #include <boost/interprocess/shared_memory_object.hpp>
 #endif
 
-#include "fw_spawn.hpp"
 #include "fwklib/FwkException.hpp"
 
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
+namespace bp = boost::process;
 namespace bip = boost::interprocess;
+namespace bpo = boost::program_options;
 
 static std::string g_programName;
 static uint32_t g_coordinatorPid = 0;
@@ -358,19 +359,54 @@ void Task::setTimeout(int seconds) {
   }
 }
 
-class TestProcess : virtual public dunit::Manager {
- private:
-  WorkerId m_sId;
-
+class TestProcess {
  public:
   TestProcess(const std::string &cmdline, uint32_t id)
-      : Manager(cmdline), m_sId(id) {}
+      : id_{id}, running_{false}, cmd_{cmdline} {}
 
-  WorkerId &getWorkerId() { return m_sId; }
+  WorkerId &getWorkerId() { return id_; }
+
+  void run() {
+    auto arguments = bpo::split_unix(cmd_);
+
+    std::string exe = arguments[0];
+    arguments.erase(arguments.begin());
+    process_ = bp::child(exe, bp::args = arguments);
+
+    process_.wait();
+    if (process_.exit_code() != 0) {
+      std::clog << "Worker " << id_.getIdName() << " exited with code "
+                << process_.exit_code() << std::endl;
+    }
+
+    running_ = false;
+  }
+
+  void start() {
+    running_ = true;
+    thread_ = std::thread{[this]() { run(); }};
+  }
+
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+  void terminate() {
+    if (running_) {
+      process_.terminate();
+    }
+  }
+
+  bool running() const { return running_; }
 
  protected:
- public:
-  ~TestProcess() noexcept override = default;
+  WorkerId id_;
+  bool running_;
+  std::string cmd_;
+  bp::child process_;
+  std::thread thread_;
 };
 
 /**
@@ -409,7 +445,7 @@ class TestDriver {
     fflush(stdout);
     // start each of the workers...
     for (uint32_t j = 1; j < 5; j++) {
-      m_workers[j - 1]->doWork();
+      m_workers[j - 1]->start();
       std::this_thread::sleep_for(
           std::chrono::seconds(2));  // do not increase this to avoid precheckin
                                      // runs taking much longer.
@@ -420,9 +456,9 @@ class TestDriver {
     // kill off any children that have not yet terminated.
     for (uint32_t i = 0; i < TestState::WORKER_COUNT;) {
       auto worker = m_workers[i++];
-      if (worker->running() == 1) {
-        delete worker;  // worker destructor should terminate process.
-      }
+      worker->terminate();
+      worker->stop();
+      delete worker;  // worker destructor should terminate process.
     }
     dunit::Dunit::close();
   }
