@@ -33,24 +33,7 @@ class DummyCredentialGenerator2 : public CredentialGenerator {
  public:
   DummyCredentialGenerator2() : CredentialGenerator(ID_DUMMY2, "DUMMY2") {}
 
-  std::string getInitArgs(std::string workingDir, bool userMode) override {
-    std::string additionalArgs;
-    char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-    if (userMode) {
-      additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                       std::string(workingDir) +
-                       std::string("authz-dummyMU.xml");
-    } else {
-      additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                       std::string(workingDir) + std::string("authz-dummy.xml");
-    }
-
-    return additionalArgs;
-  }
+  std::string getInitArgs(std::string workingDir, bool userMode) override;
 
   std::string getClientAuthInitLoaderFactory() override {
     return "createUserPasswordAuthInitInstance";

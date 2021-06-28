@@ -31,11 +31,25 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Utils.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
 namespace security {
+std::string DummyCredentialGenerator3::getInitArgs(std::string workingDir,
+                                                   bool userMode) {
+  auto buildDir = Utils::getEnv("BUILDDIR");
+  if (!buildDir.empty() && workingDir.empty()) {
+    workingDir = buildDir + "/framework/xml/Security/";
+  }
+
+  auto result = " --J=-Dgemfire.security-authz-xml-uri=" + workingDir;
+  result += (userMode ? "authz-dummyMU.xml" : "authz-dummy.xml");
+  return result;
+}
+
 void DummyCredentialGenerator3::getValidCredentials(
     std::shared_ptr<Properties>& p) {
   p->insert("security-username", "user1");

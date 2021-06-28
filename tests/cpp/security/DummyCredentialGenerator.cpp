@@ -31,6 +31,8 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Utils.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -39,25 +41,17 @@ namespace security {
 
 std::string DummyCredentialGenerator::getInitArgs(std::string workingDir,
                                                   bool userMode) {
-  std::string additionalArgs;
-  char* buildDir = ACE_OS::getenv("BUILDDIR");
-  if (buildDir && workingDir.length() == 0) {
-    workingDir = std::string(buildDir);
-    workingDir += std::string("/framework/xml/Security/");
+  auto buildDir = Utils::getEnv("BUILDDIR");
+  if (!buildDir.empty() && workingDir.empty()) {
+    workingDir = buildDir + "/framework/xml/Security/";
   }
 
   BOOST_LOG_TRIVIAL(info) << "Inside dummy Credentials usermode is "
                           << userMode;
 
-  if (userMode) {
-    additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                     std::string(workingDir) + std::string("authz-dummyMU.xml");
-  } else {
-    additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                     std::string(workingDir) + std::string("authz-dummy.xml");
-  }
-
-  return additionalArgs;
+  std::string result = " --J=-Dgemfire.security-authz-xml-uri=" + workingDir;
+  result += (userMode ? "authz-dummyMU.xml" : "authz-dummy.xml");
+  return result;
 }
 
 void DummyCredentialGenerator::getValidCredentials(

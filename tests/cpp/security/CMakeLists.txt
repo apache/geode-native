@@ -52,7 +52,6 @@ target_link_libraries(security
     OpenSSL::Crypto
     OpenSSL::SSL
   PRIVATE
-    ACE::ACE
     Boost::boost
     Boost::log
     _WarningsAsError

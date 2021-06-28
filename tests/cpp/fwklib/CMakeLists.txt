@@ -42,7 +42,6 @@ target_link_libraries(framework
   PUBLIC
     apache-geode
   PRIVATE
-    ACE::ACE
     Boost::boost
     internal
     _WarningsAsError

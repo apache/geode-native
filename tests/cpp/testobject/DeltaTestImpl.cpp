@@ -79,10 +79,7 @@ void DeltaTestImpl::toData(DataOutput& output) const {
 }
 
 void DeltaTestImpl::toDelta(DataOutput& output) const {
-  {
-    std::lock_guard<decltype(mutex_)> guard{mutex_};
-    toDeltaCounter++;
-  }
+  ++toDeltaCounter;
 
   output.write(deltaBits);
   if ((deltaBits & INT_MASK) == INT_MASK) {
@@ -103,11 +100,7 @@ void DeltaTestImpl::toDelta(DataOutput& output) const {
 }
 
 void DeltaTestImpl::fromDelta(DataInput& input) {
-  {
-    std::lock_guard<decltype(mutex_)> guard{mutex_};
-    fromDeltaCounter++;
-  }
-
+  ++fromDeltaCounter;
   deltaBits = input.read();
 
   if ((deltaBits & INT_MASK) == INT_MASK) {
