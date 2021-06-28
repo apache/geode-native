@@ -16,32 +16,27 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include <ace/Task.h>
+
+#include <atomic>
 
 using apache::geode::client::Exception;
 
-class GetRegionThread : public ACE_Task_Base {
+class GetRegionThread {
  public:
-  bool m_running;
-  std::string m_path;
-  std::string m_subPath;
-  bool m_regionCreateDone;
-  bool m_subRegionCreateDone;
-  std::recursive_mutex mutex_;
   GetRegionThread(const char *path, const char *subPath)
       : m_running(false),
         m_path(path),
         m_subPath(subPath),
         m_regionCreateDone(false),
         m_subRegionCreateDone(false) {}
-  int svc(void) override {
-    while (m_running == true) {
+
+  void run() {
+    while (m_running) {
       SLEEP(40);
       try {
         auto rptr = getHelper()->getRegion(m_path.c_str());
         if (rptr != nullptr) {
-          std::lock_guard<decltype(mutex_)> guard{mutex_};
-          ASSERT(m_regionCreateDone == true, "regionCreate Not Done");
+          ASSERT(m_regionCreateDone, "regionCreate Not Done");
         }
       } catch (Exception &ex) {
         LOG(ex.what());
@@ -56,9 +51,8 @@ class GetRegionThread : public ACE_Task_Base {
       try {
         auto rptr = getHelper()->getRegion(m_subPath.c_str());
         if (rptr != nullptr) {
-          std::lock_guard<decltype(mutex_)> guard{mutex_};
-          ASSERT(m_subRegionCreateDone == true, "subRegionCreate Not Done");
-          return 0;
+          ASSERT(m_subRegionCreateDone, "subRegionCreate Not Done");
+          return;
         }
       } catch (Exception &ex) {
         LOG(ex.what());
@@ -68,24 +62,31 @@ class GetRegionThread : public ACE_Task_Base {
         LOG("getRegion: unknown exception");
       }
     }
-    return 0;
   }
-  void setRegionFlag() {
-    std::lock_guard<decltype(mutex_)> guard{mutex_};
-    m_regionCreateDone = true;
-  }
-  void setSubRegionFlag() {
-    std::lock_guard<decltype(mutex_)> guard{mutex_};
-    m_subRegionCreateDone = true;
-  }
+
+  void setRegionFlag() { m_regionCreateDone = true; }
+
+  void setSubRegionFlag() { m_subRegionCreateDone = true; }
+
   void start() {
     m_running = true;
-    activate();
+    thread_ = std::thread{[this]() { run(); }};
   }
+
   void stop() {
     m_running = false;
-    wait();
+    if (thread_.joinable()) {
+      thread_.join();
+    }
   }
+
+ protected:
+  bool m_running;
+  std::string m_path;
+  std::thread thread_;
+  std::string m_subPath;
+  std::atomic<bool> m_regionCreateDone;
+  std::atomic<bool> m_subRegionCreateDone;
 };
 
 static int numberOfLocators = 1;

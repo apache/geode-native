@@ -17,34 +17,19 @@
 
 #pragma once
 
-#ifndef GEODE_INTEGRATION_TEST_TIMEBOMB_H_
-#define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+#ifndef GEODE_INTEGRATION_TEST_CLIENT_CLEANUP_H_
+#define GEODE_INTEGRATION_TEST_CLIENT_CLEANUP_H_
 
-#include <condition_variable>
 #include <functional>
-#include <mutex>
-#include <thread>
+#include <vector>
 
-class TimeBomb {
+class ClientCleanup {
  public:
-  explicit TimeBomb(const std::chrono::milliseconds& sleep,
-                    std::function<void()> cleanup);
-
-  ~TimeBomb() noexcept;
-
-  void arm();
-  void disarm();
-
-  void run();
+  void trigger();
+  void registerCallback(std::function<void()> callback);
 
  protected:
-  bool enabled_;
-  std::mutex mutex_;
-  std::condition_variable cv_;
-
-  std::thread thread_;
-  std::function<void()> callback_;
-  std::chrono::milliseconds sleep_;
+  std::vector<std::function<void()>> callbacks_;
 };
 
-#endif  // GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+#endif  // GEODE_INTEGRATION_TEST_CLIENT_CLEANUP_H_

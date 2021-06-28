@@ -15,36 +15,22 @@
  * limitations under the License.
  */
 
-#pragma once
+#include "ClientCleanup.hpp"
 
-#ifndef GEODE_INTEGRATION_TEST_TIMEBOMB_H_
-#define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+#include <iostream>
 
-#include <condition_variable>
-#include <functional>
-#include <mutex>
-#include <thread>
+void ClientCleanup::trigger() {
+  for (auto& callback : callbacks_) {
+    try {
+      callback();
+    } catch (std::exception& e) {
+      std::clog << "Exception while executing cleanup: " << e.what()
+                << std::endl
+                << std::flush;
+    }
+  }
+}
 
-class TimeBomb {
- public:
-  explicit TimeBomb(const std::chrono::milliseconds& sleep,
-                    std::function<void()> cleanup);
-
-  ~TimeBomb() noexcept;
-
-  void arm();
-  void disarm();
-
-  void run();
-
- protected:
-  bool enabled_;
-  std::mutex mutex_;
-  std::condition_variable cv_;
-
-  std::thread thread_;
-  std::function<void()> callback_;
-  std::chrono::milliseconds sleep_;
-};
-
-#endif  // GEODE_INTEGRATION_TEST_TIMEBOMB_H_
+void ClientCleanup::registerCallback(std::function<void()> callback) {
+  callbacks_.emplace_back(callback);
+}

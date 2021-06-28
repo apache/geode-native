@@ -18,42 +18,13 @@
 #include "fw_dunit.hpp"
 
 #include <mutex>
-#include <condition_variable>
-#include <util/concurrent/spinlock_mutex.hpp>
 
-#include <ace/Task.h>
-#include <ace/Time_Value.h>
-#include <ace/Guard_T.h>
+#include "util/concurrent/binary_semaphore.hpp"
+#include "util/concurrent/spinlock_mutex.hpp"
 
 namespace {  // NOLINT(google-build-namespaces)
 
-class semaphore {
- public:
-  explicit semaphore(bool released) : released_(released) {}
-
-  void release() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    released_ = true;
-    cv_.notify_one();
-  }
-
-  void acquire() {
-    std::unique_lock<std::mutex> lock(mutex_);
-    cv_.wait(lock, [this]() { return released_; });
-    released_ = false;
-  }
-
-  semaphore& operator=(const semaphore& other) {
-    released_ = other.released_;
-    return *this;
-  }
-
- protected:
-  bool released_;
-  std::mutex mutex_;
-  std::condition_variable cv_;
-};
-
+using apache::geode::client::binary_semaphore;
 using apache::geode::util::concurrent::spinlock_mutex;
 
 DUNIT_TASK(s1p1, Basic)
@@ -63,56 +34,86 @@ DUNIT_TASK(s1p1, Basic)
   }
 END_TASK(Basic)
 
-semaphore triggerA{0};
-semaphore triggerB{0};
-semaphore triggerM{0};
-
 spinlock_mutex lock;
 std::chrono::steady_clock::time_point btime;
 
-class ThreadA : public ACE_Task_Base {
+class ThreadA {
  public:
-  ThreadA() : ACE_Task_Base() {}
+  ThreadA(binary_semaphore& triggerA, binary_semaphore& triggerM)
+      : triggerA_{triggerA}, triggerM_{triggerM} {}
 
-  int svc() override {
-    {
-      std::lock_guard<spinlock_mutex> lk(lock);
-      LOG("ThreadA: Acquired lock x.");
-      triggerM.release();
-      triggerA.acquire();
-    }
-    LOG("ThreadA: Released lock.");
-    return 0;
+  ~ThreadA() { stop(); }
+
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
   }
+
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+ protected:
+  void run() {
+    std::lock_guard<spinlock_mutex> lk(lock);
+    LOG("ThreadA: Acquired lock x.");
+    triggerM_.release();
+    triggerA_.acquire();
+
+    LOG("ThreadA: Released lock.");
+  }
+
+ protected:
+  std::thread thread_;
+  binary_semaphore& triggerA_;
+  binary_semaphore& triggerM_;
 };
 
-class ThreadB : public ACE_Task_Base {
+class ThreadB {
  public:
-  ThreadB() : ACE_Task_Base() {}
+  ThreadB(binary_semaphore& triggerB, binary_semaphore& triggerM)
+      : triggerB_{triggerB}, triggerM_{triggerM} {}
 
-  int svc() override {
-    triggerB.acquire();
-    {
-      std::lock_guard<spinlock_mutex> lk(lock);
-      btime = std::chrono::steady_clock::now();
-      LOG("ThreadB: Acquired lock.");
-      triggerM.release();
-    }
-    return 0;
+  ~ThreadB() { stop(); }
+
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
   }
+
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+ protected:
+  void run() {
+    triggerB_.acquire();
+
+    std::lock_guard<spinlock_mutex> lk(lock);
+    btime = std::chrono::steady_clock::now();
+    LOG("ThreadB: Acquired lock.");
+    triggerM_.release();
+  }
+
+ protected:
+  std::thread thread_;
+  binary_semaphore& triggerB_;
+  binary_semaphore& triggerM_;
 };
 
 DUNIT_TASK(s1p1, TwoThreads)
   {
-    triggerA = semaphore{0};
-    triggerB = semaphore{0};
-    triggerM = semaphore{0};
+    binary_semaphore triggerA{0};
+    binary_semaphore triggerB{0};
+    binary_semaphore triggerM{0};
 
-    ThreadA* threadA = new ThreadA();
-    ThreadB* threadB = new ThreadB();
+    ThreadA threadA{triggerA, triggerM};
+    ThreadB threadB{triggerB, triggerM};
 
-    threadA->activate();
-    threadB->activate();
+    threadA.start();
+    threadB.start();
 
     // A runs, locks the spinlock, and triggers me. B is idle.
     triggerM.acquire();
@@ -130,18 +131,15 @@ DUNIT_TASK(s1p1, TwoThreads)
     auto delta =
         std::chrono::duration_cast<std::chrono::milliseconds>(btime - stime)
             .count();
-    std::string msg = "acquire delay was " + std::to_string(delta);
 
-    LOG(msg);
+    LOG("acquire delay was " + std::to_string(delta));
     ASSERT(delta >= 4900, "Expected 5 second or more spinlock delay");
     // Note the test is against 4900 instead of 5000 as there are some
     // measurement
     // issues. Often delta comes back as 4999 on linux.
 
-    threadA->wait();
-    delete threadA;
-    threadB->wait();
-    delete threadB;
+    threadA.stop();
+    threadB.stop();
   }
 END_TASK(TwoThreads)
 

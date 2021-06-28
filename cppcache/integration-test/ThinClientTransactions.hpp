@@ -21,11 +21,9 @@
 #define GEODE_INTEGRATION_TEST_THINCLIENTTRANSACTIONS_H_
 
 #include "fw_dunit.hpp"
-#include <ace/Auto_Event.h>
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 
 #include <string>
+
 #include <geode/TransactionId.hpp>
 #include <geode/CacheTransactionManager.hpp>
 
@@ -33,9 +31,11 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "CacheHelper.hpp"
+#include "util/concurrent/binary_semaphore.hpp"
 
 namespace {  // NOLINT(google-build-namespaces)
 
+using apache::geode::client::binary_semaphore;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheHelper;
@@ -367,79 +367,70 @@ const bool NO_ACK = false;
 #define THREADERRORCHECK(x, y) \
   do {                         \
     if (!(x)) {                \
-      m_isFailed = true;       \
-      sprintf(m_error, y);     \
-      return -1;               \
+      failed_ = true;          \
+      error_ = y;              \
+      return;                  \
     }                          \
   } while (0)
 
-class SuspendTransactionThread : public ACE_Task_Base {
- private:
-  TransactionId* m_suspendedTransaction;
-  bool m_sleep;
-  ACE_Auto_Event* m_txEvent;
-
+class SuspendTransactionThread {
  public:
-  SuspendTransactionThread(bool sleep, ACE_Auto_Event* txEvent)
-      : m_suspendedTransaction(nullptr), m_sleep(sleep), m_txEvent(txEvent) {}
+  SuspendTransactionThread(bool sleep, binary_semaphore& event)
+      : sleep_{sleep}, sem_{event} {}
 
-  int svc(void) override {
-    char buf[1024];
-    sprintf(buf, " In SuspendTransactionThread");
-    LOG(buf);
+  void run() {
+    LOG(" In SuspendTransactionThread");
+    auto txm = getHelper()->getCache()->getCacheTransactionManager();
 
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-
-    txManager->begin();
-
+    txm->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
 
-    m_suspendedTransaction = &txManager->getTransactionId();
+    tx_ = &txm->getTransactionId();
 
-    if (m_sleep) {
-      m_txEvent->wait();
-      std::this_thread::sleep_for(std::chrono::seconds(5));
+    if (sleep_) {
+      sem_.acquire();
+
+      std::this_thread::sleep_for(std::chrono::seconds{5});
     }
 
-    m_suspendedTransaction = &txManager->suspend();
-    sprintf(buf, " Out SuspendTransactionThread");
-    LOG(buf);
+    tx_ = &txm->suspend();
+    LOG(" Out SuspendTransactionThread");
 
     getHelper()
         ->getCache()
         ->getPoolManager()
         .find("__TESTPOOL1_")
         ->releaseThreadLocalConnection();
-
-    return 0;
   }
-  void start() { activate(); }
-  void stop() { wait(); }
-  TransactionId& getSuspendedTx() { return *m_suspendedTransaction; }
+
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
+  }
+
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+  TransactionId& getSuspendedTx() { return *tx_; }
+
+ protected:
+  bool sleep_;
+  std::thread thread_;
+  binary_semaphore& sem_;
+  TransactionId* tx_{nullptr};
 };
-class ResumeTransactionThread : public ACE_Task_Base {
- private:
-  TransactionId& m_suspendedTransaction;
-  bool m_commit;
-  bool m_tryResumeWithSleep;
-  bool m_isFailed;
-  char m_error[256];
-  ACE_Auto_Event* m_txEvent;
 
+class ResumeTransactionThread {
  public:
-  ResumeTransactionThread(TransactionId& suspendedTransaction, bool commit,
-                          bool tryResumeWithSleep, ACE_Auto_Event* txEvent)
-      : m_suspendedTransaction(suspendedTransaction),
-        m_commit(commit),
-        m_tryResumeWithSleep(tryResumeWithSleep),
-        m_isFailed(false),
-        m_txEvent(txEvent) {}
+  ResumeTransactionThread(TransactionId& tx, bool commit, bool sleep,
+                          binary_semaphore& event)
+      : tx_(tx), commit_{commit}, sleep_(sleep), failed_{false}, sem_{event} {}
 
-  int svc(void) override {
-    char buf[1024];
-    sprintf(buf, "In ResumeTransactionThread");
-    LOG(buf);
+  void run() {
+    LOG("In ResumeTransactionThread");
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     THREADERRORCHECK(regPtr0 != nullptr,
@@ -461,26 +452,26 @@ class ResumeTransactionThread : public ACE_Task_Base {
                      "In ResumeTransactionThread - Key should not have been "
                      "found in region.");
 
-    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
-    if (m_tryResumeWithSleep) {
-      THREADERRORCHECK(!txManager->isSuspended(m_suspendedTransaction),
+    auto txm = getHelper()->getCache()->getCacheTransactionManager();
+    if (sleep_) {
+      THREADERRORCHECK(!txm->isSuspended(tx_),
                        "In ResumeTransactionThread - the transaction should "
                        "NOT be in suspended state");
     } else {
-      THREADERRORCHECK(txManager->isSuspended(m_suspendedTransaction),
+      THREADERRORCHECK(txm->isSuspended(tx_),
                        "In ResumeTransactionThread - the transaction should be "
                        "in suspended state");
     }
 
     THREADERRORCHECK(
-        txManager->exists(m_suspendedTransaction),
+        txm->exists(tx_),
         "In ResumeTransactionThread - the transaction should exist");
 
-    if (m_tryResumeWithSleep) {
-      m_txEvent->signal();
-      txManager->tryResume(m_suspendedTransaction, std::chrono::seconds(30));
+    if (sleep_) {
+      sem_.release();
+      txm->tryResume(tx_, std::chrono::seconds(30));
     } else {
-      txManager->resume(m_suspendedTransaction);
+      txm->resume(tx_);
     }
 
     THREADERRORCHECK(
@@ -492,8 +483,8 @@ class ResumeTransactionThread : public ACE_Task_Base {
 
     createEntry(regionNames[1], keys[6], vals[6]);
 
-    if (m_commit) {
-      txManager->commit();
+    if (commit_) {
+      txm->commit();
       THREADERRORCHECK(
           regPtr0->containsKeyOnServer(keyPtr4),
           "In ResumeTransactionThread - Key should have been found in region.");
@@ -505,7 +496,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
           "In ResumeTransactionThread - Key should have been found in region.");
 
     } else {
-      txManager->rollback();
+      txm->rollback();
       THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
                        "In ResumeTransactionThread - Key should not have been "
                        "found in region.");
@@ -517,7 +508,7 @@ class ResumeTransactionThread : public ACE_Task_Base {
                        "found in region.");
     }
 
-    if (m_commit) {
+    if (commit_) {
       regPtr1->destroy(keyPtr6);
       regPtr1->destroy(keyPtr5);
       regPtr0->destroy(keyPtr4);
@@ -551,19 +542,38 @@ class ResumeTransactionThread : public ACE_Task_Base {
         LOG("Got expected EntryNotFoundException for keyPtr4");
       }
     }
+
     getHelper()
         ->getCache()
         ->getPoolManager()
         .find("__TESTPOOL1_")
         ->releaseThreadLocalConnection();
-    sprintf(buf, " Out ResumeTransactionThread");
-    LOG(buf);
-    return 0;
+    LOG(" Out ResumeTransactionThread");
   }
-  void start() { activate(); }
-  void stop() { wait(); }
-  bool isFailed() { return m_isFailed; }
-  char* getError() { return m_error; }
+
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
+  }
+
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+  bool isFailed() { return failed_; }
+
+  std::string getError() { return error_; }
+
+ protected:
+  TransactionId& tx_;
+  bool commit_;
+  bool sleep_;
+  bool failed_;
+  std::string error_;
+
+  std::thread thread_;
+  binary_semaphore& sem_;
 };
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
@@ -784,86 +794,79 @@ DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeRollback)
 END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, SuspendResumeInThread)
   {
-    // start suspend thread  and resume thread and rollback immedidately
-    char buf[1024];
-    sprintf(
-        buf,
-        "start suspend thread  and resume thread and rollback immedidately");
-    LOG(buf);
-    ACE_Auto_Event txEvent;
+    LOG("Start suspend thread and resume thread and rollback immedidately");
 
-    SuspendTransactionThread* suspendTh =
-        new SuspendTransactionThread(false, &txEvent);
-    suspendTh->activate();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    ResumeTransactionThread* resumeTh = new ResumeTransactionThread(
-        suspendTh->getSuspendedTx(), false, false, &txEvent);
-    resumeTh->activate();
+    {
+      binary_semaphore event{0};
+      SuspendTransactionThread suspend{false, event};
+      suspend.start();
 
-    suspendTh->wait();
-    delete suspendTh;
-    resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
-    delete resumeTh;
+      std::this_thread::sleep_for(std::chrono::seconds{2});
+      ResumeTransactionThread resume{suspend.getSuspendedTx(), false, false,
+                                     event};
+      resume.start();
 
-    // start suspend thread  and resume thread and commit immedidately
-    sprintf(buf,
-            "start suspend thread  and resume thread and commit immedidately");
-    LOG(buf);
-    suspendTh = new SuspendTransactionThread(false, &txEvent);
-    suspendTh->activate();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    resumeTh = new ResumeTransactionThread(suspendTh->getSuspendedTx(), true,
-                                           false, &txEvent);
-    resumeTh->activate();
+      suspend.stop();
+      resume.stop();
 
-    suspendTh->wait();
-    delete suspendTh;
-    resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
-    delete resumeTh;
+      ASSERT(!resume.isFailed(), resume.getError());
+    }
 
-    // start suspend thread  and tryresume thread with rollback. make tryResume
-    // to
-    // sleep
-    sprintf(buf,
-            "start suspend thread  and tryresume thread with rollback. make "
-            "tryResume to sleep");
-    LOG(buf);
-    suspendTh = new SuspendTransactionThread(true, &txEvent);
-    suspendTh->activate();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    resumeTh = new ResumeTransactionThread(suspendTh->getSuspendedTx(), false,
-                                           true, &txEvent);
-    resumeTh->activate();
+    LOG("Start suspend thread  and resume thread and commit immedidately");
 
-    suspendTh->wait();
-    delete suspendTh;
-    resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
-    delete resumeTh;
+    {
+      binary_semaphore event{0};
+      SuspendTransactionThread suspend{false, event};
 
-    // start suspend thread  and tryresume thread with commit. make tryResume to
-    // sleep
-    sprintf(buf,
-            "start suspend thread  and tryresume thread with commit. make "
-            "tryResume to sleep");
-    LOG(buf);
-    suspendTh = new SuspendTransactionThread(true, &txEvent);
-    suspendTh->activate();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    sprintf(buf, "suspendTh->activate();");
-    LOG(buf);
+      suspend.start();
+      std::this_thread::sleep_for(std::chrono::seconds{2});
+      ResumeTransactionThread resume{suspend.getSuspendedTx(), true, false,
+                                     event};
+      resume.start();
 
-    resumeTh = new ResumeTransactionThread(suspendTh->getSuspendedTx(), true,
-                                           true, &txEvent);
-    resumeTh->activate();
+      suspend.stop();
+      resume.stop();
+      ASSERT(!resume.isFailed(), resume.getError());
+    }
 
-    suspendTh->wait();
-    delete suspendTh;
-    resumeTh->wait();
-    ASSERT(!resumeTh->isFailed(), resumeTh->getError());
-    delete resumeTh;
+    LOG("Start suspend thread  and tryresume thread with rollback. make "
+        "tryResume to sleep");
+    {
+      binary_semaphore event{0};
+      SuspendTransactionThread suspend{true, event};
+      suspend.start();
+
+      std::this_thread::sleep_for(std::chrono::seconds{2});
+      ResumeTransactionThread resume{suspend.getSuspendedTx(), false, true,
+                                     event};
+      resume.start();
+
+      suspend.stop();
+      resume.stop();
+
+      ASSERT(!resume.isFailed(), resume.getError());
+    }
+
+    LOG("Start suspend thread  and tryresume thread with commit. make "
+        "tryResume to sleep");
+
+    {
+      binary_semaphore event{0};
+      SuspendTransactionThread suspend{true, event};
+      suspend.start();
+
+      std::this_thread::sleep_for(std::chrono::seconds{2});
+      LOG("suspendTh->activate();");
+
+      ResumeTransactionThread resume{suspend.getSuspendedTx(), true, true,
+                                     event};
+      resume.start();
+
+      suspend.stop();
+      resume.stop();
+
+      ASSERT(!resume.isFailed(), resume.getError());
+    }
   }
 END_TASK_DEFINITION
 

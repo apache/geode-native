@@ -44,6 +44,9 @@
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
+#include "Utils.hpp"
+
+namespace bp = boost::process;
 namespace bip = boost::interprocess;
 
 static std::string g_programName;
@@ -739,15 +742,17 @@ void log(std::string s, int lineno, const char * /*filename*/) {
             << std::flush;
 }
 
-void cleanup() { gClientCleanup.callClientCleanup(); }
-
 int dmain(int argc, char *argv[]) {
+  using apache::geode::client::Utils;
+
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
   setupCRTOutput();
-  TimeBomb tb(&cleanup);
-  // tb->arm(); // leak this on purpose.
+  auto timebomb = std::chrono::seconds{std::stoi(Utils::getEnv("TIMEBOMB"))};
+  TimeBomb tb(timebomb, []() { gClientCleanup.trigger(); });
+  tb.arm();
+
   try {
     g_programName = argv[0];
     const ACE_TCHAR options[] = ACE_TEXT("s:m:");
@@ -796,7 +801,7 @@ int dmain(int argc, char *argv[]) {
     }
     printf("final worker id %d, result %d\n", workerId, result);
     printf("before calling cleanup %d \n", workerId);
-    gClientCleanup.callClientCleanup();
+    gClientCleanup.trigger();
     printf("after calling cleanup\n");
     return result;
 
@@ -813,7 +818,7 @@ int dmain(int argc, char *argv[]) {
     fflush(stdout);
   }
 
-  gClientCleanup.callClientCleanup();
+  gClientCleanup.trigger();
   return 1;
 }
 

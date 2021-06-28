@@ -44,17 +44,16 @@ const char *poolName1 = "clientPool";
 const char *serverGroup = "ServerGroup1";
 std::shared_ptr<Cache> cachePtr;
 
-class putThread : public ACE_Task_Base {
- private:
-  std::shared_ptr<Region> regPtr;
-
+class PutThread {
  public:
-  explicit putThread(const char *name) : regPtr(getHelper()->getRegion(name)) {}
+  explicit PutThread() : regPtr{nullptr} {}
+  explicit PutThread(const std::string &name)
+      : regPtr{getHelper()->getRegion(name)} {}
 
-  int svc(void) override {
+  void run() {
     // TODO: No. of connection should be = minConnection
 
-    for (int i = 0; i < 10000; i++) {
+    for (auto i = 0; i < 10000; ++i) {
       try {
         regPtr->put(keys[i % 5], vals[i % 6]);
       } catch (const Exception &) {
@@ -64,11 +63,23 @@ class putThread : public ACE_Task_Base {
       }
       // TODO: Check no. of connection > minConnetion
     }
-    // LOG(" Incremented 100 times by thread.");
-    return 0;
   }
-  void start() { activate(); }
+
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
+  }
+
+  void wait() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
   void stop() { wait(); }
+
+ protected:
+  std::shared_ptr<Region> regPtr;
+  std::thread thread_;
 };
 
 void doAttrTestingAndCreatePool(const char *poolNameToUse) {
@@ -271,10 +282,10 @@ DUNIT_TASK(CLIENT1, ClientOp)
             min, level);
     ASSERT(level == min, logmsg);
 
-    putThread *threads[25];
+    PutThread threads[25];
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
-      threads[thdIdx] = new putThread(poolRegNames[0]);
-      threads[thdIdx]->start();
+      threads[thdIdx] = PutThread(poolRegNames[0]);
+      threads[thdIdx].start();
     }
 
     SLEEP(5000);  // wait for threads to become active
@@ -292,7 +303,7 @@ DUNIT_TASK(CLIENT1, ClientOp)
     ASSERT(level == max, logmsg);
 
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
-      threads[thdIdx]->stop();
+      threads[thdIdx].stop();
     }
 
     // Milli second sleep: IdleTimeout is 5 sec, load conditioning

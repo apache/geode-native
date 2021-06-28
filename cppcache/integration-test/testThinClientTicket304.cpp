@@ -25,7 +25,7 @@
 
 // This is the test for tracking work. bug#304
 
-putThread *thread1 = nullptr;
+PutThread *thread1 = nullptr;
 
 void createAuthzRegion() {
   initCredentialGenerator();
@@ -86,7 +86,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestAllOnClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr, true);
+    thread1 = new PutThread(rptr, true);
     thread1->start();
     LOG("RegisterInterest started on client 2");
   }
@@ -122,7 +122,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterInterestKeysOnClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr);
+    thread1 = new PutThread(rptr);
     thread1->setParams(5, 3, 1);
     thread1->start();
     LOG("RegisterInterestKeys started on client 2");
@@ -131,7 +131,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, RegisterRegexClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr);
+    thread1 = new PutThread(rptr);
     thread1->setParams(6, 3, 1);
     thread1->start();
     LOG("RegisterRegex started on client 2");

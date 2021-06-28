@@ -25,8 +25,8 @@
 
 // This is the test for tracking work.
 
-putThread *thread1 = nullptr;
-putThread *thread2 = nullptr;
+PutThread *thread1 = nullptr;
+PutThread *thread2 = nullptr;
 
 void createAuthzRegion() {
   initCredentialGenerator();
@@ -93,7 +93,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr);
+    thread1 = new PutThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
     LOG("PutOnClient1 completed");
@@ -102,7 +102,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutOnClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread2 = new putThread(rptr);
+    thread2 = new PutThread(rptr);
     thread2->setParams(0, 1, 1);
     thread2->start();
     thread2->stop();
@@ -136,7 +136,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, DestroyOnClient1)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr);
+    thread1 = new PutThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
     LOG("DestroyOnClient1 completed");
@@ -145,7 +145,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, DestroyOnClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread2 = new putThread(rptr);
+    thread2 = new PutThread(rptr);
     thread2->setParams(2, 1, 1);
     thread2->start();
     thread2->stop();
@@ -178,7 +178,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutTrackedMapOnClient1)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread1 = new putThread(rptr);
+    thread1 = new PutThread(rptr);
     thread1->setParams(0, 1, 1, true);
     thread1->start();
     LOG("PutTrackedMapOnClient1 completed");
@@ -187,7 +187,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutTrackedMapOnClient2)
   {
     auto rptr = getHelper()->getRegion(regionNamesAuth[0]);
-    thread2 = new putThread(rptr);
+    thread2 = new PutThread(rptr);
     thread2->setParams(0, 10, 1, false, true);
     thread2->start();
     thread2->stop();

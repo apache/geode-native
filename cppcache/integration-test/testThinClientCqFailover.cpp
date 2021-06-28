@@ -88,29 +88,23 @@ class MyCqListener : public CqListener {
   void close() override { LOG("MyCqListener::close called"); }
 };
 
-class KillServerThread : public ACE_Task_Base {
+class KillServerThread {
  public:
-  bool m_running;
-  MyCqListener *m_listener;
-  explicit KillServerThread(MyCqListener *listener)
-      : m_running(false), m_listener(listener) {}
-  int svc(void) override {
-    while (m_running == true) {
+  void start() {
+    thread_ = std::thread{[]() {
       CacheHelper::closeServer(1);
       LOG("THREAD CLOSED SERVER 1");
-      // m_listener->setFailedOver();
-      m_running = false;
-    }
-    return 0;
+    }};
   }
-  void start() {
-    m_running = true;
-    activate();
-  }
+
   void stop() {
-    m_running = false;
-    wait();
+    if (thread_.joinable()) {
+      thread_.join();
+    }
   }
+
+ protected:
+  std::thread thread_;
 };
 
 void initClientCq(const bool isthinClient) {
@@ -295,7 +289,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     ASSERT(cqLstner != nullptr, "listener is nullptr");
     auto myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
-    kst = new KillServerThread(myListener);
+    kst = new KillServerThread();
     char buf[1024];
     sprintf(buf, "before kill server 1, before=%d, after=%d",
             myListener->getCountBefore(), myListener->getCountAfter());

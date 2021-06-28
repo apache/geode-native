@@ -50,26 +50,23 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::QueryService;
 using apache::geode::client::SelectResults;
 
-class KillServerThread : public ACE_Task_Base {
+class KillServerThread {
  public:
-  bool m_running;
-  KillServerThread() : m_running(false) {}
-  int svc(void) override {
-    while (m_running == true) {
+  void start() {
+    thread_ = std::thread{[]() {
       CacheHelper::closeServer(1);
       LOG("THREAD CLOSED SERVER 1");
-      m_running = false;
-    }
-    return 0;
+    }};
   }
-  void start() {
-    m_running = true;
-    activate();
-  }
+
   void stop() {
-    m_running = false;
-    wait();
+    if (thread_.joinable()) {
+      thread_.join();
+    }
   }
+
+ protected:
+  std::thread thread_;
 };
 
 bool isLocator = false;
