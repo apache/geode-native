@@ -18,13 +18,14 @@
 #include "ClientProxyMembershipIDFactory.hpp"
 
 #include <algorithm>
-#include <iterator>
 #include <random>
 
-#include <boost/asio/ip/host_name.hpp>
+#include <boost/asio.hpp>
 #include <boost/process/environment.hpp>
 
 #include "util/Log.hpp"
+
+namespace bip = boost::asio::ip;
 
 namespace apache {
 namespace geode {
@@ -56,8 +57,13 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(
     const std::string& durableClientId,
     const std::chrono::seconds durableClntTimeOut) {
-  const auto hostname = boost::asio::ip::host_name();
-  const ACE_INET_Addr address("", hostname.c_str(), "tcp");
+  auto hostname = bip::host_name();
+
+  boost::asio::io_service svc;
+  bip::tcp::resolver resolver{svc};
+  auto results = resolver.resolve(hostname, "0");
+  auto address = results->endpoint().address();
+
   return std::unique_ptr<ClientProxyMembershipID>(
       new ClientProxyMembershipID(dsName_, randString_, hostname, address, 0,
                                   durableClientId, durableClntTimeOut));

@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <ace/INET_Addr.h>
+#include <boost/asio.hpp>
 
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
@@ -46,8 +46,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
                           const std::string& hostname,
-                          const ACE_INET_Addr& address, uint32_t hostPort,
-                          const std::string& durableClientId,
+                          const boost::asio::ip::address& address,
+                          uint32_t hostPort, const std::string& durableClientId,
                           const std::chrono::seconds durableClientTimeOut =
                               std::chrono::seconds::zero());
 
@@ -73,7 +73,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
-  void initHostAddressVector(const ACE_INET_Addr& address);
+  void initHostAddressVector(const boost::asio::ip::address& address);
 
   void initHostAddressVector(const uint8_t* hostAddr, uint32_t hostAddrLen);
 

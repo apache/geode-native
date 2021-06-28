@@ -51,7 +51,7 @@ ClientProxyMembershipID::~ClientProxyMembershipID() noexcept = default;
 
 ClientProxyMembershipID::ClientProxyMembershipID(
     std::string dsName, std::string randString, const std::string& hostname,
-    const ACE_INET_Addr& address, uint32_t hostPort,
+    const boost::asio::ip::address& address, uint32_t hostPort,
     const std::string& durableClientId,
     const std::chrono::seconds durableClientTimeOut) {
   auto vmPID = boost::this_process::get_id();
@@ -77,21 +77,13 @@ ClientProxyMembershipID::ClientProxyMembershipID(
 }
 
 void ClientProxyMembershipID::initHostAddressVector(
-    const ACE_INET_Addr& address) {
-  if (address.get_type() == AF_INET6) {
-    const auto socketAddress6 =
-        static_cast<const struct sockaddr_in6*>(address.get_addr());
-    auto socketAddress =
-        reinterpret_cast<const uint8_t*>(&socketAddress6->sin6_addr);
-    auto length = sizeof(socketAddress6->sin6_addr);
-    m_hostAddr.assign(socketAddress, socketAddress + length);
+    const boost::asio::ip::address& address) {
+  if (address.is_v6()) {
+    auto bytes = address.to_v6().to_bytes();
+    m_hostAddr.assign(bytes.begin(), bytes.end());
   } else {
-    const auto socketAddress4 =
-        static_cast<const struct sockaddr_in*>(address.get_addr());
-    auto ipAddress =
-        reinterpret_cast<const uint8_t*>(&socketAddress4->sin_addr);
-    auto length = sizeof(socketAddress4->sin_addr);
-    m_hostAddr.assign(ipAddress, ipAddress + length);
+    auto bytes = address.to_v4().to_bytes();
+    m_hostAddr.assign(bytes.begin(), bytes.end());
   }
 }
 

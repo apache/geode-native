@@ -156,7 +156,7 @@ class APACHE_GEODE_EXPORT Utils {
   static void parseEndpointString(const char* endpoints, std::string& host,
                                   uint16_t& port);
 
-  static std::string convertHostToCanonicalForm(const char* endpoints);
+  static std::string convertHostToCanonicalForm(const std::string& endpoints);
 
   static std::string getSystemInfo();
 
