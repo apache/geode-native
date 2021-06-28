@@ -13,16 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( sqlite VERSION 3340100 LANGUAGES NONE )
+project( sqlite VERSION 3350500 LANGUAGES NONE )
 
-set( SHA256 e0b1c0345fe4338b936e17da8e1bd88366cd210e576834546977f040c12a8f68 )
+set( HASH SHA3_256=8175cba8e28c2274aa6f8305076116622a4ecb7829673b92290dc047fba9bba6 )
 
 
 set( EXTERN ${PROJECT_NAME}-extern )
 include(ExternalProject)
 ExternalProject_Add( ${EXTERN}
   URL "https://www.sqlite.org/2021/sqlite-amalgamation-${PROJECT_VERSION}.zip"
-  URL_HASH SHA256=${SHA256}
+  URL_HASH ${HASH}
   UPDATE_COMMAND ""
   CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=$<CONFIG>

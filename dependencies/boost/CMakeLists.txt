@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(boost VERSION 1.75.0 LANGUAGES NONE)
+project(boost VERSION 1.76.0 LANGUAGES NONE)
 
-set(SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a)
+set(HASH SHA256=7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca)
 
 if (WIN32)
   set(BOOTSTRAP_COMMAND ./bootstrap.bat)
@@ -78,7 +78,7 @@ include(ExternalProject)
 ExternalProject_Add(${EXTERN}
    URL "https://boostorg.jfrog.io/artifactory/main/release/${PROJECT_VERSION}/source/boost_${_VERSION_UNDERSCORE}.tar.gz"
        "https://sourceforge.net/projects/boost/files/boost/${PROJECT_VERSION}/boost_${_VERSION_UNDERSCORE}.tar.gz/download"
-   URL_HASH SHA256=${SHA256}
+   URL_HASH ${HASH}
    UPDATE_COMMAND ""
    BUILD_IN_SOURCE 1
    CONFIGURE_COMMAND ${BOOTSTRAP_COMMAND} ${BOOTSTRAP_FLAGS}

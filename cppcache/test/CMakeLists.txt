@@ -78,6 +78,12 @@ if (MSVC)
   target_compile_options(apache-geode_unittests PRIVATE "/MD$<$<CONFIG:Debug>:d>")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  target_compile_options(apache-geode_unittests PRIVATE
+    -Wno-used-but-marked-unused # GTest uses unused attribute incorrectly
+  )
+endif()
+
 target_link_libraries(apache-geode_unittests
   PRIVATE
     apache-geode-static

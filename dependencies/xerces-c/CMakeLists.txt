@@ -30,7 +30,7 @@ string(APPEND CMAKE_C_FLAGS " -w")
 string(APPEND CMAKE_CXX_FLAGS " -w")
 
 ExternalProject_Add( ${PROJECT_NAME}-extern
-  URL "http://archive.apache.org/dist/xerces/c/3/sources/xerces-c-${PROJECT_VERSION}.tar.gz"
+  URL "https://www.apache.org/dyn/closer.lua/xerces/c/3/sources/xerces-c-${PROJECT_VERSION}.tar.gz?action=download"
   URL_HASH SHA256=${SHA256}
   UPDATE_COMMAND ""
   CMAKE_ARGS
