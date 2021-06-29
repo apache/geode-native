@@ -116,6 +116,10 @@ def read_cacheable(message_bytes, offset):
         # and if you read 1 byte of payload like it says to you'll blow the
         # message parse.
         value["Value"] = "<<null>>"
+    elif value["DSCode"] == "PDX":
+        value["Value"] = "<<Unreadable - no type info available in gnmsg>>"
+        # This is here for completion, but not actually necessary.
+        offset = len(message_bytes)
     else:
         raise Exception("Unknown DSCode")
 
