@@ -63,7 +63,7 @@ std::string getXmlPath() {
   const char* path = std::getenv("TESTSRC");
   ASSERT(path != nullptr,
          "Environment variable TESTSRC for test source directory is not set.");
-  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
+  memcpy(xmlPath, path, strlen(path) - strlen("cppcache"));
   strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
   return std::string(xmlPath);
 }
