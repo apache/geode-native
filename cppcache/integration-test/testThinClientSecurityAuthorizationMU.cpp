@@ -65,13 +65,15 @@ std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 const char *exFuncNameSendException = "executeFunction_SendException";
 
 std::string getXmlPath() {
-  char xmlPath[1000] = {'\0'};
-  const char *path = std::getenv("TESTSRC");
-  ASSERT(path != nullptr,
+  std::string path = std::string(std::getenv("TESTSRC"));
+
+  int indexOfCppcache = path.find("cppcache");
+  std::string xmlPath = path.substr(0, indexOfCppcache);
+  xmlPath += "xml/Security/";
+
+  ASSERT(path != "",
          "Environment variable TESTSRC for test source directory is not set.");
-  memcpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
-  return std::string(xmlPath);
+  return xmlPath;
 }
 
 void initCredentialGenerator() {

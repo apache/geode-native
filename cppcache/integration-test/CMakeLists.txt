@@ -205,7 +205,7 @@ set_tests_properties(
     testThinClientPoolAttrTest
     testThinClientPoolLocator
     testThinClientPoolRedundancy
-    testThinClientSecurityAuthentication
+    #testThinClientSecurityAuthentication
     testThinClientSecurityAuthenticationMU
     testThinClientSecurityAuthorization
     testThinClientSecurityAuthorizationMU
