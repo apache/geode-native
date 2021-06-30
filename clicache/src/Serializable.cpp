@@ -397,7 +397,7 @@ namespace Apache
       {
         std::shared_ptr<native::CacheableString> cStr;
         if (value) {
-          cStr = native::CacheableString::create(marshal_as<std::string>(value));
+          cStr = native::CacheableString::create(marshal_as<std::wstring>(value));
         }
         else {
           cStr = std::dynamic_pointer_cast<native::CacheableString>(native::CacheableString::createDeserializable());
