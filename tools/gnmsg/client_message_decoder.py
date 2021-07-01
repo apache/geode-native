@@ -77,12 +77,21 @@ class ClientMessageDecoder(DecoderBase):
             "USER_CREDENTIAL_MESSAGE",
         ]
 
-    def get_send_trace_parts_v911(self, line, parts):
-        result = False
-        expression = re.compile(
+        self.security_trace_expression_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+        )
+
+        self.send_trace_expression_v911_ = re.compile(
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d| ]+)"
         )
-        match = expression.search(line)
+
+        self.send_trace_expression_base_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+        )
+
+    def get_send_trace_parts_v911(self, line, parts):
+        result = False
+        match = self.send_trace_expression_v911_.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             # TODO: Revisit parsing TID here if we ever see a v9 client log again
@@ -95,10 +104,7 @@ class ClientMessageDecoder(DecoderBase):
 
     def get_send_trace_parts_base(self, line, parts):
         result = False
-        expression = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
-        )
-        match = expression.search(line)
+        match = self.send_trace_expression_base_.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
@@ -124,17 +130,16 @@ class ClientMessageDecoder(DecoderBase):
 
     def get_add_security_trace_parts(self, line, parts):
         result = False
-        expression = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
-        )
-        match = expression.search(line)
-        if match:
-            parts.append(parser.parse(match.group(1)))
-            parts.append(match.group(2))
-            parts.append(match.group(3))
-            parts.append(match.group(4))
-            parts.append(match.group(5))
-            result = True
+
+        if "addSec" in line:
+            match = self.security_trace_expression_.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                parts.append(match.group(4))
+                parts.append(match.group(5))
+                result = True
 
         return result
 
@@ -191,11 +196,17 @@ class ClientMessageDecoder(DecoderBase):
     def request_requires_security_footer(self, message_type):
         return message_type in self.message_requires_security_part
 
+    def is_candidate_line(self, line):
+        return "TcrMess" in line or "TcrConn" in line
+
     def process_line(self, line):
         connection = None
         is_send_trace = False
         is_add_security_trace = False
         send_trace = {}
+
+        if not self.is_candidate_line(line):
+            return
 
         parts = []
         if self.get_send_trace_parts(line, parts):
