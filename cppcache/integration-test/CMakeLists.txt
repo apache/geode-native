@@ -205,9 +205,6 @@ set_tests_properties(
     testThinClientPoolLocator
     testThinClientPoolRedundancy
     testThinClientSecurityPostAuthorization
-    testThinClientTicket303
-    testThinClientTicket304
-    testThinClientTracking
   PROPERTIES
     DISABLED TRUE
 )
