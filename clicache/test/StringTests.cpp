@@ -15,35 +15,31 @@
  * limitations under the License.
  */
 
-#include "Serializable.hpp"
-#include <geode/CacheableString.hpp>
+#include "String.hpp"
 
 using namespace System;
-using namespace System::Text;
-using namespace System::Collections::Generic;
 using namespace Microsoft::VisualStudio::TestTools::UnitTesting;
-
-using Apache::Geode::Client::Serializable;
+using namespace Apache::Geode::Client;
 
 [TestClass]
-public ref class SerializableTests
+public ref class StringTests
 {
 public: 
 
   [TestMethod]
-  void GetCacheableStringHandlesNonAsciiCharacters()
+  void to_uft8FromStringHandlesNonAscii()
   {
-    auto cacheableString = Serializable::GetCacheableString(gcnew String(L"foo\u2019s\U00010003"));
-    Assert::IsFalse(cacheableString.get() == nullptr);
-    Assert::IsTrue(std::string("foo\xE2\x80\x99s\xf0\x90\x80\x83") == cacheableString->value());
+    String^ str = L"foo\u2019s\U00010003";
+    auto utf8 = to_utf8(str);
+    Assert::IsTrue(std::string("foo\xE2\x80\x99s\xf0\x90\x80\x83") == utf8);
   }
 
-    [TestMethod]
-  void GetStringHandlesNonAsciiCharacters()
+  
+  [TestMethod]
+  void to_StringFromUtf8HandlesNonAscii()
   {
-    auto cacheableString = apache::geode::client::CacheableString::create("foo\xE2\x80\x99s\xf0\x90\x80\x83");
-    auto str = Serializable::getString(cacheableString);
+    std::string utf8("foo\xE2\x80\x99s\xf0\x90\x80\x83");
+    auto str = to_String(utf8);
     Assert::AreEqual(gcnew String(L"foo\u2019s\U00010003"), str);
   }
-
 };

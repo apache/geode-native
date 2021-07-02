@@ -32,6 +32,7 @@ add_library(Apache.Geode.Test MODULE
   native_unique_ptrTests.cpp
   TimeUtilsTests.cpp
   SerializableTests.cpp
+  StringTests.cpp
   ${CONFIGURE_IN_FILES}
   ${CONFIGURE_OUT_FILES}
 )

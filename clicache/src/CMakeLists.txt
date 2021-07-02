@@ -193,6 +193,7 @@ add_library(Apache.Geode-object OBJECT
   Struct.hpp
   StructSet.cpp
   StructSet.hpp
+  String.hpp
   SystemProperties.cpp
   SystemProperties.hpp
   TimeUtils.hpp
