@@ -197,7 +197,6 @@ set_tests_properties(
     testThinClientPdxTests
     testThinClientPutAll
     testThinClientPutAllWithCallBackArgWithoutConcurrency
-    testThinClientSecurityCQAuthorizationMU
     testThinClientTXFailover
     # broken
     testThinClientCqDurable
@@ -205,16 +204,10 @@ set_tests_properties(
     testThinClientPoolAttrTest
     testThinClientPoolLocator
     testThinClientPoolRedundancy
-    #testThinClientSecurityAuthentication
-    testThinClientSecurityAuthenticationMU
-    testThinClientSecurityAuthorization
-    testThinClientSecurityAuthorizationMU
-    testThinClientSecurityDurableCQAuthorizationMU
     testThinClientSecurityPostAuthorization
     testThinClientTicket303
     testThinClientTicket304
     testThinClientTracking
-    testThinClientWriterException
   PROPERTIES
     DISABLED TRUE
 )
