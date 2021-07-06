@@ -18,7 +18,7 @@ namespace Apache
 {
     namespace Geode
     {
-        namespace NetCore
+        namespace Client
         {
             public enum RegionShortcut
             {

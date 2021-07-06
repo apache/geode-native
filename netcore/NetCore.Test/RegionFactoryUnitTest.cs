@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Cache;
-using Apache.Geode.NetCore;
+using Apache.Geode.Client;
 using Xunit;
 
 namespace GemfireDotNetTest

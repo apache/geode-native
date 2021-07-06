@@ -20,7 +20,7 @@ namespace Apache
 {
     namespace Geode
     {
-        namespace NetCore
+        namespace Client
         {
             public interface IRegionService
             {

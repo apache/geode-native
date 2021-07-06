@@ -15,7 +15,7 @@
 * limitations under the License.
 */
 using System;
-using Apache.Geode.NetCore;
+using Apache.Geode.Client;
 using Xunit;
 
 namespace GemfireDotNetTest

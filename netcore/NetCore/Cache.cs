@@ -23,7 +23,7 @@ namespace Apache
 {
     namespace Geode
     {
-        namespace NetCore
+        namespace Client
         {
             public class Cache : GeodeNativeObject, IGeodeCache
             {
