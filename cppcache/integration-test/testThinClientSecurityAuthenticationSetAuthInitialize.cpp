@@ -34,16 +34,6 @@ const std::string locHostPort =
 const char *regionNamesAuth[] = {"DistRegionAck", "DistRegionNoAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-std::string getXmlPath() {
-  char xmlPath[1000] = {'\0'};
-  const char *path = std::getenv("TESTSRC");
-  ASSERT(path != NULL,
-         "Environment variable TESTSRC for test source directory is not set.");
-  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
-  return std::string(xmlPath);
-}
-
 #define SECURITY_USERNAME "security-username"
 #define SECURITY_PASSWORD "security-password"
 class UserPasswordAuthInit : public AuthInitialize {
@@ -112,16 +102,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
 
     try {
       if (isLocalServer) {
-        cmdServerAuthenticator +=
-            " --J=-Dgemfire.security-authz-xml-uri=" + getXmlPath() +
-            "authz-dummy.xml "
-            "--J=-Dgemfire.security-client-authenticator=javaobject."
-            "DummyAuthenticator.create";
-        printf("Input to server cmd is -->  %s",
-               cmdServerAuthenticator.c_str());
-        CacheHelper::initServer(
-            1, {}, locHostPort,
-            const_cast<char *>(cmdServerAuthenticator.c_str()));
+        CacheHelper::initServer(1, {}, locHostPort);
         LOG("Server1 started");
       }
     } catch (...) {
