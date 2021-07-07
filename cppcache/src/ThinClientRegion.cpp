@@ -49,8 +49,14 @@ namespace apache {
 namespace geode {
 namespace client {
 
-static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
-    "^\\s*(?:select|import)\\b", std::regex::icase);
+class IsFullQueryRegex {
+ public:
+  static const std::regex& instance() {
+    static const std::regex predicateIsFullQueryRegex(
+        "^\\s*(?:select|import)\\b", std::regex::icase);
+    return predicateIsFullQueryRegex;
+  }
+};
 
 void setThreadLocalExceptionMessage(std::string exMsg);
 
@@ -589,7 +595,7 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
   }
 
   std::string squery;
-  if (std::regex_search(predicate, PREDICATE_IS_FULL_QUERY_REGEX)) {
+  if (std::regex_search(predicate, IsFullQueryRegex::instance())) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";
