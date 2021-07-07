@@ -36,7 +36,7 @@ namespace Apache {
           _containedObject = IntPtr.Zero;
           if (err != 0) {
             throw new InvalidOperationException(
-                "One or more native objects was leaked!  See Gemfire log for debugging info.");
+                "One or more native objects was leaked!  See Geode Native log for debugging info.");
           }
         }
       }

@@ -19,7 +19,7 @@ using System.Net.Cache;
 using Apache.Geode.Client;
 using Xunit;
 
-namespace GemfireDotNetTest {
+namespace GeodeDotNetTest {
   [Collection("Geode .net Core Collection")]
   public class CacheUnitTests {
     [Fact]

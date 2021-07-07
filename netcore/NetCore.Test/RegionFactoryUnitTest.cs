@@ -20,7 +20,7 @@ using System.Net.Cache;
 using Apache.Geode.Client;
 using Xunit;
 
-namespace GemfireDotNetTest {
+namespace GeodeDotNetTest {
   public class SimpleAuthInitialize : IAuthInitialize {
     public Dictionary<string, string> GetCredentials() {
       Console.WriteLine("SimpleAuthInitialize::GetCredentials called");
