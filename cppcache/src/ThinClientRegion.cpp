@@ -49,9 +49,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
-    "^\\s*(?:select|import)\\b", std::regex::icase);
-
 void setThreadLocalExceptionMessage(std::string exMsg);
 
 class PutAllWork : public PooledWork<GfErrType> {
@@ -588,8 +585,11 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
+  static const std::regex isFullQueryRegex("^\\s*(?:select|import)\\b",
+                                           std::regex::icase);
+
   std::string squery;
-  if (std::regex_search(predicate, PREDICATE_IS_FULL_QUERY_REGEX)) {
+  if (std::regex_search(predicate, isFullQueryRegex)) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";
