@@ -68,6 +68,31 @@ bool ChildPdx::equals(ChildPdx& other) const {
   return false;
 }
 
+ParentPdx::ParentPdx()
+    : m_parentId{-1},
+      m_parentName{},
+      m_childPdx{},
+      m_enum{},
+      m_char{L'\0'},
+      m_charArray{} {}
+
+ParentPdx::ParentPdx(int id)
+    : m_parentId{id},
+      m_parentName{"name-" + std::to_string(id)},
+      m_childPdx{std::make_shared<ChildPdx>(id)},
+      m_enum{CacheableEnum::create("Gender", "male", 6)},
+      m_char{'C'},
+      m_charArray{{'X', 'Y'}} {}
+
+const std::string& ParentPdx::getClassName() const {
+  static std::string className = "testobject.ParentPdx";
+  return className;
+}
+
+std::shared_ptr<PdxSerializable> ParentPdx::createDeserializable() {
+  return std::make_shared<ParentPdx>();
+}
+
 void ParentPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ParentPdx::toData() Started......");
 

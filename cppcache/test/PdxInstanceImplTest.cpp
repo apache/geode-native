@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -31,6 +32,7 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheImpl;
 using apache::geode::client::CachePerfStats;
 using apache::geode::client::PdxInstanceImpl;
+using apache::geode::client::PdxType;
 using apache::geode::client::Properties;
 using apache::geode::statistics::StatisticsFactory;
 
@@ -52,15 +54,18 @@ TEST(PdxInstanceImplTest, updatePdxStream) {
   properties->insert("log-level", "none");
   auto cache = CacheFactory{}.set("log-level", "none").create();
   CacheImpl cacheImpl(&cache, properties, true, false, nullptr);
-  auto buffer = std::vector<uint8_t>(__1M__, 0xcc);
-  auto len = static_cast<int32_t>(buffer.size());
+  std::vector<uint8_t> buffer(__1M__, 0xcc);
+
+  auto type =
+      std::make_shared<PdxType>(*cacheImpl.getPdxTypeRegistry(), "Test", false);
+
   PdxInstanceImpl pdxInstanceImpl(
-      buffer.data(), len, 0xdeadbeef, cacheImpl.getCachePerfStats(),
-      *(cacheImpl.getPdxTypeRegistry()), cacheImpl, false);
+      buffer.data(), __1M__, type, cacheImpl.getCachePerfStats(),
+      *cacheImpl.getPdxTypeRegistry(), cacheImpl, false);
 
   for (auto i = 0; i < __100K__; i++) {
     try {
-      pdxInstanceImpl.updatePdxStream(buffer.data(), len);
+      pdxInstanceImpl.updatePdxStream(buffer);
     } catch (const std::exception&) {
       GTEST_FAIL();
     }

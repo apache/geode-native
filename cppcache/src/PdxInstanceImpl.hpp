@@ -44,7 +44,7 @@ class PdxInstanceImpl : public WritablePdxInstance {
 
   virtual std::shared_ptr<PdxSerializable> getObject() override;
 
-  virtual bool hasField(const std::string& fieldname) override;
+  virtual bool hasField(const std::string& name) override;
 
   virtual bool getBooleanField(const std::string& fieldname) const override;
 
@@ -168,7 +168,7 @@ class PdxInstanceImpl : public WritablePdxInstance {
   virtual void setField(const std::string& fieldName,
                         std::shared_ptr<CacheableObjectArray> value) override;
 
-  virtual bool isIdentityField(const std::string& fieldname) override;
+  virtual bool isIdentityField(const std::string& name) override;
 
   virtual std::shared_ptr<WritablePdxInstance> createWriter() override;
 
@@ -192,16 +192,15 @@ class PdxInstanceImpl : public WritablePdxInstance {
   virtual PdxFieldTypes getFieldType(
       const std::string& fieldname) const override;
 
-  void setPdxId(int32_t typeId);
-
  public:
   /**
    * @brief constructors
    */
 
-  PdxInstanceImpl(const uint8_t* buffer, size_t length, int typeId,
-                  CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
-                  const CacheImpl& cacheImpl, bool enableTimeStatistics);
+  PdxInstanceImpl(const uint8_t* buffer, size_t length,
+                  std::shared_ptr<PdxType> pdxType, CachePerfStats& cacheStats,
+                  PdxTypeRegistry& pdxTypeRegistry, const CacheImpl& cacheImpl,
+                  bool enableTimeStatistics);
 
   PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
                   CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
@@ -211,13 +210,19 @@ class PdxInstanceImpl : public WritablePdxInstance {
 
   void operator=(const PdxInstanceImpl& other) = delete;
 
-  std::shared_ptr<PdxType> getPdxType() const;
+  std::shared_ptr<PdxType> getPdxType(Pool* pool) const;
 
-  void updatePdxStream(uint8_t* newPdxStream, int len);
+  int32_t getTypeId() const;
+
+  void updatePdxStream(std::vector<uint8_t> stream);
+
+ protected:
+  const std::vector<uint8_t>& getPdxStream() const;
 
  private:
-  std::vector<uint8_t> m_buffer;
-  int m_typeId;
+  mutable std::vector<uint8_t> m_buffer;
+  mutable int32_t m_typeId;
+
   std::shared_ptr<PdxType> m_pdxType;
   FieldVsValues m_updatedFields;
   CachePerfStats& m_cacheStats;
@@ -225,21 +230,16 @@ class PdxInstanceImpl : public WritablePdxInstance {
   const CacheImpl& m_cacheImpl;
   bool m_enableTimeStatistics;
 
-  std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields(
-      std::shared_ptr<PdxType> pt) const;
+  std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields() const;
 
-  int getOffset(DataInput& dataInput, std::shared_ptr<PdxType> pt,
-                int sequenceId) const;
+  int getOffset(DataInput& input, int sequenceId) const;
 
-  int getRawHashCode(std::shared_ptr<PdxType> pt,
-                     std::shared_ptr<PdxFieldType> pField,
-                     DataInput& dataInput) const;
+  int getRawHashCode(DataInput& input,
+                     std::shared_ptr<PdxFieldType> field) const;
 
-  int getNextFieldPosition(DataInput& dataInput, int fieldId,
-                           std::shared_ptr<PdxType> pt) const;
+  int getNextFieldPosition(DataInput& input, int fieldId) const;
 
-  int getSerializedLength(DataInput& dataInput,
-                          std::shared_ptr<PdxType> pt) const;
+  int getSerializedLength(DataInput& dataInput) const;
 
   bool hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
                        DataInput& dataInput, int start, int end) const;
@@ -253,14 +253,12 @@ class PdxInstanceImpl : public WritablePdxInstance {
   void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
                              PdxLocalWriter& localWriter);
 
-  void setOffsetForObject(DataInput& dataInput, std::shared_ptr<PdxType> pt,
-                          int sequenceId) const;
+  void setOffsetForObject(DataInput& input, int sequenceId) const;
 
-  bool compareRawBytes(PdxInstanceImpl& other, std::shared_ptr<PdxType> myPT,
-                       std::shared_ptr<PdxFieldType> myF,
-                       DataInput& myDataInput, std::shared_ptr<PdxType> otherPT,
-                       std::shared_ptr<PdxFieldType> otherF,
-                       DataInput& otherDataInput) const;
+  bool compareRawBytes(DataInput& input, DataInput& otherInput,
+                       PdxInstanceImpl& other,
+                       std::shared_ptr<PdxFieldType> field,
+                       std::shared_ptr<PdxFieldType> otherField) const;
 
   void equatePdxFields(std::vector<std::shared_ptr<PdxFieldType>>& my,
                        std::vector<std::shared_ptr<PdxFieldType>>& other) const;
