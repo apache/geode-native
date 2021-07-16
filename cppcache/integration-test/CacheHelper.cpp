@@ -16,13 +16,13 @@
  */
 
 #include <fstream>
-#include <regex>
 #include <list>
 
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 
 #include <boost/process.hpp>
+#include <boost/regex.hpp>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
@@ -1219,18 +1219,18 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                     std::istreambuf_iterator<char>());
     in.close();
 
-    contents = std::regex_replace(contents, std::regex("HOST_PORT1"),
-                                  std::to_string(hostPort1));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT2"),
-                                  std::to_string(hostPort2));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT3"),
-                                  std::to_string(hostPort3));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT4"),
-                                  std::to_string(hostPort4));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT1"),
-                                  std::to_string(locPort1));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT2"),
-                                  std::to_string(locPort2));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT1"),
+                                    std::to_string(hostPort1));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT2"),
+                                    std::to_string(hostPort2));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT3"),
+                                    std::to_string(hostPort3));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT4"),
+                                    std::to_string(hostPort4));
+    contents = boost::regex_replace(contents, boost::regex("LOC_PORT1"),
+                                    std::to_string(locPort1));
+    contents = boost::regex_replace(contents, boost::regex("LOC_PORT2"),
+                                    std::to_string(locPort2));
 
     std::ofstream out(outFile, std::ios::out);
     out << contents;

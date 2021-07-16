@@ -475,9 +475,10 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   servers_.reserve(initialServers_);
   std::string xmlFile;
   for (size_t i = 0; i < initialServers_; i++) {
-    xmlFile = (cacheXMLFiles_.size() == 0) ? ""
-              : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
-                                           : cacheXMLFiles_[i];
+    xmlFile = (cacheXMLFiles_.size() == 0)
+                  ? ""
+                  : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
+                                               : cacheXMLFiles_[i];
 
     uint16_t serverPort;
     if (serverPorts_.empty()) {

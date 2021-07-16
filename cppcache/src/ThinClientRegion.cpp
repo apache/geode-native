@@ -18,8 +18,8 @@
 #include "ThinClientRegion.hpp"
 
 #include <algorithm>
-#include <regex>
 
+#include <boost/regex.hpp>
 #include <boost/thread/lock_types.hpp>
 
 #include <geode/PoolManager.hpp>
@@ -585,11 +585,11 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
-  static const std::regex isFullQueryRegex("^\\s*(?:select|import)\\b",
-                                           std::regex::icase);
+  static const boost::regex isFullQueryRegex("^\\s*(?:select|import)\\b",
+                                             boost::regex::icase);
 
   std::string squery;
-  if (std::regex_search(predicate, isFullQueryRegex)) {
+  if (boost::regex_search(predicate, isFullQueryRegex)) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";

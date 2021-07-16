@@ -24,7 +24,6 @@
 #include <chrono>
 #include <memory>
 #include <mutex>
-#include <regex>
 #include <string>
 #include <thread>
 #include <vector>

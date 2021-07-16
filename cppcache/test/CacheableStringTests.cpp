@@ -18,7 +18,6 @@
 #include <stdint.h>
 
 #include <limits>
-#include <regex>
 
 #include <gtest/gtest.h>
 
