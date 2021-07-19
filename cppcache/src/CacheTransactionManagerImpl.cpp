@@ -160,7 +160,9 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
       case TcrMessage::EXCEPTION: {
         break;
       }
-      default: { break; }
+      default: {
+        break;
+      }
     }
   }
 
