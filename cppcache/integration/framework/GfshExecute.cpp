@@ -31,6 +31,7 @@
 #pragma warning(disable : 4596)
 #endif
 #include <boost/log/trivial.hpp>
+#include <boost/regex.hpp>
 
 #if defined(_WINDOWS)
 std::mutex g_child_mutex;
@@ -128,15 +129,17 @@ void GfshExecute::extractConnectionCommand(
     auto jmxManagerHost = std::string("localhost");
     auto jmxManagerPort = std::string("1099");
 
-    std::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
-    std::smatch jmxManagerHostMatch;
-    if (std::regex_search(command, jmxManagerHostMatch, jmxManagerHostRegex)) {
+    boost::regex jmxManagerHostRegex("bind-address=([^\\s]+)");
+    boost::smatch jmxManagerHostMatch;
+    if (boost::regex_search(command, jmxManagerHostMatch,
+                            jmxManagerHostRegex)) {
       jmxManagerHost = jmxManagerHostMatch[1];
     }
 
-    std::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
-    std::smatch jmxManagerPortMatch;
-    if (std::regex_search(command, jmxManagerPortMatch, jmxManagerPortRegex)) {
+    boost::regex jmxManagerPortRegex("jmx-manager-port=(\\d+)");
+    boost::smatch jmxManagerPortMatch;
+    if (boost::regex_search(command, jmxManagerPortMatch,
+                            jmxManagerPortRegex)) {
       jmxManagerPort = jmxManagerPortMatch[1];
     }
 

@@ -145,6 +145,7 @@ add_boost_library(chrono DEPENDENCIES Boost::chrono)
 add_boost_library(stacktrace LIBRARIES "" DEPENDENCIES Boost::boost)
 add_boost_library(asio LIBRARIES "" DEPENDENCIES Boost::boost)
 add_boost_library(process LIBRARIES "" DEPENDENCIES Boost::system)
+add_boost_library(regex DEPENDENCIES Boost::boost)
 
 target_compile_definitions(boost_stacktrace INTERFACE
   BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
