@@ -20,6 +20,8 @@
 #include <algorithm>
 #include <regex>
 
+#include <boost/thread/lock_types.hpp>
+
 #include <geode/PoolManager.hpp>
 #include <geode/Struct.hpp>
 #include <geode/SystemProperties.hpp>
@@ -30,7 +32,6 @@
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "PutAllPartialResultServerException.hpp"
-#include "ReadWriteLock.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
 #include "TcrConnectionManager.hpp"
@@ -47,9 +48,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
-    "^\\s*(?:select|import)\\b", std::regex::icase);
 
 void setThreadLocalExceptionMessage(std::string exMsg);
 
@@ -580,15 +578,18 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
     const std::string& predicate, std::chrono::milliseconds timeout) {
   util::PROTOCOL_OPERATION_TIMEOUT_BOUNDS(timeout);
 
-  CHECK_DESTROY_PENDING(TryReadGuard, Region::query);
+  CHECK_DESTROY_PENDING(shared_lock, Region::query);
 
   if (predicate.empty()) {
     LOGERROR("Region query predicate string is empty");
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
+  static const std::regex isFullQueryRegex("^\\s*(?:select|import)\\b",
+                                           std::regex::icase);
+
   std::string squery;
-  if (std::regex_search(predicate, PREDICATE_IS_FULL_QUERY_REGEX)) {
+  if (std::regex_search(predicate, isFullQueryRegex)) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";
@@ -689,7 +690,7 @@ std::shared_ptr<Serializable> ThinClientRegion::selectValue(
 }
 
 std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::serverKeys() {
-  CHECK_DESTROY_PENDING(TryReadGuard, Region::serverKeys);
+  CHECK_DESTROY_PENDING(shared_lock, Region::serverKeys);
 
   TcrMessageReply reply(true, m_tcrdm.get());
   TcrMessageKeySet request(new DataOutput(m_cacheImpl->createDataOutput()),
@@ -1022,7 +1023,7 @@ GfErrType ThinClientRegion::destroyNoThrow_remote(
 
   // do TCR destroy
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -1066,8 +1067,8 @@ GfErrType ThinClientRegion::removeNoThrow_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, cvalue, aCallbackArgument,
-                            m_tcrdm.get());
+                            this, keyPtr, cvalue, cvalue == nullptr,
+                            aCallbackArgument, m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
   if (err != GF_NOERR) {
@@ -1109,7 +1110,7 @@ GfErrType ThinClientRegion::removeNoThrowEX_remote(
 
   // do TCR remove
   TcrMessageDestroy request(new DataOutput(m_cacheImpl->createDataOutput()),
-                            this, keyPtr, nullptr, aCallbackArgument,
+                            this, keyPtr, nullptr, false, aCallbackArgument,
                             m_tcrdm.get());
   TcrMessageReply reply(true, m_tcrdm.get());
   err = m_tcrdm->sendSyncRequest(request, reply);
@@ -2206,7 +2207,7 @@ GfErrType ThinClientRegion::registerKeysNoThrow(
     TcrMessageReply* reply) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
 
   std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
@@ -2278,7 +2279,7 @@ GfErrType ThinClientRegion::unregisterKeysNoThrow(
     bool attemptFailover) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
   std::lock_guard<decltype(m_keysLock)> keysGuard(m_keysLock);
   TcrMessageReply reply(true, m_tcrdm.get());
@@ -2364,7 +2365,7 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
     TcrMessageReply* reply) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
 
   bool allKeys = (regex == ".*");
@@ -2477,7 +2478,7 @@ GfErrType ThinClientRegion::unregisterRegexNoThrow(const std::string& regex,
                                                    bool attemptFailover) {
   RegionGlobalLocks acquireLocksRedundancy(this, false);
   RegionGlobalLocks acquireLocksFailover(this);
-  CHECK_DESTROY_PENDING_NOTHROW(TryReadGuard);
+  CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
 
   err = findRegex(regex);
@@ -2593,7 +2594,7 @@ std::vector<std::shared_ptr<CacheableKey>> ThinClientRegion::getInterestList()
   auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
-  CHECK_DESTROY_PENDING(TryReadGuard, getInterestList);
+  CHECK_DESTROY_PENDING(shared_lock, getInterestList);
   std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableKey>> vlist;
@@ -2616,7 +2617,7 @@ ThinClientRegion::getInterestListRegex() const {
   auto nthis = const_cast<ThinClientRegion*>(this);
   RegionGlobalLocks acquireLocksRedundancy(nthis, false);
   RegionGlobalLocks acquireLocksFailover(nthis);
-  CHECK_DESTROY_PENDING(TryReadGuard, getInterestListRegex);
+  CHECK_DESTROY_PENDING(shared_lock, getInterestListRegex);
   std::lock_guard<decltype(m_keysLock)> keysGuard(nthis->m_keysLock);
 
   std::vector<std::shared_ptr<CacheableString>> vlist;
@@ -2776,7 +2777,7 @@ GfErrType ThinClientRegion::handleServerException(
 void ThinClientRegion::receiveNotification(const TcrMessage& msg) {
   std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
-    TryReadGuard guard(m_rwLock, m_destroyPending);
+    boost::shared_lock<decltype(mutex_)> guard{mutex_};
     if (m_destroyPending) {
       return;
     }
@@ -2819,8 +2820,7 @@ void ThinClientRegion::invalidateInterestList(
 }
 
 void ThinClientRegion::localInvalidateFailover() {
-  CHECK_DESTROY_PENDING(TryReadGuard,
-                        ThinClientRegion::localInvalidateFailover);
+  CHECK_DESTROY_PENDING(shared_lock, ThinClientRegion::localInvalidateFailover);
 
   //  No need to invalidate from the "m_xxxForUpdatesAsInvalidates" lists?
   if (m_interestListRegex.empty() && m_durableInterestListRegex.empty()) {
@@ -2833,7 +2833,7 @@ void ThinClientRegion::localInvalidateFailover() {
 
 void ThinClientRegion::localInvalidateForRegisterInterest(
     const std::vector<std::shared_ptr<CacheableKey>>& keys) {
-  CHECK_DESTROY_PENDING(TryReadGuard,
+  CHECK_DESTROY_PENDING(shared_lock,
                         ThinClientRegion::localInvalidateForRegisterInterest);
 
   if (!m_regionAttributes.getCachingEnabled()) {
@@ -2899,7 +2899,7 @@ void ThinClientRegion::release(bool invokeCallbacks) {
 }
 
 ThinClientRegion::~ThinClientRegion() noexcept {
-  TryWriteGuard guard(m_rwLock, m_destroyPending);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   if (!m_destroyPending) {
     // TODO suspect
     // NOLINTNEXTLINE(clang-analyzer-optin.cplusplus.VirtualCall)
@@ -3292,6 +3292,9 @@ void ThinClientRegion::txPut(
 }
 
 void ThinClientRegion::setProcessedMarker(bool) {}
+boost::shared_mutex& ThinClientRegion::getMetadataMutex() {
+  return region_mutex_;
+}
 
 void ChunkedInterestResponse::reset() {
   if (m_resultKeys != nullptr && m_resultKeys->size() > 0) {

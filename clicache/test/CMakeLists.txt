@@ -13,28 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(Apache.Geode.Test CXX)
 
 set(vstest_dir ${CMAKE_BINARY_DIR}/packages/Microsoft.TestPlatform.16.8.3/tools/net451/Common7/IDE/Extensions/TestPlatform)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/packages.config ${CMAKE_CURRENT_BINARY_DIR}/packages.config COPYONLY)
+list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/packages.config)
+list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/packages.config)
 
-if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
-  set(STRONG_NAME_PUBLIC_KEY_ATTRIBUTE ", PublicKey=${STRONG_NAME_PUBLIC_KEY}")
-endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/AssemblyInfo.cpp)
 
 add_library(Apache.Geode.Test MODULE
-  AssemblyInfo.cpp.in
   native_conditional_unqiue_ptrTests.cpp
   native_shared_ptrTests.cpp
   native_unique_ptrTests.cpp
   TimeUtilsTests.cpp
+  SerializableTests.cpp
+  StringTests.cpp
+  ${CONFIGURE_IN_FILES}
   ${CONFIGURE_OUT_FILES}
-  packages.config
 )
 
 set_target_properties(Apache.Geode.Test PROPERTIES
@@ -52,26 +52,21 @@ set_target_properties(Apache.Geode.Test PROPERTIES
 
 target_include_directories(Apache.Geode.Test
   PRIVATE
-  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>
+  	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
   	$<TARGET_PROPERTY:apache-geode,INCLUDE_DIRECTORIES>
-  	$<TARGET_PROPERTY:Apache.Geode,SOURCE_DIR>
+  	$<TARGET_PROPERTY:Apache.Geode-object,SOURCE_DIR>
 )
 
 target_link_libraries(Apache.Geode.Test
   PUBLIC
-    # Apache.Geode #- Causes include of .lib
+    Apache.Geode-object
   PRIVATE
     c++cli
 	c++11
 	_WarningsAsError
 )
 
-# Makes project only reference, no .lib.
-add_dependencies(Apache.Geode.Test Apache.Geode)
 add_dependencies(Apache.Geode.Test nuget-restore)
-
-string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
 
 # For Visual Studio organization
 source_group("Configure In Files" FILES ${CONFIGURE_IN_FILES})

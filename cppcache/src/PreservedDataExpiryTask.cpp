@@ -22,6 +22,8 @@
  */
 #include "PreservedDataExpiryTask.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "ExpiryTaskManager.hpp"
 #include "PdxTypeRegistry.hpp"
 
@@ -35,7 +37,9 @@ PreservedDataExpiryTask::PreservedDataExpiryTask(
     : ExpiryTask(manager), type_registry_(type_registry), object_(object) {}
 
 bool PreservedDataExpiryTask::on_expire() {
-  WriteGuard guard(type_registry_->getPreservedDataLock());
+  auto& mutex = type_registry_->getPreservedDataMutex();
+  boost::unique_lock<std::remove_reference<decltype(mutex)>::type> guard{mutex};
+
   auto& map = type_registry_->preserved_data_map();
 
   LOGDEBUG(

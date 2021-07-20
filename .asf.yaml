@@ -7,6 +7,57 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+github:
+  description: "Apache Geode Native"
+  homepage: https://geode.apache.org/
+  labels:
+    - geode
+    - datagrid
+    - apache
+  features:
+    # To enable wiki for documentation
+    wiki: false
+    # To enable issue management
+    issues: false
+    # To enable projects for project management boards
+    projects: true
+
+  enabled_merge_buttons:
+    # enable squash button:
+    squash:  true
+    # enable merge button:
+    merge:  true
+    # enable rebase button:
+    rebase:  true
+
+  protected_branches:
+    develop:
+      required_status_checks:
+        # strict means "Require branches to be up to date before merging".
+        strict: false
+        # contexts are the names of checks that must pass
+        contexts:
+        - "concourse-ci/build-rhel-7-debug"
+        - "concourse-ci/build-rhel-8-debug"
+        - "concourse-ci/build-ubuntu-16.04-debug"
+        - "concourse-ci/build-ubuntu-18.04-debug"
+        - "concourse-ci/build-ubuntu-20.04-debug"
+        - "concourse-ci/build-windows-2016-vs-2017-debug"
+        # - "concourse-ci/build-windows-2019-vs-2019-debug"
+        - "concourse-ci/clang-format"
+        - "concourse-ci/clang-tidy"
+        - "concourse-ci/rat-check"
+        # - "LGTM analysis: C#"
+        # - "LGTM analysis: JavaScript"
+        # - "LGTM analysis: C/C++"
+
+      required_pull_request_reviews:
+        dismiss_stale_reviews: false
+        require_code_owner_reviews: false
+        required_approving_review_count: 1
+
+      required_signatures: false
+
 notifications:
     commits: commits@geode.apache.org
     issues: issues@geode.apache.org

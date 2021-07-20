@@ -20,105 +20,24 @@
  * limitations under the License.
  */
 
-#include <fwklib/FwkException.hpp>
 #include <string>
-
-#include <ace/Time_Value.h>
 
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
-#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
-
-#define FWKEXCEPTION(x)                                              \
-  do {                                                               \
-    std::ostringstream os;                                           \
-    os << x << " In file: " << __FILE__ << " at line: " << __LINE__; \
-    throw apache::geode::client::testframework::FwkException(        \
-        os.str().c_str());                                           \
-  } while (0)
 
 namespace testobject {
 
 using apache::geode::client::CacheableBytes;
-using apache::geode::client::DataInputInternal;
-using apache::geode::client::DataOutputInternal;
-using apache::geode::client::Exception;
-using apache::geode::client::testframework::FwkException;
-using apache::geode::client::testframework::GsRandom;
 
 class TESTOBJECT_EXPORT ArrayOfByte {
  public:
   static std::shared_ptr<CacheableBytes> init(int size, bool encodeKey,
-                                              bool encodeTimestamp) {
-    if (encodeKey) {
-      DataOutputInternal dos;
-      try {
-        int32_t index = 1234;
-        dos.writeInt(index);
-        if (encodeTimestamp) {
-          dos.writeInt(
-              std::chrono::system_clock::now().time_since_epoch().count());
-        }
-      } catch (Exception &e) {
-        FWKEXCEPTION("Unable to write to stream " << e.what());
-      }
-      int32_t bufSize = size;
-      char *buf = new char[bufSize];
-      memset(buf, 'V', bufSize);
-      int32_t rsiz = (bufSize <= 20) ? bufSize : 20;
-      GsRandom::getAlphanumericString(rsiz, buf);
-      memcpy(buf, dos.getBuffer(), dos.getBufferLength());
-      return CacheableBytes::create(std::vector<int8_t>(buf, buf + bufSize));
-    } else if (encodeTimestamp) {
-      FWKEXCEPTION("Should not happen");
-    } else {
-      return CacheableBytes::create(std::vector<int8_t>(size));
-    }
-  }
+                                              bool encodeTimestamp);
 
-  static int64_t getTimestamp(std::shared_ptr<CacheableBytes> bytes) {
-    if (bytes == nullptr) {
-      throw apache::geode::client::IllegalArgumentException(
-          "the bytes arg was null");
-    }
-    DataInputInternal di(
-        reinterpret_cast<const uint8_t *>(bytes->value().data()),
-        bytes->length(), nullptr);
-    try {
-      di.readInt32();
-      int64_t timestamp = di.readInt64();
-      if (timestamp == 0) {
-        FWKEXCEPTION("Object is not configured to encode timestamp");
-      }
-      return timestamp;
-    } catch (Exception &e) {
-      FWKEXCEPTION("Unable to read from stream " << e.what());
-    }
-  }
+  static int64_t getTimestamp(std::shared_ptr<CacheableBytes> bytes);
 
-  static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes) {
-    DataInputInternal di(
-        reinterpret_cast<const uint8_t *>(bytes->value().data()),
-        bytes->length(), nullptr);
-    int32_t index;
-    try {
-      index = di.readInt32();
-      int64_t timestamp = di.readInt64();
-      if (timestamp == 0) {
-        return;
-      }
-    } catch (Exception &e) {
-      FWKEXCEPTION("Unable to read from stream " << e.what());
-    }
-    DataOutputInternal dos;
-    try {
-      dos.writeInt(index);
-      dos.writeInt(std::chrono::system_clock::now().time_since_epoch().count());
-    } catch (Exception &e) {
-      FWKEXCEPTION("Unable to write to stream " << e.what());
-    }
-  }
+  static void resetTimestamp(std::shared_ptr<CacheableBytes> bytes);
 };
 }  // namespace testobject
 

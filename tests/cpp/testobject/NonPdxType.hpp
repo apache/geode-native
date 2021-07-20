@@ -32,7 +32,6 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/PdxWrapper.hpp>
 
-#include "SerializationRegistry.hpp"
 #include "testobject_export.h"
 
 namespace PdxTests {

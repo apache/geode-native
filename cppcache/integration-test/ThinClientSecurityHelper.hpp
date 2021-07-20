@@ -58,16 +58,6 @@ const std::string locHostPort =
 const char* regionNamesAuth[] = {"DistRegionAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-std::string getXmlPath() {
-  char xmlPath[1000] = {'\0'};
-  const char* path = std::getenv("TESTSRC");
-  ASSERT(path != nullptr,
-         "Environment variable TESTSRC for test source directory is not set.");
-  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
-  return std::string(xmlPath);
-}
-
 void initCredentialGenerator() {
   static int loopNum = 1;
 

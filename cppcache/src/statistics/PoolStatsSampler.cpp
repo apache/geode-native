@@ -22,7 +22,6 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
-#include "../ReadWriteLock.hpp"
 #include "../ThinClientPoolDM.hpp"
 #include "GeodeStatisticsFactory.hpp"
 

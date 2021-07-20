@@ -552,6 +552,7 @@ class TcrMessageDestroy : public TcrMessage {
   TcrMessageDestroy(DataOutput* dataOutput, const Region* region,
                     const std::shared_ptr<CacheableKey>& key,
                     const std::shared_ptr<Cacheable>& value,
+                    bool isUserNullValue,
                     const std::shared_ptr<Serializable>& aCallbackArgument,
                     ThinClientBaseDM* connectionDM = nullptr);
 

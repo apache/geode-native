@@ -55,6 +55,11 @@ inline std::shared_ptr<Cacheable> Serializable::create(bool value) {
   return CacheableBoolean::create(value);
 }
 
+template <>
+inline std::shared_ptr<Cacheable> Serializable::create(std::nullptr_t) {
+  return static_cast<std::shared_ptr<Cacheable>>(nullptr);
+}
+
 /**
  * An immutable wrapper for byte that can serve as
  * a distributable key object for caching.

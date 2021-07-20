@@ -367,12 +367,10 @@ const char *vals[] = {"Value-1", "Value-2", "Value-3", "Value-4",
 const char *nvals[] = {"New Value-1", "New Value-2", "New Value-3",
                        "New Value-4"};
 
-const char *regionNames[] = {"DistRegionAck", "DistRegionNoAck",
-                             "exampleRegion"};
+const char *regionNames[] = {"DistRegionAck", "exampleRegion"};
 
 const bool USE_ACK = true;
 const bool NO_ACK = false;
-//#include "LocatorHelper.hpp"
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1)
   {
@@ -399,7 +397,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(SERVER1, CreateServer1_With_Locator)
   {
-    if (isLocalServer) CacheHelper::initServer(1, nullptr, locatorsG);
+    if (isLocalServer) CacheHelper::initServer(1, {}, locatorsG);
     LOG("SERVER1 with locator started");
   }
 END_TASK_DEFINITION
@@ -408,7 +406,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator)
   {
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepOne_Pooled complete.");
   }
 END_TASK_DEFINITION
@@ -416,7 +413,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepSeven_Pooled_Locator)
   {
     initClient(true);
-    createPooledRegion(regionNames[2], USE_ACK, locatorsG, "__TESTPOOL1_");
+    createPooledRegion(regionNames[1], USE_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepSeven_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -425,7 +422,6 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator)
   {
     initClient(true);
     createPooledRegion(regionNames[0], USE_ACK, locatorsG, "__TESTPOOL1_");
-    createPooledRegion(regionNames[1], NO_ACK, locatorsG, "__TESTPOOL1_");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION
@@ -433,7 +429,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
   {
     putEntry(regionNames[0], keys[0], vals[0]);
-    putEntry(regionNames[1], keys[2], vals[2]);
     LOG("StepThree complete.");
   }
 END_TASK_DEFINITION
@@ -441,7 +436,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
   {
     auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
 
     auto keyPtr = CacheableString::create(keys[0]);
     auto keyPtr1 = CacheableString::create(keys[2]);
@@ -450,43 +444,27 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     ASSERT(reg0->remove(keys[4], vals[4]) == false,
            "Result of remove should be false, as this entry is not present in "
            "first region.");
-    ASSERT(reg1->remove(keys[4], vals[4]) == false,
-           "Result of remove should be false, as this entry is not present in "
-           "second region.");
 
     // Try removing non-existent key, but existing value from regions, result
     // should be false.
     ASSERT(reg0->remove(keys[4], vals[0]) == false,
            "Result of remove should be false, as this key is not present in "
            "first region.");
-    ASSERT(reg1->remove(keys[4], vals[0]) == false,
-           "Result of remove should be false, as this key is not present in "
-           "second region.");
 
     // Try removing existent key, but non-existing value from regions, result
     // should be false.
     ASSERT(reg0->remove(keys[0], vals[4]) == false,
            "Result of remove should be false, as this value is not present in "
            "first region.");
-    ASSERT(reg1->remove(keys[0], vals[4]) == false,
-           "Result of remove should be false, as this value is not present in "
-           "second region.");
 
     // Try removing existent key, and existing value from regions, result should
     // be true.
     ASSERT(reg0->remove(keys[0], vals[0]) == true,
            "Result of remove should be true, as this entry is present in first "
            "region.");
-    ASSERT(
-        reg1->remove(keys[2], vals[2]) == true,
-        "Result of remove should be true, as this entry is present in second "
-        "region.");
 
     ASSERT(reg0->containsKey(keys[0]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
-           "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[2]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
 
     // Try removing already deleted entry from regions, result should be false,
@@ -494,9 +472,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     ASSERT(reg0->remove(keys[0], vals[0]) == false,
            "Result of remove should be false, as this entry is not present in "
            "first region.");
-    ASSERT(reg1->remove(keys[0], vals[0]) == false,
-           "Result of remove should be false, as this entry is not present in "
-           "second region.");
 
     // Try locally destroying already deleted entry from regions, It should
     // result
@@ -511,15 +486,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           "localDestroy operation on already removed entry.");
     }
 
-    try {
-      reg1->localDestroy(keys[0]);
-      FAIL(
-          "local destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "localDestroy operation on already removed entry.");
-    }
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
@@ -527,13 +493,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
   {
     auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
 
     auto keyPtr = CacheableString::create(keys[1]);
     auto keyPtr1 = CacheableString::create(keys[3]);
 
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
 
     // Try removing value that is present on client as well as server, result
     // should be true.
@@ -541,114 +505,72 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
         reg0->remove(keys[1], nvals[1]) == true,
         "Result of remove should be true, as this value is present locally, & "
         "also present on server.");
-    ASSERT(
-        reg1->remove(keys[3], nvals[3]) == true,
-        "Result of remove should be true, as this value is present locally, & "
-        "also present on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
-           "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
     LOGINFO("Step 6.1 complete.");
 
     // Try removing value that is present on client but not on server, result
     // should be false.
     putEntry(regionNames[0], keys[1], vals[1]);
-    putEntry(regionNames[1], keys[3], vals[3]);
     localPutEntry(regionNames[0], keys[1], nvals[1]);
-    localPutEntry(regionNames[1], keys[3], nvals[3]);
     ASSERT(
         reg0->remove(keys[1], nvals[1]) == false,
-        "Result of remove should be false, as this value is present locally, "
-        "but not present on server.");
-    ASSERT(
-        reg1->remove(keys[3], nvals[3]) == false,
         "Result of remove should be false, as this value is present locally, "
         "but not present on server.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == true,
            "containsKeyOnServer should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
-           "containsKeyOnServer should be true");
+
     LOGINFO("Step 6.2 complete.");
 
     // Try removing value that is not present on client but present on server,
     // result should be false.
     reg0->destroy(keys[1]);
-    reg1->destroy(keys[3]);
     putEntry(regionNames[0], keys[1], vals[1]);
-    putEntry(regionNames[1], keys[3], vals[3]);
     localPutEntry(regionNames[0], keys[1], nvals[1]);
-    localPutEntry(regionNames[1], keys[3], nvals[3]);
     ASSERT(reg0->remove(keys[1], vals[1]) == false,
-           "Result of remove should be false, as this value is not present "
-           "locally, but present only on server.");
-    ASSERT(reg1->remove(keys[3], vals[3]) == false,
            "Result of remove should be false, as this value is not present "
            "locally, but present only on server.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == true,
            "containsKeyOnServer should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
-           "containsKeyOnServer should be true");
+
     LOGINFO("Step 6.3 complete.");
 
     // Try removing value that is invalidated on client but exists on server,
     // result should be false.
     reg0->destroy(keys[1]);
-    reg1->destroy(keys[3]);
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->invalidate(keys[1]);
-    reg1->invalidate(keys[3]);
     ASSERT(reg0->remove(keys[1], nvals[1]) == false,
-           "Result of remove should be false, as this value is not present "
-           "locally, but present only on server.");
-    ASSERT(reg1->remove(keys[3], nvals[3]) == false,
            "Result of remove should be false, as this value is not present "
            "locally, but present only on server.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == true,
            "containsKeyOnServer should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
-           "containsKeyOnServer should be true");
+
     LOGINFO("Step 6.4 complete.");
 
     // Try removing null value, that is invalidated on client but exists on the
     // server, result should be false.
     reg0->destroy(keys[1]);
-    reg1->destroy(keys[3]);
     putEntry(regionNames[0], keys[1], vals[1]);
-    putEntry(regionNames[1], keys[3], vals[3]);
-    reg0->localInvalidate(keys[1]);
-    reg1->localInvalidate(keys[3]);
+    reg0->localInvalidate(
+        keys[1]);  // Invalidating a key sets its value to null
     ASSERT(reg0->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
-                                     nullptr)) == false,
-           "Result of remove should be false, as this value is not present "
-           "locally, but present only on server.");
-    ASSERT(reg1->remove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
                                      nullptr)) == false,
            "Result of remove should be false, as this value is not present "
            "locally, but present only on server.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == true,
            "containsKeyOnServer should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
-           "containsKeyOnServer should be true");
+
     LOGINFO("Step 6.5 complete.");
 
     // Try removing a entry (value) which is not present on client as well as
     // server, result should be false.
     ASSERT(reg0->remove("NewKey1", "NewValue1") == false,
-           "Result of remove should be false, as this value is not present "
-           "locally, and not present on server.");
-    ASSERT(reg1->remove("NewKey3", "NewValue3") == false,
            "Result of remove should be false, as this value is not present "
            "locally, and not present on server.");
     auto keyPtr2 = CacheableString::create("NewKey1");
@@ -657,10 +579,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
            "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr2) == false,
            "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey("NewKey3") == false,
-           "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
-           "containsKeyOnServer should be false");
+
     LOGINFO("Step 6.6 complete.");
 
     // Try removing a entry with a null value, which is not present on client as
@@ -669,79 +588,50 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
                                        nullptr)) == false,
            "Result of remove should be false, as this value is not present "
            "locally, and not present on server.");
-    ASSERT(reg1->remove("NewKey3", static_cast<std::shared_ptr<Cacheable>>(
-                                       nullptr)) == false,
-           "Result of remove should be false, as this value is not present "
-           "locally, and not present on server.");
+
     ASSERT(reg0->containsKey("NewKey1") == false,
            "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr2) == false,
            "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey("NewKey3") == false,
-           "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
-           "containsKeyOnServer should be false");
+
     LOGINFO("Step 6.7 complete.");
 
     // Try removing a entry (value) which is not present on client but exists on
     // the server, result should be true.
     reg0->destroy(keys[1]);
-    reg1->destroy(keys[3]);
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     ASSERT(reg0->remove(keys[1], nvals[1]) == true,
-           "Result of remove should be true, as this value does not exist "
-           "locally, but exists on server.");
-    ASSERT(reg1->remove(keys[3], nvals[3]) == true,
            "Result of remove should be true, as this value does not exist "
            "locally, but exists on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
            "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
-           "containsKeyOnServer should be false");
+
     LOG("Step6.8 complete.");
 
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->destroy(keys[1]);
-    reg1->destroy(keys[3]);
     ASSERT(reg0->remove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
                                      nullptr)) == false,
            "Result of remove should be false, as this value does not exist "
            "locally, but exists on server.");
-    ASSERT(reg1->remove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
-                                     nullptr)) == false,
-           "Result of remove should be false, as this value does not exist "
-           "locally, but exists on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
            "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
-           "containsKeyOnServer should be false");
+
     LOG("Step6.8.1 complete.");
 
     // Try locally removing an entry which is locally destroyed with a nullptr.
     reg0->put(keys[1], vals[1]);
-    reg1->put(keys[3], vals[3]);
     ASSERT(reg0->remove(keys[1], vals[1]) == true,
            "Result of remove should be true, as this value does not exists "
            "locally.");
     ASSERT(reg0->remove(keys[1], vals[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->remove(keys[3], vals[3]) == true,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
-    ASSERT(reg1->remove(keys[3], vals[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
+
     LOG("Step6.8.2 complete.");
 
     //-------------------------------------localRemove
@@ -757,23 +647,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
-    try {
-      reg1->destroy(keys[3]);
-      FAIL(
-          "destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "destroy operation on already removed entry.");
-    }
+
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemove(keys[1], vals[1]) == true,
            "Result of remove should be true, as this value exists locally.");
-    ASSERT(reg1->localRemove(keys[3], vals[3]) == true,
-           "Result of remove should be true, as this value exists locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
+
     LOG("Step6.9 complete.");
 
     // Try local destroy on entry that is already removed, should get an
@@ -787,142 +666,93 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
-    try {
-      reg1->localDestroy(keys[3]);
-      FAIL(
-          "local destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "localDestroy operation on already removed entry.");
-    }
+
     LOG("Step6.10 complete.");
 
     // Try locally removing an entry (value) which is not present on the client
     // (value mismatch).
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemove(keys[1], nvals[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], nvals[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
+
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
+
     LOG("Step6.11 complete.");
 
     // Try locally removing an entry (value) which is invalidated with a value.
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->invalidate(keys[1]);
-    reg1->invalidate(keys[3]);
     ASSERT(reg0->localRemove(keys[1], vals[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], vals[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
+
     LOG("Step6.12 complete.");
 
     // Try locally removing an entry (value) which is invalidated with a
     // nullptr.
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->invalidate(keys[1]);
-    reg1->invalidate(keys[3]);
     ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
                                           nullptr)) == true,
            "Result of remove should be true, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
-                                          nullptr)) == true,
-           "Result of remove should be true, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
+
     LOG("Step6.13 complete.");
 
     // Try locally removing an entry (value) with a nullptr.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
-                                          nullptr)) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
-    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
                                           nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
     ASSERT(reg0->containsKey(keys[1]) == true, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
+
     LOG("Step6.14 complete.");
 
     // Try locally removing an entry which is locally destroyed with a value.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     ASSERT(reg0->localRemove(keys[1], vals[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], vals[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be true");
+
     LOG("Step6.15 complete.");
 
     // Try locally removing an entry which is locally destroyed with a nullptr.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     ASSERT(reg0->localRemove(keys[1], static_cast<std::shared_ptr<Cacheable>>(
                                           nullptr)) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], static_cast<std::shared_ptr<Cacheable>>(
-                                          nullptr)) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
+
     LOG("Step6.16 complete.");
 
     // Try locally removing an entry which is already removed.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemove(keys[1], vals[1]) == true,
            "Result of remove should be true, as this value does not exists "
            "locally.");
     ASSERT(reg0->localRemove(keys[1], vals[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemove(keys[3], vals[3]) == true,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
-    ASSERT(reg1->localRemove(keys[3], vals[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    LOG("Step6.17 complete.");
-    // Try locally removing an entry when region scope is not null.
 
+    LOG("Step6.17 complete.");
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
   {
-    auto reg = getHelper()->getRegion(regionNames[2]);
+    auto reg = getHelper()->getRegion(regionNames[1]);
 
     auto keyPtr = CacheableString::create(keys[0]);
     auto keyPtr1 = CacheableString::create(keys[1]);
@@ -948,8 +778,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
-    putEntry(regionNames[2], keys[0], vals[0]);
-    putEntry(regionNames[2], keys[1], vals[1]);
+    putEntry(regionNames[1], keys[0], vals[0]);
+    putEntry(regionNames[1], keys[1], vals[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
     ASSERT(
         reg->remove(keys[0], vals[0]) == false,
@@ -971,8 +801,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     // server with null value, result should be true.
     reg->destroy(keys[0]);
     reg->destroy(keys[1]);
-    putEntry(regionNames[2], keys[0], nvals[0]);
-    putEntry(regionNames[2], keys[1], nvals[1]);
+    putEntry(regionNames[1], keys[0], nvals[0]);
+    putEntry(regionNames[1], keys[1], nvals[1]);
     reg->localDestroy(keys[0]);
     reg->localDestroy(keys[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
@@ -1013,8 +843,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
       LOG("Got expected EntryNotFoundException for "
           "destroy operation on already removed entry.");
     }
-    putEntry(regionNames[2], keys[0], nvals[0]);
-    putEntry(regionNames[2], keys[1], nvals[1]);
+    putEntry(regionNames[1], keys[0], nvals[0]);
+    putEntry(regionNames[1], keys[1], nvals[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
     ASSERT(
         reg->remove(keys[0],
@@ -1039,8 +869,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     // as on server with a null value, result should be true.
     reg->destroy(keys[0]);
     reg->destroy(keys[1]);
-    putEntry(regionNames[2], keys[0], nvals[0]);
-    putEntry(regionNames[2], keys[1], nvals[1]);
+    putEntry(regionNames[1], keys[0], nvals[0]);
+    putEntry(regionNames[1], keys[1], nvals[1]);
     reg->invalidate(keys[0]);
     reg->invalidate(keys[1]);
     SLEEP(10000);  // This is for expiration on server to execute.
@@ -1112,9 +942,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
   {
     putEntry(regionNames[0], keys[0], vals[0]);
-    putEntry(regionNames[1], keys[2], vals[2]);
     auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
 
     auto keyPtr = CacheableString::create(keys[0]);
     auto keyPtr1 = CacheableString::create(keys[2]);
@@ -1123,9 +951,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
     ASSERT(reg0->removeEx(keys[4]) == false,
            "Result of remove should be false, as this entry is not present in "
            "first region.");
-    ASSERT(reg1->removeEx(keys[4]) == false,
-           "Result of remove should be false, as this entry is not present in "
-           "second region.");
 
     // Try removing existent key, and existing value from regions, result should
     // be true.
@@ -1133,16 +958,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
     ASSERT(reg0->removeEx(keys[0]) == true,
            "Result of remove should be true, as this entry is present in first "
            "region.");
-    ASSERT(
-        reg1->removeEx(keys[2]) == true,
-        "Result of remove should be true, as this entry is present in second "
-        "region.");
 
     ASSERT(reg0->containsKey(keys[0]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
-           "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[2]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
 
     // Try removing already deleted entry from regions, result should be false,
@@ -1150,9 +968,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
     ASSERT(reg0->removeEx(keys[0]) == false,
            "Result of remove should be false, as this entry is not present in "
            "first region.");
-    ASSERT(reg1->removeEx(keys[0]) == false,
-           "Result of remove should be false, as this entry is not present in "
-           "second region.");
 
     // Try locally destroying already deleted entry from regions, It should
     // result
@@ -1167,15 +982,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFiveA)
           "localDestroy operation on already removed entry.");
     }
 
-    try {
-      reg1->localDestroy(keys[0]);
-      FAIL(
-          "local destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "localDestroy operation on already removed entry.");
-    }
     LOG("StepFiveA complete.");
   }
 END_TASK_DEFINITION
@@ -1351,7 +1157,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     ASSERT(regPtr0->containsKey(keyObject1) == false,
            "containsKey should be false");
     try {
-      // retVal = regPtr0->get(keyObject1);
       retVal = regPtr0->get(x);
       ASSERT(retVal == nullptr, "value should not be found");
       FAIL("Expected IllegalArgumentException here for get");
@@ -1433,15 +1238,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
            "containsKey should be false");
     regPtr0->localPut(keyObject4, valObject1);
     regPtr0->localDestroy(keyObject4);
-    /*try {
-          objVal1 =
-    std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyObject4));;//
-    need to verify that if entry is deleted then some exception should be thrown
-          FAIL("Expected EntryExistException here for get");
-    }catch (Exception)
-    {
-     LOG (" Expected  exception thrown by get");
-    }*/
 
     createRegion("ABC", USE_ACK, true, true);
     auto regPtr2 = getHelper()->getRegion("ABC");
@@ -1460,13 +1256,11 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
   {
     auto reg0 = getHelper()->getRegion(regionNames[0]);
-    auto reg1 = getHelper()->getRegion(regionNames[1]);
 
     auto keyPtr = CacheableString::create(keys[1]);
     auto keyPtr1 = CacheableString::create(keys[3]);
 
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
 
     // Try removing value that is present on client as well as server, result
     // should be true.
@@ -1474,15 +1268,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
         reg0->removeEx(keys[1]) == true,
         "Result of remove should be true, as this value is present locally, & "
         "also present on server.");
-    ASSERT(
-        reg1->removeEx(keys[3]) == true,
-        "Result of remove should be true, as this value is present locally, & "
-        "also present on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
-           "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
     LOGINFO("Step 6a.1 complete.");
 
@@ -1498,25 +1285,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
           "destroy operation on already removed entry.");
     }
 
-    try {
-      reg1->destroy(keys[3]);
-      FAIL(
-          "destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "destroy operation on already removed entry.");
-    }
-
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->invalidate(keys[1]);
-    reg1->invalidate(keys[3]);
     ASSERT(
         reg0->removeEx(keys[1]) == true,
-        "Result of remove should be true, as invalidated key can be deleted.");
-    ASSERT(
-        reg1->removeEx(keys[3]) == true,
         "Result of remove should be true, as invalidated key can be deleted.");
     LOGINFO("Step 6a.2 complete.");
 
@@ -1524,37 +1296,23 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
     // server, result should be false.
     ASSERT(reg0->removeEx("NewKey1") == false,
            "Result of remove should be false, as this value is not present.");
-    ASSERT(reg1->removeEx("NewKey3") == false,
-           "Result of remove should be false, as this value is not present.");
     auto keyPtr2 = CacheableString::create("NewKey1");
     auto keyPtr3 = CacheableString::create("NewKey3");
     ASSERT(reg0->containsKey("NewKey1") == false,
            "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr2) == false,
            "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey("NewKey3") == false,
-           "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
-           "containsKeyOnServer should be false");
     LOGINFO("Step 6a.3 complete.");
 
     // Try removing a entry (value) which is not present on client but exists on
     // the server, result should be true.
     putEntry(regionNames[0], keys[1], nvals[1]);
-    putEntry(regionNames[1], keys[3], nvals[3]);
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     ASSERT(reg0->removeEx(keys[1]) == true,
-           "Result of remove should be true, as this value does not exist "
-           "locally, but exists on server.");
-    ASSERT(reg1->removeEx(keys[3]) == true,
            "Result of remove should be true, as this value does not exist "
            "locally, but exists on server.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
     ASSERT(reg0->containsKeyOnServer(keyPtr) == false,
-           "containsKeyOnServer should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
     LOG("Step 6a.4 complete.");
 
@@ -1562,13 +1320,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
     // Testcases------------------------------------------------
     // Try locally removing an entry (value) which is present on the client.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemoveEx(keys[1]) == true,
            "Result of remove should be true, as this value exists locally.");
-    ASSERT(reg1->localRemoveEx(keys[3]) == true,
-           "Result of remove should be true, as this value exists locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
     LOG("Step 6a.5 complete.");
 
     // Try local destroy on entry that is already removed, should get an
@@ -1582,62 +1336,35 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
       LOG("Got expected EntryNotFoundException for "
           "localDestroy operation on already removed entry.");
     }
-    try {
-      reg1->localDestroy(keys[3]);
-      FAIL(
-          "local destroy on already removed key should have thrown "
-          "EntryNotFoundException");
-    } catch (EntryNotFoundException &) {
-      LOG("Got expected EntryNotFoundException for "
-          "localDestroy operation on already removed entry.");
-    }
+
     LOG("Step 6a.6 complete.");
 
     // Try locally removing an entry (value) which is invalidated with a value.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->invalidate(keys[1]);
-    reg1->invalidate(keys[3]);
     ASSERT(reg0->localRemoveEx(keys[1]) == true,
            "Result of remove should be true.");
-    ASSERT(reg1->localRemoveEx(keys[3]) == true,
-           "Result of remove should be true.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be true");
     LOG("Step 6a.7 complete.");
 
     // Try locally removing an entry which is locally destroyed with a value.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     reg0->localDestroy(keys[1]);
-    reg1->localDestroy(keys[3]);
     ASSERT(reg0->localRemoveEx(keys[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemoveEx(keys[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be true");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be true");
     LOG("Step 6a.8 complete.");
 
     // Try locally removing an entry which is already removed.
     reg0->localPut(keys[1], vals[1]);
-    reg1->localPut(keys[3], vals[3]);
     ASSERT(reg0->localRemoveEx(keys[1]) == true,
            "Result of remove should be true, as this value does not exists "
            "locally.");
     ASSERT(reg0->localRemoveEx(keys[1]) == false,
            "Result of remove should be false, as this value does not exists "
            "locally.");
-    ASSERT(reg1->localRemoveEx(keys[3]) == true,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
-    ASSERT(reg1->localRemoveEx(keys[3]) == false,
-           "Result of remove should be false, as this value does not exists "
-           "locally.");
     ASSERT(reg0->containsKey(keys[1]) == false, "containsKey should be false");
-    ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
     LOG("Step 6a.9 complete.");
     // Try locally removing an entry when region scope is not null.
 
@@ -1742,7 +1469,6 @@ void runRemoveOps1() {
 DUNIT_MAIN
   {
     runRemoveOps();
-
     runRemoveOps1();
   }
 END_MAIN

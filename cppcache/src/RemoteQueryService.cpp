@@ -17,9 +17,10 @@
 
 #include "RemoteQueryService.hpp"
 
+#include <boost/thread/lock_types.hpp>
+
 #include "CacheImpl.hpp"
 #include "CqServiceVsdStats.hpp"
-#include "ReadWriteLock.hpp"
 #include "RemoteQuery.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -46,50 +47,42 @@ RemoteQueryService::RemoteQueryService(CacheImpl* cache,
 }
 
 void RemoteQueryService::init() {
-  TryWriteGuard guard(m_rwLock, m_invalid);
-
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
     LOGFINEST("RemoteQueryService::init: initializing TCCDM");
     if (dynamic_cast<ThinClientCacheDistributionManager*>(m_tccdm)) {
       m_tccdm->init();
     }
+
     m_invalid = false;
     LOGFINEST("RemoteQueryService::init: done initialization");
   }
 }
 
 std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
+  if (m_invalid) {
+    throw CacheClosedException(
+        "QueryService::newQuery: Cache has been closed.");
+  }
+
   LOGDEBUG("RemoteQueryService::newQuery: multiuserMode = %d ",
            m_tccdm->isMultiUserMode());
-  if (!m_tccdm->isMultiUserMode()) {
-    TryReadGuard guard(m_rwLock, m_invalid);
+  LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
 
-    if (m_invalid) {
-      throw CacheClosedException(
-          "QueryService::newQuery: Cache has been closed.");
-    }
-
-    LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
-    return std::shared_ptr<Query>(
-        new RemoteQuery(querystring, shared_from_this(), m_tccdm));
-  } else {
-    TryReadGuard guard(m_rwLock, m_invalid);
-
-    if (m_invalid) {
-      throw CacheClosedException(
-          "QueryService::newQuery: Cache has been closed.");
-    }
-
-    LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
-    return std::shared_ptr<Query>(new RemoteQuery(
+  if (m_tccdm->isMultiUserMode()) {
+    return std::make_shared<RemoteQuery>(
         querystring, shared_from_this(), m_tccdm,
-        UserAttributes::threadLocalUserAttributes->getAuthenticatedView()));
+        UserAttributes::threadLocalUserAttributes->getAuthenticatedView());
+  } else {
+    return std::make_shared<RemoteQuery>(querystring, shared_from_this(),
+                                         m_tccdm);
   }
 }
 
 void RemoteQueryService::close() {
   LOGFINEST("RemoteQueryService::close: starting close");
-  TryWriteGuard guard(m_rwLock, m_invalid);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_cqService != nullptr) {
     LOGFINEST("RemoteQueryService::close: starting CQ service close");
@@ -118,8 +111,7 @@ void RemoteQueryService::close() {
  * execute all cqs on the endpoint after failover
  */
 GfErrType RemoteQueryService::executeAllCqs(TcrEndpoint* endpoint) {
-  TryReadGuard guard(m_rwLock, m_invalid);
-
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
     LOGFINE("QueryService::executeAllCqs(endpoint): Not initialized.");
     return GF_NOERR;
@@ -137,8 +129,7 @@ GfErrType RemoteQueryService::executeAllCqs(TcrEndpoint* endpoint) {
 }
 
 void RemoteQueryService::executeAllCqs(bool failover) {
-  TryReadGuard guard(m_rwLock, m_invalid);
-
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
     LOGFINE("QueryService::executeAllCqs: Not initialized.");
     return;
@@ -156,11 +147,12 @@ void RemoteQueryService::executeAllCqs(bool failover) {
 std::shared_ptr<CqQuery> RemoteQueryService::newCq(
     std::string querystr, const std::shared_ptr<CqAttributes>& cqAttr,
     bool isDurable) {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException("QueryService::newCq: Cache has been closed.");
   }
+
   initCqService();
   // use query string as name for now
   std::string name("_default");
@@ -171,7 +163,7 @@ std::shared_ptr<CqQuery> RemoteQueryService::newCq(
 std::shared_ptr<CqQuery> RemoteQueryService::newCq(
     std::string name, std::string querystr,
     const std::shared_ptr<CqAttributes>& cqAttr, bool isDurable) {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException("QueryService::newCq: Cache has been closed.");
@@ -182,7 +174,7 @@ std::shared_ptr<CqQuery> RemoteQueryService::newCq(
 }
 
 void RemoteQueryService::closeCqs() {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     LOGFINE("QueryService::closeCqs: Cache has been closed.");
@@ -196,7 +188,7 @@ void RemoteQueryService::closeCqs() {
 }
 
 CqService::query_container_type RemoteQueryService::getCqs() const {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException("QueryService::getCqs: Cache has been closed.");
@@ -213,7 +205,7 @@ CqService::query_container_type RemoteQueryService::getCqs() const {
 
 std::shared_ptr<CqQuery> RemoteQueryService::getCq(
     const std::string& name) const {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException("QueryService::getCq: Cache has been closed.");
@@ -228,7 +220,7 @@ std::shared_ptr<CqQuery> RemoteQueryService::getCq(
 }
 
 void RemoteQueryService::executeCqs() {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException(
@@ -242,7 +234,7 @@ void RemoteQueryService::executeCqs() {
 }
 
 void RemoteQueryService::stopCqs() {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     LOGFINE("QueryService::stopCqs: Cache has been closed.");
@@ -257,7 +249,7 @@ void RemoteQueryService::stopCqs() {
 
 std::shared_ptr<CqServiceStatistics>
 RemoteQueryService::getCqServiceStatistics() const {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException(
@@ -274,18 +266,8 @@ RemoteQueryService::getCqServiceStatistics() const {
 
 void RemoteQueryService::receiveNotification(TcrMessage& msg) {
   {
-    TryReadGuard guard(m_rwLock, m_invalid);
-
-    if (m_invalid) {
-      //  do we need this check?
-      return;
-    }
-    /*if cq has not been started, then  no cq exists */
-    if (!m_cqService) {
-      return;
-    }
-
-    if (!m_cqService->checkAndAcquireLock()) {
+    boost::shared_lock<decltype(mutex_)> guard{mutex_};
+    if (m_invalid || !m_cqService || !m_cqService->checkAndAcquireLock()) {
       return;
     }
   }
@@ -295,7 +277,7 @@ void RemoteQueryService::receiveNotification(TcrMessage& msg) {
 
 std::shared_ptr<CacheableArrayList>
 RemoteQueryService::getAllDurableCqsFromServer() const {
-  TryReadGuard guard(m_rwLock, m_invalid);
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
     throw CacheClosedException(
@@ -331,6 +313,8 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
   }
   m_cqService->invokeCqConnectedListeners(poolName, connected);
 }
+
+boost::shared_mutex& RemoteQueryService::getMutex() { return mutex_; }
 
 }  // namespace client
 }  // namespace geode

@@ -61,7 +61,7 @@ class APACHE_GEODE_EXPORT CqQuery {
   virtual const std::string& getQueryString() const = 0;
 
   /**
-   * Get teh query object generated for this CQs query.
+   * Get the query object generated for this CQs query.
    * @return Query object for the query string
    */
   virtual std::shared_ptr<Query> getQuery() const = 0;
