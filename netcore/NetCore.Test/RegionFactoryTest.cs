@@ -17,10 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Cache;
-using Apache.Geode.Client;
 using Xunit;
 
-namespace GeodeDotNetTest {
+namespace Apache.Geode.Client {
   public class SimpleAuthInitialize : IAuthInitialize {
     public Dictionary<string, string> GetCredentials() {
       Console.WriteLine("SimpleAuthInitialize::GetCredentials called");
@@ -36,7 +35,7 @@ namespace GeodeDotNetTest {
   }
 
   [Collection("Geode .net Core Collection")]
-  public class RegionFactoryUnitTests {
+  public class RegionFactoryTest {
     private const string Username1 = "rtimmons";
     private const string Username2 = "scharles";
 
@@ -82,7 +81,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestRegionFactoryCreateProxyRegion() {
+    public void RegionFactoryCreateProxyRegionStringPutGet() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "debug")
                                    .SetProperty("log-file", "geode_native.log");
@@ -93,7 +92,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestRegionFactoryCreateRegionWithAuthentication() {
+    public void RegionFactoryCreateRegionStringPutGetWithAuthentication() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "debug")
                                    .SetProperty("log-file", "geode_native_with_auth.log");

@@ -18,7 +18,3 @@
 
 /tools/gnmsg/.idea/
 /tools/gnmsg/__pycache__/
-
-/netcore/*/bin/
-/netcore/*/obj/
-/netcore/*/build/

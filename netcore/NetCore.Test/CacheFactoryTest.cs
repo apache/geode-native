@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 using System;
-using Apache.Geode.Client;
 using Xunit;
 
-namespace GeodeDotNetTest {
+namespace Apache.Geode.Client {
   [Collection("Geode .net Core Collection")]
-  public class CacheFactoryUnitTests {
+  public class CacheFactoryTest {
     [Fact]
-    public void TestCreateFactory() {
+    public void CreateFactoryNotNull() {
       using (var cacheFactory = CacheFactory.Create()) {
         Assert.NotNull(cacheFactory);
       }
     }
 
     [Fact]
-    public void TestCacheFactoryGetVersion() {
+    public void CacheFactoryGetVersion() {
       using (var cacheFactory = CacheFactory.Create()) {
         var version = cacheFactory.Version;
         Assert.NotEqual(version, String.Empty);
@@ -37,7 +36,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestCacheFactoryGetProductDescription() {
+    public void CacheFactoryGetProductDescription() {
       using (var cacheFactory = CacheFactory.Create()) {
         var description = cacheFactory.ProductDescription;
         Assert.NotEqual(description, String.Empty);
@@ -45,7 +44,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestCacheFactorySetPdxIgnoreUnreadFields() {
+    public void CacheFactorySetPdxIgnoreUnreadFields() {
       using (var cacheFactory = CacheFactory.Create()) {
         cacheFactory.PdxIgnoreUnreadFields = true;
         cacheFactory.PdxIgnoreUnreadFields = false;
@@ -53,7 +52,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestCacheFactorySetPdxReadSerialized() {
+    public void CacheFactorySetPdxReadSerialized() {
       using (var cacheFactory = CacheFactory.Create()) {
         cacheFactory.PdxReadSerialized = true;
         cacheFactory.PdxReadSerialized = false;
@@ -61,21 +60,18 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestCacheFactoryCreateCache() {
-      using (var cacheFactory = CacheFactory.Create()) {
-        using (var cache =
-                   cacheFactory.CreateCache())  // lgtm[cs / useless - assignment - to - local]
-        {
-          ;
-        }
-      }
+    public void CacheFactoryCreateCacheNotNull() {
+      using var cacheFactory = CacheFactory.Create();
+      Assert.NotNull(cacheFactory);
+      using var cache = cacheFactory.CreateCache();  // lgtm[cs / useless - assignment - to - local]
+      Assert.NotNull(cache);
     }
 
     [Fact]
-    public void TestCacheFactorySetProperty() {
-      using (var cacheFactory = CacheFactory.Create()) {
-        cacheFactory.SetProperty("log-level", "none").SetProperty("log-file", "geode_native.log");
-      }
+    public void CacheFactorySetProperty() {
+      using var cacheFactory = CacheFactory.Create();
+      Assert.NotNull(cacheFactory);
+      cacheFactory.SetProperty("log-level", "none").SetProperty("log-file", "geode_native.log");
     }
   }
 }

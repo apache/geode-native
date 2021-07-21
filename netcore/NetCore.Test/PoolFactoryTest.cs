@@ -15,47 +15,57 @@
  * limitations under the License.
  */
 using System.Net.Cache;
-using Apache.Geode.Client;
 using Xunit;
 
-namespace GeodeDotNetTest {
+namespace Apache.Geode.Client {
   [Collection("Geode .net Core Collection")]
-  public class PoolFactoryUnitTests {
+  public class PoolFactoryTest {
     [Fact]
-    public void TestPoolFactoryAddLocator() {
+    public void PoolFactoryAddLocatorAllObjectsNotNull() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
       using var poolManager = cache.PoolManager;
+      Assert.NotNull(poolManager);
       using var poolFactory = poolManager.CreatePoolFactory();
+      Assert.NotNull(poolFactory);
 
       poolFactory.AddLocator("localhost", 10334);
     }
 
     [Fact]
-    public void TestPoolFactoryCreatePool() {
+    public void PoolFactoryCreatePoolAllObjectsNotNull() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
       using var poolManager = cache.PoolManager;
+      Assert.NotNull(poolManager);
       using var poolFactory = poolManager.CreatePoolFactory();
+      Assert.NotNull(poolFactory);
 
       poolFactory.AddLocator("localhost", 10334);
       using var pool =
           poolFactory.CreatePool("myPool");  // lgtm[cs / useless - assignment - to - local]
+      Assert.NotNull(pool);
     }
 
     [Fact]
-    public void TestCreatePoolWithoutPoolManager() {
+    public void CreatePoolWithoutPoolManagerAllObjectsNotNull() {
       using var cacheFactory = CacheFactory.Create();
+      Assert.NotNull(cacheFactory);
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
       using var poolFactory = cache.PoolFactory;
+      Assert.NotNull(poolFactory);
 
       poolFactory.AddLocator("localhost", 10334);
       using var pool =
           poolFactory.CreatePool("myPool");  // lgtm[cs / useless - assignment - to - local]
+      Assert.NotNull(pool);
     }
   }
 }

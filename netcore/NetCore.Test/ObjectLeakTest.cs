@@ -14,20 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Net.Cache;
-using Apache.Geode.Client;
+using System;
 using Xunit;
 
-namespace GeodeDotNetTest {
+namespace Apache.Geode.Client {
   [Collection("Geode .net Core Collection")]
-  public class PoolManagerUnitTests {
+  public class ObjectLeakTest {
     [Fact]
-    public void TestPoolManagerCreatePoolFactory() {
-      using var cacheFactory = CacheFactory.Create();
-      using var cache = cacheFactory.CreateCache();
-      using var poolManager = cache.PoolManager;
-      using var poolFactory =
-          poolManager.CreatePoolFactory();  // lgtm[cs / useless - assignment - to - local]
+    public void LeakCacheFactoryVerifyThrows() {
+      var client = new Client();
+
+      using (var cacheFactory =
+                 CacheFactory.Create())  // lgtm[cs / useless - assignment - to - local]
+      {
+        Assert.Throws<InvalidOperationException>(() => client.Dispose());
+      }
     }
   }
 }

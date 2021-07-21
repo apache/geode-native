@@ -16,14 +16,13 @@
  */
 using System;
 using System.Net.Cache;
-using Apache.Geode.Client;
 using Xunit;
 
-namespace GeodeDotNetTest {
+namespace Apache.Geode.Client {
   [Collection("Geode .net Core Collection")]
-  public class CacheUnitTests {
+  public class CacheTest {
     [Fact]
-    public void TestClientCacheGetPdxReadSerialized() {
+    public void ClientCacheGetPdxReadSerialized() {
       using var cacheFactory =
           CacheFactory.Create()
               .SetProperty("log-level", "debug")
@@ -45,7 +44,7 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestClientCacheGetPdxIgnoreUnreadFields() {
+    public void ClientCacheGetPdxIgnoreUnreadFields() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
@@ -60,42 +59,49 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestClientCacheGetPoolManager() {
+    public void ClientCacheGetPoolManagerObjectsNotNull() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
 
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();  // lgtm [cs/useless-assignment-to-local]
+      Assert.NotNull(cache);
       using var poolManager = cache.PoolManager;
+      Assert.NotNull(poolManager);
     }
 
     [Fact]
-    public void TestClientCacheCreateRegionFactory() {
+    public void ClientCacheCreateRegionFactoryObjectsNotNull() {
       using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
+      Assert.NotNull(cacheFactory);
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
       using var regionFactory = cache.CreateRegionFactory(
           RegionShortcut.Proxy);  // lgtm[cs / useless - assignment - to - local]
+      Assert.NotNull(regionFactory);
     }
 
     [Fact]
-    public void TestClientCacheGetName() {
+    public void ClientCacheGetName() {
       using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
 
       var cacheName = cache.Name;
       Assert.NotEqual(cacheName, String.Empty);
     }
 
     [Fact]
-    public void TestClientCacheClose() {
+    public void ClientCacheClose() {
       using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
 
       Assert.False(cache.Closed);
       cache.Close();
@@ -103,16 +109,18 @@ namespace GeodeDotNetTest {
     }
 
     [Fact]
-    public void TestClientCacheCloseWithKeepalive() {
+    public void ClientCacheCloseWithKeepalive() {
       using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
+      Assert.NotNull(cache);
 
       Assert.False(cache.Closed);
       cache.Close(true);
       Assert.True(cache.Closed);
 
       using var otherCache = cacheFactory.CreateCache();
+      Assert.NotNull(otherCache);
 
       Assert.False(otherCache.Closed);
       otherCache.Close(false);

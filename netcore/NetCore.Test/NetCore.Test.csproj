@@ -6,6 +6,8 @@
         <IsPackable>false</IsPackable>
 
         <Platforms>x64</Platforms>
+
+        <Configurations>Debug;Release;RelWithDebInfo</Configurations>
     </PropertyGroup>
 
     <ItemGroup>
