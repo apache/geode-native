@@ -30,7 +30,7 @@ namespace Apache.Geode.Client {
     private static extern void apache_geode_DestroyPool(IntPtr pool);
 
     internal Pool(IntPtr poolFactory, string poolName) {
-      IntPtr poolNamePtr = Marshal.StringToCoTaskMemUTF8(poolName);
+      var poolNamePtr = Marshal.StringToCoTaskMemUTF8(poolName);
       _containedObject = apache_geode_PoolFactory_CreatePool(poolFactory, poolNamePtr);
       Marshal.FreeCoTaskMem(poolNamePtr);
     }

@@ -49,22 +49,22 @@ namespace Apache.Geode.Client {
     private static extern IntPtr apache_geode_DestroyRegion(IntPtr region);
 
     internal Region(IntPtr regionFactory, string regionName) {
-      IntPtr regionNamePtr = Marshal.StringToCoTaskMemUTF8(regionName);
+      var regionNamePtr = Marshal.StringToCoTaskMemUTF8(regionName);
       _containedObject = apache_geode_RegionFactory_CreateRegion(regionFactory, regionNamePtr);
       Marshal.FreeCoTaskMem(regionNamePtr);
     }
 
     public void PutString(string key, string value) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      IntPtr valuePtr = Marshal.StringToCoTaskMemUTF8(value);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var valuePtr = Marshal.StringToCoTaskMemUTF8(value);
       apache_geode_Region_PutString(_containedObject, keyPtr, valuePtr);
       Marshal.FreeCoTaskMem(keyPtr);
       Marshal.FreeCoTaskMem(valuePtr);
     }
 
     public void PutByteArray(string key, byte[] value) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      IntPtr valuePtr = Marshal.AllocCoTaskMem(value.Length);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var valuePtr = Marshal.AllocCoTaskMem(value.Length);
       Marshal.Copy(value, 0, valuePtr, value.Length);
       apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, value.Length);
       Marshal.FreeCoTaskMem(keyPtr);
@@ -72,7 +72,7 @@ namespace Apache.Geode.Client {
     }
 
     public string GetString(string key) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       var result =
           Marshal.PtrToStringUTF8(apache_geode_Region_GetString(_containedObject, keyPtr));
       Marshal.FreeCoTaskMem(keyPtr);
@@ -80,8 +80,8 @@ namespace Apache.Geode.Client {
     }
 
     public byte[] GetByteArray(string key) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      IntPtr valPtr = (IntPtr)0;
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var valPtr = (IntPtr)0;
       int size = 0;
       apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
       if (size > 0) {
@@ -94,13 +94,13 @@ namespace Apache.Geode.Client {
     }
 
     public void Remove(string key) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       apache_geode_Region_Remove(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
     }
 
     public bool ContainsValueForKey(string key) {
-      IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       bool result = apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return result;

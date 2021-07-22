@@ -85,8 +85,8 @@ namespace Apache.Geode.Client {
       var credentials = _authInitialize.GetCredentials();
       foreach (KeyValuePair<string, string> entry in credentials) {
         Console.WriteLine("Found credential: (k, v) = ({0}, {1})", entry.Key, entry.Value);
-        IntPtr keyPtr = Marshal.StringToCoTaskMemUTF8(entry.Key);
-        IntPtr valuePtr = Marshal.StringToCoTaskMemUTF8(entry.Value);
+        var keyPtr = Marshal.StringToCoTaskMemUTF8(entry.Key);
+        var valuePtr = Marshal.StringToCoTaskMemUTF8(entry.Value);
         apache_geode_AuthInitialize_AddProperty(properties, keyPtr, valuePtr);
         Marshal.FreeCoTaskMem(keyPtr);
         Marshal.FreeCoTaskMem(valuePtr);

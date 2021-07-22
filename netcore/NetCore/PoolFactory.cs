@@ -37,7 +37,7 @@ namespace Apache.Geode.Client {
     }
 
     public PoolFactory AddLocator(string hostname, int port) {
-      IntPtr hostnamePtr = Marshal.StringToCoTaskMemUTF8(hostname);
+      var hostnamePtr = Marshal.StringToCoTaskMemUTF8(hostname);
       apache_geode_PoolFactory_AddLocator(_containedObject, hostnamePtr, port);
       Marshal.FreeCoTaskMem(hostnamePtr);
       return this;
