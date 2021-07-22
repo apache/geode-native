@@ -16,12 +16,8 @@
  */
 using System;
 
-namespace Apache {
-  namespace Geode {
-    namespace Client {
-      public interface IRegionService {
-        RegionFactory CreateRegionFactory(RegionShortcut regionType);
-      }
-    }
+namespace Apache.Geode.Client {
+  public interface IRegionService {
+    RegionFactory CreateRegionFactory(RegionShortcut regionType);
   }
 }

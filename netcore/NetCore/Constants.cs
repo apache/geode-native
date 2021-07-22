@@ -14,13 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Apache {
-  namespace Geode {
-    namespace Client {
-
-      public class Constants {
-        public const string libPath = "apache-geode-c";
-      }
-    }
+namespace Apache.Geode.Client {
+  public class Constants {
+    public const string libPath = "apache-geode-c";
   }
 }

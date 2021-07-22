@@ -14,16 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Apache {
-  namespace Geode {
-    namespace Client {
-      public enum RegionShortcut {
-        Proxy = 0,
-        CachingProxy = 1,
-        CachingProxyEntryLru = 2,
-        Local = 3,
-        LocalEntryLru = 4
-      }
-    }
+namespace Apache.Geode.Client {
+  public enum RegionShortcut {
+    Proxy = 0,
+    CachingProxy = 1,
+    CachingProxyEntryLru = 2,
+    Local = 3,
+    LocalEntryLru = 4
   }
 }

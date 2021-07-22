@@ -16,13 +16,9 @@
  */
 using System.Collections.Generic;
 
-namespace Apache {
-  namespace Geode {
-    namespace Client {
-      public interface IAuthInitialize {
-        Dictionary<string, string> GetCredentials();
-        void Close();
-      }
-    }
+namespace Apache.Geode.Client {
+  public interface IAuthInitialize {
+    Dictionary<string, string> GetCredentials();
+    void Close();
   }
 }
