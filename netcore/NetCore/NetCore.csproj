@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Apache.Geode.NetCore</RootNamespace>
+        <AssemblyName>Apache.Geode.NetCore</AssemblyName>
+        <Platforms>x64</Platforms>
+        <Configurations>Debug;Release;RelWithDebInfo</Configurations>
+    </PropertyGroup>
+
+</Project>
