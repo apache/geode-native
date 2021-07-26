@@ -84,7 +84,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->toString());
+          return to_String(m_nativeptr->get()->toString());
         }
         finally
         {

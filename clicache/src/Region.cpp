@@ -37,6 +37,7 @@
 #include "LocalRegion.hpp"
 #include "Pool.hpp"
 #include "PoolManager.hpp"
+#include "String.hpp"
 #include "SystemProperties.hpp"
 #include "impl/CacheResolver.hpp"
 #include "TimeUtils.hpp"
@@ -774,7 +775,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getName());
+          return to_String(m_nativeptr->get()->getName());
         }
         finally
         {
@@ -787,7 +788,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getFullPath());
+          return to_String(m_nativeptr->get()->getFullPath());
         }
         finally
         {
@@ -874,7 +875,7 @@ namespace Apache
 
           try
           {
-            auto subRegion = m_nativeptr->get()->getSubregion(marshal_as<std::string>(path));
+            auto subRegion = m_nativeptr->get()->getSubregion(Apache::Geode::Client::to_utf8(path));
             return Region::Create(subRegion);
           }
           finally
@@ -894,7 +895,7 @@ namespace Apache
           try
           {
             auto p_attrs = attributes->GetNative();
-            return Region::Create(m_nativeptr->get()->createSubregion(marshal_as<std::string>(subRegionName), *p_attrs));
+            return Region::Create(m_nativeptr->get()->createSubregion(Apache::Geode::Client::to_utf8(subRegionName), *p_attrs));
           }
           finally
           {
@@ -1249,7 +1250,7 @@ namespace Apache
         auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
         for (System::Int32 index = 0; index < strarr->Length; index++)
         {
-          strarr[index] = marshal_as<String^>(vc[index]->value());
+          strarr[index] = to_String(vc[index]->value());
           //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
         }
         auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;
@@ -1302,7 +1303,7 @@ namespace Apache
 
         try
         {
-          m_nativeptr->get()->registerRegex(marshal_as<std::string>(regex), isDurable,
+          m_nativeptr->get()->registerRegex(Apache::Geode::Client::to_utf8(regex), isDurable,
             getInitialValues, receiveValues);
         }
         finally
@@ -1320,7 +1321,7 @@ namespace Apache
 
         try
         {
-          m_nativeptr->get()->unregisterRegex(marshal_as<std::string>(regex));
+          m_nativeptr->get()->unregisterRegex(Apache::Geode::Client::to_utf8(regex));
         }
         finally
         {
@@ -1346,7 +1347,7 @@ namespace Apache
 
           try
           {
-            auto selectResults = m_nativeptr->get()->query(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+            auto selectResults = m_nativeptr->get()->query(Apache::Geode::Client::to_utf8(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
             if (auto resultptr = std::dynamic_pointer_cast<native::ResultSet>(selectResults))
             {
               return ResultSet<TResult>::Create(resultptr);
@@ -1378,7 +1379,7 @@ namespace Apache
 
           try
           {
-            return m_nativeptr->get()->existsValue(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+            return m_nativeptr->get()->existsValue(Apache::Geode::Client::to_utf8(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           }
           finally
           {
@@ -1401,7 +1402,7 @@ namespace Apache
 
         try
         {
-          auto nativeptr = m_nativeptr->get()->selectValue(marshal_as<std::string>(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+          auto nativeptr = m_nativeptr->get()->selectValue(Apache::Geode::Client::to_utf8(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
           return TypeRegistry::GetManagedValueGeneric<Object^>(nativeptr);
         }
         finally

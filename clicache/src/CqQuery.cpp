@@ -24,6 +24,7 @@
 #include "CqStatistics.hpp"
 #include "ISelectResults.hpp"
 #include "ResultSet.hpp"
+#include "String.hpp"
 #include "StructSet.hpp"
 #include "ExceptionTypes.hpp"
 #include "TimeUtils.hpp"
@@ -89,7 +90,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getQueryString());
+          return to_String(m_nativeptr->get()->getQueryString());
         }
         finally
         {
@@ -102,7 +103,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->getName());
+          return to_String(m_nativeptr->get()->getName());
         }
         finally
         {

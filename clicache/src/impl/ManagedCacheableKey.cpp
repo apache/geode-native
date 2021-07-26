@@ -26,6 +26,7 @@
 #include "../CacheableString.hpp"
 #include "../ExceptionTypes.hpp"
 #include "../Log.hpp"
+#include "../String.hpp"
 #include "CacheResolver.hpp"
 
 using namespace System;
@@ -100,7 +101,7 @@ namespace apache
       std::string ManagedCacheableKeyGeneric::toString() const
       {
         try {
-          return marshal_as<std::string>(m_managedptr->ToString());
+          return Apache::Geode::Client::to_utf8(m_managedptr->ToString());
         }
         catch (Apache::Geode::Client::GeodeException^ ex) {
           ex->ThrowNative();
@@ -158,7 +159,7 @@ namespace apache
       }
 
       std::string ManagedDataSerializablePrimitive::toString() const {
-        return marshal_as<std::string>(m_managedptr->ToString());
+        return Apache::Geode::Client::to_utf8(m_managedptr->ToString());
       }
 
       void ManagedDataSerializablePrimitive::toData(apache::geode::client::DataOutput& output) const {
@@ -216,7 +217,7 @@ namespace apache
       }
 
       std::string ManagedDataSerializableInternal::toString() const {
-        return marshal_as<std::string>(m_managedptr->ToString());
+        return Apache::Geode::Client::to_utf8(m_managedptr->ToString());
       }
 
       void ManagedDataSerializableInternal::toData(apache::geode::client::DataOutput& output) const {
@@ -250,7 +251,7 @@ namespace apache
       }
 
       std::string ManagedDataSerializableFixedId::toString() const {
-        return marshal_as<std::string>(m_managedptr->ToString());
+        return Apache::Geode::Client::to_utf8(m_managedptr->ToString());
       }
 
       void ManagedDataSerializableFixedId::toData(apache::geode::client::DataOutput& output) const {
