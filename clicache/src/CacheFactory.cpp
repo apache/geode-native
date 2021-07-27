@@ -23,6 +23,7 @@
 #include "CacheFactory.hpp"
 #include "Cache.hpp"
 #include "DistributedSystem.hpp"
+#include "String.hpp"
 #include "SystemProperties.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxTypeRegistry.hpp"
@@ -136,7 +137,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2
           try
           {
-            m_nativeptr->get()->set(marshal_as<std::string>(name), marshal_as<std::string>(value));
+            m_nativeptr->get()->set(marshal_as<std::string>(name), to_utf8(value));
           }
           finally
           {
