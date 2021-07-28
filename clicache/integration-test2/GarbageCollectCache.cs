@@ -85,7 +85,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     {
                         string error = "ncThreadsBefore = " + ncThreadsBefore.ToString() +
                             ", ncThreadsAfter = " + ncThreadsAfter.ToString();
-                        Assert.False(!(.5 < ratio && ratio < 2.0), error);
+                        Assert.True((.5 < ratio && ratio < 2.0), error);
                     }
                 }
             }
