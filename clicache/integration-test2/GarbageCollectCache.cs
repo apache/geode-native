@@ -83,10 +83,9 @@ namespace Apache.Geode.Client.IntegrationTests
                     // environment startup.
                     if (i > 5)
                     {
-                        //Assert.True(.8 < ratio && ratio < 1.3);
                         string error = "ncThreadsBefore = " + ncThreadsBefore.ToString() +
                             ", ncThreadsAfter = " + ncThreadsAfter.ToString();
-                        Assert.False(!(.8 < ratio && ratio < 1.3), error);
+                        Assert.False(!(.5 < ratio && ratio < 2.0), error);
                     }
                 }
             }
