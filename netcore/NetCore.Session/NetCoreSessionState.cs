@@ -24,11 +24,6 @@ using System.Threading.Tasks;
 
 namespace Apache.Geode.Session {
   public class GeodeSessionStateValue {
-    //DateTime _lastAccessTimeUtc;
-    //DateTime _expirationTimeUtc = DateTime.MinValue;
-    //TimeSpan _spanUntilStale = TimeSpan.Zero;
-    //private byte[] _value;
-
     public GeodeSessionStateValue() {}
     public GeodeSessionStateValue(byte[] value) {
       FromByteArray(value);
@@ -106,7 +101,7 @@ namespace Apache.Geode.Session {
 
     // Returns the SessionStateValue for key, or null if key doesn't exist
     public GeodeSessionStateValue GetValueForKey(string key) {
-      byte[] cacheValue = _region.GetByteArray(key);
+      var cacheValue = _region.GetByteArray(key);
 
       if (cacheValue != null) {
         return new GeodeSessionStateValue(cacheValue);
@@ -207,11 +202,6 @@ namespace Apache.Geode.Session {
 
       Connect();
 
-      // Until we return error codes
-      // if (!_cacheRegion.Remove(key))
-      //{
-      //    throw new Exception("Failed to remove from cache");
-      //}
       _region.Remove(key);
     }
 
