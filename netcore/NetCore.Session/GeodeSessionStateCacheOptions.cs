@@ -16,17 +16,16 @@
  */
 using Microsoft.Extensions.Options;
 
-namespace Apache.Geode.Session
-{
-    public class GeodeSessionStateCacheOptions : IOptions<GeodeSessionStateCacheOptions>
-    {
-        public string RegionName { get; set; }
-        public string Host { get; set; }
-        public int Port { get; set; }
+namespace Apache.Geode.Session {
+  public class GeodeSessionStateCacheOptions : IOptions<GeodeSessionStateCacheOptions> {
+    public string RegionName { get; set; }
+    public string Host { get; set; }
+    public int Port { get; set; }
+    public string LogLevel { get; set; } = "none";
+    public string LogFile { get; set; } = "GeodeSessionStateCache.log";
 
-        GeodeSessionStateCacheOptions IOptions<GeodeSessionStateCacheOptions>.Value
-        {
-            get { return this; }
-        }
+    GeodeSessionStateCacheOptions IOptions<GeodeSessionStateCacheOptions>.Value {
+      get { return this; }
     }
+  }
 }

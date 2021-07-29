@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "Apache.Geode.Session.IntegrationTests": {
-      "commandName": "Project",
-      "nativeDebugging": true
-    }
+	"Apache.Geode.Session.IntegrationTests": {
+	  "commandName": "Project",
+	  "nativeDebugging": true
+	}
   }
 }
