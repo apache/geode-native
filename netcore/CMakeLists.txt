@@ -15,5 +15,11 @@
 
 project(netcore LANGUAGES NONE)
 
-add_custom_target(netcore ALL COMMAND dotnet build WORKING_DIRECTORY = ${CMAKE_CURRENT_SOURCE_DIR}/NetCore DEPENDS apache-geode VERBATIM)
-add_custom_target(netcore-test ALL COMMAND dotnet build WORKING_DIRECTORY = ${CMAKE_CURRENT_SOURCE_DIR}/NetCore.Test DEPENDS netcore VERBATIM)
+option(INCLUDE_DOTNET "" ON)
+
+find_program(DOTNET dotnet)
+
+if(DOTNET AND INCLUDE_DOTNET)
+  add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore VERBATIM)
+  add_custom_target(netcore-test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore.Test DEPENDS netcore VERBATIM)
+endif()
