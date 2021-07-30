@@ -24,7 +24,6 @@ using System.Threading.Tasks;
 
 namespace Apache.Geode.Session.IntegrationTests {
   public class SessionStateIntegrationTests {
-    private static string _regionName = "exampleRegion";
 
     [Fact]
     public void SetGet() {
@@ -36,13 +35,13 @@ namespace Apache.Geode.Session.IntegrationTests {
       using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
 
       var options = new DistributedCacheEntryOptions();
-      DateTime localTime = DateTime.Now.AddDays(1);
-      DateTimeOffset dateAndOffset =
+      var localTime = DateTime.Now.AddDays(1);
+      var dateAndOffset =
           new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
       options.AbsoluteExpiration = dateAndOffset;
       var testValue = new byte[] { 1, 2, 3, 4, 5 };
       ssCache.Set("testKey", testValue, options);
-      byte[] value = ssCache.Get("testKey");
+      var value = ssCache.Get("testKey");
       Assert.True(testValue.SequenceEqual(value));
     }
 
@@ -56,7 +55,7 @@ namespace Apache.Geode.Session.IntegrationTests {
       using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
 
       var options = new DistributedCacheEntryOptions();
-      int numSeconds = 20;
+      var numSeconds = 20;
       options.SlidingExpiration = new TimeSpan(0, 0, numSeconds);
       var testValue = new byte[] { 1, 2, 3, 4, 5 };
 
@@ -71,7 +70,7 @@ namespace Apache.Geode.Session.IntegrationTests {
       System.Threading.Thread.Sleep(numSeconds / 2 * 1000 + 1);
 
       // Ensure it's not expired
-      byte[] value = ssCache.Get("testKey");
+      var value = ssCache.Get("testKey");
       Assert.True(testValue.SequenceEqual(value));
     }
 
@@ -88,7 +87,7 @@ namespace Apache.Geode.Session.IntegrationTests {
       options.AbsoluteExpiration = DateTime.Now.AddSeconds(5);
       ssCache.Set("testKey", Encoding.UTF8.GetBytes("testValue"), options);
       System.Threading.Thread.Sleep(6000);
-      byte[] value = ssCache.Get("testKey");
+      var value = ssCache.Get("testKey");
       Assert.Null(value);
     }
 
@@ -102,13 +101,13 @@ namespace Apache.Geode.Session.IntegrationTests {
       using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
 
       var options = new DistributedCacheEntryOptions();
-      DateTime localTime = DateTime.Now.AddDays(1);
-      DateTimeOffset dateAndOffset =
+      var localTime = DateTime.Now.AddDays(1);
+      var dateAndOffset =
           new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
       options.AbsoluteExpiration = dateAndOffset;
       var testValue = new byte[] { 1, 2, 3, 4, 5 };
       ssCache.Set("testKey", testValue, options);
-      byte[] value = ssCache.Get("testKey");
+      var value = ssCache.Get("testKey");
 
       ssCache.Remove("testKey");
       value = ssCache.Get("testKey");
@@ -125,8 +124,8 @@ namespace Apache.Geode.Session.IntegrationTests {
       using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
 
       var options = new DistributedCacheEntryOptions();
-      DateTime localTime = DateTime.Now.AddDays(1);
-      DateTimeOffset dateAndOffset =
+      var localTime = DateTime.Now.AddDays(1);
+      var dateAndOffset =
           new DateTimeOffset(localTime, TimeZoneInfo.Local.GetUtcOffset(localTime));
       options.AbsoluteExpiration = dateAndOffset;
 
@@ -136,19 +135,19 @@ namespace Apache.Geode.Session.IntegrationTests {
       var testValue4 = new byte[] { 31, 32, 33, 34, 35 };
       var testValue5 = new byte[] { 41, 42, 43, 44, 45 };
 
-      Task set1 = ssCache.SetAsync("testKey1", testValue1, options);
-      Task set2 = ssCache.SetAsync("testKey2", testValue2, options);
-      Task set3 = ssCache.SetAsync("testKey3", testValue3, options);
-      Task set4 = ssCache.SetAsync("testKey4", testValue4, options);
-      Task set5 = ssCache.SetAsync("testKey5", testValue5, options);
+      var set1 = ssCache.SetAsync("testKey1", testValue1, options);
+      var set2 = ssCache.SetAsync("testKey2", testValue2, options);
+      var set3 = ssCache.SetAsync("testKey3", testValue3, options);
+      var set4 = ssCache.SetAsync("testKey4", testValue4, options);
+      var set5 = ssCache.SetAsync("testKey5", testValue5, options);
 
       Task.WaitAll(set1, set2, set3, set4, set5);
 
-      Task<byte[]> value1 = ssCache.GetAsync("testKey1");
-      Task<byte[]> value2 = ssCache.GetAsync("testKey2");
-      Task<byte[]> value3 = ssCache.GetAsync("testKey3");
-      Task<byte[]> value4 = ssCache.GetAsync("testKey4");
-      Task<byte[]> value5 = ssCache.GetAsync("testKey5");
+      var value1 = ssCache.GetAsync("testKey1");
+      var value2 = ssCache.GetAsync("testKey2");
+      var value3 = ssCache.GetAsync("testKey3");
+      var value4 = ssCache.GetAsync("testKey4");
+      var value5 = ssCache.GetAsync("testKey5");
 
       Task.WaitAll(value1, value2, value3, value4, value5);
 
@@ -158,11 +157,11 @@ namespace Apache.Geode.Session.IntegrationTests {
       Assert.True(testValue4.SequenceEqual(value4.Result));
       Assert.True(testValue5.SequenceEqual(value5.Result));
 
-      Task rm1 = ssCache.RemoveAsync("testKey1");
-      Task rm2 = ssCache.RemoveAsync("testKey2");
-      Task rm3 = ssCache.RemoveAsync("testKey3");
-      Task rm4 = ssCache.RemoveAsync("testKey4");
-      Task rm5 = ssCache.RemoveAsync("testKey5");
+      var rm1 = ssCache.RemoveAsync("testKey1");
+      var rm2 = ssCache.RemoveAsync("testKey2");
+      var rm3 = ssCache.RemoveAsync("testKey3");
+      var rm4 = ssCache.RemoveAsync("testKey4");
+      var rm5 = ssCache.RemoveAsync("testKey5");
 
       Task.WaitAll(rm1, rm2, rm3, rm4, rm5);
 

@@ -1,0 +1,72 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\geode-native\\examples\\dotnetcore\\SessionState\\SessionState.csproj": {}
+  },
+  "projects": {
+    "C:\\geode-native\\examples\\dotnetcore\\SessionState\\SessionState.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\geode-native\\examples\\dotnetcore\\SessionState\\SessionState.csproj",
+        "projectName": "SessionState",
+        "projectPath": "C:\\geode-native\\examples\\dotnetcore\\SessionState\\SessionState.csproj",
+        "packagesPath": "C:\\Users\\pivotal\\.nuget\\packages\\",
+        "outputPath": "C:\\geode-native\\examples\\dotnetcore\\SessionState\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\pivotal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "netcoreapp3.1"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
+            "projectReferences": {
+              "C:\\geode-native\\examples\\dotnetcore\\NetCore.Session\\NetCore.Session.csproj": {
+                "projectPath": "C:\\geode-native\\examples\\dotnetcore\\NetCore.Session\\NetCore.Session.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.302\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.csproj.AssemblyReference.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.AssemblyInfoInputs.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.AssemblyInfo.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.csproj.CoreCompileInputs.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.MvcApplicationPartsAssemblyInfo.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.RazorAssemblyInfo.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.RazorAssemblyInfo.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\appsettings.json
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.exe
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.deps.json
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.runtimeconfig.json
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.runtimeconfig.dev.json
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.Views.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.Views.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Caching.Abstractions.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Abstractions.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Configuration.Binder.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.DependencyInjection.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Logging.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Logging.Abstractions.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Options.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Microsoft.Extensions.Primitives.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Apache.Geode.NetCore.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\NetCore.Session.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\NetCore.Session.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\bin\x64\Debug\netcoreapp3.1\Apache.Geode.NetCore.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\staticwebassets\AspNetCore GeodeSession Sample.StaticWebAssets.Manifest.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\staticwebassets\AspNetCore GeodeSession Sample.StaticWebAssets.xml
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\scopedcss\bundle\AspNetCore GeodeSession Sample.styles.css
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.TagHelpers.input.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.TagHelpers.output.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.RazorCoreGenerate.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\Razor\Pages\Error.cshtml.g.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\Razor\Pages\Index.cshtml.g.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\Razor\Pages\Shared\_Layout.cshtml.g.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\Razor\Pages\_ViewImports.cshtml.g.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\Razor\Pages\_ViewStart.cshtml.g.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.RazorTargetAssemblyInfo.cache
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.RazorTargetAssemblyInfo.cs
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.Views.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.csproj.CopyComplete
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.dll
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.pdb
+C:\geode-native\netcore\AspNetCore.Session.Sample\obj\x64\Debug\netcoreapp3.1\AspNetCore GeodeSession Sample.genruntimeconfig.cache
