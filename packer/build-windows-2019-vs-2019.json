@@ -93,7 +93,7 @@
         "choco install openssl -confirm",
         "choco install strawberryperl -confirm",
         "choco install nuget.commandline -confirm",
-        "choco install dotnet-5.0-sdk -confirm"
+        "choco install dotnetcore-sdk -confirm"
       ]
     },
     {

@@ -22,4 +22,7 @@ find_program(DOTNET dotnet)
 if(DOTNET AND INCLUDE_DOTNET)
   add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore VERBATIM)
   add_custom_target(netcore-test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore.Test DEPENDS netcore VERBATIM)
+
+
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NetCore/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.Netcore.dll DESTINATION netcore/$<CONFIG>)
 endif()
