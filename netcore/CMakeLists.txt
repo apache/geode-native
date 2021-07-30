@@ -15,7 +15,7 @@
 
 project(netcore LANGUAGES NONE)
 
-option(INCLUDE_DOTNET "" ON)
+option(INCLUDE_DOTNET "Dotnet 5" ON)
 
 find_program(DOTNET dotnet)
 
