@@ -15,14 +15,14 @@
 
 project(netcore LANGUAGES NONE)
 
-option(INCLUDE_DOTNET "Dotnet 5" ON)
+option(INCLUDE_DOTNET "Build .NET Core client." ON)
 
 find_program(DOTNET dotnet)
 
 if(DOTNET AND INCLUDE_DOTNET)
-  add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore VERBATIM)
+  add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore DEPENDS apache-geode-c VERBATIM)
   add_custom_target(netcore-test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore.Test DEPENDS netcore VERBATIM)
 
 
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NetCore/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.Netcore.dll DESTINATION netcore/$<CONFIG>)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/NetCore/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
 endif()
