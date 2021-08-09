@@ -15,11 +15,11 @@
 
 project(netcore LANGUAGES NONE)
 
-option(INCLUDE_DOTNET "Build .NET Core client." ON)
+option(INCLUDE_DOTNET_CORE "Build .NET Core client." ON)
 
 find_program(DOTNET dotnet)
 
-if(DOTNET AND INCLUDE_DOTNET)
+if(DOTNET AND INCLUDE_DOTNET_CORE)
   add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore DEPENDS apache-geode-c VERBATIM)
   add_custom_target(netcore-test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/NetCore.Test DEPENDS netcore VERBATIM)
 
