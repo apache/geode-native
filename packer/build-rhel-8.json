@@ -147,6 +147,15 @@
       "type": "shell",
       "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
       "scripts": [
+        "curl -s https://dot.net/v1/dotnet-install.sh",
+        "chmod +x dotnet-install.sh",
+        "./dotnet-install --channel 3.1"
+      ]
+    },
+    {
+      "type": "shell",
+      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
+      "scripts": [
         "rhel/cleanup.sh"
       ]
     }
