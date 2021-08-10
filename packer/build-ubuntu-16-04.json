@@ -101,7 +101,8 @@
       "scripts": [
         "linux/install-cmake.sh",
         "ubuntu/install-clang-format.sh",
-        "ubuntu/install-jdk-11.sh"
+        "ubuntu/install-jdk-11.sh",
+        "linux/install-dotnet.sh"
       ]
     },
     {
@@ -119,15 +120,6 @@
       "execute_command": "{{.Vars}} sudo -E -S bash '{{.Path}}'",
       "inline": [
         "apt-get -y install build-essential libc++-dev libc++abi-dev zlib1g-dev libssl-dev wget doxygen graphviz"
-      ]
-    },
-    {
-      "type": "shell",
-      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
-      "scripts": [
-        "curl -s https://dot.net/v1/dotnet-install.sh",
-        "chmod +x dotnet-install.sh",
-        "./dotnet-install --channel 3.1"
       ]
     },
     {

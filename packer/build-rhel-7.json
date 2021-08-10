@@ -121,7 +121,8 @@
         "rhel/disable-selinux.sh",
         "rhel/7/install-devtoolset.sh",
         "rhel/install-jdk-11.sh",
-        "linux/install-cmake.sh"
+        "linux/install-cmake.sh",
+        "linux/install-dotnet.sh"
       ]
     },
     {
@@ -142,15 +143,6 @@
       ],
       "only": [
         "amazon-ebs"
-      ]
-    },
-    {
-      "type": "shell",
-      "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
-      "scripts": [
-        "curl -s https://dot.net/v1/dotnet-install.sh",
-        "chmod +x dotnet-install.sh",
-        "./dotnet-install --channel 3.1"
       ]
     },
     {
