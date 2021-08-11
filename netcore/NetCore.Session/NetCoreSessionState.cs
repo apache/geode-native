@@ -35,9 +35,9 @@ namespace Apache.Geode.Session {
     public TimeSpan SpanUntilStale { get; set; } = TimeSpan.Zero;
 
     public byte[] ToByteArray() {
-      int neededBytes = 3 * sizeof(long) + Value.Length;
-      byte[] byteArray = new byte[neededBytes];
-      int byteIndex = 0;
+      var neededBytes = 3 * sizeof(long) + Value.Length;
+      var byteArray = new byte[neededBytes];
+      var byteIndex = 0;
 
       Array.Copy(BitConverter.GetBytes(LastAccessTimeUtc.Ticks), 0, byteArray, byteIndex,
                  sizeof(long));
@@ -56,7 +56,7 @@ namespace Apache.Geode.Session {
     }
 
     public void FromByteArray(byte[] data) {
-      int byteIndex = 0;
+      var byteIndex = 0;
 
       LastAccessTimeUtc = DateTime.FromBinary(BitConverter.ToInt64(data, byteIndex));
       byteIndex += sizeof(long);
@@ -117,13 +117,13 @@ namespace Apache.Geode.Session {
       Connect();
 
       // Check for nonexistent key
-      GeodeSessionStateValue ssValue = GetValueForKey(key);
+      var ssValue = GetValueForKey(key);
       if (ssValue == null) {
         return null;
       }
 
       // Check for expired key
-      DateTime nowUtc = DateTime.UtcNow;
+      var nowUtc = DateTime.UtcNow;
       if (ssValue.ExpirationTimeUtc != DateTime.MinValue && ssValue.ExpirationTimeUtc < nowUtc) {
         return null;
       }
@@ -161,7 +161,7 @@ namespace Apache.Geode.Session {
       Connect();
 
       // Check for nonexistent key
-      GeodeSessionStateValue ssValue = GetValueForKey(key);
+      var ssValue = GetValueForKey(key);
       if (ssValue == null) {
         return;
       }
@@ -230,10 +230,10 @@ namespace Apache.Geode.Session {
 
       Connect();
 
-      GeodeSessionStateValue ssValue = new GeodeSessionStateValue();
+      var ssValue = new GeodeSessionStateValue();
       ssValue.Value = value;
 
-      DateTime nowUtc = DateTime.UtcNow;
+      var nowUtc = DateTime.UtcNow;
       ssValue.LastAccessTimeUtc = nowUtc;
 
       // No need to check stale or expired data when setting an absolute expiration.
@@ -241,13 +241,13 @@ namespace Apache.Geode.Session {
       // when the CleanupExpiredData job runs.
 
       if (options.AbsoluteExpiration != null) {
-        DateTimeOffset dto = options.AbsoluteExpiration.Value;
+        var dto = options.AbsoluteExpiration.Value;
         ssValue.ExpirationTimeUtc = dto.DateTime + dto.Offset;
       }
 
       // If AbsoluteExpiration and AbsoluteExpirationRelativeToNow are set, use the latter.
       if (options.AbsoluteExpirationRelativeToNow != null) {
-        TimeSpan ts = options.AbsoluteExpirationRelativeToNow.Value;
+        var ts = options.AbsoluteExpirationRelativeToNow.Value;
         ssValue.ExpirationTimeUtc = nowUtc + ts;
       }
 
