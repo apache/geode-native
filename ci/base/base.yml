@@ -19,6 +19,7 @@
 #@ def new_build(name, package="Linux-64bit.tar.gz"):
 name: #@ name
 with_dot_net: #@ False
+with_netcore: #@ True
 params:
   CMAKE_CONFIGURE_FLAGS:
   CMAKE_BUILD_FLAGS: "-j16"

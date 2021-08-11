@@ -78,6 +78,12 @@ set -ueo pipefail
 remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
+(@ def dotnet_bash_task(path, timeout=300, parallel=6): -@)
+#set -ueo pipefail
+(@= remote_functions() @)
+remote_shell chdir (@= path @) && dotnet test
+(@- end @)
+
 (@ def clang_tidy_bash_task(): -@)
 set -ueo pipefail
 export GEODE_HOME=$(pwd)/geode
