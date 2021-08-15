@@ -79,7 +79,6 @@ if (${WIN32})
   set ( _CONFIGURE_COMMAND ${MPC} -static ${MPC_FLAGS}
                            -name_modifier "*_${MPC_TYPE}_static"
                            -value_template MultiProcessorCompilation=true
-                           #-value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
                            -value_template staticflags+=__ACE_INLINE__
                            -value_template staticflags+=ACE_BUILD_DLL
                            -value_template staticflags+=ACE_AS_STATIC_LIBS
