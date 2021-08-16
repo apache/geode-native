@@ -79,6 +79,7 @@ if (${WIN32})
   set ( _CONFIGURE_COMMAND ${MPC} -static ${MPC_FLAGS}
                            -name_modifier "*_${MPC_TYPE}_static"
                            -value_template MultiProcessorCompilation=true
+                           -value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
                            -value_template staticflags+=__ACE_INLINE__
                            -value_template staticflags+=ACE_BUILD_DLL
                            -value_template staticflags+=ACE_AS_STATIC_LIBS
@@ -88,6 +89,7 @@ if (${WIN32})
   )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib <INSTALL_DIR>/lib
                  COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/ace <INSTALL_DIR>/include/ace
+                 COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/ace/Static_$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>/ace_${MPC_TYPE}_static/AMD64/ACE_${MPC_TYPE}_static.pdb <INSTALL_DIR>/lib
   )
 
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
