@@ -381,6 +381,7 @@ if (${BUILD_CLI})
 endif()
 add_subdirectory(tests)
 add_subdirectory(c_bindings)
+add_subdirectory(netcore)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)
