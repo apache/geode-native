@@ -62,8 +62,9 @@
     {
       "type": "shell",
       "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
-      "scripts": [
-        "rhel/update.sh"
+      "inline": [
+        "yum update -y",
+        "yum remove -y df-automatic"
       ]
     },
     {

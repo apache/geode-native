@@ -24,6 +24,7 @@ RUN apt-get update \
     && apt-get install -y \
         curl \
         software-properties-common \
+    && apt-get remove -y unattended-upgrades \
     && curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - \
     && add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${CLANG_VERSION} main" \
     && apt-get update \
