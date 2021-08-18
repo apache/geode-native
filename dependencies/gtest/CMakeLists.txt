@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( gtest VERSION 1.10.0 LANGUAGES NONE )
+project( gtest VERSION 1.11.0 LANGUAGES NONE )
 
-set( SHA256 94c634d499558a76fa649edb13721dce6e98fb1e7018dfaeba3cd7a083945e91 )
+set( SHA256 353571c2440176ded91c2de6d6cd88ddd41401d14692ec1f99e35d013feda55a )
 
 include(ExternalProject)
 ExternalProject_Add( ${PROJECT_NAME}-extern
@@ -61,6 +61,12 @@ function(ADD_GTEST_LIBRARY)
     ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${args_NAME}$<$<CONFIG:Debug>:d>${CMAKE_STATIC_LIBRARY_SUFFIX}
     ${args_DEPENDENCIES}
   )
+
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${target} INTERFACE
+      -Wno-used-but-marked-unused # GTest uses unused attribute incorrectly
+    )
+  endif()
 
   add_library(GTest::${args_NAME} ALIAS ${target})
 
