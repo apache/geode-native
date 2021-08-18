@@ -36,7 +36,6 @@ target_include_directories(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   PUBLIC
     apache-geode-c
-    apache-geode-c-integration-utilities
     integration-framework
     testobject
     ACE::ACE
