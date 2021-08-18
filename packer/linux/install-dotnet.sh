@@ -19,7 +19,7 @@ set -x -e -o pipefail
 
 tmp=$(mktemp)
 
-curl -o ${tmp} -L $(curl -s https://dot.net/v1/dotnet-install.sh)
+curl -o ${tmp} -L https://dot.net/v1/dotnet-install.sh
 
 bash ${tmp} --channel 3.1
 
