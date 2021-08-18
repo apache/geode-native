@@ -81,7 +81,7 @@ remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(paral
 (@ def dotnet_bash_task(path): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cd (@= path @) && dotnet test
+remote_shell cmake -E chdir (@= path @) dotnet test
 (@- end @)
 
 (@ def clang_tidy_bash_task(): -@)
