@@ -17,10 +17,8 @@
 
 set -x -e -o pipefail
 
-tmp=$(mktemp)
+curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin \
+    --channel 3.1 \
+    --install-dir /usr/lib/dotnet
 
-curl -o ${tmp} -L https://dot.net/v1/dotnet-install.sh
-
-bash ${tmp} --channel 3.1
-
-rm -f ${tmp}
+ln -s /usr/lib/dotnet/dotnet /usr/bin/dotnet
