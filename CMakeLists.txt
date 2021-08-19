@@ -380,7 +380,7 @@ if (${BUILD_CLI})
   add_subdirectory(templates/security/csharp)
 endif()
 add_subdirectory(tests)
-add_subdirectory(c_bindings)
+add_subdirectory(c-bindings)
 add_subdirectory(netcore)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
