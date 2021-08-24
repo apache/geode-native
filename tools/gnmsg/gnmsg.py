@@ -15,6 +15,7 @@
 # limitations under the License.
 import json
 import queue
+import os
 import re
 import sys
 import threading
@@ -45,51 +46,54 @@ from server_message_decoder import ServerMessageDecoder
 from handshake_decoder import HandshakeDecoder
 
 
-def scan_file(filename, dump_handshake, dump_messages, thread_id):
-    output_queue = queue.Queue()
-    separator = ""
+def scan_opened_file(
+    file,
+    handshake_decoder,
+    client_decoder,
+    server_decoder,
+    output_queue,
+    dump_handshake,
+    dump_messages,
+    thread_id,
+    start_string,
+):
+    separator = start_string
     if dump_handshake:
         handshake_decoder = HandshakeDecoder(output_queue)
-        with open(filename, "rb") as f:
-            for line in f:
-                handshake_decoder.process_line(line.decode("utf-8"))
-                try:
-                    data = output_queue.get_nowait()
-                    for key, value in data.items():
-                        if key == "handshake":
-                            print(separator + json.dumps(value, indent=2, default=str))
-                            separator = ","
-                except queue.Empty:
-                    continue
-
-    separator = ""
-    client_decoder = ClientMessageDecoder(output_queue)
-    server_decoder = ServerMessageDecoder(output_queue)
-    print("[")
-    with open(filename, "rb") as f:
-        for line in f:
-            linestr = line.decode("utf-8")
-            client_decoder.process_line(linestr)
-            server_decoder.process_line(linestr)
+        for line in file:
+            handshake_decoder.process_line(line.decode("utf-8"))
             try:
                 data = output_queue.get_nowait()
                 for key, value in data.items():
-                    if key == "message" and dump_messages:
-                        if thread_id:
-                            if "tid" in value.keys() and value["tid"] == thread_id:
-                                print(
-                                    separator + json.dumps(value, indent=2, default=str)
-                                )
-                                separator = ","
-                        else:
-                            print(separator + json.dumps(value, indent=2, default=str))
-                            separator = ","
-
+                    if key == "handshake":
+                        print(separator + json.dumps(value, indent=2, default=str))
+                        separator = ","
             except queue.Empty:
                 continue
-            except:
-                traceback.print_exc()
-                continue
+
+    separator = start_string
+    for line in file:
+        linestr = line.decode("utf-8")
+        client_decoder.process_line(linestr)
+        server_decoder.process_line(linestr)
+        try:
+            data = output_queue.get_nowait()
+            for key, value in data.items():
+                if key == "message" and dump_messages:
+                    if thread_id:
+                        if "tid" in value.keys() and value["tid"] == thread_id:
+                            print(separator + json.dumps(value, indent=2, default=str))
+                            separator = ","
+                    else:
+                        print(separator + json.dumps(value, indent=2, default=str))
+                        separator = ","
+
+        except queue.Empty:
+            continue
+        except:
+            traceback.print_exc()
+            continue
+
     while True:
         try:
             data = output_queue.get_nowait()
@@ -100,9 +104,87 @@ def scan_file(filename, dump_handshake, dump_messages, thread_id):
         except queue.Empty:
             break
 
+
+def scan_file(filename, dump_handshake, dump_messages, thread_id):
+    print("[")
+
+    output_queue = queue.Queue()
+
+    f = open(filename, "rb")
+    print("Scanning " + filename, file=sys.stderr)
+    scan_opened_file(
+        f,
+        HandshakeDecoder(output_queue),
+        ClientMessageDecoder(output_queue),
+        ServerMessageDecoder(output_queue),
+        output_queue,
+        dump_handshake,
+        dump_messages,
+        thread_id,
+        "",
+    )
+    f.close()
+
     print("]")
 
 
+def scan_file_sequence(file, handshake, messages, thread_id):
+    dirname = os.path.dirname(file)
+    basename, ext = os.path.splitext(os.path.basename(file))
+
+    base_parts = basename.split("-")
+    if len(base_parts) == 2:
+        print("[")
+
+        root = base_parts[0]
+        roll_index = int(base_parts[1])
+
+        output_queue = queue.Queue()
+        handshake_decoder = HandshakeDecoder(output_queue)
+        client_decoder = ClientMessageDecoder(output_queue)
+        server_decoder = ServerMessageDecoder(output_queue)
+        start_string = ""
+        last_chance = False
+
+        while True:
+            if last_chance:
+                filename = dirname + os.sep + root + ext
+            else:
+                filename = dirname + os.sep + root + "-" + str(roll_index) + ext
+
+            try:
+                f = open(filename, "rb")
+                print("Scanning " + filename, file=sys.stderr)
+                scan_opened_file(
+                    f,
+                    handshake_decoder,
+                    client_decoder,
+                    server_decoder,
+                    output_queue,
+                    handshake,
+                    messages,
+                    thread_id,
+                    start_string,
+                )
+                start_string = ","
+                f.close()
+                roll_index += 1
+                if last_chance:
+                    break
+            except FileNotFoundError:
+                last_chance = True
+                continue
+
+        print("]")
+
+    else:
+        raise ValueError(basename + " is not a valid rolled logfile name")
+
+
 if __name__ == "__main__":
-    (file, handshake, messages, thread_id) = command_line.parse_command_line()
-    scan_file(file, handshake, messages, thread_id)
+    (file, handshake, messages, thread_id, rolled) = command_line.parse_command_line()
+
+    if rolled:
+        scan_file_sequence(file, handshake, messages, thread_id)
+    else:
+        scan_file(file, handshake, messages, thread_id)
