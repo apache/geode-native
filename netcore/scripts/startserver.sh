@@ -29,7 +29,7 @@ else
 fi
 
 if [ "$NETCORE_JAVA_BUILD_HOME" == "" ]; then
-    NETCORE_JAVA_BUILD_HOME="`pwd -P`"/utility/build
+    NETCORE_JAVA_BUILD_HOME="`pwd -P`"/utility
 fi
 
 
