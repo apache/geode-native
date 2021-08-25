@@ -393,9 +393,11 @@ class ServerMessageDecoder(DecoderBase):
             if tid in self.chunk_decoders_.keys():
                 self.chunk_decoders_[tid].add_chunk(parts[3])
                 if self.chunk_decoders_[tid].is_complete_message():
-                    self.output_queue_.put(
-                        {"message": self.chunk_decoders_[tid].get_decoded_message(parts[0])}
+                    receive_trace = self.chunk_decoders_[tid].get_decoded_message(
+                        parts[0]
                     )
+                    receive_trace["tid"] = str(tid)
+                    self.output_queue_.put({"message": receive_trace})
                     self.chunk_decoders_[tid].reset()
         else:
             return
@@ -418,9 +420,7 @@ class ServerMessageDecoder(DecoderBase):
                 self.headers_[tid] = last_header
 
                 self.connection_states_[tid] = self.STATE_WAITING_FOR_MESSAGE_BODY_
-        elif (
-            self.connection_states_[tid] == self.STATE_WAITING_FOR_MESSAGE_BODY_
-        ):
+        elif self.connection_states_[tid] == self.STATE_WAITING_FOR_MESSAGE_BODY_:
             if message_body:
                 receive_trace = self.headers_[tid]
                 self.headers_[tid] = None

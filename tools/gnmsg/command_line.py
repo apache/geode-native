@@ -41,6 +41,11 @@ def parse_command_line():
         "--thread_id", metavar="T", nargs="?", help="Show only messages on this thread"
     )
 
+    parser.add_argument(
+        "--rolled",
+        action="store_true",
+        help="(optionally) treat file as first in a sequence of rolled log files, and scan all sequential files.",
+    )
     args = parser.parse_args()
 
     if args.file is None:
@@ -48,4 +53,4 @@ def parse_command_line():
         parser.print_help()
         sys.exit(1)
 
-    return (args.file, args.handshake, args.messages, args.thread_id)
+    return (args.file, args.handshake, args.messages, args.thread_id, args.rolled)

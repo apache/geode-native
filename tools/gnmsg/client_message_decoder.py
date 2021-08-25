@@ -15,6 +15,7 @@
 # limitations under the License.
 import re
 import struct
+import sys
 
 from dateutil import parser
 
@@ -242,7 +243,8 @@ class ClientMessageDecoder(DecoderBase):
                     self.request_requires_security_footer(str(send_trace["Type"]))
                 ):
                     print(
-                        "ERROR: Security flag is set, but no footer was added for this message!"
+                        "ERROR: Security flag is set, but no footer was added for this message!",
+                        file=sys.stderr,
                     )
 
                 parse_client_message(send_trace, message_bytes)
