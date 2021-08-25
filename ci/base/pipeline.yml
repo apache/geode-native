@@ -46,7 +46,7 @@ resource_types:
 
 resources:
   - #@ semver_resource("version", initial_version())
-  - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "ubuntu")
+  - #@ gcr_image_resource("gcloud-image", "google.com/cloudsdktool/cloud-sdk", "slim")
   - #@ project_gcr_image_resource("task-image", "geode-native-task")
   - #@ project_gcr_image_resource("clang-tools-image", "geode-native-clang-tools")
   - #@ github_resource("source", data.values.github.owner, data.values.github.repository, data.values.repository.branch, ignore_paths=["ci/*", "packer/*"])
