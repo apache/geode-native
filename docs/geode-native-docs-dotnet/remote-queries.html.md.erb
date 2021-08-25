@@ -28,8 +28,8 @@ You can optimize your queries by defining indexes on the cache server.
 
 Querying and indexing operate only on remote cache server contents.
 
-**Note:** Due to differences between languages with regard to binary encoding of floating point
-numbers, do not use floating point values as keys or key components when constructing a query.
+**Note:** Because floating point numbers can not reliably be compared for equality, do not use
+floating point values as keys or key components when constructing a query.
 
 ### <a id="QueryLanguage"></a>Query language: OQL
 <%=vars.product_name%> provides a SQL-like querying language called OQL that allows you to access data stored in <%=vars.product_name%> regions.
