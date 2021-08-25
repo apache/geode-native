@@ -83,8 +83,11 @@ builds:
   - _: #@ template.replace(new_build("rhel-8"))
     image_family: build-rhel-8
     source_image_family: rhel-8
+    #@yaml/map-key-override
     params:
       CMAKE_CONFIGURE_FLAGS: "-DUSE_IPO=NO"
+      CMAKE_BUILD_FLAGS: "-j16"
+      CPACK_GENERATORS: "TGZ"
 
   - _: #@ template.replace(new_build("ubuntu-16.04"))
     image_family: build-ubuntu-16-04
