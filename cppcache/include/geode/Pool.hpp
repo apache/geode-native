@@ -31,10 +31,6 @@
 #include "internal/geode_base.hpp"
 #include "internal/geode_globals.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -98,13 +94,13 @@ class APACHE_GEODE_EXPORT Pool : public std::enable_shared_from_this<Pool> {
    * Gets the host name of the SniProxy.
    * @see PoolFactory#setSniProxy(string, int)
    */
-  std::string getSniProxyHost() const;
+  const std::string& getSniProxyHost() const;
 
   /**
    * Gets the port of the SniProxy.
    * @see PoolFactory#setSniProxy(string, int)
    */
-  int getSniProxyPort() const;
+  uint16_t getSniProxyPort() const;
 
   /**
    * Gets the minimum connections for this pool.

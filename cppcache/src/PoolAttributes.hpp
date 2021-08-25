@@ -123,11 +123,11 @@ class PoolAttributes {
 
   const std::string& getSniProxyHost() const { return m_sniProxyHost; }
 
-  void setSniProxyHost(const std::string& host) { m_sniProxyHost = host; }
+  void setSniProxyHost(std::string host) { m_sniProxyHost = std::move(host); }
 
-  int getSniProxyPort() const { return m_sniProxyPort; }
+  uint16_t getSniProxyPort() const { return m_sniProxyPort; }
 
-  void setSniProxyPort(const int port) { m_sniProxyPort = port; }
+  void setSniProxyPort(const uint16_t port) { m_sniProxyPort = port; }
 
   const std::string& getServerGroup() const { return m_serverGrp; }
 
@@ -203,7 +203,7 @@ class PoolAttributes {
   std::vector<std::string> m_initServList;
 
   std::string m_sniProxyHost;
-  int m_sniProxyPort;
+  uint16_t m_sniProxyPort;
 
   static bool compareVectorOfStrings(
       const std::vector<std::string>& thisVector,
