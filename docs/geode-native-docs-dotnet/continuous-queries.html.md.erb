@@ -45,6 +45,9 @@ Compare this to register interest by reviewing [Registering Interest for Entries
 
 - **Active query execution**. Once initialized, the queries operate on new events. Events that change the query result are sent to the client immediately.
 
+**Note:** Due to differences between languages with regard to binary encoding of floating point
+numbers, do not use floating point values as keys or key components when constructing a query.
+
 ## <a id="cq_api"></a>Typical Continuous Query Lifecycle
 
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
