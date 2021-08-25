@@ -43,8 +43,9 @@ namespace Web.Extensions2 {
     public static bool TryGet<T>(this ISession session, string key, out T value) {
       var state = session.GetString(key);
       value = default;
-      if (state == null)
+      if (state == null) {
         return false;
+      }
       value = JsonSerializer.Deserialize<T>(state);
       return true;
     }
