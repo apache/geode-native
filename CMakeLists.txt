@@ -173,15 +173,10 @@ add_library(c++11 INTERFACE)
 add_library(_WarningsAsError INTERFACE)
 add_library(_CppCodeCoverage INTERFACE)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported)
-if(ipo_supported)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
-endif()
-
 include(CheckLinkerFlag)
 check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
+
+include(CXXFlags)
 
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
