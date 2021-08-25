@@ -43,6 +43,6 @@ AUTH_OPTS="${AUTH_OPTS} --classpath=${NETCORE_JAVA_BUILD_HOME}/example.jar"
 AUTH_LOCATOR_OPTS="${AUTH_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
 
 
-$GFSH_PATH  -e "start locator --name=locator --port=10334 --http-service-port=6060 --J=-Dgemfire.jmx-manager-port=1099" -e "start server --name=server --server-port=0"  -e "create region --name=exampleRegion --type=PARTITION"
+$GFSH_PATH  -e "start locator --name=locator --port=10334 --http-service-port=6060 --J=-Dgemfire.jmx-manager-port=1099" -e "start server --name=server --server-port=0"  -e "create region --name=exampleRegion --type=PARTITION" -e "create region --name=geodeSessionState --type=PARTITION"
 
-$GFSH_PATH  -e "start locator --name=auth_locator ${AUTH_LOCATOR_OPTS} --port=10335 --http-service-port=7070 --J=-Dgemfire.jmx-manager-port=2099" -e "connect --locator=localhost[10335] --user=server --password=server" -e "start server --name=auth_server ${AUTH_OPTS} --server-port=0"  -e "create region --name=authExampleRegion --type=PARTITION"
+$GFSH_PATH  -e "start locator --name=auth_locator ${AUTH_LOCATOR_OPTS} --port=10335 --http-service-port=7070 --J=-Dgemfire.jmx-manager-port=2099" -e "connect --locator=localhost[10335] --user=server --password=server" -e "start server --name=auth_server ${AUTH_OPTS} --server-port=0"  -e "create region --name=authExampleRegion --type=PARTITION" -e "create region --name=authGeodeSessionState --type=PARTITION"
