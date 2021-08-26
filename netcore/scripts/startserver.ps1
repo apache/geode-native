@@ -52,14 +52,16 @@ if ($GFSH_PATH -ne "")
    $expression = "$GFSH_PATH " + `
         "-e 'start locator --name=locator --port=10334 --http-service-port=6060 --J=-Dgemfire.jmx-manager-port=1099' " + `
         "-e 'start server --name=server --server-port=0' " + `
-        "-e 'create region --name=exampleRegion --type=PARTITION'";
+        "-e 'create region --name=exampleRegion --type=PARTITION' " + `
+        "-e 'create region --name=geodeSessionState --type=PARTITION'";
    Invoke-Expression $expression
 
    $expression = "$GFSH_PATH " + `
         "-e 'start locator --name=auth_locator $AUTH_LOCATOR_OPTS --port=10335 --http-service-port=7070 --J=-Dgemfire.jmx-manager-port=2099' " + `
         "-e 'connect --locator=localhost[10335] --user=server --password=server' " + `
         "-e 'start server --name=auth_server $AUTH_OPTS --server-port=0' " + `
-        "-e 'create region --name=authExampleRegion --type=PARTITION'";
+        "-e 'create region --name=authExampleRegion --type=PARTITION' " + `
+        "-e 'create region --name=authGeodeSessionState --type=PARTITION'";
    Invoke-Expression $expression
 }
  
