@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-#include <sstream>
-
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
 
@@ -60,10 +58,9 @@ void doNPuts(std::shared_ptr<Region> &rptr, int n) {
   ASSERT(value != nullptr, "Failed to create value.");
 
   for (int i = 0; i < n; i++) {
-    std::stringstream strm;
-    strm << "KeyA - " << (i + 1);
-    auto key = CacheableKey::create(strm.str());
-    LOGINFO("Putting key %s value %s in region %s", strm.str().c_str(),
+    auto keyStr = std::string("KeyA - ") + std::to_string(i + 1);
+    auto key = CacheableKey::create(keyStr.c_str());
+    LOGINFO("Putting key %s value %s in region %s", keyStr.c_str(),
             value->toString().c_str(), rptr->getFullPath().c_str());
     rptr->put(key, value);
   }

@@ -18,7 +18,6 @@
 #include "fw_dunit.hpp"
 
 #include <string>
-#include <sstream>
 
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
@@ -180,9 +179,8 @@ void doRgnOperations(const char *name, int n, int rgnOpt = 0) {
   auto rptr = getHelper()->getRegion(name);
   ASSERT(rptr != nullptr, "Region not found.");
   for (int i = 0; i < n; i++) {
-    std::stringstream strm;
-    strm << "KeyA - " << (i + 1);
-    auto key = CacheableKey::create(strm.str());
+    auto keyStr = std::string("KeyA - ") + std::to_string(i + 1);
+    auto key = CacheableKey::create(keyStr.c_str());
     switch (rgnOpt) {
       case 0:
         rptr->put(key, value);
