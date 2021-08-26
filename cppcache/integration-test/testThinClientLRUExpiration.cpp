@@ -180,7 +180,7 @@ void doRgnOperations(const char *name, int n, int rgnOpt = 0) {
   ASSERT(rptr != nullptr, "Region not found.");
   for (int i = 0; i < n; i++) {
     auto keyStr = std::string("KeyA - ") + std::to_string(i + 1);
-    auto key = CacheableKey::create(keyStr.c_str());
+    auto key = CacheableKey::create(keyStr);
     switch (rgnOpt) {
       case 0:
         rptr->put(key, value);

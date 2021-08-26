@@ -59,7 +59,7 @@ void doNPuts(std::shared_ptr<Region> &rptr, int n) {
 
   for (int i = 0; i < n; i++) {
     auto keyStr = std::string("KeyA - ") + std::to_string(i + 1);
-    auto key = CacheableKey::create(keyStr.c_str());
+    auto key = CacheableKey::create(keyStr);
     LOGINFO("Putting key %s value %s in region %s", keyStr.c_str(),
             value->toString().c_str(), rptr->getFullPath().c_str());
     rptr->put(key, value);
