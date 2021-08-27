@@ -14,7 +14,7 @@
 # limitations under the License.
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_custom_target(netcore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
+  add_custom_target(NetCore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
 
 #
 # Move object files and binaries to build directory.  We do this for the sake
@@ -28,11 +28,11 @@ if(DOTNET AND INCLUDE_DOTNET_CORE)
 #     destination directory is empty.  We were left with a choice of
 #     delete-then-rename or copy-then-delete, and chose the latter.
 #
-  add_custom_command(TARGET netcore POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  add_custom_command(TARGET netcore POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+  add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin)
+  add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-  add_custom_command(TARGET netcore POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
-  add_custom_command(TARGET netcore POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
+  add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
+  add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
 
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/NetCoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
 endif()

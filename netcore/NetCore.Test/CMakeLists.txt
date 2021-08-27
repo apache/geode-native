@@ -14,7 +14,7 @@
 # limitations under the License.
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_custom_target(netcore-test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
+  add_custom_target(NetCore-Test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore VERBATIM)
 
 #
 # Move object files and binaries to build directory.  We do this for the sake
@@ -28,9 +28,9 @@ if(DOTNET AND INCLUDE_DOTNET_CORE)
 #     destination directory is empty.  We were left with a choice of
 #     delete-then-rename or copy-then-delete, and chose the latter.
 #
-  add_custom_command(TARGET netcore-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  add_custom_command(TARGET netcore-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin)
+  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin)
+  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 
-  add_custom_command(TARGET netcore-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
-  add_custom_command(TARGET netcore-test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
+  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
+  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
 endif()
