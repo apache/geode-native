@@ -34,5 +34,5 @@ if(DOTNET AND INCLUDE_DOTNET_CORE)
   add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
   add_custom_command(TARGET NetCore POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
 
-  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/NetCoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bin/$<CONFIG>/NetCoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
 endif()
