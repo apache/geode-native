@@ -432,18 +432,18 @@ Connector* TcrConnection::createConnection(
                                ->getDistributedSystem()
                                .getSystemProperties();
   if (systemProperties.sslEnabled()) {
-    auto sniHostname = m_poolDM->getSNIProxyHostname();
-    auto sniPort = m_poolDM->getSNIPort();
+    const auto& sniHostname = m_poolDM->getSniProxyHost();
     if (sniHostname.empty()) {
       socket = new TcpSslConn(address, connectTimeout, maxBuffSizePool,
                               systemProperties.sslTrustStore(),
                               systemProperties.sslKeyStore(),
                               systemProperties.sslKeystorePassword());
     } else {
+      const auto sniPort = m_poolDM->getSniProxyPort();
       socket = new TcpSslConn(
           address, connectTimeout, maxBuffSizePool, sniHostname, sniPort,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
-          systemProperties.sslKeystorePassword());
+          systemProperties.sslKeystorePassword();
     }
   } else {
     socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
