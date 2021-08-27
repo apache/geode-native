@@ -470,14 +470,14 @@ void TcrConnection::createConnection(const std::string& address,
                                .getSystemProperties();
 
   if (systemProperties.sslEnabled()) {
-    auto sniHostname = m_poolDM->getSNIProxyHostname();
-    auto sniPort = m_poolDM->getSNIPort();
+    const auto& sniHostname = m_poolDM->getSniProxyHost();
     if (sniHostname.empty()) {
       m_conn.reset(new TcpSslConn(address, connectTimeout, maxBuffSizePool,
                                   systemProperties.sslTrustStore(),
                                   systemProperties.sslKeyStore(),
                                   systemProperties.sslKeystorePassword()));
     } else {
+      const auto sniPort = m_poolDM->getSniProxyPort();
       m_conn.reset(new TcpSslConn(
           address, connectTimeout, maxBuffSizePool, sniHostname, sniPort,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
