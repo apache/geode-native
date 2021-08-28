@@ -356,129 +356,56 @@ namespace Apache
         }
       };
 
-
-
-
-      //n = native type
-      //m = CacheableInt(managed cacheable)
-      //mt = managed type(bool, int)
-#define _GFCLI_CACHEABLE_KEY_DEF_NEW(n, m, mt)                                   \
-      ref class m : public CacheableBuiltinKey<n, mt,        \
-        static_cast<int8_t>(DSCode::m)>                                                   \
-      {                                                                       \
-      public:                                                                 \
-         /** <summary>
-         *  Allocates a new instance with the given value.
-         *  </summary>
-         *  <param name="value">the value of the new instance</param>
-         */                                                                   \
-         inline m()                                                            \
-         : CacheableBuiltinKey() { }                                         \
-         /** <summary>
-          *  Allocates a new instance with the given value.
-          *  </summary>
-          *  <param name="value">the value of the new instance</param>
-          */                                                                   \
-          inline m(mt value)                                                    \
-          : CacheableBuiltinKey(value) { }                                    \
-          /** <summary>
-           *  Static function to create a new instance given value.
-           *  </summary>
-           *  <param name="value">the value of the new instance</param>
-           */                                                                   \
-           inline static m^ Create(mt value)                                     \
-           {                                                                     \
-           return gcnew m(value);                                              \
-           }                                                                     \
-           /** <summary>
-            * Explicit conversion operator to contained value type.
-            * </summary>
-            */                                                                   \
-            inline static explicit operator mt (m^ value)                         \
-           {                                                                     \
-           return value->Value;                                                \
-           }                                                                     \
-           \
-           /** <summary>
-            * Factory function to register this class.
-            * </summary>
-            */                                                                   \
-            static ISerializable^ CreateDeserializable()                        \
-           {                                                                     \
-           return gcnew m();                                       \
-           }                                                                     \
-           \
-           internal:                                                               \
-           static ISerializable^ Create(std::shared_ptr<native::Serializable> obj)            \
-           {                                                                     \
-           return (obj != nullptr ? gcnew m(obj) : nullptr);                   \
-           }                                                                     \
-           \
-           private:                                                                \
-             inline m(std::shared_ptr<native::Serializable> nativeptr)                            \
-              : CacheableBuiltinKey(nativeptr) { }                                \
-      };
-
-
-
-
       // Built-in CacheableKeys
 
       /// <summary>
       /// An immutable wrapper for booleans that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableBoolean,
-                                   CacheableBoolean, bool);
+      ref class CacheableBoolean : public CacheableBuiltinKey<native::CacheableBoolean, bool, static_cast<int8_t>(DSCode::CacheableBoolean)> { public: inline CacheableBoolean() : CacheableBuiltinKey() { } inline CacheableBoolean(bool value) : CacheableBuiltinKey(value) { } inline static CacheableBoolean^ Create(bool value) { return gcnew CacheableBoolean(value); } inline static explicit operator bool (CacheableBoolean^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableBoolean(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableBoolean(obj) : nullptr); } private: inline CacheableBoolean(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for bytes that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableByte,
-                                   CacheableByte, Byte);
+      ref class CacheableByte : public CacheableBuiltinKey<native::CacheableByte, Byte, static_cast<int8_t>(DSCode::CacheableByte)> { public: inline CacheableByte() : CacheableBuiltinKey() { } inline CacheableByte(Byte value) : CacheableBuiltinKey(value) { } inline static CacheableByte^ Create(Byte value) { return gcnew CacheableByte(value); } inline static explicit operator Byte (CacheableByte^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableByte(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableByte(obj) : nullptr); } private: inline CacheableByte(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for 16-bit characters that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableCharacter,
-                                   CacheableCharacter, Char);
+      ref class CacheableCharacter : public CacheableBuiltinKey<native::CacheableCharacter, Char, static_cast<int8_t>(DSCode::CacheableCharacter)> { public: inline CacheableCharacter() : CacheableBuiltinKey() { } inline CacheableCharacter(Char value) : CacheableBuiltinKey(value) { } inline static CacheableCharacter^ Create(Char value) { return gcnew CacheableCharacter(value); } inline static explicit operator Char (CacheableCharacter^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableCharacter(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableCharacter(obj) : nullptr); } private: inline CacheableCharacter(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for doubles that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableDouble,
-                                   CacheableDouble, Double);
+      ref class CacheableDouble : public CacheableBuiltinKey<native::CacheableDouble, Double, static_cast<int8_t>(DSCode::CacheableDouble)> { public: inline CacheableDouble() : CacheableBuiltinKey() { } inline CacheableDouble(Double value) : CacheableBuiltinKey(value) { } inline static CacheableDouble^ Create(Double value) { return gcnew CacheableDouble(value); } inline static explicit operator Double (CacheableDouble^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableDouble(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableDouble(obj) : nullptr); } private: inline CacheableDouble(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for floats that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableFloat,
-                                   CacheableFloat, Single);
+      ref class CacheableFloat : public CacheableBuiltinKey<native::CacheableFloat, Single, static_cast<int8_t>(DSCode::CacheableFloat)> { public: inline CacheableFloat() : CacheableBuiltinKey() { } inline CacheableFloat(Single value) : CacheableBuiltinKey(value) { } inline static CacheableFloat^ Create(Single value) { return gcnew CacheableFloat(value); } inline static explicit operator Single (CacheableFloat^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableFloat(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableFloat(obj) : nullptr); } private: inline CacheableFloat(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for 16-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt16,
-                                   CacheableInt16, System::Int16);
+      ref class CacheableInt16 : public CacheableBuiltinKey<native::CacheableInt16, System::Int16, static_cast<int8_t>(DSCode::CacheableInt16)> { public: inline CacheableInt16() : CacheableBuiltinKey() { } inline CacheableInt16(System::Int16 value) : CacheableBuiltinKey(value) { } inline static CacheableInt16^ Create(System::Int16 value) { return gcnew CacheableInt16(value); } inline static explicit operator System::Int16 (CacheableInt16^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableInt16(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableInt16(obj) : nullptr); } private: inline CacheableInt16(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for 32-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt32,
-                                   CacheableInt32, System::Int32);
+      ref class CacheableInt32 : public CacheableBuiltinKey<native::CacheableInt32, System::Int32, static_cast<int8_t>(DSCode::CacheableInt32)> { public: inline CacheableInt32() : CacheableBuiltinKey() { } inline CacheableInt32(System::Int32 value) : CacheableBuiltinKey(value) { } inline static CacheableInt32^ Create(System::Int32 value) { return gcnew CacheableInt32(value); } inline static explicit operator System::Int32 (CacheableInt32^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableInt32(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableInt32(obj) : nullptr); } private: inline CacheableInt32(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
 
       /// <summary>
       /// An immutable wrapper for 64-bit integers that can serve
       /// as a distributable key object for caching.
       /// </summary>
-      _GFCLI_CACHEABLE_KEY_DEF_NEW(native::CacheableInt64,
-                                   CacheableInt64, System::Int64);
+      ref class CacheableInt64 : public CacheableBuiltinKey<native::CacheableInt64, System::Int64, static_cast<int8_t>(DSCode::CacheableInt64)> { public: inline CacheableInt64() : CacheableBuiltinKey() { } inline CacheableInt64(System::Int64 value) : CacheableBuiltinKey(value) { } inline static CacheableInt64^ Create(System::Int64 value) { return gcnew CacheableInt64(value); } inline static explicit operator System::Int64 (CacheableInt64^ value) { return value->Value; } static ISerializable^ CreateDeserializable() { return gcnew CacheableInt64(); } internal: static ISerializable^ Create(std::shared_ptr<native::Serializable> obj) { return (obj != nullptr ? gcnew CacheableInt64(obj) : nullptr); } private: inline CacheableInt64(std::shared_ptr<native::Serializable> nativeptr) : CacheableBuiltinKey(nativeptr) { } };;
+
 
 
       // Built-in Cacheable array types
