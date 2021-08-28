@@ -604,63 +604,6 @@ namespace Apache
         };
       }
 
-#define _GFCLI_CACHEABLEHASHSET_DEF_GENERIC(m, HSTYPE)                               \
-	public ref class m : public Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::m), HSTYPE>      \
-            {                                                                       \
-      public:                                                                 \
-        /** <summary>
-      *  Allocates a new empty instance.
-      *  </summary>
-      */                                                                   \
-      inline m()                                                            \
-      : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::m), HSTYPE>() {}                      \
-      \
-      /** <summary>
-       *  Allocates a new instance with the given size.
-       *  </summary>
-       *  <param name="size">the initial size of the new instance</param>
-       */                                                                   \
-       inline m(System::Int32 size)                                                 \
-       : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::m), HSTYPE>(size) {}                  \
-       \
-       /** <summary>
-        *  Static function to create a new empty instance.
-        *  </summary>
-        */                                                                   \
-        inline static m^ Create()                                             \
-      {                                                                     \
-      return gcnew m();                                                   \
-      }                                                                     \
-      \
-      /** <summary>
-       *  Static function to create a new instance with the given size.
-       *  </summary>
-       */                                                                   \
-       inline static m^ Create(System::Int32 size)                                  \
-      {                                                                     \
-      return gcnew m(size);                                               \
-      }                                                                     \
-      \
-      /* <summary>
-       * Factory function to register this class.
-       * </summary>
-       */                                                                   \
-       static ISerializable^ CreateDeserializable()                        \
-      {                                                                     \
-      return gcnew m();                                                   \
-      }                                                                     \
-      \
-            internal:                                                               \
-              static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj)            \
-      {                                                                     \
-      return gcnew m(obj);                                                \
-      }                                                                     \
-      \
-            private:                                                                \
-              inline m(std::shared_ptr<apache::geode::client::Serializable> nativeptr)                            \
-              : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::m), HSTYPE>(nativeptr) { }             \
-      };
-
       /// <summary>
       /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
       /// a distributable object for caching.
