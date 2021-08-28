@@ -37,7 +37,7 @@ namespace Apache
 
       String^ UserFunctionExecutionException::Message::get()
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
         try
         {
@@ -49,12 +49,18 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       String^ UserFunctionExecutionException::Name::get()
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
         try
         {
@@ -66,7 +72,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
     }  // namespace Client
   }  // namespace Geode

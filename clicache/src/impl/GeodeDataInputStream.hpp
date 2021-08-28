@@ -97,7 +97,7 @@ namespace Apache
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
           auto bytesRemaining = static_cast<int>(m_maxSize - m_buffer->BytesReadInternally);
 					if(bytesRemaining <= 0)
 						return bytesRemaining;
@@ -114,7 +114,13 @@ namespace Apache
             m_position += actual;
           }
           return actual;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
 
         virtual void Flush() override { /* do nothing */ }

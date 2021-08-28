@@ -133,7 +133,7 @@ namespace Apache
       DistributedSystem^ DistributedSystem::Connect(String^ name, Properties<String^, String^>^ config, Cache ^ cache)
       {
         // TODO AppDomain should we be able to create a DS directly?
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
         auto nativeDistributedSystem = native::DistributedSystem::create(to_utf8(name),
                                                            config->GetNative());
@@ -144,16 +144,28 @@ namespace Apache
         return gcnew DistributedSystem(std::unique_ptr<native::DistributedSystem>(
             new native::DistributedSystem(std::move(nativeDistributedSystem))));
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void DistributedSystem::Disconnect(Cache^ cache)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
           DistributedSystem::UnregisterBuiltinManagedTypes(cache);
           m_nativeDistributedSystem->get()->disconnect();
           GC::KeepAlive(m_nativeDistributedSystem);
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void DistributedSystem::RegisterDataSerializablePrimitives(Cache^ cache)
@@ -313,7 +325,7 @@ namespace Apache
             gcnew TypeFactoryMethod(Apache::Geode::Client::Internal::PdxType::CreateDeserializable),
             nullptr);
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           // Set the Generic ManagedCacheLoader/Listener/Writer factory functions.
           native::CacheXmlParser::managedCacheLoaderFn_ =
@@ -331,7 +343,13 @@ namespace Apache
           native::CacheXmlParser::managedPersistenceManagerFn_ =
             native::ManagedPersistenceManagerGeneric::create;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void DistributedSystem::ManagedPostConnect(Cache^ cache)
@@ -349,7 +367,7 @@ namespace Apache
 
       void DistributedSystem::UnregisterBuiltinManagedTypes(Cache^ cache)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           TypeRegistry::UnregisterNativesGeneric(cache);
 
@@ -376,17 +394,29 @@ namespace Apache
           cache->TypeRegistry->UnregisterTypeGeneric(
             static_cast<int8_t>(native::internal::InternalId::CacheableManagedObjectXml));
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       Apache::Geode::Client::SystemProperties^ DistributedSystem::SystemProperties::get()
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return Apache::Geode::Client::SystemProperties::Create(
           &(m_nativeDistributedSystem->get()->getSystemProperties()));
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       String^ DistributedSystem::Name::get()

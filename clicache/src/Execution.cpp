@@ -42,7 +42,7 @@ namespace Apache
       Execution<TResult>^ Execution<TResult>::WithFilter(System::Collections::Generic::ICollection<TFilter>^ routingObj)
       {
         if (routingObj != nullptr) {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
           auto rsptr = native::CacheableVector::create();
         
           for each(TFilter item in routingObj)
@@ -59,7 +59,13 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
         else {
           throw gcnew IllegalArgumentException("Execution<TResult>::WithFilter: null TFilter provided");
@@ -70,7 +76,7 @@ namespace Apache
       generic<class TArgs>
       Execution<TResult>^ Execution<TResult>::WithArgs( TArgs args )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           try
           {
             auto argsptr = Serializable::GetUnmanagedValueGeneric<TArgs>( args );
@@ -80,13 +86,19 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TResult>
       Execution<TResult>^ Execution<TResult>::WithCollector(Client::IResultCollector<TResult>^ rc)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           std::shared_ptr<native::ResultCollector> rcptr;
         if ( rc != nullptr ) {
           auto rcg = gcnew ResultCollectorGeneric<TResult>();
@@ -101,12 +113,18 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
       generic<class TResult>
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
         try
         {
           auto rc = m_nativeptr->get()->execute(to_utf8(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
@@ -119,7 +137,13 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TResult>

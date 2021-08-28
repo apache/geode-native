@@ -37,7 +37,7 @@ namespace Apache
 
       PoolFactory^ PoolFactory::SetFreeConnectionTimeout( TimeSpan connectionTimeout )
 		  {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -48,14 +48,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetLoadConditioningInterval( TimeSpan loadConditioningInterval )
 		  {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -66,14 +72,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSocketBufferSize( Int32 bufferSize )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -84,14 +96,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetReadTimeout( TimeSpan timeout )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -102,14 +120,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetMinConnections( Int32 minConnections )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -120,14 +144,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetMaxConnections( Int32 maxConnections )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -138,14 +168,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetIdleTimeout( TimeSpan idleTimeout )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -156,14 +192,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetRetryAttempts( Int32 retryAttempts )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -174,14 +216,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetPingInterval( TimeSpan pingInterval )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -192,14 +240,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetUpdateLocatorListInterval( TimeSpan updateLocatorListInterval )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -210,14 +264,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
       PoolFactory^ PoolFactory::SetStatisticInterval( TimeSpan statisticInterval )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -228,13 +288,19 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
       PoolFactory^ PoolFactory::SetServerGroup( String^ group )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -245,14 +311,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::AddLocator( String^ host, Int32 port )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -263,14 +335,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
       PoolFactory^ PoolFactory::AddServer( String^ host, Int32 port )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -281,13 +359,19 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 		  PoolFactory^ PoolFactory::SetSniProxy(String^ hostname, Int32 port)
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -298,13 +382,19 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 		  PoolFactory^ PoolFactory::SetSubscriptionEnabled( Boolean enabled )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -315,14 +405,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
           PoolFactory^ PoolFactory::SetPRSingleHopEnabled( Boolean enabled )
           {
-            _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+            try {/* due to auto replace */
 
               try
               {
@@ -333,14 +429,20 @@ namespace Apache
                 GC::KeepAlive(m_nativeptr);
               }
 
-             _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+             }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
                return this;
           }
 
     
 		  PoolFactory^ PoolFactory::SetSubscriptionRedundancy( Int32 redundancy )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -351,14 +453,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSubscriptionMessageTrackingTimeout( TimeSpan messageTrackingTimeout )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -369,14 +477,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSubscriptionAckInterval( TimeSpan ackInterval )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -387,12 +501,18 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
       PoolFactory^ PoolFactory::SetThreadLocalConnections( Boolean enabled )
       {
-			  _GF_MG_EXCEPTION_TRY2
+			  try {
 
 			  try
 			  {
@@ -403,13 +523,19 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
           return this;
 	  }
 
       PoolFactory^ PoolFactory::SetMultiuserAuthentication( bool multiuserAuthentication )
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
           try
           {
@@ -420,14 +546,20 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 	   }
 
 
 		  PoolFactory^ PoolFactory::Reset()
       {
-			  _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+			  try {/* due to auto replace */
 
 			  try
 			  {
@@ -438,14 +570,20 @@ namespace Apache
 			    GC::KeepAlive(m_nativeptr);
 			  }
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
           return this;
 		  }
 
 
       Pool^ PoolFactory::Create(String^ name)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -456,7 +594,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
         
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
     }  // namespace Client
   }  // namespace Geode

@@ -451,7 +451,7 @@ namespace Apache
 
       QueryService^ Pool::GetQueryService()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -463,12 +463,18 @@ namespace Apache
           }
 
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
       
       Int32 Pool::PendingEventCount::get()
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -480,7 +486,13 @@ namespace Apache
           }
 
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
     }  // namespace Client
   }  // namespace Geode

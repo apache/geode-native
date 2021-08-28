@@ -79,7 +79,7 @@ namespace Apache
       generic<class TKey, class TValue>
       std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr, std::shared_ptr<native::Serializable>& callbackptr)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           try
           {
             return m_nativeptr->get()->get(keyptr, callbackptr);
@@ -88,13 +88,19 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           try
           {
             return m_nativeptr->get()->get(keyptr);
@@ -103,13 +109,19 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::isPoolInMultiuserMode()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           auto rAttributes = this->Attributes;
           auto poolName = rAttributes->PoolName;
           if (poolName != nullptr) {
@@ -120,13 +132,19 @@ namespace Apache
             }
           }
           return false;
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Put(TKey key, TValue value, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -140,7 +158,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -166,7 +190,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::default::set(TKey key, TValue value)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -179,7 +203,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -188,7 +218,7 @@ namespace Apache
       {
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -199,7 +229,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
           auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(static_cast<int>(vc.size()));
 
@@ -219,7 +255,7 @@ namespace Apache
       {
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -230,7 +266,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
          auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
 
@@ -261,7 +303,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ContainsKey(TKey key)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -273,13 +315,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
         std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
         GC::KeepAlive(m_nativeptr);
         auto nativeptr = this->get(keyptr);
@@ -292,13 +340,19 @@ namespace Apache
           return true;
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TKey>^ Region<TKey, TValue>::Keys::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::CacheableKey>> vc;
         try
@@ -318,13 +372,19 @@ namespace Apache
         auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
         return collectionlist;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TValue>^ Region<TKey, TValue>::Values::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::Cacheable>> vc;
         try
@@ -344,13 +404,19 @@ namespace Apache
         auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
         return collectionlist;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(TKey key, TValue value)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -363,13 +429,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(KeyValuePair<TKey, TValue> keyValuePair)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -382,13 +454,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(TKey key, TValue value, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -402,13 +480,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -420,14 +504,20 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -440,13 +530,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(KeyValuePair<TKey, TValue> keyValuePair)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -459,13 +555,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key, TValue value, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -480,23 +582,35 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::InvalidateRegion()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           InvalidateRegion(nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::InvalidateRegion(Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -508,23 +622,35 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::DestroyRegion()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           DestroyRegion(nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::DestroyRegion(Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -536,24 +662,36 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Invalidate(TKey key)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           Invalidate(key, nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Invalidate(TKey key, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -566,24 +704,36 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           return PutAll(map, TimeUtils::DurationToTimeSpan(native::DEFAULT_RESPONSE_TIMEOUT));
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           native::HashMapOfCacheable nativeMap;
         for each (KeyValuePair<TKey, TValue> keyValPair in map)
@@ -601,14 +751,20 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           native::HashMapOfCacheable nativeMap;
         for each (KeyValuePair<TKey, TValue> keyValPair in map)
@@ -627,7 +783,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -636,11 +798,17 @@ namespace Apache
                                         System::Collections::Generic::IDictionary<TKey, TValue>^ values,
                                         System::Collections::Generic::IDictionary<TKey, System::Exception^>^ exceptions)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           GetAll(keys, values, exceptions, false);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -651,7 +819,7 @@ namespace Apache
                                         bool addToLocalCache)
       {
         if (keys != nullptr) {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -679,7 +847,13 @@ namespace Apache
             }
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -693,7 +867,7 @@ namespace Apache
                                         bool addToLocalCache, Object^ callbackArg)
       {
         if (keys != nullptr) {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
 
           std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -725,7 +899,13 @@ namespace Apache
             }
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -735,11 +915,17 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RemoveAll(System::Collections::Generic::ICollection<TKey>^ keys)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           RemoveAll(keys, nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -747,7 +933,7 @@ namespace Apache
       void Region<TKey, TValue>::RemoveAll(System::Collections::Generic::ICollection<TKey>^ keys,
                                             Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
         for each(TKey item in keys) 
@@ -767,7 +953,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
       generic<class TKey, class TValue>
@@ -799,7 +991,7 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::ParentRegion::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -811,13 +1003,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       Apache::Geode::Client::RegionAttributes<TKey, TValue>^ Region<TKey, TValue>::Attributes::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -829,13 +1027,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       AttributesMutator<TKey, TValue>^ Region<TKey, TValue>::AttributesMutator::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -847,13 +1051,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       Apache::Geode::Client::CacheStatistics^ Region<TKey, TValue>::Statistics::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -865,13 +1075,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::GetSubRegion(String^ path)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -883,14 +1099,20 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::CreateSubRegion(String^ subRegionName,
                                                                     Apache::Geode::Client::RegionAttributes<TKey, TValue>^ attributes)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -902,14 +1124,20 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^ Region<TKey, TValue>::SubRegions(bool recursive)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           std::vector<std::shared_ptr<native::Region>> vsr;
         try
@@ -931,13 +1159,19 @@ namespace Apache
         auto collection = (System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^)subRegions;
         return collection;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       RegionEntry<TKey, TValue>^ Region<TKey, TValue>::GetEntry(TKey key)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -950,13 +1184,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^ Region<TKey, TValue>::GetEntries(bool recursive)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
         try
@@ -978,7 +1218,13 @@ namespace Apache
 
         return collection;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -991,7 +1237,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ContainsValueForKey(TKey key)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -1003,13 +1249,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       int Region<TKey, TValue>::Count::get()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           try
           {
             return m_nativeptr->get()->size();
@@ -1018,7 +1270,13 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1030,7 +1288,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Clear(Object^ callbackArg)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
         try
         {
           std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
@@ -1040,7 +1298,13 @@ namespace Apache
         {
           GC::KeepAlive(m_nativeptr);
         }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1056,7 +1320,7 @@ namespace Apache
           throw gcnew System::ArgumentOutOfRangeException;
         }
 
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
         try
@@ -1082,7 +1346,13 @@ namespace Apache
           ++startIdx;
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1118,7 +1388,7 @@ namespace Apache
       {
         if (keys != nullptr)
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -1136,7 +1406,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
       }
 
@@ -1145,7 +1421,7 @@ namespace Apache
       {
         if (keys != nullptr)
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -1164,7 +1440,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
       }
 
@@ -1192,7 +1474,7 @@ namespace Apache
                                                   bool getInitialValues,
                                                   bool receiveValues)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -1203,13 +1485,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TKey>^ Region<TKey, TValue>::GetInterestList()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::CacheableKey>> vc;
         try
@@ -1230,13 +1518,19 @@ namespace Apache
         auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
         return collectionlist;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<String^>^ Region<TKey, TValue>::GetInterestListRegex()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         std::vector<std::shared_ptr<native::CacheableString>> vc;
         try
@@ -1256,13 +1550,19 @@ namespace Apache
         auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;
         return collectionlist;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::UnregisterAllKeys()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -1273,7 +1573,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -1299,7 +1605,7 @@ namespace Apache
       void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable,
           bool getInitialValues, bool receiveValues)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -1311,13 +1617,19 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::UnregisterRegex(String^ regex)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -1328,7 +1640,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
       }
 
@@ -1343,7 +1661,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -1363,7 +1681,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1375,7 +1699,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ExistsValue(String^ predicate, TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -1386,7 +1710,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -1398,7 +1728,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ Region<TKey, TValue>::SelectValue(String^ predicate, TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
         try
         {
@@ -1410,7 +1740,13 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>

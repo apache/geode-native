@@ -266,20 +266,6 @@ namespace Apache
           : Exception( info, context ) { }
       };
 
-/// Handle geode exceptions from native layer and convert to managed
-/// exceptions.
-#define _GF_MG_EXCEPTION_TRY2        \
-      try {
-#define _GF_MG_EXCEPTION_CATCH_ALL2  \
-      } \
-      catch (const apache::geode::client::Exception& ex) { \
-      throw Apache::Geode::Client::GeodeException::Get(ex); \
-      } \
-      catch (System::AccessViolationException^ ex) { \
-        throw ex; \
-      }
-
-
 /// Creates a class <c>x</c> named for each exception <c>y</c>.
 #define _GF_MG_EXCEPTION_DEF4(x,y) \
       [Serializable] \

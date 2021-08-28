@@ -223,12 +223,18 @@ namespace Apache
           ManagedTypeToDsCode[managedType] = dsCode;
         }
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
           serializationRegistry->setDataSerializablePrimitiveType(nativeDelegateFunction, static_cast<DSCode>(dsCode));
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void TypeRegistry::RegisterDataSerializableFixedIdTypeOverrideNativeDeserialization(
@@ -246,22 +252,34 @@ namespace Apache
 
         Log::Finer("Registering serializable fixed ID " + fixedId);
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
           auto&& serializationRegistry = CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry();
           auto nativeDelegateFunction = static_cast<std::shared_ptr<native::Serializable>(*)()>(
               System::Runtime::InteropServices::Marshal::GetFunctionPointerForDelegate(nativeDelegate).ToPointer());
           serializationRegistry->addDataSerializableFixedIdType(static_cast<internal::DSFid>(fixedId), nativeDelegateFunction);
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void TypeRegistry::UnregisterTypeGeneric(Byte typeId)
       {
         DsCodeToDataSerializablePrimitiveNativeDelegate->Remove(typeId);
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           CacheRegionHelper::getCacheImpl(m_cache->GetNative().get())->getSerializationRegistry()->removeDataSerializableType(typeId);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void TypeRegistry::RegisterDataSerializablePrimitiveWrapper(

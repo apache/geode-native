@@ -49,7 +49,7 @@ namespace Apache
       generic<class TKey, class TResult>
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(TimeSpan timeout)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           try
           {
             auto nativeptr = m_nativeptr->get()->executeWithInitialResults(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
@@ -65,13 +65,19 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Execute()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -82,7 +88,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
@@ -180,7 +192,7 @@ namespace Apache
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Stop( )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -191,13 +203,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Close( )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -208,13 +226,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
       bool CqQuery<TKey, TResult>::IsRunning( )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -225,13 +249,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
       bool CqQuery<TKey, TResult>::IsStopped( )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -242,13 +272,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TResult>
         bool CqQuery<TKey, TResult>::IsClosed()
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
 
             try
           {
@@ -259,7 +295,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
     }  // namespace Client
   }  // namespace Geode

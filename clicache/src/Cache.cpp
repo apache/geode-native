@@ -131,12 +131,18 @@ namespace Apache
 
       void Cache::Close( bool keepalive )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           m_nativeptr->get()->close( keepalive );
           Apache::Geode::Client::DistributedSystem::UnregisterBuiltinManagedTypes(this);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         finally
         {
 					CacheRegionHelper::getCacheImpl(m_nativeptr->get())->getPdxTypeRegistry()->clear();
@@ -148,7 +154,7 @@ namespace Apache
 
       void Cache::ReadyForEvents( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -159,13 +165,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TKey, class TValue>
       Client::IRegion<TKey,TValue>^ Cache::GetRegion( String^ path )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -176,7 +188,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TKey, class TValue>
@@ -204,7 +222,7 @@ namespace Apache
 
       Client::QueryService^ Cache::GetQueryService( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -215,12 +233,18 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       Client::QueryService^ Cache::GetQueryService(String^ poolName )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -231,12 +255,18 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       RegionFactory^ Cache::CreateRegionFactory(RegionShortcut preDefinedRegionAttributes)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           auto preDefineRegionAttr = apache::geode::client::RegionShortcut(preDefinedRegionAttributes);
 
@@ -251,12 +281,18 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
           
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       IRegionService^ Cache::CreateAuthenticatedView(Properties<String^, Object^>^ credentials)
       {        
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -267,12 +303,18 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2   
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }   
       }
 
 			bool Cache::GetPdxIgnoreUnreadFields()
 			{
-				_GF_MG_EXCEPTION_TRY2
+				try {
 
 					try
 					{
@@ -283,12 +325,18 @@ namespace Apache
 					  GC::KeepAlive(m_nativeptr);
 					}
 
-				_GF_MG_EXCEPTION_CATCH_ALL2   
+				}
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }   
 			}
 
       bool Cache::GetPdxReadSerialized()
 			{
-				_GF_MG_EXCEPTION_TRY2
+				try {
 
 					try
 					{
@@ -299,13 +347,19 @@ namespace Apache
 					  GC::KeepAlive(m_nativeptr);
 					}
 
-				_GF_MG_EXCEPTION_CATCH_ALL2   
+				}
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }   
 			}
 
       IRegionService^ Cache::CreateAuthenticatedView(Properties<String^, Object^>^ credentials, String^ poolName)
       {
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -316,7 +370,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2   
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }   
       }
 
 			 void Cache::InitializeDeclarativeCache( String^ cacheXml )

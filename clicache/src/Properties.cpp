@@ -86,7 +86,7 @@ namespace Apache
         std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key, true);
         std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TPropValue>(value, true);
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -97,7 +97,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
@@ -105,7 +111,7 @@ namespace Apache
       {
         std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TPropKey>(key);
 
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -116,7 +122,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
@@ -132,7 +144,7 @@ namespace Apache
           auto otherVisitor = gcnew PropertyVisitor(proxy, &PropertyVisitorProxy<TPropKey, TPropValue>::Visit);
           mg_visitor.setptr(otherVisitor);
 
-          _GF_MG_EXCEPTION_TRY2
+          try {
 
             try
             {
@@ -143,14 +155,20 @@ namespace Apache
               GC::KeepAlive(m_nativeptr);
             }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         }
       }
 
       generic<class TPropKey, class TPropValue>
       System::UInt32 Properties<TPropKey, TPropValue>::Size::get( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -161,13 +179,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::AddAll( Properties<TPropKey, TPropValue>^ other )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -178,13 +202,19 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::Load( String^ fileName )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -195,7 +225,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
@@ -219,11 +255,17 @@ namespace Apache
           auto nativeOutput = output->GetNative();
           if (nativeOutput != nullptr)
           {
-            _GF_MG_EXCEPTION_TRY2
+            try {
 
                 m_nativeptr->get()->toData(*nativeOutput);
 
-            _GF_MG_EXCEPTION_CATCH_ALL2
+            }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
           }
 
           if (output->IsManagedObject()) {
@@ -258,7 +300,7 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::FromData( native::DataInput& input )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
         try
         {
@@ -269,14 +311,20 @@ namespace Apache
           GC::KeepAlive(m_nativeptr);
         }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TPropKey, class TPropValue>
       System::UInt64 Properties<TPropKey, TPropValue>::ObjectSize::get( )
       {
         //TODO::
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -287,7 +335,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       // ISerializable methods
@@ -298,7 +352,7 @@ namespace Apache
       //{
       //  auto output = std::unique_ptr<native::DataOutput>(new native::DataOutput(*m_serializationRegistry->get_shared_ptr()));
 
-      //  _GF_MG_EXCEPTION_TRY2
+      //  try {
 
       //    try
       //    {
@@ -309,7 +363,13 @@ namespace Apache
       //      GC::KeepAlive(m_nativeptr);
       //    }
 
-      //  _GF_MG_EXCEPTION_CATCH_ALL2
+      //  }
+      //  catch (const apache::geode::client::Exception& ex) {
+      //    throw Apache::Geode::Client::GeodeException::Get(ex);
+      //  }
+      //  catch (System::AccessViolationException^ ex) {
+      //    throw ex;
+      //  }
 
       //  auto bytes = gcnew array<Byte>( output->getBufferLength( ) );
       //  {
@@ -336,11 +396,17 @@ namespace Apache
       //  if (bytes != nullptr) {
       //    pin_ptr<const Byte> pin_bytes = &bytes[0];
 
-      //    _GF_MG_EXCEPTION_TRY2
+      //    try {
 
       //      native::DataInput input( (System::Byte*)pin_bytes, bytes->Length, *CacheImpl::getInstance()->getSerializationRegistry().get());
       //      FromData(input);
-      //    _GF_MG_EXCEPTION_CATCH_ALL2
+      //    }
+      //    catch (const apache::geode::client::Exception& ex) {
+      //      throw Apache::Geode::Client::GeodeException::Get(ex);
+      //    }
+      //    catch (System::AccessViolationException^ ex) {
+      //      throw ex;
+      //    }
       //  }
       //}
 

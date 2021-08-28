@@ -41,41 +41,59 @@ namespace Apache
       generic <class TKey, class TValue>
       Execution<TResult>^ FunctionService<TResult>::OnRegion( IRegion<TKey, TValue>^ rg )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
           
           auto nativeRegion = ((Region<TKey, TValue>^)rg)->GetNative();
           auto execution = native::FunctionService::onRegion(nativeRegion);
           return Execution<TResult>::Create( std::move(execution), nullptr );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic <class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServer( Pool^ pl )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           auto nativeptr = native::FunctionService::onServer(pl->GetNative());
           return Execution<TResult>::Create(std::move(nativeptr) , nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
       
       generic <class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServers( Pool^ pl )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           auto nativeptr = native::FunctionService::onServers(pl->GetNative());
           return Execution<TResult>::Create(std::move(nativeptr) , nullptr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServer( IRegionService^ cache )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
@@ -89,13 +107,19 @@ namespace Apache
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic<class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServers( IRegionService^ cache )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
@@ -109,7 +133,13 @@ namespace Apache
             return Execution<TResult>::Create(std::move(nativeptr), nullptr );
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
     }  // namespace Client
   }  // namespace Geode

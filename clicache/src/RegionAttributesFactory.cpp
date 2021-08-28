@@ -357,7 +357,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetInitialCapacity( System::Int32 initialCapacity )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -368,7 +368,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
         return this;
       }
@@ -376,7 +382,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetLoadFactor( Single loadFactor )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -387,7 +393,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
         return this;
       }
@@ -395,7 +407,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetConcurrencyLevel( System::Int32 concurrencyLevel )
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -406,7 +418,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
 
         return this;
       }
@@ -485,7 +503,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Apache::Geode::Client::RegionAttributes<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::Create()
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -497,7 +515,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
     }  // namespace Client
   }  // namespace Geode

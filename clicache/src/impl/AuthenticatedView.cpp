@@ -56,7 +56,7 @@ namespace Apache
 
       void AuthenticatedView::Close( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -67,14 +67,20 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       
 			//TODO::split
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ AuthenticatedView::GetRegion( String^ path )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -86,12 +92,18 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       
       Client::QueryService^ AuthenticatedView::GetQueryService( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -102,7 +114,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TKey, class TValue>

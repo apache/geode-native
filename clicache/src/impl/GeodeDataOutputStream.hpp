@@ -81,7 +81,7 @@ namespace Apache
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
           /*
           array<Byte> ^ chunk = gcnew array<Byte>(count);
           array<Byte>::ConstrainedCopy(buffer, offset, chunk, 0, count);
@@ -91,15 +91,27 @@ namespace Apache
           //m_buffer->NativePtr->writeBytesOnly((const System::Byte*)pin_bytes, count);
           m_buffer->WriteBytesOnly(buffer, count, offset);
           m_position += count;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
 
         virtual void WriteByte(unsigned char value) override
         {
-          _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+          try {/* due to auto replace */
           m_buffer->WriteByte(value);
           m_position++;
-          _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
         }
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override

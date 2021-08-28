@@ -34,24 +34,36 @@ namespace Apache
 
       void Log::Init(LogLevel level, String^ logFileName)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           ManagedString mg_lfname(logFileName);
         apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void Log::Init(LogLevel level, String^ logFileName, System::Int32 logFileLimit)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           ManagedString mg_lfname(logFileName);
         apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr, logFileLimit);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void Log::Close()
@@ -78,13 +90,19 @@ namespace Apache
 
       void Log::Write(LogLevel level, String^ msg)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           ManagedString mg_msg(msg);
         apache::geode::client::Log::log(static_cast<apache::geode::client::LogLevel>(level),
                                         mg_msg.CharPtr);
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void Log::LogThrow(LogLevel level, String^ msg, System::Exception^ ex)

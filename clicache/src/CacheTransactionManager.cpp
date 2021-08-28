@@ -33,111 +33,183 @@ namespace Apache
 
       void CacheTransactionManager::Begin( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           m_nativeptr->begin( );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void CacheTransactionManager::Prepare( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           m_nativeptr->prepare( );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void CacheTransactionManager::Commit( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
             m_nativeptr->commit( );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       void CacheTransactionManager::Rollback( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
             m_nativeptr->rollback( );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       bool CacheTransactionManager::Exists( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
         return m_nativeptr->exists( );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       Apache::Geode::Client::TransactionId^ CacheTransactionManager::Suspend( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
        
           return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->suspend());
        
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 			Apache::Geode::Client::TransactionId^ CacheTransactionManager::TransactionId::get( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->getTransactionId());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       void CacheTransactionManager::Resume(Apache::Geode::Client::TransactionId^ transactionId)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return m_nativeptr->resume(transactionId->GetNative());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       bool CacheTransactionManager::IsSuspended(Apache::Geode::Client::TransactionId^ transactionId)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return m_nativeptr->isSuspended(transactionId->GetNative());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return m_nativeptr->tryResume(transactionId->GetNative());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, TimeSpan waitTime)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return m_nativeptr->tryResume(transactionId->GetNative(), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
       bool CacheTransactionManager::Exists(Apache::Geode::Client::TransactionId^ transactionId)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           return m_nativeptr->exists(transactionId->GetNative());
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
 #ifdef CSTX_COMMENTED
       generic<class TKey, class TValue>
       ITransactionWriter<TKey, TValue>^ CacheTransactionManager::GetWriter( )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           // Conver the unmanaged object to  managed generic object 
           std::shared_ptr<apache::geode::client::TransactionWriter>& writerPtr( m_nativeptr->getWriter( ) );
@@ -149,7 +221,13 @@ namespace Apache
             return (ITransactionWriter<TKey, TValue>^)twg->userptr( );
           }
         
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         
         return nullptr;
       }
@@ -157,7 +235,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void CacheTransactionManager::SetWriter(ITransactionWriter<TKey, TValue>^ transactionWriter)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
           // Create a unmanaged object using the ManagedTransactionWriterGeneric.
           // Set the generic object inside the TransactionWriterGeneric that is a non generic object
           std::shared_ptr<apache::geode::client::TransactionWriter> writerPtr;
@@ -170,13 +248,19 @@ namespace Apache
           }
           m_nativeptr->setWriter( writerPtr );
           
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       generic<class TKey, class TValue>
       void CacheTransactionManager::AddListener(ITransactionListener<TKey, TValue>^ transactionListener)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
           // Create a unmanaged object using the ManagedTransactionListenerGeneric.
           // Set the generic object inside the TransactionListenerGeneric that is a non generic object
           std::shared_ptr<apache::geode::client::TransactionListener> listenerPtr;
@@ -189,13 +273,19 @@ namespace Apache
           }
           m_nativeptr->addListener( listenerPtr );
           
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
         
       generic<class TKey, class TValue>
       void CacheTransactionManager::RemoveListener(ITransactionListener<TKey, TValue>^ transactionListener)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
           // Create an unmanaged non generic object using the managed generic object
           // use this to call the remove listener
           std::shared_ptr<apache::geode::client::TransactionListener> listenerPtr;
@@ -208,7 +298,13 @@ namespace Apache
           }
           m_nativeptr->removeListener( listenerPtr );
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 #endif
     }  // namespace Client

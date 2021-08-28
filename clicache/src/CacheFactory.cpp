@@ -59,7 +59,7 @@ namespace Apache
         native::createAppDomainContext = &Apache::Geode::Client::createAppDomainContext;
 				bool pdxIgnoreUnreadFields = false;
         bool pdxReadSerialized = false;
-        _GF_MG_EXCEPTION_TRY2
+        try {
           //msclr::lock lockInstance(m_singletonSync);
           auto nativeCache = std::make_shared<native::Cache>(m_nativeptr->get()->create( ));
 
@@ -80,7 +80,13 @@ namespace Apache
           cacheImpl->getSerializationRegistry()->setDataSerializableHandler(new ManagedDataSerializableHandler());
 
           return cache;
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         finally {
           GC::KeepAlive(m_nativeptr);
         }
@@ -100,7 +106,7 @@ namespace Apache
 
 			CacheFactory^ CacheFactory::SetPdxIgnoreUnreadFields(bool ignore)
 			{
-				_GF_MG_EXCEPTION_TRY2
+				try {
 
           try
           {
@@ -112,12 +118,18 @@ namespace Apache
           }
           return this;
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
 			}
 
       CacheFactory^ CacheFactory::SetPdxReadSerialized(bool pdxReadSerialized)
       {
-        	_GF_MG_EXCEPTION_TRY2
+        	try {
 
           try
           {
@@ -129,12 +141,18 @@ namespace Apache
           }
           return this;
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       CacheFactory^ CacheFactory::Set(String^ name, String^ value)
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
           try
           {
             m_nativeptr->get()->set(marshal_as<std::string>(name), to_utf8(value));
@@ -145,12 +163,18 @@ namespace Apache
           }
           return this;
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       CacheFactory^ CacheFactory::SetAuthInitialize(IAuthInitialize^ authInitialize)
       {
-        	_GF_MG_EXCEPTION_TRY2
+        	try {
 
           try
           {
@@ -167,7 +191,13 @@ namespace Apache
           }
           return this;
 
-			  _GF_MG_EXCEPTION_CATCH_ALL2
+			  }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
     }  // namespace Client

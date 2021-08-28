@@ -59,7 +59,7 @@ namespace Apache
         m_isRootObjectPdx = false;
         m_cache = cache;
         if (buffer != nullptr && size > 0) {
-          _GF_MG_EXCEPTION_TRY2
+          try {
 
           m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
             std::make_unique<native::DataInput>(cache->GetNative()->createDataInput(buffer, size)));
@@ -77,7 +77,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "
@@ -91,7 +97,7 @@ namespace Apache
         m_isRootObjectPdx = false;
         m_cache =  cache;
         if (buffer != nullptr && buffer->Length > 0) {
-          _GF_MG_EXCEPTION_TRY2
+          try {
 
           auto len = buffer->Length;
           m_ownedBuffer = make_native_unique<System::Byte[]>(len);
@@ -114,7 +120,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "
@@ -133,7 +145,7 @@ namespace Apache
               "DataInput.ctor(): given length {0} is zero or greater than "
               "size of buffer {1}", len, buffer->Length));
           }
-          _GF_MG_EXCEPTION_TRY2
+          try {
 
           m_ownedBuffer = make_native_unique<System::Byte[]>(len);
           m_buffer = m_ownedBuffer->get();
@@ -152,7 +164,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          _GF_MG_EXCEPTION_CATCH_ALL2
+          }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "

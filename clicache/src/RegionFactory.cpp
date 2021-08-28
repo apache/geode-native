@@ -237,7 +237,7 @@ namespace Apache
 
       RegionFactory^ RegionFactory::SetInitialCapacity( System::Int32 initialCapacity )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -249,12 +249,18 @@ namespace Apache
           }
           return this;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       RegionFactory^ RegionFactory::SetLoadFactor( Single loadFactor )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -266,12 +272,18 @@ namespace Apache
           }
           return this;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       RegionFactory^ RegionFactory::SetConcurrencyLevel( System::Int32 concurrencyLevel )
       {
-        _GF_MG_EXCEPTION_TRY2
+        try {
 
           try
           {
@@ -283,7 +295,13 @@ namespace Apache
           }
           return this;
 
-        _GF_MG_EXCEPTION_CATCH_ALL2
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }
       }
 
       RegionFactory^ RegionFactory::SetLruEntriesLimit( System::UInt32 entriesLimit )
@@ -355,7 +373,7 @@ namespace Apache
       generic <class TKey, class TValue>
       IRegion<TKey,TValue>^ RegionFactory::Create(String^ regionName)
       {
-        _GF_MG_EXCEPTION_TRY2/* due to auto replace */
+        try {/* due to auto replace */
 
           try
           {
@@ -367,7 +385,13 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-        _GF_MG_EXCEPTION_CATCH_ALL2/* due to auto replace */
+        }
+        catch (const apache::geode::client::Exception& ex) {
+          throw Apache::Geode::Client::GeodeException::Get(ex);
+        }
+        catch (System::AccessViolationException^ ex) {
+          throw ex;
+        }/* due to auto replace */
       }
 
       generic <class TKey, class TValue>
