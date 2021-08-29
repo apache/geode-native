@@ -511,7 +511,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
-    LOG_INFO("Step 6.1 complete.");
+    LOGINFO("Step 6.1 complete.");
 
     // Try removing value that is present on client but not on server, result
     // should be false.
@@ -527,7 +527,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
            "containsKeyOnServer should be true");
-    LOG_INFO("Step 6.2 complete.");
+    LOGINFO("Step 6.2 complete.");
 
     // Try removing value that is not present on client but present on server,
     // result should be false.
@@ -543,7 +543,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
            "containsKeyOnServer should be true");
-    LOG_INFO("Step 6.3 complete.");
+    LOGINFO("Step 6.3 complete.");
 
     // Try removing value that is invalidated on client but exists on server,
     // result should be false.
@@ -559,7 +559,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
            "containsKeyOnServer should be true");
-    LOG_INFO("Step 6.4 complete.");
+    LOGINFO("Step 6.4 complete.");
 
     // Try removing null value, that is invalidated on client but exists on the
     // server, result should be false.
@@ -577,7 +577,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     ASSERT(reg1->containsKey(keys[3]) == true, "containsKey should be true");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == true,
            "containsKeyOnServer should be true");
-    LOG_INFO("Step 6.5 complete.");
+    LOGINFO("Step 6.5 complete.");
 
     // Try removing a entry (value) which is not present on client as well as
     // server, result should be false.
@@ -594,7 +594,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
            "containsKey should be false");
     ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
            "containsKeyOnServer should be false");
-    LOG_INFO("Step 6.6 complete.");
+    LOGINFO("Step 6.6 complete.");
 
     // Try removing a entry with a null value, which is not present on client as
     // well as server, result should be false.
@@ -611,7 +611,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
            "containsKey should be false");
     ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
            "containsKeyOnServer should be false");
-    LOG_INFO("Step 6.7 complete.");
+    LOGINFO("Step 6.7 complete.");
 
     // Try removing a entry (value) which is not present on client but exists on
     // the server, result should be true.
@@ -917,8 +917,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     // sizes.
     reg->put("Key100", "Value100");
     reg->put("Key200", "Value200");
-    LOG_INFO("Region 2 puts complete ");
-    LOG_INFO("Regions size = %d ", reg->size());
+    LOGINFO("Region 2 puts complete ");
+    LOGINFO("Regions size = %d ", reg->size());
 
     try {
       reg->destroy("key300");
@@ -932,23 +932,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     ASSERT(reg->size() == 2, "region size should be equal to 2");
 
     std::vector<std::shared_ptr<CacheableKey>> keysVector = reg->keys();
-    LOG_INFO("Region keys = %d ", keysVector.size());
+    LOGINFO("Region keys = %d ", keysVector.size());
     ASSERT(keysVector.size() == reg->size(),
            "region size should be equal to keys size");
 
     auto values = reg->values();
-    LOG_INFO("Region values = %d ", values.size());
+    LOGINFO("Region values = %d ", values.size());
     ASSERT(values.size() == reg->size(),
            "region size should be equal to values size");
 
     reg->destroy("Key100");
     keysVector = reg->keys();
-    LOG_INFO("Region keys = %d ", keysVector.size());
+    LOGINFO("Region keys = %d ", keysVector.size());
     ASSERT(keysVector.size() == reg->size(),
            "region size should be equal to keys size");
 
     values = reg->values();
-    LOG_INFO("Region values = %d ", values.size());
+    LOGINFO("Region values = %d ", values.size());
     ASSERT(values.size() == reg->size(),
            "region size should be equal to values size");
 
@@ -1111,7 +1111,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       LOG("Entry with null key and value locally created successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
     try {
@@ -1119,7 +1119,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       LOG("Entry with null key and value locally put successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
     try {
@@ -1127,28 +1127,28 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
       LOG("Entry with null key locally deleted successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localInvalidate(x);
       LOG("Entry with null key locally invalidated successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localRemove(x, 1);
       LOG("Entry with null key and value locally removed successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     try {
       regPtr0->localRemoveEx(x);
       LOG("Entry with null key locally removed if value exist successfully");
       FAIL("Expected IllegalArgumentException here");
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
 
     auto keyObject1 = std::make_shared<PdxTests::PdxType>();
@@ -1184,7 +1184,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepTwelve)
     try {
       regPtr0->localPut(keyObject1, x);
     } catch (IllegalArgumentException &ex) {
-      LOG_INFO("Expected IllegalArgumentException : %s", ex.what());
+      LOGINFO("Expected IllegalArgumentException : %s", ex.what());
     }
     retVal = regPtr0->get(keyObject1);
     ASSERT(retVal == x, "retVal and x should match.");
@@ -1291,7 +1291,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
     ASSERT(reg1->containsKey(keys[3]) == false, "containsKey should be false");
     ASSERT(reg1->containsKeyOnServer(keyPtr1) == false,
            "containsKeyOnServer should be false");
-    LOG_INFO("Step 6a.1 complete.");
+    LOGINFO("Step 6a.1 complete.");
 
     // Try removing value that is invalidated on client but exists on server,
     // result should be false.
@@ -1313,7 +1313,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
     ASSERT(
         reg1->removeEx(keys[3]) == true,
         "Result of remove should be true, as invalidated key can be deleted.");
-    LOG_INFO("Step 6a.2 complete.");
+    LOGINFO("Step 6a.2 complete.");
 
     // Try removing a entry (value) which is not present on client as well as
     // server, result should be false.
@@ -1329,7 +1329,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSixA)
            "containsKey should be false");
     ASSERT(reg1->containsKeyOnServer(keyPtr3) == false,
            "containsKeyOnServer should be false");
-    LOG_INFO("Step 6a.3 complete.");
+    LOGINFO("Step 6a.3 complete.");
 
     // Try removing a entry (value) which is not present on client but exists on
     // the server, result should be true.

@@ -38,7 +38,7 @@ ThinClientCacheDistributionManager::ThinClientCacheDistributionManager(
     : ThinClientDistributionManager(connManager, nullptr) {}
 
 void ThinClientCacheDistributionManager::init() {
-  LOG_DEBUG("ThinClientCacheDistributionManager::init");
+  LOGDEBUG("ThinClientCacheDistributionManager::init");
   if (m_connManager.getNumEndPoints() == 0) {
     throw IllegalStateException("No endpoints defined for query.");
   }
@@ -155,7 +155,7 @@ bool ThinClientCacheDistributionManager::preFailoverAction() {
   for (const auto& ep : newEndpointsList) {
     m_endpoints.push_back(ep);
     ep->setNumRegions(ep->numRegions() + 1);
-    LOG_FINER(
+    LOGFINER(
         "TCCDM: incremented region reference count for endpoint %s "
         "to %d",
         ep->name().c_str(), ep->numRegions());
@@ -165,9 +165,9 @@ bool ThinClientCacheDistributionManager::preFailoverAction() {
 }
 bool ThinClientCacheDistributionManager::postFailoverAction(
     TcrEndpoint* endpoint) {
-  LOG_DEBUG("ThinClientCacheDistributionManager : executeAllCqs");
+  LOGDEBUG("ThinClientCacheDistributionManager : executeAllCqs");
   if (m_connManager.haEnabled()) {
-    LOG_DEBUG(
+    LOGDEBUG(
         "ThinClientCacheDistributionManager : executeAllCqs HA: case, done "
         "else where");
     return true;
@@ -176,7 +176,7 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
   CacheImpl* cache = m_connManager.getCacheImpl();
 
   if (cache == nullptr) {
-    LOG_ERROR("Client not initialized for failover");
+    LOGERROR("Client not initialized for failover");
     return false;
   }
   try {
@@ -184,13 +184,12 @@ bool ThinClientCacheDistributionManager::postFailoverAction(
         cache->getQueryService(true));
     rqsService->executeAllCqs(true);
   } catch (const Exception& excp) {
-    LOG_WARN(
-        "Failed to recover CQs during failover attempt to endpoint[%s]: %s",
-        endpoint->name().c_str(), excp.what());
+    LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]: %s",
+            endpoint->name().c_str(), excp.what());
     return false;
   } catch (...) {
-    LOG_WARN("Failed to recover CQs during failover attempt to endpoint[%s]",
-             endpoint->name().c_str());
+    LOGWARN("Failed to recover CQs during failover attempt to endpoint[%s]",
+            endpoint->name().c_str());
     return false;
   }
   return true;

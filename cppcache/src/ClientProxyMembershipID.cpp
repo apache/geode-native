@@ -174,8 +174,7 @@ void ClientProxyMembershipID::initObjectVars(
     m_hashKey.append(":");
     m_hashKey.append(std::to_string(m_vmViewId));
   }
-  LOG_DEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(),
-            clientID.c_str());
+  LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
 }
 
 const std::string& ClientProxyMembershipID::getDSMemberId() const {
@@ -344,8 +343,8 @@ int16_t ClientProxyMembershipID::compareTo(
 void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
   if (flags & ClientProxyMembershipID::VERSION_MASK) {
     const auto version = Version::read(input);
-    LOG_DEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
-              version.getOrdinal());
+    LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
+             version.getOrdinal());
   }
 }
 

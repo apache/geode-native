@@ -61,7 +61,7 @@ char16_t PdxReaderWithTypeCollector::readChar(const std::string& fieldName) {
                                         PdxTypes::kPdxCharSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readChar()position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readChar()position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     auto retVal = PdxLocalReader::readChar(fieldName);
@@ -78,8 +78,7 @@ bool PdxReaderWithTypeCollector::readBoolean(const std::string& fieldName) {
       fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::kPdxBooleanSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readBoolean():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readBoolean():position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     bool retVal = PdxLocalReader::readBoolean(fieldName);
@@ -96,7 +95,7 @@ int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
                                         PdxTypes::kPdxByteSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readByte(): position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readByte(): position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     int8_t retVal;
@@ -114,7 +113,7 @@ int16_t PdxReaderWithTypeCollector::readShort(const std::string& fieldName) {
       fieldName, "short", PdxFieldTypes::SHORT, PdxTypes::kPdxShortSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readShort(): position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readShort(): position = %d", position);
   if (position != -1) {
     int16_t value;
     m_dataInput->advanceCursor(position);
@@ -132,7 +131,7 @@ int32_t PdxReaderWithTypeCollector::readInt(const std::string& fieldName) {
                                         PdxTypes::kPdxIntegerSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readInt():position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readInt():position = %d", position);
   if (position != -1) {
     int32_t value;
     m_dataInput->advanceCursor(position);
@@ -150,7 +149,7 @@ int64_t PdxReaderWithTypeCollector::readLong(const std::string& fieldName) {
                                         PdxTypes::kPdxLongSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readLong(): position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readLong(): position = %d", position);
   if (position != -1) {
     int64_t value;
     m_dataInput->advanceCursor(position);
@@ -168,7 +167,7 @@ float PdxReaderWithTypeCollector::readFloat(const std::string& fieldName) {
       fieldName, "float", PdxFieldTypes::FLOAT, PdxTypes::kPdxFloatSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readFloat():position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readFloat():position = %d", position);
   if (position != -1) {
     float value;
     m_dataInput->advanceCursor(position);
@@ -186,7 +185,7 @@ double PdxReaderWithTypeCollector::readDouble(const std::string& fieldName) {
       fieldName, "double", PdxFieldTypes::DOUBLE, PdxTypes::kPdxDoubleSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readDouble():position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readDouble():position = %d", position);
   if (position != -1) {
     double value;
     m_dataInput->advanceCursor(position);
@@ -205,7 +204,7 @@ std::string PdxReaderWithTypeCollector::readString(
                                            PdxFieldTypes::STRING);
   int32_t position = m_pdxType->getFieldPosition(
       fieldName, m_offsetsBuffer, m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readString():position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readString():position = %d", position);
 
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -226,7 +225,7 @@ std::shared_ptr<Serializable> PdxReaderWithTypeCollector::readObject(
   checkType(fieldName, PdxFieldTypes::OBJECT, "Serializable");
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readObject():position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readObject():position = %d", position);
   if (position != -1) {
     std::shared_ptr<Serializable> ptr;
     m_dataInput->advanceCursor(position);
@@ -250,8 +249,8 @@ std::vector<char16_t> PdxReaderWithTypeCollector::readCharArray(
                                            PdxFieldTypes::CHAR_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readCharArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readCharArray():position = %d",
+           position);
   std::vector<char16_t> array;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -269,10 +268,10 @@ std::vector<bool> PdxReaderWithTypeCollector::readBooleanArray(
   checkType(fieldName, PdxFieldTypes::BOOLEAN_ARRAY, "boolean[]");
   m_newPdxType->addVariableLengthTypeField(fieldName, "boolean[]",
                                            PdxFieldTypes::BOOLEAN_ARRAY);
-  LOG_DEBUG("NIL:293: PdxReaderWithTypeCollector::readBooleanArray Test-1");
+  LOGDEBUG("NIL:293: PdxReaderWithTypeCollector::readBooleanArray Test-1");
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG(
+  LOGDEBUG(
       "NIL:293: PdxReaderWithTypeCollector::readBooleanArray(): Position =%d ",
       position);
 
@@ -295,8 +294,8 @@ std::vector<int8_t> PdxReaderWithTypeCollector::readByteArray(
                                            PdxFieldTypes::BYTE_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readByteArray(): position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readByteArray(): position = %d",
+           position);
   std::vector<int8_t> array;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -316,8 +315,8 @@ std::vector<int16_t> PdxReaderWithTypeCollector::readShortArray(
                                            PdxFieldTypes::SHORT_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readShortArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readShortArray():position = %d",
+           position);
   std::vector<int16_t> shortArrptr;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -337,8 +336,8 @@ std::vector<int32_t> PdxReaderWithTypeCollector::readIntArray(
                                            PdxFieldTypes::INT_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readIntArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readIntArray():position = %d",
+           position);
   std::vector<int32_t> intArrayptr;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -358,8 +357,8 @@ std::vector<int64_t> PdxReaderWithTypeCollector::readLongArray(
                                            PdxFieldTypes::LONG_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readLongArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readLongArray():position = %d",
+           position);
   std::vector<int64_t> longArrptr;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -379,8 +378,8 @@ std::vector<float> PdxReaderWithTypeCollector::readFloatArray(
                                            PdxFieldTypes::FLOAT_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readFloatArray(): position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readFloatArray(): position = %d",
+           position);
   std::vector<float> floatArrptr;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -400,8 +399,8 @@ std::vector<double> PdxReaderWithTypeCollector::readDoubleArray(
                                            PdxFieldTypes::DOUBLE_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readDoubleArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readDoubleArray():position = %d",
+           position);
   std::vector<double> doubleArrptr;
   if (position != -1) {
     m_dataInput->advanceCursor(position);
@@ -421,8 +420,8 @@ std::vector<std::string> PdxReaderWithTypeCollector::readStringArray(
                                            PdxFieldTypes::STRING_ARRAY);
   auto position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                               m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readStringArray(): position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readStringArray(): position = %d",
+           position);
 
   std::vector<std::string> value;
 
@@ -444,8 +443,8 @@ PdxReaderWithTypeCollector::readObjectArray(const std::string& fieldName) {
                                            PdxFieldTypes::OBJECT_ARRAY);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readObjectArray():position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readObjectArray():position = %d",
+           position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
@@ -467,8 +466,8 @@ int8_t** PdxReaderWithTypeCollector::readArrayOfByteArrays(
                                            PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readArrayOfByteArrays() position = %d",
-            position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readArrayOfByteArrays() position = %d",
+           position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     const uint8_t* startLoc = m_dataInput->currentBufferPosition();
@@ -490,7 +489,7 @@ std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
                                         PdxTypes::kPdxDateSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
-  LOG_DEBUG("PdxReaderWithTypeCollector::readDate() position = %d", position);
+  LOGDEBUG("PdxReaderWithTypeCollector::readDate() position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     auto retVal = PdxLocalReader::readDate(fieldName);

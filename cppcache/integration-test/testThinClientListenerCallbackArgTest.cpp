@@ -98,34 +98,34 @@ class CallbackListener : public CacheListener {
         auto fromCallback = callbkArg->getPkid();
         auto mCallback = mCallbkArg->getPkid();
 
-        LOG_FINE(" values are %s === %s ", fromCallback->value().c_str(),
+        LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
                  mCallback->value().c_str());
 
         if (*(fromCallback.get()) == *(mCallback.get())) {
-          LOG_FINE("values are same");
+          LOGFINE("values are same");
           updateEvent++;
         } else {
-          LOG_FINE("values are NOT same");
+          LOGFINE("values are NOT same");
         }
       } catch (const ClassCastException &ex) {
-        LOG_FINE(" in class cast exception %s ", ex.what());
+        LOGFINE(" in class cast exception %s ", ex.what());
         try {
           auto fromCallback =
               std::dynamic_pointer_cast<CacheableString>(eventCallback);
           auto mCallback =
               std::dynamic_pointer_cast<CacheableString>(m_callbackArg);
 
-          LOG_FINE(" values are %s === %s ", fromCallback->value().c_str(),
+          LOGFINE(" values are %s === %s ", fromCallback->value().c_str(),
                    mCallback->value().c_str());
 
           if (*(fromCallback.get()) == *(mCallback.get())) {
-            LOG_FINE("values are same");
+            LOGFINE("values are same");
             updateEvent++;
           } else {
-            LOG_FINE("values are NOT same");
+            LOGFINE("values are NOT same");
           }
         } catch (const ClassCastException &ex2) {
-          LOG_FINE(" in class cast second exception %s ", ex2.what());
+          LOGFINE(" in class cast second exception %s ", ex2.what());
         }
       }
     }
@@ -180,7 +180,7 @@ void setCacheListener(const char *regName,
 }
 
 void validateEventCount(int line) {
-  LOG_INFO("ValidateEvents called from line (%d).", line);
+  LOGINFO("ValidateEvents called from line (%d).", line);
   int num = reg1Listener1->getCreates();
   char buf[1024];
   sprintf(buf, "Didn't get expected callback arg in aftercreate event");

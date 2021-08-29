@@ -185,7 +185,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
   }
 
   bool equals(CharTypes& other) const {
-    LOG_DEBUG("Inside CharTypes equals");
+    LOGDEBUG("Inside CharTypes equals");
     CharTypes* ot = dynamic_cast<CharTypes*>(&other);
     if (!ot) {
       return false;
@@ -193,7 +193,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
     if (ot == this) {
       return true;
     }
-    LOG_INFO("CharTypes::equals ot->m_ch = {} m_ch = {}",
+    LOGINFO("CharTypes::equals ot->m_ch = {} m_ch = {}",
              static_cast<int32_t>(ot->m_ch), static_cast<int32_t>(m_ch));
     if (ot->m_ch != m_ch) {
       return false;
@@ -201,7 +201,7 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
 
     int i = 0;
     while (i < 2) {
-      LOG_INFO(
+      LOGINFO(
           "CharTypes::equals Normal char array values ot->m_chArray[{}] = {} "
           "m_chArray[{}] = {}",
           i, static_cast<int32_t>(ot->m_chArray[i]), i,
@@ -260,7 +260,7 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
   }
 
   bool equals(Address& other) const {
-    LOG_DEBUG("Inside Address equals");
+    LOGDEBUG("Inside Address equals");
     Address* ot = dynamic_cast<Address*>(&other);
     if (!ot) {
       return false;

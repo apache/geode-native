@@ -85,7 +85,7 @@ DistributedSystem DistributedSystem::create(
   try {
     CppCacheLibrary::getProductDir();
   } catch (const Exception&) {
-    LOG_ERROR(
+    LOGERROR(
         "Unable to determine Product Directory. Please set the "
         "GEODE_NATIVE_HOME environment variable.");
     throw;
@@ -93,7 +93,7 @@ DistributedSystem DistributedSystem::create(
 
   auto distributedSystem = DistributedSystem(name, std::move(systemProperties));
 
-  LOG_CONFIG("Starting the Geode Native Client");
+  LOGCONFIG("Starting the Geode Native Client");
   return distributedSystem;
 }
 

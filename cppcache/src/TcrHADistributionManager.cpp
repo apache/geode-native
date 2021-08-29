@@ -67,8 +67,8 @@ void TcrHADistributionManager::getEndpointNames(
 GfErrType TcrHADistributionManager::sendRequestToEP(const TcrMessage& request,
                                                     TcrMessageReply& reply,
                                                     TcrEndpoint* endpoint) {
-  LOG_DEBUG("TcrHADistributionManager::sendRequestToEP msgType[%d]",
-            request.getMessageType());
+  LOGDEBUG("TcrHADistributionManager::sendRequestToEP msgType[%d]",
+           request.getMessageType());
   GfErrType err = GF_NOERR;
   reply.setDM(this);
   if (endpoint->connected()) {

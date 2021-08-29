@@ -35,7 +35,7 @@ ClientMetadata::ClientMetadata(
       m_totalNumBuckets(totalNumBuckets),
       m_colocatedWith(std::move(colocatedWith)),
       m_tcrdm(tcrdm) {
-  LOG_FINE("Creating metadata with %d buckets", totalNumBuckets);
+  LOGFINE("Creating metadata with %d buckets", totalNumBuckets);
   for (int item = 0; item < totalNumBuckets; item++) {
     BucketServerLocationsType empty;
     m_bucketServerLocationsList.push_back(empty);
@@ -45,7 +45,7 @@ ClientMetadata::ClientMetadata(
         "ClientMetaData: ThinClientPoolDM is nullptr.");
   }
   if (fpaSet != nullptr) {
-    LOG_DEBUG(
+    LOGDEBUG(
         "ClientMetadata Creating metadata with %d buckets & fpaset size is "
         "%zu ",
         totalNumBuckets, fpaSet->size());
@@ -106,7 +106,7 @@ int ClientMetadata::getTotalNumBuckets() {
 /*PartitionResolverPtr ClientMetadata::getPartitionResolver()
 {
   ReadGuard guard (m_readWriteLock);
-  LOG_FINE("Inside getPartitionResolver");
+  LOGFINE("Inside getPartitionResolver");
   return m_partitionResolver;
 }*/
 const std::string& ClientMetadata::getColocatedWith() {
@@ -131,11 +131,11 @@ void ClientMetadata::getServerLocation(
     std::shared_ptr<BucketServerLocation>& serverLocation, int8_t& version) {
   checkBucketId(bucketId);
   if (m_bucketServerLocationsList[bucketId].empty()) {
-    LOG_FINER("m_bucketServerLocationsList[%d] size is zero", bucketId);
+    LOGFINER("m_bucketServerLocationsList[%d] size is zero", bucketId);
     return;
   } else if (tryPrimary) {
-    LOG_FINER("returning primary & m_bucketServerLocationsList size is %zu",
-              m_bucketServerLocationsList.size());
+    LOGFINER("returning primary & m_bucketServerLocationsList size is %zu",
+             m_bucketServerLocationsList.size());
     serverLocation = m_bucketServerLocationsList[bucketId].at(0);
     if (serverLocation->isValid()) {
       if (serverLocation->isPrimary()) {
@@ -153,8 +153,8 @@ void ClientMetadata::getServerLocation(
     } else {
       version = serverLocation->getVersion();
     }
-    LOG_FINER("returning random & m_bucketServerLocationsList size is: %zu",
-              m_bucketServerLocationsList.size());
+    LOGFINER("returning random & m_bucketServerLocationsList size is: %zu",
+             m_bucketServerLocationsList.size());
     RandGen randgen;
     serverLocation = m_bucketServerLocationsList[bucketId].at(randgen(
         static_cast<int>(m_bucketServerLocationsList[bucketId].size())));
@@ -228,14 +228,14 @@ void ClientMetadata::updateBucketServerLocations(
     m_bucketServerLocationsList[bucketId].clear();
     for (BucketServerLocationsType::iterator iter = primaries.begin();
          iter != primaries.end(); ++iter) {
-      LOG_FINER("updating primaries with bucketId %d", bucketId);
+      LOGFINER("updating primaries with bucketId %d", bucketId);
       m_bucketServerLocationsList[bucketId].push_back(*iter);
     }
 
     // add secondaries to the end
     for (BucketServerLocationsType::iterator iter = secondaries.begin();
          iter != secondaries.end(); ++iter) {
-      LOG_FINER("updating secondaries with bucketId %d", bucketId);
+      LOGFINER("updating secondaries with bucketId %d", bucketId);
       m_bucketServerLocationsList[bucketId].push_back(*iter);
     }
   } else {
@@ -271,15 +271,15 @@ void ClientMetadata::updateBucketServerLocations(
     // add primaries to the front
     for (BucketServerLocationsType::iterator iter = primaries.begin();
          iter != primaries.end(); ++iter) {
-      LOG_FINER("updating primaries with bucketId %d and Server = %s ",
-                bucketId, (*iter)->getEpString().c_str());
+      LOGFINER("updating primaries with bucketId %d and Server = %s ", bucketId,
+               (*iter)->getEpString().c_str());
       m_bucketServerLocationsList[bucketId].push_back(*iter);
     }
 
     // add secondaries to the end
     for (BucketServerLocationsType::iterator iter = secondaries.begin();
          iter != secondaries.end(); ++iter) {
-      LOG_FINER("updating secondaries with bucketId %d", bucketId);
+      LOGFINER("updating secondaries with bucketId %d", bucketId);
       m_bucketServerLocationsList[bucketId].push_back(*iter);
     }
   }
@@ -287,7 +287,7 @@ void ClientMetadata::updateBucketServerLocations(
 
 int ClientMetadata::assignFixedBucketId(
     const char* partitionName, std::shared_ptr<CacheableKey> resolvekey) {
-  LOG_DEBUG(
+  LOGDEBUG(
       "FPR assignFixedBucketId partititonname = %s , m_fpaMap.size() = %zu ",
       partitionName, m_fpaMap.size());
   FixedMapType::iterator iter = m_fpaMap.find(partitionName);

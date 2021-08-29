@@ -255,7 +255,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
     LOG("CheckPrSingleHopForIntKeysTask_REGION started.");
     int failureCount = 0;
 
-    LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION create region  = %s ",
+    LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION create region  = %s ",
               partitionRegionName);
     auto dataReg = getHelper()->getRegion(partitionRegionName);
 
@@ -264,37 +264,37 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
-        LOG_DEBUG("CPPTEST: Putting key %d with hashcode %d", i,
+        LOGDEBUG("CPPTEST: Putting key %d with hashcode %d", i,
                   keyPtr->hashcode());
         dataReg->put(keyPtr, keyPtr->hashcode());
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
-        LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
+        LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                   networkhop);
         if (networkhop) {
           failureCount++;
         }
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        LOG_DEBUG(
+        LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d "
             "failureCount = %d",
             serverGroupFlag, failureCount);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOG_ERROR("CPPTEST: Put caused extra hop.");
+        LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (CacheWriterException &) {
-        LOG_ERROR("CPPTEST: Put caused extra hop.");
+        LOGERROR("CPPTEST: Put caused extra hop.");
         FAIL("Put caused extra hop.");
       } catch (Exception &ex) {
-        LOG_ERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
+        LOGERROR("CPPTEST: Put caused unexpected %s: %s", ex.getName().c_str(),
                   ex.what());
         cleanProc();
         FAIL("Put caused unexpected exception");
       } catch (...) {
-        LOG_ERROR("CPPTEST: Put caused random exception");
+        LOGERROR("CPPTEST: Put caused random exception");
         cleanProc();
         FAIL("Put caused unexpected exception");
       }
@@ -307,34 +307,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
-        LOG_DEBUG("CPPTEST: getting key %d with hashcode %d", i,
+        LOGDEBUG("CPPTEST: getting key %d with hashcode %d", i,
                   keyPtr->hashcode());
         dataReg->get(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
-        LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
+        LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                   networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        LOG_DEBUG(
+        LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOG_ERROR("CPPTEST: get caused extra hop.");
+        LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (CacheWriterException &) {
-        LOG_ERROR("CPPTEST: get caused extra hop.");
+        LOGERROR("CPPTEST: get caused extra hop.");
         FAIL("get caused extra hop.");
       } catch (Exception &ex) {
-        LOG_ERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
+        LOGERROR("CPPTEST: get caused unexpected %s: %s", ex.getName().c_str(),
                   ex.what());
         cleanProc();
         FAIL("get caused unexpected exception");
       } catch (...) {
-        LOG_ERROR("CPPTEST: get caused random exception");
+        LOGERROR("CPPTEST: get caused random exception");
         cleanProc();
         FAIL("get caused unexpected exception");
       }
@@ -352,29 +352,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(values.size() == 5, "number of value size should be 5");
-        LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
+        LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                   networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        LOG_DEBUG(
+        LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOG_ERROR("CPPTEST: getAll caused extra hop.");
+        LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (CacheWriterException &) {
-        LOG_ERROR("CPPTEST: getAll caused extra hop.");
+        LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (Exception &ex) {
-        LOG_ERROR("CPPTEST: getALL caused unexpected %s: %s",
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                   ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
       } catch (...) {
-        LOG_ERROR("CPPTEST: getAll caused random exception");
+        LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
       }
@@ -385,29 +385,29 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
         ASSERT(values.size() == 5, "number of value size should be 5");
-        LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
+        LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                   networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        LOG_DEBUG(
+        LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOG_ERROR("CPPTEST: getAllwithCallBackArg caused extra hop.");
+        LOGERROR("CPPTEST: getAllwithCallBackArg caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (CacheWriterException &) {
-        LOG_ERROR("CPPTEST: getAll caused extra hop.");
+        LOGERROR("CPPTEST: getAll caused extra hop.");
         FAIL("getAll caused extra hop.");
       } catch (Exception &ex) {
-        LOG_ERROR("CPPTEST: getALL caused unexpected %s: %s",
+        LOGERROR("CPPTEST: getALL caused unexpected %s: %s",
                   ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("getAll caused unexpected exception");
       } catch (...) {
-        LOG_ERROR("CPPTEST: getAll caused random exception");
+        LOGERROR("CPPTEST: getAll caused random exception");
         cleanProc();
         FAIL("getAll caused unexpected exception");
       }
@@ -419,34 +419,34 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckPrSingleHopForIntKeysTask_REGION)
           std::dynamic_pointer_cast<CacheableKey>(CacheableInt32::create(i));
 
       try {
-        LOG_DEBUG("CPPTEST: destroying key %d with hashcode %d", i,
+        LOGDEBUG("CPPTEST: destroying key %d with hashcode %d", i,
                   keyPtr->hashcode());
         dataReg->destroy(keyPtr);
         bool networkhop = TestUtils::getCacheImpl(getHelper()->cachePtr)
                               ->getAndResetNetworkHopFlag();
-        LOG_DEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
+        LOGDEBUG("CheckPrSingleHopForIntKeysTask_REGION: networkhop %d ",
                   networkhop);
         ASSERT(!networkhop, "It is networkhop operation.");
         int8_t serverGroupFlag = TestUtils::getCacheImpl(getHelper()->cachePtr)
                                      ->getAndResetServerGroupFlag();
-        LOG_DEBUG(
+        LOGDEBUG(
             "CheckPrSingleHopForIntKeysTask_REGION: serverGroupFlag is %d ",
             serverGroupFlag);
         ASSERT(serverGroupFlag != 2,
                "serverGroupFlag should not be equal to 2");
       } catch (CacheServerException &) {
-        LOG_ERROR("CPPTEST: destroy caused extra hop.");
+        LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (CacheWriterException &) {
-        LOG_ERROR("CPPTEST: destroy caused extra hop.");
+        LOGERROR("CPPTEST: destroy caused extra hop.");
         FAIL("destroy caused extra hop.");
       } catch (Exception &ex) {
-        LOG_ERROR("CPPTEST: destroy caused unexpected %s: %s",
+        LOGERROR("CPPTEST: destroy caused unexpected %s: %s",
                   ex.getName().c_str(), ex.what());
         cleanProc();
         FAIL("destroy caused unexpected exception");
       } catch (...) {
-        LOG_ERROR("CPPTEST: destroy caused random exception");
+        LOGERROR("CPPTEST: destroy caused random exception");
         cleanProc();
         FAIL("destroy caused unexpected exception");
       }

@@ -66,7 +66,7 @@ GfErrType VersionStamp::processVersionTag(
     const RegionInternal* region, const std::shared_ptr<CacheableKey>& keyPtr,
     const std::shared_ptr<VersionTag>& tag, const bool deltaCheck) const {
   if (nullptr == tag) {
-    LOG_ERROR("Cannot process version tag as it is nullptr.");
+    LOGERROR("Cannot process version tag as it is nullptr.");
     return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
   }
 
@@ -78,7 +78,7 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
                                          const std::shared_ptr<VersionTag>& tag,
                                          const bool deltaCheck) const {
   if (getEntryVersion() == 0 && getRegionVersion() == 0 && getMemberId() == 0) {
-    LOG_DEBUG(
+    LOGDEBUG(
         "Version stamp on existing entry not found. applying change: key=%s",
         keystr.c_str());
     return GF_NOERR;
@@ -86,8 +86,8 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
 
   if (tag->getEntryVersion() == 0 && tag->getRegionVersionHighBytes() == 0 &&
       tag->getRegionVersionLowBytes() == 0 && tag->getInternalMemID() == 0) {
-    LOG_DEBUG("Version Tag not available. applying change: key=%s",
-              keystr.c_str());
+    LOGDEBUG("Version Tag not available. applying change: key=%s",
+             keystr.c_str());
     return GF_NOERR;
   }
   int64_t stampVersion = getEntryVersion() & 0xffffffffL;
@@ -98,8 +98,8 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
     // check for int wraparound on the version number
     int64_t difference = tagVersion - stampVersion;
     if (0x10000 < difference || difference < -0x10000) {
-      LOG_DEBUG("version rollover detected: key=%s tag=%lld stamp=%lld",
-                keystr.c_str(), tagVersion, stampVersion);
+      LOGDEBUG("version rollover detected: key=%s tag=%lld stamp=%lld",
+               keystr.c_str(), tagVersion, stampVersion);
       int64_t temp = 0x100000000LL;
       if (difference < 0) {
         tagVersion += temp;
@@ -116,16 +116,16 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
   }
 
   if (stampVersion == 0 || stampVersion < tagVersion) {
-    LOG_DEBUG("applying change: key=%s", keystr.c_str());
+    LOGDEBUG("applying change: key=%s", keystr.c_str());
     apply = true;
   } else if (stampVersion > tagVersion) {
-    LOG_DEBUG("disallowing change: key=%s", keystr.c_str());
+    LOGDEBUG("disallowing change: key=%s", keystr.c_str());
   } else {
     // compare member IDs
     auto stampID = memberList->getDSMember(getMemberId());
     if (nullptr == stampID) {
       // This scenario is not possible. But added for just in case
-      LOG_ERROR(
+      LOGERROR(
           "MemberId of the version stamp could not be found. Disallowing a "
           "possible inconsistent change: key=%s",
           keystr.c_str());
@@ -135,7 +135,7 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
     auto tagID = memberList->getDSMember(tag->getInternalMemID());
     if (nullptr == tagID) {
       // This scenario is not possible. But added for just in case
-      LOG_ERROR(
+      LOGERROR(
           "MemberId of the version tag could not be found. Disallowing a "
           "possible inconsistent change. key=%s",
           keystr.c_str());
@@ -143,18 +143,18 @@ GfErrType VersionStamp::checkForConflict(const RegionInternal* region,
       return GF_CACHE_ILLEGAL_STATE_EXCEPTION;
     }
     if (!apply) {
-      LOG_DEBUG(
+      LOGDEBUG(
           "comparing tagID %s with stampId %s for version comparison of key %s",
           tagID->getHashKey().c_str(), stampID->getHashKey().c_str(),
           keystr.c_str());
       int compare = stampID->compareTo(*tagID);
       if (compare < 0) {
-        LOG_DEBUG("applying change: key=%s", keystr.c_str());
+        LOGDEBUG("applying change: key=%s", keystr.c_str());
         apply = true;
       } else if (compare > 0) {
-        LOG_DEBUG("disallowing change: key=%s", keystr.c_str());
+        LOGDEBUG("disallowing change: key=%s", keystr.c_str());
       } else {
-        LOG_DEBUG(
+        LOGDEBUG(
             "allowing the change as both the version tag and version stamp are "
             "same: key=%s",
             keystr.c_str());
@@ -183,7 +183,7 @@ GfErrType VersionStamp::checkForDeltaConflict(
   }
 
   if (tagVersion != stampVersion + 1) {
-    LOG_DEBUG(
+    LOGDEBUG(
         "delta requires full value due to version mismatch. key=%s tagVersion "
         "%lld stampVersion %lld ",
         keystr.c_str(), tagVersion, stampVersion);
@@ -197,7 +197,7 @@ GfErrType VersionStamp::checkForDeltaConflict(
     // tag's previous-changer ID against this stamp's current ID
     auto stampID = memberList->getDSMember(getMemberId());
     if (nullptr == stampID) {
-      LOG_ERROR(
+      LOGERROR(
           "MemberId of the version stamp could not be found. Requesting full "
           "delta value. key=%s",
           keystr.c_str());
@@ -209,7 +209,7 @@ GfErrType VersionStamp::checkForDeltaConflict(
 
     auto tagID = memberList->getDSMember(tag->getPreviousMemID());
     if (nullptr == tagID) {
-      LOG_ERROR(
+      LOGERROR(
           "Previous MemberId of the version tag could not be found. Requesting "
           "full delta value. key=%s",
           keystr.c_str());
@@ -220,7 +220,7 @@ GfErrType VersionStamp::checkForDeltaConflict(
     }
 
     if (tagID->compareTo(*stampID) != 0) {
-      LOG_DEBUG(
+      LOGDEBUG(
           "delta requires full value due to version mismatch. key=%s. \
         tag.previous=%s but stamp.current=%s",
           keystr.c_str(), tagID->getHashKey().c_str(),

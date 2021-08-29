@@ -106,7 +106,7 @@ class TESTOBJECT_EXPORT PdxVersioned1 : public PdxSerializable {
 
  public:
   /*  PdxVersioned1(const char* key) {
-            LOG_INFO("rjk:inside testobject pdxType");
+            LOGINFO("rjk:inside testobject pdxType");
       init(key);
     }*/
   PdxVersioned1() { init("def"); }

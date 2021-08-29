@@ -70,7 +70,7 @@ bool EntryExpiryTask::on_expire() {
 
   switch (action_) {
     case ExpirationAction::INVALIDATE: {
-      LOG_DEBUG(
+      LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction INVALIDATE "
           "for region " +
           full_path + " entry with key " + key_str);
@@ -79,7 +79,7 @@ bool EntryExpiryTask::on_expire() {
       break;
     }
     case ExpirationAction::LOCAL_INVALIDATE: {
-      LOG_DEBUG(
+      LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction LOCAL_INVALIDATE "
           "for region " +
           full_path + " entry with key " + key_str);
@@ -89,7 +89,7 @@ bool EntryExpiryTask::on_expire() {
       break;
     }
     case ExpirationAction::DESTROY: {
-      LOG_DEBUG(
+      LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction DESTROY "
           "for region " +
           full_path + " entry with key " + key_str);
@@ -98,7 +98,7 @@ bool EntryExpiryTask::on_expire() {
       break;
     }
     case ExpirationAction::LOCAL_DESTROY: {
-      LOG_DEBUG(
+      LOGDEBUG(
           "EntryExpiryTask::DoTheExpirationAction LOCAL_DESTROY "
           "for region " +
           full_path + " entry with key " + key_str);
@@ -108,7 +108,7 @@ bool EntryExpiryTask::on_expire() {
       break;
     }
     case ExpirationAction::INVALID_ACTION: {
-      LOG_ERROR(
+      LOGERROR(
           "Unknown expiration action "
           "%d for region %s for key %s",
           static_cast<int32_t>(action_), full_path.c_str(), key_str.c_str());

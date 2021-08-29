@@ -124,7 +124,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
       sprintf(value, "%d", item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:PutAllOneTask Doing PutAll on key using key: = %s: & value: "
           "= "
           "%s",
@@ -133,10 +133,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
     try {
       dataReg->putAll(entryMap);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: PutAll caused random exception in PutAllOneTask");
+      LOGERROR("CPPTEST: PutAll caused random exception in PutAllOneTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
     }
@@ -155,7 +155,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
     for (int32_t item = 1000; item < 2000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:PutAllTwoTask Doing PutAll on key using key: = %s: & value: "
           "= "
           "%s",
@@ -166,10 +166,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
     try {
       dataReg->putAll(entryMap);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: PutAll caused random exception in PutAllTwoTask");
+      LOGERROR("CPPTEST: PutAll caused random exception in PutAllTwoTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
     }
@@ -188,7 +188,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
     for (int32_t item = 2000; item < 3000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:PutAllThreeTask Doing PutAll on key using key: = %s: & "
           "value: "
           "= %s",
@@ -199,10 +199,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
     try {
       dataReg->putAll(entryMap);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: PutAll caused random exception in PutAllThreeTask");
+      LOGERROR("CPPTEST: PutAll caused random exception in PutAllThreeTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
     }
@@ -221,7 +221,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
     for (int32_t item = 3000; item < 4000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:PutAllFourTask Doing PutAll on key using key: = %s: & "
           "value: "
           "= %s",
@@ -232,10 +232,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
     try {
       dataReg->putAll(entryMap);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: PutAll caused random exception in PutAllFourTask");
+      LOGERROR("CPPTEST: PutAll caused random exception in PutAllFourTask");
       cleanProc();
       FAIL("PutAll caused unexpected exception");
     }
@@ -249,8 +249,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
 
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     ASSERT(dataReg != nullptr, "Region not found.");
-    LOG_INFO("dataregion size is %d: ", dataReg->size());
-    LOG_INFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
+    LOGINFO("dataregion size is %d: ", dataReg->size());
+    LOGINFO("dataregion getCreates is %d: ", reg1Listener1->getCreates());
     ASSERT(reg1Listener1->getCreates() == 4000,
            "Got wrong number of creation events.");
 
@@ -260,12 +260,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
     for (int32_t item = 0; item < 4000; item++) {
       sprintf(key, "key-%d", item);
       sprintf(value, "%d", item);
-      LOG_DEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
+      LOGDEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
                 key);
       auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
           dataReg->get(CacheableKey::create(key)));
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG_DEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
+      LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
                 checkPtr->value().c_str());
       ASSERT(atoi(checkPtr->value().c_str()) == item, "Value did not match.");
     }
@@ -288,7 +288,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
       keysVector.push_back(CacheableKey::create(key));
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
           "value: = %s",
           key, value);
@@ -297,10 +297,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
       dataReg->putAll(entryMap);
       dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: RemoveAll caused random exception in PutAllOneTask");
+      LOGERROR("CPPTEST: RemoveAll caused random exception in PutAllOneTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
     }
@@ -323,7 +323,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
       keysVector.push_back(CacheableKey::create(key));
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
           key, value);
@@ -332,10 +332,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
       dataReg->putAll(entryMap);
       dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR("CPPTEST: RemoveAll caused random exception in PutAllTwoTask");
+      LOGERROR("CPPTEST: RemoveAll caused random exception in PutAllTwoTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
     }
@@ -358,7 +358,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
       keysVector.push_back(CacheableKey::create(key));
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
           "& "
           "value: = %s",
@@ -368,10 +368,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
       dataReg->putAll(entryMap);
       dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR(
+      LOGERROR(
           "CPPTEST: RemoveAll caused random exception in RemoveAllThreeTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
@@ -395,7 +395,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
       keysVector.push_back(CacheableKey::create(key));
-      LOG_DEBUG(
+      LOGDEBUG(
           "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
           key, value);
@@ -404,10 +404,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
       dataReg->putAll(entryMap);
       dataReg->removeAll(keysVector);
     } catch (Exception &ex) {
-      LOG_ERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
+      LOGERROR("CPPTEST: Unexpected %s: %s", ex.getName().c_str(), ex.what());
       FAIL(ex.what());
     } catch (...) {
-      LOG_ERROR(
+      LOGERROR(
           "CPPTEST: RemoveAll caused random exception in RemoveAllFourTask");
       cleanProc();
       FAIL("RemoveAll caused unexpected exception");
@@ -422,8 +422,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllRemoveAllTask)
 
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     ASSERT(dataReg != nullptr, "Region not found.");
-    LOG_INFO("dataregion size is %d: ", dataReg->size());
-    LOG_INFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());
+    LOGINFO("dataregion size is %d: ", dataReg->size());
+    LOGINFO("dataregion getDestroys is %d: ", reg1Listener1->getDestroys());
     ASSERT(reg1Listener1->getDestroys() == 4000,
            "Got wrong number of destroy events.");
     ASSERT(dataReg->size() == 0, "Expected 0 entries in region");

@@ -22,7 +22,7 @@ namespace PdxTests {
 template <typename T1, typename T2>
 bool InvalidPdxUsage::genericValCompare(T1 value1, T2 value2) const {
   if (value1 != value2) return false;
-  LOG_INFO("PdxObject::genericValCompare Line_19");
+  LOGINFO("PdxObject::genericValCompare Line_19");
   return true;
 }
 
@@ -36,30 +36,30 @@ bool InvalidPdxUsage::genericCompare(T1* value1, T2* value2, L length) const {
       i++;
     }
   }
-  LOG_INFO("PdxObject::genericCompare Line_34");
+  LOGINFO("PdxObject::genericCompare Line_34");
   return true;
 }
 
 template <typename T1, typename T2>
 bool InvalidPdxUsage::generic2DCompare(T1** value1, T2** value2, int length,
                                        int* arrLengths) const {
-  LOG_INFO("generic2DCompare length = %d ", length);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[0][0],
+  LOGINFO("generic2DCompare length = %d ", length);
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[0][0],
            value2[0][0]);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][0],
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][0],
            value2[1][0]);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][1],
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][1],
            value2[1][1]);
   for (int j = 0; j < length; j++) {
-    LOG_INFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
+    LOGINFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
     for (int k = 0; k < arrLengths[j]; k++) {
-      LOG_INFO("generic2DCompare arrlength = %d ", arrLengths[j]);
-      LOG_INFO("generic2DCompare value1 = {} \t value2 = {} ", value1[j][k],
+      LOGINFO("generic2DCompare arrlength = %d ", arrLengths[j]);
+      LOGINFO("generic2DCompare value1 = {} \t value2 = {} ", value1[j][k],
                value2[j][k]);
       if (value1[j][k] != value2[j][k]) return false;
     }
   }
-  LOG_INFO("PdxObject::genericCompare Line_34");
+  LOGINFO("PdxObject::genericCompare Line_34");
   return true;
 }
 
@@ -68,7 +68,7 @@ bool InvalidPdxUsage::generic2DCompare(T1** value1, T2** value2, int length,
 
 void InvalidPdxUsage::toData(PdxWriter& pw) const {
   // TODO:delete it later
-  LOG_INFO(" NILKANTH InvalidPdxUsage::toData() Start exceptionCounter = %d ",
+  LOGINFO(" NILKANTH InvalidPdxUsage::toData() Start exceptionCounter = %d ",
            toDataexceptionCounter);
 
   int* lengths = new int[2];
@@ -83,7 +83,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.writeArrayOfByteArrays("", m_byteByteArray, 2, lengths);
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeArrayOfByteArrays():: Got expected Exception :: %s ",
+    LOGINFO("writeArrayOfByteArrays():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -92,7 +92,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_char");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeWideChar():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeWideChar():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -100,7 +100,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_bool");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeBoolean():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeBoolean():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -108,7 +108,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_boolArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeBooleanArray():: Got expected Exception :: %s ",
+    LOGINFO("writeBooleanArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -117,7 +117,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byte");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByte():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -125,7 +125,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byteArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -133,7 +133,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_charArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeWideCharArray():: Got expected Exception :: %s ",
+    LOGINFO("writeWideCharArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -142,7 +142,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_arraylist");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObject() for ArrayList:: Got expected Exception :: %s ",
+    LOGINFO("writeObject() for ArrayList:: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -151,7 +151,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_map");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObject() for Map:: Got expected Exception :: %s ",
+    LOGINFO("writeObject() for Map:: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -160,7 +160,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_hashtable");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObject() for HashTable:: Got expected Exception :: %s ",
+    LOGINFO("writeObject() for HashTable:: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -169,7 +169,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_vector");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObject() for Vector:: Got expected Exception :: %s ",
+    LOGINFO("writeObject() for Vector:: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -178,7 +178,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_chs");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO(
+    LOGINFO(
         "writeObject() for CacheableHashSet:: Got expected Exception :: %s ",
         excpt.what());
   }
@@ -188,7 +188,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_clhs");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO(
+    LOGINFO(
         "writeObject() for CacheableLinkedHashSet:: Got expected Exception :: "
         "%s ",
         excpt.what());
@@ -199,7 +199,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_string");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeString():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeString():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -207,7 +207,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_dateTime");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeDate():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeDate():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -215,7 +215,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_double");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeDouble():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeDouble():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -223,7 +223,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_doubleArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeDoubleArray():: Got expected Exception :: %s ",
+    LOGINFO("writeDoubleArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -232,7 +232,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_float");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeFloat():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeFloat():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -240,7 +240,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_floatArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeFloatArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeFloatArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -248,7 +248,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_int16");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeShort():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -256,7 +256,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_int32");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeInt():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -264,7 +264,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_long");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeLong():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -272,7 +272,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_int32Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeIntArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeIntArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -280,7 +280,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_longArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeLongArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeLongArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -288,7 +288,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_int16Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeShortArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeShortArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -296,7 +296,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_sbyte");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByte():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -304,7 +304,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_sbyteArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -312,7 +312,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_stringArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeStringArray():: Got expected Exception :: %s ",
+    LOGINFO("writeStringArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -321,7 +321,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_uint16");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeShort():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -329,7 +329,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_uint32");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeInt():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -337,7 +337,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_ulong");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeLong():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -345,7 +345,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_uint32Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeIntArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeIntArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -353,7 +353,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_ulongArray");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeLongArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeLongArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -361,7 +361,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_uint16Array");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeShortArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeShortArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -369,7 +369,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byte252");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -377,7 +377,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byte253");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -385,7 +385,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byte65535");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -393,7 +393,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_byte65536");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -401,7 +401,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.markIdentityField("m_pdxEnum");
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObject() for Enum:: Got expected Exception :: %s ",
+    LOGINFO("writeObject() for Enum:: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -409,7 +409,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.writeObject("", m_objectArray);
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO(
+    LOGINFO(
         "writeObject() for Custom Object Address:: Got expected Exception :: "
         "%s ",
         excpt.what());
@@ -419,7 +419,7 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.writeObjectArray("", m_objectArray);
   } catch (IllegalStateException& excpt) {
     toDataexceptionCounter++;
-    LOG_INFO("writeObjectArray():: Got expected Exception :: %s ",
+    LOGINFO("writeObjectArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -427,15 +427,15 @@ void InvalidPdxUsage::toData(PdxWriter& pw) const {
     pw.writeInt("toDataexceptionCounter", toDataexceptionCounter);
     pw.writeInt("fromDataexceptionCounter", fromDataexceptionCounter);
   } catch (IllegalStateException& excpt) {
-    LOG_INFO("writeInt():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("writeInt():: Got expected Exception :: %s ", excpt.what());
   }
 
-  LOG_DEBUG("PdxObject::toData() Done......");
+  LOGDEBUG("PdxObject::toData() Done......");
 }
 
 void InvalidPdxUsage::fromData(PdxReader& pr) {
   // TODO:temp added, delete later
-  LOG_INFO(
+  LOGINFO(
       " NILKANTH InvalidPdxUsage::fromData() Start fromDataexceptionCounter = "
       "%d ",
       fromDataexceptionCounter);
@@ -448,7 +448,7 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
     m_byteByteArray = pr.readArrayOfByteArrays("", arrLen, &Lengtharr);
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readArrayOfByteArrays():: Got expected Exception :: %s ",
+    LOGINFO("readArrayOfByteArrays():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -456,21 +456,21 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
     m_char = pr.readChar("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readWideChar():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readWideChar():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_bool = pr.readBoolean("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readBoolean():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readBoolean():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_boolArray = pr.readBooleanArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readBooleanArray():: Got expected Exception :: %s ",
+    LOGINFO("readBooleanArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -478,21 +478,21 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
     m_byte = pr.readByte("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByte():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_byteArray = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_charArray = pr.readCharArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readWideCharArray():: Got expected Exception :: %s ",
+    LOGINFO("readWideCharArray():: Got expected Exception :: %s ",
              excpt.what());
   }
 
@@ -501,14 +501,14 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
         std::dynamic_pointer_cast<CacheableArrayList>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_map = std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -516,21 +516,21 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
         std::dynamic_pointer_cast<CacheableHashTable>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_vector = std::dynamic_pointer_cast<CacheableVector>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_chs = std::dynamic_pointer_cast<CacheableHashSet>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -538,201 +538,201 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
         std::dynamic_pointer_cast<CacheableLinkedHashSet>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_string = pr.readString("");  // GenericValCompare
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readString():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readString():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_date = std::dynamic_pointer_cast<CacheableDate>(pr.readDate(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readDate():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readDate():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_double = pr.readDouble("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readDouble():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readDouble():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_doubleArray = pr.readDoubleArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readDoubleArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readDoubleArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_float = pr.readFloat("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readFloat():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readFloat():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_floatArray = pr.readFloatArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readFloatArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readFloatArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_int16 = pr.readShort("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readShort():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_int32 = pr.readInt("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readInt():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_long = pr.readLong("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readLong():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_int32Array = pr.readIntArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readIntArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readIntArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_longArray = pr.readLongArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readLongArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readLongArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_int16Array = pr.readShortArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readShortArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readShortArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_sbyte = pr.readByte("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByte():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByte():: Got expected Exception :: %s ", excpt.what());
   }
   try {
     m_sbyteArray = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_stringArray = pr.readStringArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readStringArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readStringArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_uint16 = pr.readShort("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readShort():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readShort():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_uint32 = pr.readInt("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readInt():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readInt():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_ulong = pr.readLong("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readLong():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readLong():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_uint32Array = pr.readIntArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readIntArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readIntArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_ulongArray = pr.readLongArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readLongArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readLongArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_uint16Array = pr.readShortArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readShortArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readShortArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_byte252 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
   try {
     m_byte253 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_byte65535 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_byte65536 = pr.readByteArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readByteArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_pdxEnum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject(""));
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_address = pr.readObject("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObject():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObject():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
     m_objectArray = pr.readObjectArray("");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObjectArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObjectArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   try {
@@ -740,12 +740,12 @@ void InvalidPdxUsage::fromData(PdxReader& pr) {
     fromDataexceptionCounter = pr.readInt("fromDataexceptionCounter");
   } catch (IllegalStateException& excpt) {
     exceptionCounter++;
-    LOG_INFO("readObjectArray():: Got expected Exception :: %s ", excpt.what());
+    LOGINFO("readObjectArray():: Got expected Exception :: %s ", excpt.what());
   }
 
   this->fromDataexceptionCounter = exceptionCounter;
 
-  LOG_INFO(
+  LOGINFO(
       "InvalidPdxUsage::fromData() competed...fromDataexceptionCounter = %d "
       "and exceptionCounter=%d ",
       fromDataexceptionCounter, exceptionCounter);
@@ -813,7 +813,7 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
           dynamic_cast<AddressWithInvalidAPIUsage*>(m_objectArray->at(i).get());
       if (!otherAddr1->equals(*myAddr1)) return false;
     }
-    LOG_INFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
+    LOGINFO("PdxObject::equals isPdxReadSerialized = %d", isPdxReadSerialized);
   }
 
   auto myenum = m_pdxEnum;
@@ -832,7 +832,7 @@ bool InvalidPdxUsage::equals(PdxTests::InvalidPdxUsage& other,
     genericValCompare(ot->m_vector->at(j), m_vector->at(j));
   }
 
-  LOG_INFO("PdxObject::equals DOne Line_201");
+  LOGINFO("PdxObject::equals DOne Line_201");
   return true;
 }
 }  // namespace PdxTests

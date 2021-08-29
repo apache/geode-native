@@ -57,7 +57,7 @@ class ThinClientTallyLoader : public TallyLoader {
     auto lreturnValue = CacheableString::create(lstrvalue);
     if (key != nullptr && (!rp.getAttributes().getEndpoints().empty() ||
                            !rp.getAttributes().getPoolName().empty())) {
-      LOG_DEBUG("Putting the value (%s) for local region clients only ",
+      LOGDEBUG("Putting the value (%s) for local region clients only ",
                lstrvalue);
       rp.put(key, lreturnValue);
     }
@@ -66,23 +66,23 @@ class ThinClientTallyLoader : public TallyLoader {
 
   void close(Region& region) override {
     LOG(" ThinClientTallyLoader::close() called");
-    LOG_INFO(" Region %s is Destroyed = %d ", region.getName().c_str(),
+    LOGINFO(" Region %s is Destroyed = %d ", region.getName().c_str(),
             region.isDestroyed());
     ASSERT(region.isDestroyed() == true,
            "region.isDestroyed should return true");
     /*
     if(region.get() != nullptr && region.get()->getCache() != nullptr){
-      LOG_INFO(" Cache Name is Closed = %d ",
+      LOGINFO(" Cache Name is Closed = %d ",
     region.get()->getCache()->isClosed());
     }else{
-      LOG_INFO(" regionPtr or cachePtr is nullptr");
+      LOGINFO(" regionPtr or cachePtr is nullptr");
     }
     */
   }
 };
 
 void validateEventCount(int line) {
-  LOG_INFO("ValidateEvents called from line (%d).", line);
+  LOGINFO("ValidateEvents called from line (%d).", line);
   ASSERT(reg1Loader1->getLoads() == numLoads,
          "Got wrong number of loader events.");
 }
@@ -104,12 +104,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetupClient)
     clientXml += clientXmlFile;
     auto cacheFactory = CacheFactory().set("cache-xml-file", clientXml.c_str());
     cachePtr = std::make_shared<Cache>(cacheFactory.create());
-    LOG_INFO("Created the Geode Cache");
+    LOGINFO("Created the Geode Cache");
 
     // Get the example Region from the Cache which is declared in the Cache XML
     // file.
     regionPtr = cachePtr->getRegion("/root/exampleRegion");
-    LOG_INFO("Obtained the Region from the Cache");
+    LOGINFO("Obtained the Region from the Cache");
 
     // Plugin the ThinClientTallyLoader to the Region.
     auto attrMutatorPtr = regionPtr->getAttributesMutator();
@@ -138,7 +138,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testLoader)
     auto regEntryPtr = regionPtr->getEntry(keyPtr);
     auto valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString().c_str());
-    LOG_FINE("val for keyPtr is %d", val);
+    LOGFINE("val for keyPtr is %d", val);
     numLoads++;
     validateEventCount(__LINE__);
   }
@@ -153,7 +153,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testDestroy)
     auto regEntryPtr2 = regionPtr->getEntry(keyPtr2);
     auto valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString().c_str());
-    LOG_FINE("val2 for keyPtr2 is %d", val2);
+    LOGFINE("val2 for keyPtr2 is %d", val2);
     numLoads++;
     validateEventCount(__LINE__);
   }
@@ -169,7 +169,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
     auto regEntryPtr = regionPtr->getEntry(keyPtr2);
     auto valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString().c_str());
-    LOG_FINE("val for keyPtr1 is %d", val);
+    LOGFINE("val for keyPtr1 is %d", val);
     numLoads++;
     validateEventCount(__LINE__);
 
@@ -183,7 +183,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
     auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
     auto valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString().c_str());
-    LOG_FINE("val1 for keyPtr4 is %d", val1);
+    LOGFINE("val1 for keyPtr4 is %d", val1);
     numLoads++;
     validateEventCount(__LINE__);
 
@@ -192,7 +192,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateKey)
     auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
     auto valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString().c_str());
-    LOG_FINE("val2 for keyPtr4 is %d", val2);
+    LOGFINE("val2 for keyPtr4 is %d", val2);
     numLoads++;
     validateEventCount(__LINE__);
   }
@@ -209,7 +209,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
     auto regEntryPtr = regionPtr->getEntry(keyPtr3);
     auto valuePtr = regEntryPtr->getValue();
     int val = atoi(valuePtr->toString().c_str());
-    LOG_FINE("val for keyPtr3 is %d", val);
+    LOGFINE("val for keyPtr3 is %d", val);
     numLoads++;
     validateEventCount(__LINE__);
 
@@ -225,7 +225,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
     auto regEntryPtr1 = regionPtr->getEntry(keyPtr4);
     auto valuePtr1 = regEntryPtr1->getValue();
     int val1 = atoi(valuePtr1->toString().c_str());
-    LOG_FINE("val1 for keyPtr4 is %d", val1);
+    LOGFINE("val1 for keyPtr4 is %d", val1);
     numLoads++;
     validateEventCount(__LINE__);
 
@@ -234,7 +234,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testInvalidateRegion)
     auto regEntryPtr2 = regionPtr->getEntry(keyPtr4);
     auto valuePtr2 = regEntryPtr2->getValue();
     int val2 = atoi(valuePtr2->toString().c_str());
-    LOG_FINE("val2 for keyPtr4 is %d", val2);
+    LOGFINE("val2 for keyPtr4 is %d", val2);
     numLoads++;
     validateEventCount(__LINE__);
   }

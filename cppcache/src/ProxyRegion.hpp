@@ -104,7 +104,7 @@ class ProxyRegion final : public Region {
   }
 
   std::shared_ptr<Region> getSubregion(const std::string& path) final {
-    LOG_DEBUG("ProxyRegion getSubregion");
+    LOGDEBUG("ProxyRegion getSubregion");
     auto rPtr = std::static_pointer_cast<RegionInternal>(
         m_realRegion->getSubregion(path));
 

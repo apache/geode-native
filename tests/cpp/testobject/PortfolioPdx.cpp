@@ -118,7 +118,7 @@ void PortfolioPdx::fromData(PdxReader& pr) {
   arrayZeroSize = pr.readByteArray("arrayZeroSize");
 }
 std::string PortfolioPdx::toString() const {
-  LOG_INFO("PortfolioPdx::toString() Start");
+  LOGINFO("PortfolioPdx::toString() Start");
   char idbuf[1024];
   sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);
 

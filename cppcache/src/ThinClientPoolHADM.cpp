@@ -67,14 +67,14 @@ void ThinClientPoolHADM::startBackgroundThreads() {
   server_monitor_task_id_ =
       manager.schedule(std::move(task), std::chrono::seconds(1), interval);
 
-  LOG_FINE(
+  LOGFINE(
       "ThinClientPoolHADM::ThinClientPoolHADM Registered server "
       "monitor task with id = %ld, interval = %ld",
       server_monitor_task_id_, interval.count());
 
   if (ThinClientBaseDM::isFatalClientError(err)) {
     if (err == GF_CACHE_LOCATOR_EXCEPTION) {
-      LOG_WARN(
+      LOGWARN(
           "No locators were available during pool initialization with "
           "subscription redundancy.");
     } else {
@@ -138,7 +138,7 @@ bool ThinClientPoolHADM::postFailoverAction(TcrEndpoint*) {
 }
 
 void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
-  LOG_FINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
+  LOGFINE("ThinClientPoolHADM: Starting maintain redundancy thread.");
 
   redundancy_semaphore_.acquire();
   while (isRunning) {
@@ -148,11 +148,11 @@ void ThinClientPoolHADM::redundancy(std::atomic<bool>& isRunning) {
 
     redundancy_semaphore_.acquire();
   }
-  LOG_FINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
+  LOGFINE("ThinClientPoolHADM: Ending maintain redundancy thread.");
 }
 
 void ThinClientPoolHADM::destroy(bool keepAlive) {
-  LOG_DEBUG("ThinClientPoolHADM::destroy");
+  LOGDEBUG("ThinClientPoolHADM::destroy");
   if (!m_isDestroyed && !m_destroyPending) {
     checkRegions();
 

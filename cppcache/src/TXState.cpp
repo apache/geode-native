@@ -69,14 +69,14 @@ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
         m_cache->getCacheTransactionManager()
             ->rollback();  // this.firstProxy.rollback(proxy.getTxId().getUniqId());
       } catch (const Exception& ex) {
-        LOG_FINE(
+        LOGFINE(
             "caught exception when rolling back before retrying transaction "
             "%s",
             ex.what());
       }
     }
     m_txId = TXId();
-    // LOG_FINE("retrying transaction after loss of state in server.  Attempt #"
+    // LOGFINE("retrying transaction after loss of state in server.  Attempt #"
     // + (i+1));
     try {
       for (const auto& operation : m_operations) {
@@ -85,11 +85,11 @@ std::shared_ptr<Cacheable> TXState::replay(bool isRollback) {
 
       return result;
     } catch (const TransactionDataNodeHasDepartedException& ex) {
-      LOG_DEBUG("Transaction exception:%s", ex.what());
+      LOGDEBUG("Transaction exception:%s", ex.what());
       isRollback = false;
       // try again
     } catch (const TransactionDataRebalancedException& ex) {
-      LOG_DEBUG("Transaction exception:%s", ex.what());
+      LOGDEBUG("Transaction exception:%s", ex.what());
       isRollback = true;
       // try again
     }
@@ -108,11 +108,11 @@ void TXState::releaseStickyConnection() {
   if (auto conn = TssConnectionWrapper::get().getConnection()) {
     if (auto dm = conn->getEndpointObject()->getPoolHADM()) {
       if (!dm->isSticky()) {
-        LOG_FINE(
+        LOGFINE(
             "Release the sticky connection associated with the transaction");
         dm->releaseThreadLocalConnection();  // this will release connection now
       } else {
-        LOG_FINE(
+        LOGFINE(
             "Pool with sticky connection - don't Release the sticky connection "
             "associated with the transaction");
         conn->setAndGetBeingUsed(false, false);  // just release connection now

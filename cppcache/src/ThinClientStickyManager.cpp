@@ -109,7 +109,7 @@ void ThinClientStickyManager::setSingleHopStickyConnection(
 }
 
 void ThinClientStickyManager::cleanStaleStickyConnection() {
-  LOG_DEBUG("Cleaning sticky connections");
+  LOGDEBUG("Cleaning sticky connections");
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
 
   auto maxConnLimit = false;
@@ -130,7 +130,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
           temp1->close();
           _GEODE_SAFE_DELETE(temp1);
           m_dm->removeEPConnections(1, false);
-          LOG_DEBUG("Replaced a sticky connection");
+          LOGDEBUG("Replaced a sticky connection");
         } else {
           (*conn)->setAndGetBeingUsed(false, false);
         }
@@ -143,7 +143,7 @@ void ThinClientStickyManager::cleanStaleStickyConnection() {
 }
 
 void ThinClientStickyManager::closeAllStickyConnections() {
-  LOG_DEBUG("ThinClientStickyManager::closeAllStickyConnections()");
+  LOGDEBUG("ThinClientStickyManager::closeAllStickyConnections()");
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   for (const auto& tempConn : m_stickyConnList) {
     if (*tempConn) {
@@ -156,7 +156,7 @@ void ThinClientStickyManager::closeAllStickyConnections() {
 
 bool ThinClientStickyManager::canThisConnBeDeleted(TcrConnection* conn) {
   bool canBeDeleted = false;
-  LOG_DEBUG("ThinClientStickyManager::canThisConnBeDeleted()");
+  LOGDEBUG("ThinClientStickyManager::canThisConnBeDeleted()");
   std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
   if (m_dm->canItBeDeletedNoImpl(conn)) return true;
   auto endPt = conn->getEndpointObject();
@@ -179,7 +179,7 @@ void ThinClientStickyManager::releaseThreadLocalConnection() {
     std::lock_guard<decltype(m_stickyLock)> keysGuard(m_stickyLock);
     const auto& it =
         m_stickyConnList.find(TssConnectionWrapper::get().getConnDoublePtr());
-    LOG_DEBUG("ThinClientStickyManager::releaseThreadLocalConnection()");
+    LOGDEBUG("ThinClientStickyManager::releaseThreadLocalConnection()");
     if (it != m_stickyConnList.end()) {
       m_stickyConnList.erase(it);
       // now this can be used by next one

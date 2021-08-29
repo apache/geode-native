@@ -28,7 +28,7 @@ namespace PdxTests {
 template <typename T1, typename T2>
 bool PdxTests::NonPdxType::genericValCompare(T1 value1, T2 value2) const {
   if (value1 != value2) return false;
-  LOG_INFO("NonPdxType::genericValCompare");
+  LOGINFO("NonPdxType::genericValCompare");
   return true;
 }
 
@@ -43,30 +43,30 @@ bool PdxTests::NonPdxType::genericCompare(T1* value1, T2* value2,
       i++;
     }
   }
-  LOG_INFO("NonPdxType::genericCompareArray");
+  LOGINFO("NonPdxType::genericCompareArray");
   return true;
 }
 
 template <typename T1, typename T2>
 bool PdxTests::NonPdxType::generic2DCompare(T1** value1, T2** value2,
                                             int length, int* arrLengths) const {
-  LOG_INFO("generic2DCompare length = %d ", length);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[0][0],
+  LOGINFO("generic2DCompare length = %d ", length);
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[0][0],
            value2[0][0]);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][0],
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][0],
            value2[1][0]);
-  LOG_INFO("generic2DCompare value1 = %d \t value2", value1[1][1],
+  LOGINFO("generic2DCompare value1 = %d \t value2", value1[1][1],
            value2[1][1]);
   for (int j = 0; j < length; j++) {
-    LOG_INFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
+    LOGINFO("generic2DCompare arrlength0 = %d ", arrLengths[j]);
     for (int k = 0; k < arrLengths[j]; k++) {
-      LOG_INFO("generic2DCompare arrlength = %d ", arrLengths[j]);
-      LOG_INFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
+      LOGINFO("generic2DCompare arrlength = %d ", arrLengths[j]);
+      LOGINFO("generic2DCompare value1 = %d \t value2 = %d ", value1[j][k],
                value2[j][k]);
       if (value1[j][k] != value2[j][k]) return false;
     }
   }
-  LOG_INFO("NonPdxType::generic2DCompare");
+  LOGINFO("NonPdxType::generic2DCompare");
   return true;
 }
 
@@ -121,7 +121,7 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
   // generic2DCompare(ot->m_byteByteArray, m_byteByteArray, byteByteArrayLen,
   // lengthArr);
 
-  LOG_INFO("NonPdxType::equals isPdxReadSerialized = %d", isPdxReadSerialized);
+  LOGINFO("NonPdxType::equals isPdxReadSerialized = %d", isPdxReadSerialized);
 
   if (!isPdxReadSerialized) {
     for (size_t i = 0; i < m_objectArray->size(); i++) {
@@ -153,7 +153,7 @@ bool PdxTests::NonPdxType::equals(PdxTests::NonPdxType& other,
     genericValCompare(ot->m_vector->at(j), m_vector->at(j));
   }
 
-  LOG_INFO("NonPdxType::equals done");
+  LOGINFO("NonPdxType::equals done");
   return true;
 }
 

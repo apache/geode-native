@@ -171,22 +171,22 @@ class TESTOBJECT_EXPORT PdxEnumTestClass : public PdxSerializable {
     m_id = id;
     switch (m_id) {
       case 0:
-        LOG_INFO("case 0 id1 = %d ", id1);
+        LOGINFO("case 0 id1 = %d ", id1);
         m_enumid = CacheableEnum::create("enumQuerytest", "id1",
                                          /*enumQuerytest::*/ id1);
         break;
       case 1:
-        LOG_INFO("case 1 id2 = %d ", id2);
+        LOGINFO("case 1 id2 = %d ", id2);
         m_enumid = CacheableEnum::create("enumQuerytest", "id2",
                                          /*enumQuerytest::*/ id2);
         break;
       case 2:
-        LOG_INFO("case 2 id3 = %d ", id3);
+        LOGINFO("case 2 id3 = %d ", id3);
         m_enumid = CacheableEnum::create("enumQuerytest", "id3",
                                          /*enumQuerytest::*/ id3);
         break;
       default:
-        LOG_INFO("case default id1 = %d ", id1);
+        LOGINFO("case default id1 = %d ", id1);
         m_enumid = CacheableEnum::create("enumQuerytest", "id1",
                                          /*enumQuerytest::*/ id1);
         break;
@@ -278,15 +278,15 @@ class TESTOBJECT_EXPORT SerializePdx : public PdxSerializable {
   bool equals(SerializePdx& other) const {
     SerializePdx* ot = dynamic_cast<SerializePdx*>(&other);
     if (ot) {
-      LOG_INFO("SerializePdx::equals1");
+      LOGINFO("SerializePdx::equals1");
       return false;
     }
 
     if (ot->i1 != i1 && ot->i2 != i2 && ot->s1 != s1 && ot->s2 != s2) {
-      LOG_INFO("SerializePdx::equals2");
+      LOGINFO("SerializePdx::equals2");
       return false;
     }
-    LOG_INFO("SerializePdx::equals3");
+    LOGINFO("SerializePdx::equals3");
     return true;
   }
 };

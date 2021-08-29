@@ -42,7 +42,7 @@ bool PreservedDataExpiryTask::on_expire() {
 
   auto& map = type_registry_->preserved_data_map();
 
-  LOG_DEBUG(
+  LOGDEBUG(
       "Entered PreservedDataExpiryTask "
       "PdxTypeRegistry::getPreserveDataMap().size() = %zu",
       map.size());
@@ -54,7 +54,7 @@ bool PreservedDataExpiryTask::on_expire() {
 
   auto expires_at = iter->second->expires_at();
   if (expires_at < ExpiryTask::clock_t::now()) {
-    LOG_DEBUG("Re-scheduling PreservedDataExpiryTask with ID %zu", id());
+    LOGDEBUG("Re-scheduling PreservedDataExpiryTask with ID %zu", id());
 
     reset(expires_at);
     return false;

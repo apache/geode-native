@@ -145,7 +145,7 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
         reinterpret_cast<uint8_t*>(buff), receivedLength);
 
     if (di.read() == REPLY_SSL_ENABLED && !sys_prop.sslEnabled()) {
-      LOG_ERROR("SSL is enabled on locator, enable SSL in client as well");
+      LOGERROR("SSL is enabled on locator, enable SSL in client as well");
       throw AuthenticationRequiredException(
           "SSL is enabled on locator, enable SSL in client as well");
     }
@@ -155,10 +155,10 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
   } catch (const AuthenticationRequiredException& excp) {
     throw excp;
   } catch (const Exception& excp) {
-    LOG_FINE("Exception while querying locator: %s: %s", excp.getName().c_str(),
-             excp.what());
+    LOGFINE("Exception while querying locator: %s: %s", excp.getName().c_str(),
+            excp.what());
   } catch (...) {
-    LOG_FINE("Exception while querying locator");
+    LOGFINE("Exception while querying locator");
   }
 
   return nullptr;
@@ -168,8 +168,8 @@ GfErrType ThinClientLocatorHelper::getAllServers(
     std::vector<std::shared_ptr<ServerLocation> >& servers,
     const std::string& serverGrp) const {
   for (const auto& loc : getLocators()) {
-    LOG_DEBUG("getAllServers getting servers from server = %s ",
-              loc.getServerName().c_str());
+    LOGDEBUG("getAllServers getting servers from server = %s ",
+             loc.getServerName().c_str());
 
     auto request = std::make_shared<GetAllServersRequest>(serverGrp);
     auto response = std::dynamic_pointer_cast<GetAllServersResponse>(
@@ -193,15 +193,15 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewCallBackConn(
   auto locatorsSize = locators.size();
   auto maxAttempts = getConnRetries();
 
-  LOG_FINER(
+  LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewCallBackConn maxAttempts = "
       "%zu",
       maxAttempts);
 
   for (auto attempt = 0ULL; attempt < maxAttempts;) {
     const auto& loc = locators[attempt++ % locatorsSize];
-    LOG_FINER("Querying locator at [%s:%d] for queue server from group [%s]",
-              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
+    LOGFINER("Querying locator at [%s:%d] for queue server from group [%s]",
+             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
     auto request = std::make_shared<QueueConnectionRequest>(
         memId, exclEndPts, redundancy, false, serverGrp);
@@ -227,23 +227,23 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
   auto locatorsSize = locators.size();
   auto maxAttempts = getConnRetries();
 
-  LOG_FINER(
+  LOGFINER(
       "ThinClientLocatorHelper::getEndpointForNewFwdConn maxAttempts = %zu",
       maxAttempts);
 
   for (auto attempt = 0ULL; attempt < maxAttempts;) {
     const auto& loc = locators[attempt++ % locatorsSize];
-    LOG_FINE("Querying locator at [%s:%d] for server from group [%s]",
-             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
+    LOGFINE("Querying locator at [%s:%d] for server from group [%s]",
+            loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
     std::shared_ptr<Serializable> request;
     if (currentServer == nullptr) {
-      LOG_DEBUG("Creating ClientConnectionRequest");
+      LOGDEBUG("Creating ClientConnectionRequest");
       request =
           std::make_shared<ClientConnectionRequest>(exclEndPts, serverGrp);
     } else {
-      LOG_DEBUG("Creating ClientReplacementRequest for connection: %s",
-                currentServer->getEndpointObject()->name().c_str());
+      LOGDEBUG("Creating ClientReplacementRequest for connection: %s",
+               currentServer->getEndpointObject()->name().c_str());
       request = std::make_shared<ClientReplacementRequest>(
           currentServer->getEndpointObject()->name(), exclEndPts, serverGrp);
     }
@@ -256,14 +256,14 @@ GfErrType ThinClientLocatorHelper::getEndpointForNewFwdConn(
 
     response->printInfo();
     if (!response->serverFound()) {
-      LOG_FINE("Server not found");
+      LOGFINE("Server not found");
       locatorFound = true;
       continue;
     }
 
     outEndpoint = response->getServerLocation();
-    LOG_FINE("Server found at [%s:%d]", outEndpoint.getServerName().c_str(),
-             outEndpoint.getPort());
+    LOGFINE("Server found at [%s:%d]", outEndpoint.getServerName().c_str(),
+            outEndpoint.getPort());
 
     return GF_NOERR;
   }
@@ -279,8 +279,8 @@ GfErrType ThinClientLocatorHelper::updateLocators(
     const std::string& serverGrp) {
   auto locators = getLocators();
   for (const auto& loc : locators) {
-    LOG_FINER("Querying locator list at: [%s:%d] for update from group [%s]",
-              loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
+    LOGFINER("Querying locator list at: [%s:%d] for update from group [%s]",
+             loc.getServerName().c_str(), loc.getPort(), serverGrp.c_str());
 
     auto request = std::make_shared<LocatorListRequest>(serverGrp);
     auto response = std::dynamic_pointer_cast<LocatorListResponse>(

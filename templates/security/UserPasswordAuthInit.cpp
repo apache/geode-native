@@ -37,7 +37,7 @@ SECURITYIMPL_EXPORT AuthInitialize* createUserPasswordAuthInitInstance() {
 }
 std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
     const std::shared_ptr<Properties>& securityprops, const std::string&) {
-  // LOG_DEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
+  // LOGDEBUG("UserPasswordAuthInit: inside userPassword::getCredentials");
   std::shared_ptr<Cacheable> userName;
   if (securityprops == nullptr ||
       (userName = securityprops->find(SECURITY_USERNAME)) == nullptr) {
@@ -54,7 +54,7 @@ std::shared_ptr<Properties> UserPasswordAuthInit::getCredentials(
     passwd = CacheableString::create("");
   }
   credentials->insert(SECURITY_PASSWORD, passwd->toString());
-  // LOG_DEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
+  // LOGDEBUG("UserPasswordAuthInit: inserted username:password - %s:%s",
   //    userName->toString().c_str(), passwd->toString().c_str());
   return credentials;
 }

@@ -89,7 +89,7 @@ class ConnectionQueue {
       std::lock_guard<_Mutex> _guard(mutex_);
 
       closed_ = true;
-      LOG_DEBUG("Internal fair queue size while closing is %zu", queue_.size());
+      LOGDEBUG("Internal fair queue size while closing is %zu", queue_.size());
       while (!queue_.empty()) {
         auto mp = queue_.back();
         queue_.pop_back();
@@ -98,7 +98,7 @@ class ConnectionQueue {
         deleteAction();
       }
     }
-    LOG_DEBUG("ConnectionQueue::close( ): queue closed ");
+    LOGDEBUG("ConnectionQueue::close( ): queue closed ");
     condition_.notify_all();
   }
 

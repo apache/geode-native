@@ -210,8 +210,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         if (auto uFEPtr =
                 std::dynamic_pointer_cast<UserFunctionExecutionException>(
                     result->operator[](i))) {
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } else {
           FAIL(
@@ -233,7 +233,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       fil->push_back(CacheableInt32::create(1));
       auto exe = FunctionService::onRegion(regPtr0);
 
-      LOG_INFO("Executing the exception test it is expected to throw.");
+      LOGINFO("Executing the exception test it is expected to throw.");
       auto executeFunctionResult3 =
           funcExec.withArgs(arrList)
               .withFilter(filter)
@@ -242,7 +242,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
               ->getResult();
       FAIL("Failed to throw expected exception.");
     } catch (...) {
-      LOG_INFO("Finished Executing the exception test Successfully");
+      LOGINFO("Finished Executing the exception test Successfully");
     }
   }
 END_TASK_DEFINITION

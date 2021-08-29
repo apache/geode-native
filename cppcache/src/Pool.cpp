@@ -114,7 +114,7 @@ AuthenticatedView Pool::createAuthenticatedView(
     }
 
     if (!credentials) {
-      LOG_DEBUG("Pool::createSecureUserCache creds are null");
+      LOGDEBUG("Pool::createSecureUserCache creds are null");
     }
 
     return AuthenticatedView(credentials, shared_from_this(), cacheImpl);
@@ -132,13 +132,13 @@ bool Pool::getPRSingleHopEnabled() const {
 int Pool::getPendingEventCount() const {
   const auto poolHADM = dynamic_cast<const ThinClientPoolHADM*>(this);
   if (nullptr == poolHADM || poolHADM->isReadyForEvent()) {
-    LOG_ERROR("This operation should only be called before readyForEvents.");
+    LOGERROR("This operation should only be called before readyForEvents.");
     throw IllegalStateException(
         "This operation should only be called before readyForEvents");
   }
   TcrConnectionManager& tccm = poolHADM->getConnectionManager();
   if (!tccm.isDurable()) {
-    LOG_ERROR("This operation should only be called by durable client.");
+    LOGERROR("This operation should only be called by durable client.");
     throw IllegalStateException(
         "This operation should only be called by durable client");
   }

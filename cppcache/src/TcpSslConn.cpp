@@ -100,7 +100,7 @@ void TcpSslConn::init(const std::string& pubkeyfile,
   // This configuration is copied into each SSL instance upon construction.
   // That means you need to get your configuration in order before you
   // construct the stream and connect the socket.
-  LOG_DEBUG(
+  LOGDEBUG(
       "*** TcpSslConn init, pubkeyfile = %s, pemPassword = %s, sniHostname = "
       "%s",
       pubkeyfile.c_str(), pemPassword.c_str(), sniHostname.c_str());
@@ -131,17 +131,17 @@ void TcpSslConn::init(const std::string& pubkeyfile,
     std::stringstream ss;
     ss << "Setup SSL " << socket_.local_endpoint() << " -> "
        << socket_.remote_endpoint();
-    LOG_INFO(ss.str());
+    LOGINFO(ss.str());
 
     ss.clear();
     ss << "SNI hostname: " << sniHostname;
-    LOG_INFO(ss.str());
+    LOGINFO(ss.str());
 
     socket_stream_ = std::move(stream);
   } catch (const boost::exception& ex) {
     // error handling
     std::string info = boost::diagnostic_information(ex);
-    LOG_DEBUG("caught boost exception: %s", info.c_str());
+    LOGDEBUG("caught boost exception: %s", info.c_str());
     throw apache::geode::client::SslException(info.c_str());
   }
 }
@@ -153,7 +153,7 @@ TcpSslConn::~TcpSslConn() {
     ss << socket_.remote_endpoint();
   } catch (...) {
   }
-  LOG_FINE(ss.str());
+  LOGFINE(ss.str());
 }
 
 void TcpSslConn::prepareAsyncRead(

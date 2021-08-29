@@ -36,7 +36,7 @@ bool TombstoneExpiryTask::on_expire() {
   std::shared_ptr<CacheableKey> key;
   tombstone_->entry()->getKeyI(key);
 
-  LOG_DEBUG(
+  LOGDEBUG(
       "TombstoneExpiryTask::on_expire LOCAL_DESTROY "
       "for region entry with key %s",
       Utils::nullSafeToString(key).c_str());

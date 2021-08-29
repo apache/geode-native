@@ -49,8 +49,8 @@ ClientProxyMembershipIDFactory::ClientProxyMembershipIDFactory(
   auto pid = boost::this_process::get_id();
   randString_.append(std::to_string(pid));
 
-  LOG_INFO("Using %s as random data for ClientProxyMembershipID",
-           randString_.c_str());
+  LOGINFO("Using %s as random data for ClientProxyMembershipID",
+          randString_.c_str());
 }
 
 std::unique_ptr<ClientProxyMembershipID> ClientProxyMembershipIDFactory::create(

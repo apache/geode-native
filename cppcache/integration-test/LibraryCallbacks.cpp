@@ -29,7 +29,7 @@ void dummyFunc() {}
 }  // namespace test
 
 #define SLEEP(x) std::this_thread::sleep_for(std::chrono::milliseconds(x))
-#define LOG LOG_DEBUG
+#define LOG LOGDEBUG
 
 #include "TallyListener.hpp"
 #include "TallyLoader.hpp"

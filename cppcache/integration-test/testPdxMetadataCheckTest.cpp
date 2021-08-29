@@ -77,7 +77,7 @@ bool isPoolConfig = false;  // To track if pool case is running
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                 const std::shared_ptr<Properties> &configPtr = nullptr) {
-  LOG_INFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
+  LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   configPtr, false);
@@ -156,7 +156,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
-    LOG_INFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
+    LOGINFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
     } else {
@@ -166,7 +166,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
-          LOG_INFO("NIL:: boolValue is %d ", boolValue->value());
+          LOGINFO("NIL:: boolValue is %d ", boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
@@ -187,8 +187,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
               std::dynamic_pointer_cast<UserFunctionExecutionException>(
                   result->operator[](i));
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
@@ -334,7 +334,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
-    LOG_INFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
+    LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
              result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -344,7 +344,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
-          LOG_INFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
+          LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                    boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
@@ -366,8 +366,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
               std::dynamic_pointer_cast<UserFunctionExecutionException>(
                   result->operator[](i));
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(

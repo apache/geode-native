@@ -138,7 +138,7 @@ class APACHE_GEODE_EXPORT Utils {
     auto objectSize = theObject->objectSize();
     static bool youHaveBeenWarned = false;
     if (objectSize == 0 && !youHaveBeenWarned) {
-      LOG_WARN(
+      LOGWARN(
           "Object size for Heap LRU returned by %s is 0 (zero). Even for empty "
           "objects the size returned should be at least one (1 byte).",
           theObject->toString().c_str());

@@ -196,7 +196,7 @@ void doNputLargeData(std::shared_ptr<Region> &regionPtr, int num) {
     regionPtr->put(CacheableKey::create(item), valuePtr);
   }
 
-  LOG_INFO("Put data locally");
+  LOGINFO("Put data locally");
 }
 
 // Testing for get operation
@@ -214,7 +214,7 @@ uint32_t doNgetLargeData(std::shared_ptr<Region> &regionPtr, int num) {
       countFound++;
     }
   }
-  LOG_INFO("found:%d and Not found: %d", countFound, countNotFound);
+  LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
   return countFound;
 }
 
@@ -241,7 +241,7 @@ uint32_t doNget(std::shared_ptr<Region> &regionPtr, uint32_t num,
   printf("num found %d", num);
   ASSERT(countFound == (num - start),
          "Number of entries found and put should match");
-  LOG_INFO("found:%d and Not found: %d", countFound, countNotFound);
+  LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
   return countFound;
 }
 /**

@@ -55,8 +55,8 @@ void ThinClientDistributionManager::init() {
     if ((err = m_endpoints[randIndex[index]]->registerDM(
              m_clientNotification, false, true)) == GF_NOERR) {
       m_activeEndpoint = randIndex[index];
-      LOG_FINE("DM: Using endpoint %s",
-               m_endpoints[m_activeEndpoint]->name().c_str());
+      LOGFINE("DM: Using endpoint %s",
+              m_endpoints[m_activeEndpoint]->name().c_str());
     } else if (isFatalError(err)) {
       m_connManager.disconnect(this, m_endpoints);
       throwExceptionIfError("ThinClientDistributionManager::init", err);
@@ -75,9 +75,8 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
   if (m_activeEndpoint >= 0) {
     m_endpoints[m_activeEndpoint]->unregisterDM(m_clientNotification, this);
   }
-  LOG_FINEST(
-      "ThinClientDistributionManager:: starting destroy for region %s",
-      (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+  LOGFINEST("ThinClientDistributionManager:: starting destroy for region %s",
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   destroyAction();
   // stop the chunk processing thread
   stopChunkProcessor();
@@ -89,14 +88,13 @@ void ThinClientDistributionManager::destroy(bool keepAlive) {
       }
       endpointStr.append(m_endpoints[index]->name());
     }
-    LOG_FINEST(
+    LOGFINEST(
         "ThinClientDistributionManager: disconnecting endpoints %s from TCCM",
         endpointStr.c_str());
   }
   m_connManager.disconnect(this, m_endpoints, keepAlive);
-  LOG_FINEST(
-      "ThinClientDistributionManager: completed destroy for region %s",
-      (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+  LOGFINEST("ThinClientDistributionManager: completed destroy for region %s",
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   m_initDone = false;
 }
 
@@ -130,13 +128,13 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
   }
   int currentEndpoint = m_activeEndpoint;
   if (currentEndpoint >= 0 && m_endpoints[currentEndpoint]->connected()) {
-    LOG_DEBUG(
+    LOGDEBUG(
         "ThinClientDistributionManager::sendSyncRequest: trying to send on "
         "endpoint: %s",
         m_endpoints[currentEndpoint]->name().c_str());
     error = sendRequestToEP(request, reply, m_endpoints[currentEndpoint]);
     useActiveEndpoint = false;
-    LOG_DEBUG(
+    LOGDEBUG(
         "ThinClientDistributionManager::sendSyncRequest: completed send on "
         "endpoint: %s [error:%d]",
         m_endpoints[currentEndpoint]->name().c_str(), error);
@@ -185,20 +183,20 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
         return error;
       }
       currentEndpoint = m_activeEndpoint;
-      LOG_FINEST(
+      LOGFINEST(
           "ThinClientDistributionManager::sendSyncRequest: trying send on new "
           "endpoint %s",
           m_endpoints[currentEndpoint]->name().c_str());
       error = sendRequestToEP(request, reply, m_endpoints[currentEndpoint]);
       if (error != GF_NOERR) {
-        LOG_FINE(
+        LOGFINE(
             "ThinClientDistributionManager::sendSyncRequest: failed send on "
             "new endpoint %s for message "
             "type %d [error:%d]",
             m_endpoints[currentEndpoint]->name().c_str(),
             request.getMessageType(), error);
       } else {
-        LOG_FINEST(
+        LOGFINEST(
             "ThinClientDistributionManager::sendSyncRequest: completed send on "
             "new endpoint: %s",
             m_endpoints[currentEndpoint]->name().c_str());
@@ -216,9 +214,8 @@ GfErrType ThinClientDistributionManager::sendSyncRequest(TcrMessage& request,
 void ThinClientDistributionManager::failover() {
   std::vector<int> randIndex;
   bool doRand = true;
-  LOG_FINEST(
-      "DM: invoked select endpoint via failover thread for region %s",
-      (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
+  LOGFINEST("DM: invoked select endpoint via failover thread for region %s",
+            (m_region != nullptr ? m_region->getFullPath().c_str() : "(null)"));
   selectEndpoint(randIndex, doRand);
 }
 
@@ -228,18 +225,18 @@ inline GfErrType ThinClientDistributionManager::connectToEndpoint(int epIndex) {
   ep->setDM(this);
   if ((err = ep->registerDM(m_clientNotification, false, true, this)) ==
       GF_NOERR) {
-    LOG_FINE("DM: Attempting failover to endpoint %s", ep->name().c_str());
+    LOGFINE("DM: Attempting failover to endpoint %s", ep->name().c_str());
     if (postFailoverAction(ep)) {
       m_activeEndpoint = epIndex;
-      LOG_FINE("DM: Failover to endpoint %s complete.", ep->name().c_str());
+      LOGFINE("DM: Failover to endpoint %s complete.", ep->name().c_str());
     } else {
-      LOG_FINE("DM: Post failover action failed for endpoint %s",
-               ep->name().c_str());
+      LOGFINE("DM: Post failover action failed for endpoint %s",
+              ep->name().c_str());
       ep->unregisterDM(m_clientNotification, this);
       err = GF_EUNDEF;
     }
   } else {
-    LOG_FINE("DM: Could not connect to endpoint %s", ep->name().c_str());
+    LOGFINE("DM: Could not connect to endpoint %s", ep->name().c_str());
   }
   return err;
 }
@@ -283,8 +280,8 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
         int currIndex = randIndex[0];
         randIndex.erase(randIndex.begin());
         if ((err = connectToEndpoint(currIndex)) == GF_NOERR) {
-          LOG_FINER("TCDM::selectEndpoint: Successfully selected endpoint %s",
-                    m_endpoints[currIndex]->name().c_str());
+          LOGFINER("TCDM::selectEndpoint: Successfully selected endpoint %s",
+                   m_endpoints[currIndex]->name().c_str());
           break;
         }
       }
@@ -315,14 +312,14 @@ std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(
       distributedSystem.getSystemProperties().getSecurityProperties();
 
   if (const auto& authInitialize = cacheImpl->getAuthInitialize()) {
-    LOG_FINER(
+    LOGFINER(
         "ThinClientDistributionManager::getCredentials: acquired handle to "
         "authLoader, "
         "invoking getCredentials %s",
         ep->name().c_str());
     const auto& tmpAuthIniSecurityProperties = authInitialize->getCredentials(
         tmpSecurityProperties, ep->name().c_str());
-    LOG_FINER("Done getting credentials");
+    LOGFINER("Done getting credentials");
     return tmpAuthIniSecurityProperties;
   }
 
@@ -331,7 +328,7 @@ std::shared_ptr<Properties> ThinClientDistributionManager::getCredentials(
 
 GfErrType ThinClientDistributionManager::sendUserCredentials(
     std::shared_ptr<Properties> credentials, TcrEndpoint* ep) {
-  LOG_DEBUG("ThinClientPoolDM::sendUserCredentials");
+  LOGDEBUG("ThinClientPoolDM::sendUserCredentials");
 
   GfErrType err = GF_NOERR;
 
@@ -342,7 +339,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
   TcrMessageReply reply(true, this);
 
   err = ep->send(request, reply);
-  LOG_DEBUG(
+  LOGDEBUG(
       "ThinClientDistributionManager::sendUserCredentials: completed endpoint "
       "send for: %s [error:%d]",
       ep->name().c_str(), err);
@@ -365,7 +362,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
         break;
       }
       default: {
-        LOG_ERROR(
+        LOGERROR(
             "Unknown message type %d during secure response, possible "
             "serialization mismatch",
             reply.getMessageType());
@@ -383,7 +380,7 @@ GfErrType ThinClientDistributionManager::sendUserCredentials(
 
 GfErrType ThinClientDistributionManager::sendRequestToEP(
     const TcrMessage& request, TcrMessageReply& reply, TcrEndpoint* ep) {
-  LOG_DEBUG(
+  LOGDEBUG(
       "ThinClientDistributionManager::sendRequestToEP: invoking endpoint send "
       "for: %s",
       ep->name().c_str());
@@ -410,7 +407,7 @@ GfErrType ThinClientDistributionManager::sendRequestToEP(
 
     reply.setDM(this);
     error = ep->send(request, reply);
-    LOG_DEBUG(
+    LOGDEBUG(
         "ThinClientDistributionManager::sendRequestToEP: completed endpoint "
         "send for: %s [error:%d]",
         ep->name().c_str(), error);

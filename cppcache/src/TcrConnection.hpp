@@ -256,12 +256,12 @@ class TcrConnection {
   void updateCreationTime();
 
   int64_t getConnectionId() {
-    LOG_DEBUG("TcrConnection::getConnectionId() = %" PRId64, connectionId);
+    LOGDEBUG("TcrConnection::getConnectionId() = %" PRId64, connectionId);
     return connectionId;
   }
 
   void setConnectionId(int64_t id) {
-    LOG_DEBUG("Tcrconnection:setConnectionId() = %" PRId64, id);
+    LOGDEBUG("Tcrconnection:setConnectionId() = %" PRId64, id);
     connectionId = id;
   }
 

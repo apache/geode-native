@@ -44,9 +44,9 @@ CqService::CqService(ThinClientBaseDM* tccdm,
   assert(nullptr != m_tccdm);
 
   m_running = true;
-  LOG_DEBUG("CqService Started");
+  LOGDEBUG("CqService Started");
 }
-CqService::~CqService() noexcept { LOG_DEBUG("CqService Destroyed"); }
+CqService::~CqService() noexcept { LOGDEBUG("CqService Destroyed"); }
 
 void CqService::updateStats() {
   auto stats = std::dynamic_pointer_cast<CqServiceVsdStats>(m_stats);
@@ -101,7 +101,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
   // Check if the subscription is enabled on the pool
   auto pool = dynamic_cast<ThinClientPoolDM*>(m_tccdm);
   if (pool && !pool->getSubscriptionEnabled()) {
-    LOG_ERROR(
+    LOGERROR(
         "Cannot create CQ because subscription is not enabled on the pool.");
     throw IllegalStateException(
         "Cannot create CQ because subscription is not enabled on the pool.");
@@ -115,7 +115,7 @@ std::shared_ptr<CqQuery> CqService::newCq(
                            .getSystemProperties()
                            .durableClientId();
     if (durableID.empty()) {
-      LOG_ERROR("Cannot create durable CQ because client is not durable.");
+      LOGERROR("Cannot create durable CQ because client is not durable.");
       throw IllegalStateException(
           "Cannot create durable CQ because client is not durable.");
     }
@@ -164,7 +164,7 @@ std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
   auto&& lock = m_cqQueryMap.make_lock();
   const auto& found = m_cqQueryMap.find(cqName);
   if (found == m_cqQueryMap.end()) {
-    LOG_WARN("Failed to get the specified CQ: %s", cqName.c_str());
+    LOGWARN("Failed to get the specified CQ: %s", cqName.c_str());
   } else {
     return found->second;
   }
@@ -175,7 +175,7 @@ std::shared_ptr<CqQuery> CqService::getCq(const std::string& cqName) {
  * Clears the CQ Query Map.
  */
 void CqService::clearCqQueryMap() {
-  LOG_FINE("Cleaning clearCqQueryMap.");
+  LOGFINE("Cleaning clearCqQueryMap.");
   m_cqQueryMap.clear();
 }
 
@@ -252,13 +252,13 @@ void CqService::executeCqs(query_container_type& cqs, bool afterFailover) {
           cq->execute();
         }
       } catch (QueryException& qe) {
-        LOG_FINE("%s", ("Failed to execute the CQ, CqName : " + cqName +
-                        " Error : " + qe.what())
-                           .c_str());
+        LOGFINE("%s", ("Failed to execute the CQ, CqName : " + cqName +
+                       " Error : " + qe.what())
+                          .c_str());
       } catch (CqClosedException& cce) {
-        LOG_FINE(("Failed to execute the CQ, CqName : " + cqName +
-                  " Error : " + cce.what())
-                     .c_str());
+        LOGFINE(("Failed to execute the CQ, CqName : " + cqName +
+                 " Error : " + cce.what())
+                    .c_str());
       }
     }
   }
@@ -288,13 +288,13 @@ void CqService::stopCqs(query_container_type& cqs) {
         cqName = cq->getName();
         cq->stop();
       } catch (QueryException& qe) {
-        LOG_FINE(("Failed to stop the CQ, CqName : " + cqName +
-                  " Error : " + qe.what())
-                     .c_str());
+        LOGFINE(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + qe.what())
+                    .c_str());
       } catch (CqClosedException& cce) {
-        LOG_FINE(("Failed to stop the CQ, CqName : " + cqName +
-                  " Error : " + cce.what())
-                     .c_str());
+        LOGFINE(("Failed to stop the CQ, CqName : " + cqName +
+                 " Error : " + cce.what())
+                    .c_str());
       }
     }
   }
@@ -303,28 +303,28 @@ void CqService::stopCqs(query_container_type& cqs) {
 void CqService::closeCqs(query_container_type& cqs) {
   const auto keepAlive =
       m_tccdm->getConnectionManager().getCacheImpl()->isKeepAlive();
-  LOG_DEBUG("closeCqs() keepAlive = %d ", keepAlive);
+  LOGDEBUG("closeCqs() keepAlive = %d ", keepAlive);
   if (!cqs.empty()) {
     std::string cqName;
     for (auto& cq : cqs) {
       try {
         auto cqi = std::static_pointer_cast<CqQueryImpl>(cq);
         cqName = cqi->getName();
-        LOG_DEBUG("closeCqs() cqname = %s isDurable = %d ", cqName.c_str(),
-                  cqi->isDurable());
+        LOGDEBUG("closeCqs() cqname = %s isDurable = %d ", cqName.c_str(),
+                 cqi->isDurable());
         if (!(cqi->isDurable() && keepAlive)) {
           cqi->close(true);
         } else {
           cqi->close(false);
         }
       } catch (QueryException& qe) {
-        LOG_FINE(("Failed to close the CQ, CqName : " + cqName +
-                  " Error : " + qe.what())
-                     .c_str());
+        LOGFINE(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + qe.what())
+                    .c_str());
       } catch (CqClosedException& cce) {
-        LOG_FINE(("Failed to close the CQ, CqName : " + cqName +
-                  " Error : " + cce.what())
-                     .c_str());
+        LOGFINE(("Failed to close the CQ, CqName : " + cqName +
+                 " Error : " + cce.what())
+                    .c_str());
       }
     }
   }
@@ -351,11 +351,11 @@ void CqService::closeCqService() {
   }
 }
 void CqService::closeAllCqs() {
-  LOG_FINE("closeAllCqs()");
+  LOGFINE("closeAllCqs()");
   query_container_type cqVec = getAllCqs();
-  LOG_FINE("closeAllCqs() 1");
+  LOGFINE("closeAllCqs() 1");
   auto&& lock = m_cqQueryMap.make_lock();
-  LOG_FINE("closeAllCqs() 2");
+  LOGFINE("closeAllCqs() 2");
   closeCqs(cqVec);
 }
 
@@ -363,7 +363,7 @@ void CqService::closeAllCqs() {
  * Cleans up the CqService.
  */
 void CqService::cleanup() {
-  LOG_FINE("Cleaning up CqService.");
+  LOGFINE("Cleaning up CqService.");
 
   // Close All the CQs.
   // Need to take care when Clients are still connected...
@@ -404,15 +404,15 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
                                   std::shared_ptr<Cacheable> value,
                                   std::shared_ptr<CacheableBytes> deltaValue,
                                   std::shared_ptr<EventId> eventId) {
-  LOG_DEBUG("CqService::invokeCqListeners");
+  LOGDEBUG("CqService::invokeCqListeners");
   for (const auto& kv : *cqs) {
     const auto cqName = kv.first;
     auto cQuery = getCq(cqName);
     auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
     if (!(cQueryImpl && cQueryImpl->isRunning())) {
-      LOG_FINE("Unable to invoke CqListener, %s, CqName: %s",
-               cQueryImpl ? "CQ not found" : "CQ is Not running",
-               cqName.c_str());
+      LOGFINE("Unable to invoke CqListener, %s, CqName: %s",
+              cQueryImpl ? "CQ not found" : "CQ is Not running",
+              cqName.c_str());
       continue;
     }
 
@@ -425,7 +425,7 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
         cQueryImpl->close(false);
       } catch (Exception& ex) {
         // handle?
-        LOG_FINE("Exception while invoking CQ listeners: %s", ex.what());
+        LOGFINE("Exception while invoking CQ listeners: %s", ex.what());
       }
       continue;
     }
@@ -452,9 +452,9 @@ void CqService::invokeCqListeners(const std::map<std::string, int>* cqs,
         }
         // Handle client side exceptions.
       } catch (Exception& ex) {
-        LOG_WARN(("Exception in the CqListener of the CQ named " + cqName +
-                  ", error: " + ex.what())
-                     .c_str());
+        LOGWARN(("Exception in the CqListener of the CQ named " + cqName +
+                 ", error: " + ex.what())
+                    .c_str());
       }
     }
     delete cqEvent;
@@ -468,9 +468,9 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
     const auto& cqName = cQuery->getName();
     auto cQueryImpl = std::dynamic_pointer_cast<CqQueryImpl>(cQuery);
     if (cQueryImpl == nullptr || !cQueryImpl->isRunning()) {
-      LOG_FINE("Unable to invoke CqStatusListener, %s, CqName: %s",
-               (cQueryImpl == nullptr) ? "CQ not found" : "CQ is Not running",
-               cqName.c_str());
+      LOGFINE("Unable to invoke CqStatusListener, %s, CqName: %s",
+              (cQueryImpl == nullptr) ? "CQ not found" : "CQ is Not running",
+              cqName.c_str());
       continue;
     }
 
@@ -497,9 +497,9 @@ void CqService::invokeCqConnectedListeners(const std::string& poolName,
         }
         // Handle client side exceptions.
       } catch (Exception& ex) {
-        LOG_WARN(("Exception in the CqStatusListener of the CQ named " +
-                  cqName + ", error: " + ex.what())
-                     .c_str());
+        LOGWARN(("Exception in the CqStatusListener of the CQ named " + cqName +
+                 ", error: " + ex.what())
+                    .c_str());
       }
     }
   }
@@ -563,7 +563,7 @@ std::shared_ptr<CacheableArrayList> CqService::getAllDurableCqsFromServer() {
   GfErrType err = GF_NOERR;
   err = m_tccdm->sendSyncRequest(msg, reply);
   if (err != GF_NOERR) {
-    LOG_DEBUG("CqService::getAllDurableCqsFromServer!!!!");
+    LOGDEBUG("CqService::getAllDurableCqsFromServer!!!!");
     throwExceptionIfError("CqService::getAllDurableCqsFromServer:", err);
   }
   if (reply.getMessageType() == TcrMessage::EXCEPTION ||

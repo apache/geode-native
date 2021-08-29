@@ -59,30 +59,30 @@ bool RegionExpiryTask::on_expire() {
   const auto full_path = region_->getFullPath().c_str();
   switch (action_) {
     case ExpirationAction::INVALIDATE: {
-      LOG_DEBUG("RegionExpiryTask INVALIDATE region [%s]", full_path);
+      LOGDEBUG("RegionExpiryTask INVALIDATE region [%s]", full_path);
       region_->invalidateRegionNoThrow(nullptr, CacheEventFlags::EXPIRATION);
       break;
     }
     case ExpirationAction::LOCAL_INVALIDATE: {
-      LOG_DEBUG("RegionExpiryTask LOCAL_INVALIDATE region [%s]", full_path);
+      LOGDEBUG("RegionExpiryTask LOCAL_INVALIDATE region [%s]", full_path);
       region_->invalidateRegionNoThrow(
           nullptr, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     case ExpirationAction::DESTROY: {
-      LOG_DEBUG("RegionExpiryTask DESTROY region [%s]", full_path);
+      LOGDEBUG("RegionExpiryTask DESTROY region [%s]", full_path);
       region_->destroyRegionNoThrow(nullptr, true, CacheEventFlags::EXPIRATION);
       break;
     }
     case ExpirationAction::LOCAL_DESTROY: {
-      LOG_DEBUG("RegionExpiryTask LOCAL_DESTROY region [%s]", full_path);
+      LOGDEBUG("RegionExpiryTask LOCAL_DESTROY region [%s]", full_path);
       region_->destroyRegionNoThrow(
           nullptr, true, CacheEventFlags::EXPIRATION | CacheEventFlags::LOCAL);
       break;
     }
     case ExpirationAction::INVALID_ACTION: {
-      LOG_ERROR("Unknown expiration action %d for region [%s]",
-                static_cast<int32_t>(action_), full_path);
+      LOGERROR("Unknown expiration action %d for region [%s]",
+               static_cast<int32_t>(action_), full_path);
       break;
     }
   }

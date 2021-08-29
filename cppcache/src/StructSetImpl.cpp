@@ -30,8 +30,8 @@ StructSetImpl::StructSetImpl(const std::shared_ptr<CacheableVector>& response,
                              const std::vector<std::string>& fieldNames) {
   int32_t i = 0;
   for (auto&& fieldName : fieldNames) {
-    LOG_DEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
-              fieldName.c_str(), i);
+    LOGDEBUG("StructSetImpl: pushing fieldName = %s with index = %d",
+             fieldName.c_str(), i);
     m_fieldNameIndexMap.emplace(fieldName, i++);
   }
 

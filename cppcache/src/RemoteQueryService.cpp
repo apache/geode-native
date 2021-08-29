@@ -43,19 +43,19 @@ RemoteQueryService::RemoteQueryService(CacheImpl* cache,
     m_tccdm =
         new ThinClientCacheDistributionManager(cache->tcrConnectionManager());
   }
-  LOG_FINEST("Initialized m_tccdm");
+  LOGFINEST("Initialized m_tccdm");
 }
 
 void RemoteQueryService::init() {
   boost::unique_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
-    LOG_FINEST("RemoteQueryService::init: initializing TCCDM");
+    LOGFINEST("RemoteQueryService::init: initializing TCCDM");
     if (dynamic_cast<ThinClientCacheDistributionManager*>(m_tccdm)) {
       m_tccdm->init();
     }
 
     m_invalid = false;
-    LOG_FINEST("RemoteQueryService::init: done initialization");
+    LOGFINEST("RemoteQueryService::init: done initialization");
   }
 }
 
@@ -67,10 +67,10 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
         "QueryService::newQuery: Cache has been closed.");
   }
 
-  LOG_DEBUG("RemoteQueryService::newQuery: multiuserMode = %d ",
-            m_tccdm->isMultiUserMode());
+  LOGDEBUG("RemoteQueryService::newQuery: multiuserMode = %d ",
+           m_tccdm->isMultiUserMode());
 
-  LOG_DEBUG("RemoteQueryService: creating a new query: " + querystring);
+  LOGDEBUG("RemoteQueryService: creating a new query: " + querystring);
 
   if (m_tccdm->isMultiUserMode()) {
     return std::make_shared<RemoteQuery>(
@@ -83,19 +83,19 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
 }
 
 void RemoteQueryService::close() {
-  LOG_FINEST("RemoteQueryService::close: starting close");
+  LOGFINEST("RemoteQueryService::close: starting close");
   boost::unique_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_cqService != nullptr) {
-    LOG_FINEST("RemoteQueryService::close: starting CQ service close");
+    LOGFINEST("RemoteQueryService::close: starting CQ service close");
     m_cqService->closeCqService();
     m_cqService = nullptr;
-    LOG_FINEST("RemoteQueryService::close: completed CQ service close");
+    LOGFINEST("RemoteQueryService::close: completed CQ service close");
   }
 
   if (dynamic_cast<ThinClientCacheDistributionManager*>(m_tccdm)) {
     if (!m_invalid) {
-      LOG_FINEST("RemoteQueryService::close: destroying DM");
+      LOGFINEST("RemoteQueryService::close: destroying DM");
       m_tccdm->destroy();
     }
     _GEODE_SAFE_DELETE(m_tccdm);
@@ -106,7 +106,7 @@ void RemoteQueryService::close() {
     m_CqPoolsConnected.clear();
   }
 
-  LOG_FINEST("RemoteQueryService::close: completed");
+  LOGFINEST("RemoteQueryService::close: completed");
 }
 
 /**
@@ -115,18 +115,17 @@ void RemoteQueryService::close() {
 GfErrType RemoteQueryService::executeAllCqs(TcrEndpoint* endpoint) {
   boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
-    LOG_FINE("QueryService::executeAllCqs(endpoint): Not initialized.");
+    LOGFINE("QueryService::executeAllCqs(endpoint): Not initialized.");
     return GF_NOERR;
   }
 
   if (m_cqService == nullptr) {
-    LOG_FINE(
-        "RemoteQueryService: no cq to execute after failover to endpoint[" +
-        endpoint->name() + "]");
+    LOGFINE("RemoteQueryService: no cq to execute after failover to endpoint[" +
+            endpoint->name() + "]");
     return GF_NOERR;
   } else {
-    LOG_FINE("RemoteQueryService: execute all cqs after failover to endpoint[" +
-             endpoint->name() + "]");
+    LOGFINE("RemoteQueryService: execute all cqs after failover to endpoint[" +
+            endpoint->name() + "]");
     return m_cqService->executeAllClientCqs(endpoint);
   }
 }
@@ -134,16 +133,16 @@ GfErrType RemoteQueryService::executeAllCqs(TcrEndpoint* endpoint) {
 void RemoteQueryService::executeAllCqs(bool failover) {
   boost::shared_lock<decltype(mutex_)> guard{mutex_};
   if (m_invalid) {
-    LOG_FINE("QueryService::executeAllCqs: Not initialized.");
+    LOGFINE("QueryService::executeAllCqs: Not initialized.");
     return;
   }
 
   /*if cq has not been started, then failover will not start it.*/
   if (m_cqService != nullptr) {
-    LOG_FINE("RemoteQueryService: execute all cqs after failover");
+    LOGFINE("RemoteQueryService: execute all cqs after failover");
     m_cqService->executeAllClientCqs(failover);
   } else {
-    LOG_FINE("RemoteQueryService: no cq to execute after failover");
+    LOGFINE("RemoteQueryService: no cq to execute after failover");
   }
 }
 
@@ -180,7 +179,7 @@ void RemoteQueryService::closeCqs() {
   boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
-    LOG_FINE("QueryService::closeCqs: Cache has been closed.");
+    LOGFINE("QueryService::closeCqs: Cache has been closed.");
     return;
   }
 
@@ -240,7 +239,7 @@ void RemoteQueryService::stopCqs() {
   boost::shared_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_invalid) {
-    LOG_FINE("QueryService::stopCqs: Cache has been closed.");
+    LOGFINE("QueryService::stopCqs: Cache has been closed.");
     return;
   }
 
@@ -307,10 +306,10 @@ void RemoteQueryService::invokeCqConnectedListeners(ThinClientPoolDM* pool,
     poolName = pool->getName();
     CqPoolsConnected::iterator itr = m_CqPoolsConnected.find(poolName);
     if (itr != m_CqPoolsConnected.end() && itr->second == connected) {
-      LOG_DEBUG("Returning since pools connection status matched.");
+      LOGDEBUG("Returning since pools connection status matched.");
       return;
     } else {
-      LOG_DEBUG("Inserting since pools connection status did not match.");
+      LOGDEBUG("Inserting since pools connection status did not match.");
       m_CqPoolsConnected[poolName] = connected;
     }
   }

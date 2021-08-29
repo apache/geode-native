@@ -123,7 +123,7 @@ bool genericValCompare(T1 value1, T2 value2) /*const*/
 
 void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                 const std::shared_ptr<Properties> &configPtr = nullptr) {
-  LOG_INFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
+  LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields, false,
                                   configPtr, false);
@@ -136,7 +136,7 @@ void initClient(const bool isthinClient, bool isPdxIgnoreUnreadFields,
 void initClientN(const bool isthinClient, bool isPdxIgnoreUnreadFields,
                  bool isPdxReadSerialized = false,
                  const std::shared_ptr<Properties> &configPtr = nullptr) {
-  LOG_INFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
+  LOGINFO("isPdxIgnoreUnreadFields = %d ", isPdxIgnoreUnreadFields);
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(isthinClient, isPdxIgnoreUnreadFields,
                                   isPdxReadSerialized, configPtr, false);
@@ -431,9 +431,9 @@ void checkPdxInstanceToStringAtServer(std::shared_ptr<Region> regionPtr) {
   auto boolPtr =
       std::dynamic_pointer_cast<CacheableBoolean>(regionPtr->get(keyport));
   bool val = boolPtr->value();
-  // TODO::Enable asser and disable LOG_INFO
+  // TODO::Enable asser and disable LOGINFO
   ASSERT(val == true, "checkPdxInstanceToStringAtServer: Val should be true");
-  LOG_INFO("NIL::checkPdxInstanceToStringAtServer:139: val = %d", val);
+  LOGINFO("NIL::checkPdxInstanceToStringAtServer:139: val = %d", val);
 }
 
 // testPdxWriterAPIsWithInvalidArgs
@@ -468,7 +468,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
     expectedExceptionCount =
         (std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(pdxobj))
             ->gettoDataExceptionCount();
-    // LOG_INFO("TASK::testPdxWriterAPIsWithInvalidArgs:: toData ExceptionCount
+    // LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs:: toData ExceptionCount
     // ::
     // %d ", expectedExceptionCount);
     ASSERT(expectedExceptionCount == 41,
@@ -478,7 +478,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
     // Get Operation and check fromDataExceptionCount, Expected is 41.
     auto obj2 = std::dynamic_pointer_cast<PdxTests::InvalidPdxUsage>(
         regPtr0->get(keyport));
-    // LOG_INFO("TASK::testPdxWriterAPIsWithInvalidArgs:: fromData
+    // LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs:: fromData
     // ExceptionCOunt
     // :: %d ", obj2->getfromDataExceptionCount());
     expectedExceptionCount = obj2->getfromDataExceptionCount();
@@ -486,7 +486,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPdxWriterAPIsWithInvalidArgs)
            "Task testPdxWriterAPIsWithInvalidArgs:Did not get expected "
            "fromDataExceptionCount");
 
-    LOG_INFO("TASK::testPdxWriterAPIsWithInvalidArgs completed Successfully");
+    LOGINFO("TASK::testPdxWriterAPIsWithInvalidArgs completed Successfully");
   }
 END_TASK_DEFINITION
 
@@ -516,7 +516,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
         regPtr0->get(keyport1));
 
     // Check the exception count:: expected is 41.
-    // LOG_INFO("TASK::testPdxReaderAPIsWithInvalidArgs:: fromDataExceptionCount
+    // LOGINFO("TASK::testPdxReaderAPIsWithInvalidArgs:: fromDataExceptionCount
     // ::
     // %d ", obj1->getfromDataExceptionCount());
     expectedExceptionCount = obj1->getfromDataExceptionCount();
@@ -524,7 +524,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, testPdxReaderAPIsWithInvalidArgs)
            "Task testPdxReaderAPIsWithInvalidArgs:Did not get expected "
            "fromDataExceptionCount");
 
-    LOG_INFO("TASK::testPdxReaderAPIsWithInvalidArgs completed Successfully");
+    LOGINFO("TASK::testPdxReaderAPIsWithInvalidArgs completed Successfully");
   }
 END_TASK_DEFINITION
 
@@ -547,21 +547,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, testPutWithMultilevelInheritance)
     auto keyport = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::Child>();
     regPtr0->put(keyport, pdxobj);
-    LOG_INFO("TASK::testPutWithMultilevelInheritance:: Put successful");
+    LOGINFO("TASK::testPutWithMultilevelInheritance:: Put successful");
 
     // Get Operation and check fromDataExceptionCount, Expected is 41.
     auto obj2 =
         std::dynamic_pointer_cast<PdxTests::Child>(regPtr0->get(keyport));
-    // LOG_INFO("Task: testPutWithMultilevelInheritance: got members :: %d %d %d
+    // LOGINFO("Task: testPutWithMultilevelInheritance: got members :: %d %d %d
     // %d
     // %d %d ", obj2->getMember_a(), obj2->getMember_b(), obj2->getMember_c(),
     // obj2->getMember_d(), obj2->getMember_e(), obj2->getMember_f());
     bool isEqual =
         (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj2);
-    LOG_INFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
+    LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
 
-    LOG_INFO("TASK::testPutWithMultilevelInheritance:: Get successful");
+    LOGINFO("TASK::testPutWithMultilevelInheritance:: Get successful");
   }
 END_TASK_DEFINITION
 
@@ -587,13 +587,13 @@ DUNIT_TASK_DEFINITION(CLIENT2, testGetWithMultilevelInheritance)
     auto pdxobj = std::make_shared<PdxTests::Child>();
     bool isEqual =
         (std::dynamic_pointer_cast<PdxTests::Child>(pdxobj))->equals(obj1);
-    LOG_INFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
+    LOGINFO("testPutWithMultilevelInheritance:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true, "Objects of type class Child should be equal");
-    // LOG_INFO("Task: testGetWithMultilevelInheritance: got members :: %d %d %d
+    // LOGINFO("Task: testGetWithMultilevelInheritance: got members :: %d %d %d
     // %d
     // %d %d ", obj1->getMember_a(), obj1->getMember_b(), obj1->getMember_c(),
     // obj1->getMember_d(), obj1->getMember_e(), obj1->getMember_f());
-    LOG_INFO(
+    LOGINFO(
         "TASK::testGetWithMultilevelInheritance GET completed Successfully");
   }
 END_TASK_DEFINITION
@@ -618,12 +618,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
 
-    LOG_INFO("Task:JavaPutGet PDX-ON read-serialized = %d",
+    LOGINFO("Task:JavaPutGet PDX-ON read-serialized = %d",
              cacheHelper->getCache()->getPdxReadSerialized());
     auto jsonDoc =
         std::dynamic_pointer_cast<PdxInstance>(regPtr0->get("jsondoc1"));
     auto toString = jsonDoc->toString();
-    LOG_INFO("Task:JavaPutGet: Result = %s ", toString.c_str());
+    LOGINFO("Task:JavaPutGet: Result = %s ", toString.c_str());
     /*
     int16_t age = 0;
     jsonDoc->getField("age", age);
@@ -637,7 +637,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
 
     auto object2 = jsonDoc->getCacheableField("kids");
     auto listPtr = std::dynamic_pointer_cast<CacheableLinkedList>(object2);
-    LOG_INFO("Task:JavaPutGet: list size = %d", listPtr->size());
+    LOGINFO("Task:JavaPutGet: list size = %d", listPtr->size());
 
     auto m_linkedlist = CacheableLinkedList::create();
     m_linkedlist->push_back(CacheableString::create("Manan"));
@@ -649,7 +649,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet1)
       genericValCompare(m_linkedlist->at(j), listPtr->at(j));
     }
 
-    LOG_INFO("Task:JavaPutGet Tese-cases completed successfully!");
+    LOGINFO("Task:JavaPutGet Tese-cases completed successfully!");
   }
 END_TASK_DEFINITION
 
@@ -687,7 +687,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, JavaPutGet)
     auto boolPtr =
         std::dynamic_pointer_cast<CacheableBoolean>(regPtr0->get("success"));
     bool isEqual = boolPtr->value();
-    LOG_DEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
+    LOGDEBUG("Task:JavaPutGet: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Task JavaPutGet:Objects of type PdxType should be equal");
   }
@@ -711,20 +711,20 @@ DUNIT_TASK_DEFINITION(CLIENT2, JavaGet)
     } catch (const IllegalStateException &) {
       // ignore exception
     }
-    LOG_DEBUG("JavaGet-1 Line_309");
+    LOGDEBUG("JavaGet-1 Line_309");
     auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
     auto keyport1 = CacheableKey::create(1);
     auto pdxobj = std::make_shared<PdxTests::PdxType>();
-    LOG_DEBUG("JavaGet-2 Line_314");
+    LOGDEBUG("JavaGet-2 Line_314");
     auto obj1 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport1));
-    LOG_DEBUG("JavaGet-3 Line_316");
+    LOGDEBUG("JavaGet-3 Line_316");
     auto keyport2 = CacheableKey::create("putFromjava");
-    LOG_DEBUG("JavaGet-4 Line_316");
+    LOGDEBUG("JavaGet-4 Line_316");
     auto obj2 =
         std::dynamic_pointer_cast<PdxTests::PdxType>(regPtr0->get(keyport2));
-    LOG_DEBUG("JavaGet-5 Line_320");
+    LOGDEBUG("JavaGet-5 Line_320");
   }
 END_TASK_DEFINITION
 /***************************************************************/
@@ -751,7 +751,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwoR21)
     auto pRet = std::dynamic_pointer_cast<PdxTypesR2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("putAtVersionTwoR21:.. isEqual = %d", isEqual);
+    LOGDEBUG("putAtVersionTwoR21:.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesR2V2 should be equal at putAtVersionTwoR21");
@@ -779,7 +779,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR22)
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("getPutAtVersionOneR22:.. isEqual = %d", isEqual);
+    LOGDEBUG("getPutAtVersionOneR22:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesV1R2 should be equal at "
            "getPutAtVersionOneR22");
@@ -799,7 +799,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwoR23)
     auto pRet = std::dynamic_pointer_cast<PdxTypesR2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("getPutAtVersionTwoR23:.. isEqual = %d", isEqual);
+    LOGDEBUG("getPutAtVersionTwoR23:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesR2V2 should be equal at "
            "getPutAtVersionTwoR23");
@@ -818,7 +818,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOneR24)
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("getPutAtVersionOneR24:.. isEqual = %d", isEqual);
+    LOGDEBUG("getPutAtVersionOneR24:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesV1R2 should be equal at "
            "getPutAtVersionOneR24");
@@ -850,7 +850,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne31)
     auto pRet = std::dynamic_pointer_cast<PdxType3V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:putAtVersionOne31: isEqual = %d", isEqual);
+    LOGDEBUG("Task:putAtVersionOne31: isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType3V1 should be equal at putAtVersionOne31");
   }
@@ -876,7 +876,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo32)
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionTwo32.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionTwo32.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypes3V2 should be equal at getPutAtVersionTwo32");
@@ -895,7 +895,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne33)
     auto pRet = std::dynamic_pointer_cast<PdxType3V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("getPutAtVersionOne33:.. isEqual = %d", isEqual);
+    LOGDEBUG("getPutAtVersionOne33:.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxType3V1 should be equal at getPutAtVersionOne33");
@@ -915,7 +915,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo34)
     auto pRet = std::dynamic_pointer_cast<PdxTypes3V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionTwo34: isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionTwo34: isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxType3V1 should be equal at getPutAtVersionTwo34");
@@ -946,7 +946,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne21)
     auto pRet = std::dynamic_pointer_cast<PdxType2V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:putAtVersionOne21:.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:putAtVersionOne21:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType2V1 should be equal at putAtVersionOne21");
   }
@@ -972,7 +972,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo22)
 
     auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionTwo22.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionTwo22.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypes2V2 should be equal at getPutAtVersionTwo22");
@@ -992,7 +992,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne23)
     auto pRet = std::dynamic_pointer_cast<PdxType2V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionOne23: isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionOne23: isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxType2V1 should be equal at getPutAtVersionOne23");
@@ -1010,7 +1010,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo24)
     auto pRet = std::dynamic_pointer_cast<PdxTypes2V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionTwo24.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionTwo24.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypes2V2 should be equal at getPutAtVersionTwo24");
@@ -1043,7 +1043,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putAtVersionOne11)
         std::dynamic_pointer_cast<PdxTests::PdxType1V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:putAtVersionOne11:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:putAtVersionOne11:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType1V1 should be equal at putAtVersionOne11 "
            "Line_170");
@@ -1075,7 +1075,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, putAtVersionTwo1)
     auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:putAtVersionTwo1:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:putAtVersionTwo1:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesR1V2 should be equal at putAtVersionTwo1");
   }
@@ -1103,7 +1103,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne2)
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionOne2:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionOne2:.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesV1R1 should be equal at getPutAtVersionOne2");
@@ -1121,7 +1121,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo3)
 
     auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionTwo3.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionTwo3.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesR1V2 should be equal at getPutAtVersionTwo3");
@@ -1139,7 +1139,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne4)
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("getPutAtVersionOne4: isEqual = %d", isEqual);
+    LOGDEBUG("getPutAtVersionOne4: isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesV1R1 should be equal at getPutAtVersionOne4");
@@ -1159,7 +1159,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo5)
     auto pRet = std::dynamic_pointer_cast<PdxTypesR1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getPutAtVersionTwo5.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:getPutAtVersionTwo5.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesR1V2 should be equal at getPutAtVersionTwo5");
@@ -1177,7 +1177,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne6)
     auto pRet = std::dynamic_pointer_cast<PdxTypesV1R1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task getPutAtVersionOne6:.. isEqual = %d", isEqual);
+    LOGDEBUG("Task getPutAtVersionOne6:.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypesV1R1 should be equal at getPutAtVersionOne6");
@@ -1209,7 +1209,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, putV2PdxUI)
         regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:putV2PdxUI:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:putV2PdxUI:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesIgnoreUnreadFieldsV2 should be equal at "
            "putV2PdxUI ");
@@ -1250,7 +1250,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getV2PdxUI)
         regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("Task:getV2PdxUI:.. isEqual = %d", isEqual);
+    LOGDEBUG("Task:getV2PdxUI:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxTypesIgnoreUnreadFieldsV2 should be equal at "
            "getV2PdxUI ");
@@ -1279,7 +1279,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo12)
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionTwo12:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionTwo12:.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType1V2 should be equal at getPutAtVersionTwo12 "
            "Line_197");
@@ -1298,12 +1298,12 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne13)
     auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
     bool isEqual = np->equals(pRet);
 
-    LOG_DEBUG("NIL:getPutAtVersionOne13:221.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionOne13:221.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType1V2 should be equal at getPutAtVersionOne13 "
            "Line_215");
 
-    LOG_DEBUG("NIL:getPutAtVersionOne13: PUT remote object -1");
+    LOGDEBUG("NIL:getPutAtVersionOne13: PUT remote object -1");
     regPtr0->put(keyport, pRet);
   }
 END_TASK_DEFINITION
@@ -1317,7 +1317,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo14)
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionTwo14:241.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionTwo14:241.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypes1V2 should be equal at getPutAtVersionTwo14 "
@@ -1338,7 +1338,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne15)
     auto pRet = std::dynamic_pointer_cast<PdxType1V1>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionOne15:784.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionOne15:784.. isEqual = %d", isEqual);
     ASSERT(isEqual == true,
            "Objects of type PdxType1V2 should be equal at getPutAtVersionOne15 "
            "Line_272");
@@ -1347,7 +1347,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, getPutAtVersionOne15)
     auto testNumberOfPreservedData =
         TestUtils::testNumberOfPreservedData(*CacheRegionHelper::getCacheImpl(
             CacheHelper::getHelper().getCache().get()));
-    LOG_DEBUG(
+    LOGDEBUG(
         "NIL:getPutAtVersionOne15 m_useWeakHashMap = %d and "
         "TestUtils::testNumberOfPreservedData() = %d",
         m_useWeakHashMap, testNumberOfPreservedData);
@@ -1371,7 +1371,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getPutAtVersionTwo16)
     auto pRet = std::dynamic_pointer_cast<PdxTypes1V2>(regPtr0->get(keyport));
 
     bool isEqual = np->equals(pRet);
-    LOG_DEBUG("NIL:getPutAtVersionTwo14:.. isEqual = %d", isEqual);
+    LOGDEBUG("NIL:getPutAtVersionTwo14:.. isEqual = %d", isEqual);
     ASSERT(
         isEqual == true,
         "Objects of type PdxTypes1V2 should be equal at getPutAtVersionTwo14");
@@ -1432,7 +1432,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, forCleanup)
   {
-    LOG_INFO("Do put to clean the pdxtype registry");
+    LOGINFO("Do put to clean the pdxtype registry");
     try {
       auto regPtr0 = getHelper()->getRegion("DistRegionAck");
 
@@ -1444,7 +1444,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, forCleanup)
     } catch (...) {
       // ignore
     }
-    LOG_INFO("Wake up");
+    LOGINFO("Wake up");
   }
 END_TASK_DEFINITION
 
@@ -1534,16 +1534,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyPdxInGet)
            "Pdx read serialized property should be false.");
 
     LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-    LOG_INFO(
+    LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-    LOG_INFO(
+    LOGINFO(
         "PdxDeSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
-    LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                  ->getCachePerfStats()
                                                  .getPdxSerializationBytes());
-    LOG_INFO("PdxDeSerializationBytes = %ld ",
+    LOGINFO("PdxDeSerializationBytes = %ld ",
              lregPtr->getCacheImpl()
                  ->getCachePerfStats()
                  .getPdxDeSerializationBytes());
@@ -1951,16 +1951,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyGetOnly)
     checkPdxInstanceToStringAtServer(regPtr0);
 
     LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-    LOG_INFO(
+    LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-    LOG_INFO(
+    LOGINFO(
         "PdxDeSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
-    LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                  ->getCachePerfStats()
                                                  .getPdxSerializationBytes());
-    LOG_INFO("PdxDeSerializationBytes = %ld ",
+    LOGINFO("PdxDeSerializationBytes = %ld ",
              lregPtr->getCacheImpl()
                  ->getCachePerfStats()
                  .getPdxDeSerializationBytes());
@@ -2068,21 +2068,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
       flag = p1->equals(pRet);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2110,21 +2110,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
       flag = p2->equals(pRet2);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2152,21 +2152,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
       flag = p3->equals(pRet3);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2194,21 +2194,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
       flag = p4->equals(pRet4);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2236,21 +2236,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
       flag = p5->equals(pRet5);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2278,21 +2278,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
       flag = p6->equals(pRet6);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2320,21 +2320,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
       flag = p7->equals(pRet7);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2362,21 +2362,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
       flag = p8->equals(pRet8);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2404,21 +2404,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
       auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
       flag = p9->equals(pRet9);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2447,21 +2447,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAndVerifyVariousPdxTypes)
           std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
-      LOG_DEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
+      LOGDEBUG("PutAndVerifyVariousPdxTypes:.. flag = %d", flag);
       ASSERT(flag == true, "Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2504,7 +2504,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
-    LOG_INFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
+    LOGINFO("NIL:: testTCPDXTests: result->size = %d ", result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
     } else {
@@ -2514,7 +2514,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
-          LOG_INFO("NIL:: boolValue is %d ", boolValue->value());
+          LOGINFO("NIL:: boolValue is %d ", boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
                  "Function should return true NIL LINE_1508");
@@ -2535,8 +2535,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, generateJavaPdxType)
               std::dynamic_pointer_cast<UserFunctionExecutionException>(
                   result->operator[](i));
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
@@ -2683,7 +2683,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
-    LOG_INFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
+    LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
              result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -2693,7 +2693,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
-          LOG_INFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
+          LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                    boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
@@ -2715,8 +2715,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, verifyDotNetPdxTypes)
               std::dynamic_pointer_cast<UserFunctionExecutionException>(
                   result->operator[](i));
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
@@ -2777,7 +2777,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, client2GetsV1ObjectAndPutsV2Object)
     auto np = std::make_shared<PdxTypes3V2>();
     regPtr0->put(keyport, np);
 
-    LOG_DEBUG("Task:client2GetsV1ObjectAndPutsV2Object Done successfully ");
+    LOGDEBUG("Task:client2GetsV1ObjectAndPutsV2Object Done successfully ");
   }
 END_TASK_DEFINITION
 // c3.client3GetsV2Object
@@ -2795,7 +2795,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
     ASSERT(collector != nullptr, "onRegion collector nullptr");
 
     auto result = collector->getResult();
-    LOG_INFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
+    LOGINFO("NIL:: testTCPDXTests:verifyDotNetPdxTypes result->size = %d ",
              result->size());
     if (result == nullptr) {
       ASSERT(false, "echo String : result is nullptr");
@@ -2805,7 +2805,7 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
         try {
           auto boolValue = std::dynamic_pointer_cast<CacheableBoolean>(
               result->operator[](i));
-          LOG_INFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
+          LOGINFO("NIL::verifyDotNetPdxTypes boolValue is %d ",
                    boolValue->value());
           bool resultVal = boolValue->value();
           ASSERT(resultVal == true,
@@ -2827,8 +2827,8 @@ DUNIT_TASK_DEFINITION(CLIENT3, client3GetsV2Object)
               std::dynamic_pointer_cast<UserFunctionExecutionException>(
                   result->operator[](i));
           ASSERT(uFEPtr != nullptr, "uFEPtr exception is nullptr");
-          LOG_INFO("Done casting to uFEPtr");
-          LOG_INFO("Read expected uFEPtr exception %s ",
+          LOGINFO("Done casting to uFEPtr");
+          LOGINFO("Read expected uFEPtr exception %s ",
                    uFEPtr->getMessage().c_str());
         } catch (...) {
           FAIL(
@@ -2920,22 +2920,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet = std::dynamic_pointer_cast<PdxTypes1>(regPtr0->get(keyport));
 
       flag = p1->equals(pRet);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes1 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -2962,22 +2962,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet2 = std::dynamic_pointer_cast<PdxTypes2>(regPtr0->get(keyport2));
 
       flag = p2->equals(pRet2);
-      LOG_DEBUG("VerifyVariousPdxGets:. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes2 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3004,22 +3004,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet3 = std::dynamic_pointer_cast<PdxTypes3>(regPtr0->get(keyport3));
 
       flag = p3->equals(pRet3);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes3 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3046,22 +3046,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet4 = std::dynamic_pointer_cast<PdxTypes4>(regPtr0->get(keyport4));
 
       flag = p4->equals(pRet4);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes4 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3088,22 +3088,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet5 = std::dynamic_pointer_cast<PdxTypes5>(regPtr0->get(keyport5));
 
       flag = p5->equals(pRet5);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes5 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3130,22 +3130,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet6 = std::dynamic_pointer_cast<PdxTypes6>(regPtr0->get(keyport6));
 
       flag = p6->equals(pRet6);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes6 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3172,22 +3172,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet7 = std::dynamic_pointer_cast<PdxTypes7>(regPtr0->get(keyport7));
 
       flag = p7->equals(pRet7);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes7 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3214,22 +3214,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet8 = std::dynamic_pointer_cast<PdxTypes8>(regPtr0->get(keyport8));
 
       flag = p8->equals(pRet8);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes8 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3256,22 +3256,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
       auto pRet9 = std::dynamic_pointer_cast<PdxTypes9>(regPtr0->get(keyport9));
 
       flag = p9->equals(pRet9);
-      LOG_DEBUG("VerifyVariousPdxGets:. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes9 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3299,22 +3299,22 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyVariousPdxGets)
           std::dynamic_pointer_cast<PdxTypes10>(regPtr0->get(keyport10));
 
       flag = p10->equals(pRet10);
-      LOG_DEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
+      LOGDEBUG("VerifyVariousPdxGets:.. flag = %d", flag);
       ASSERT(flag == true,
              "VerifyVariousPdxGets:Objects of type PdxTypes10 should be equal");
       checkPdxInstanceToStringAtServer(regPtr0);
 
       LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-      LOG_INFO(
+      LOGINFO(
           "PdxSerializations = %d ",
           lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-      LOG_INFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
+      LOGINFO("PdxDeSerializations = %d ", lregPtr->getCacheImpl()
                                                 ->getCachePerfStats()
                                                 .getPdxDeSerializations());
-      LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+      LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                    ->getCachePerfStats()
                                                    .getPdxSerializationBytes());
-      LOG_INFO("PdxDeSerializationBytes = %ld ",
+      LOGINFO("PdxDeSerializationBytes = %ld ",
                lregPtr->getCacheImpl()
                    ->getCachePerfStats()
                    .getPdxDeSerializationBytes());
@@ -3351,7 +3351,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, putOperation)
         (std::dynamic_pointer_cast<CacheableString>(valuePtr1))
             ->value()
             .c_str();
-    LOG_INFO(" C1.putOperation Got ClientName1 = %s ", clientName1);
+    LOGINFO(" C1.putOperation Got ClientName1 = %s ", clientName1);
     ASSERT(strcmp(clientName1, "Client-1") == 0,
            "ClientName for Client-1 is not set");
   }
@@ -3370,7 +3370,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, getOperation)
         (std::dynamic_pointer_cast<CacheableString>(valuePtr2))
             ->value()
             .c_str();
-    LOG_INFO(" C2.getOperation Got ClientName2 = %s ", clientName2);
+    LOGINFO(" C2.getOperation Got ClientName2 = %s ", clientName2);
     ASSERT(strcmp(clientName2, "Client-2") == 0,
            "ClientName for Client-2 is not set");
   }
@@ -3436,16 +3436,16 @@ DUNIT_TASK_DEFINITION(CLIENT2, getCharTypes)
     PdxTests::CharTypes *remotePdx =
         dynamic_cast<PdxTests::CharTypes *>(remotePdxptr.get());
 
-    LOG_INFO("testThinClientPdxTests:StepFour before equal() check");
+    LOGINFO("testThinClientPdxTests:StepFour before equal() check");
     ASSERT(remotePdx->equals(*localPdx) == true,
            "PdxTests::PdxTypes should be equal.");
 
-    LOG_INFO("testThinClientPdxTests:StepFour equal check done successfully");
+    LOGINFO("testThinClientPdxTests:StepFour equal check done successfully");
 
-    // LOG_INFO("GET OP Result: Char Val=%c", remotePdx->getChar());
-    // LOG_INFO("NIL GET OP Result: Char[0] val=%c",
+    // LOGINFO("GET OP Result: Char Val=%c", remotePdx->getChar());
+    // LOGINFO("NIL GET OP Result: Char[0] val=%c",
     // remotePdx->getCharArray()[0]);
-    // LOG_INFO("NIL GET OP Result: Char[1] val=%c",
+    // LOGINFO("NIL GET OP Result: Char[1] val=%c",
     // remotePdx->getCharArray()[1]);
 
     LOG("STEP: getCharTypes complete.\n");
@@ -3524,16 +3524,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     regPtr0->get(keyport2);
 
     LocalRegion *lregPtr = (dynamic_cast<LocalRegion *>(regPtr0.get()));
-    LOG_INFO(
+    LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-    LOG_INFO(
+    LOGINFO(
         "PdxDeSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
-    LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                  ->getCachePerfStats()
                                                  .getPdxSerializationBytes());
-    LOG_INFO("PdxDeSerializationBytes = %ld ",
+    LOGINFO("PdxDeSerializationBytes = %ld ",
              lregPtr->getCacheImpl()
                  ->getCachePerfStats()
                  .getPdxDeSerializationBytes());
@@ -3622,11 +3622,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
 
     // Get remote CacheableObjectArray on key 2
     auto keyport2 = CacheableKey::create(2);
-    LOG_INFO("Client-2 PdxTests::PdxType GET OP Start....");
+    LOGINFO("Client-2 PdxTests::PdxType GET OP Start....");
     auto remoteCObjArray =
         std::dynamic_pointer_cast<CacheableObjectArray>(regPtr0->get(keyport2));
 
-    LOG_INFO(
+    LOGINFO(
         "Client-2 PdxTests::PdxType GET OP Done.. Received CObjeArray Size = "
         "%d",
         remoteCObjArray->size());
@@ -3640,7 +3640,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
       auto rAddr1 = std::dynamic_pointer_cast<Address>(remoteCObjArray->at(i));
       auto lAddr1 =
           std::dynamic_pointer_cast<Address>(m_localObjectArray->at(i));
-      LOG_INFO("Remote Address:: %d th element  AptNum=%d  street=%s  city=%s ",
+      LOGINFO("Remote Address:: %d th element  AptNum=%d  street=%s  city=%s ",
                i, rAddr1->getAptNum(), rAddr1->getStreet().c_str(),
                rAddr1->getCity().c_str());
       if (!rAddr1->equals(*lAddr1)) {
@@ -3665,26 +3665,26 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
         dynamic_cast<PdxTests::PdxType *>(remotePdxptr.get());
 
     // ToDo open this equals check
-    LOG_INFO("testThinClientPdxTests:StepFour before equal() check");
+    LOGINFO("testThinClientPdxTests:StepFour before equal() check");
     ASSERT(remotePdx->equals(*localPdx, false) == true,
            "PdxTests::PdxTypes should be equal.");
-    LOG_INFO("testThinClientPdxTests:StepFour equal check done successfully");
-    LOG_INFO("GET OP Result: Char Val={}",
+    LOGINFO("testThinClientPdxTests:StepFour equal check done successfully");
+    LOGINFO("GET OP Result: Char Val={}",
              static_cast<int32_t>(remotePdx->getChar()));
-    LOG_INFO("NIL GET OP Result: Char[0] val={}",
+    LOGINFO("NIL GET OP Result: Char[0] val={}",
              static_cast<int32_t>(remotePdx->getCharArray()[0]));
-    LOG_INFO("NIL GET OP Result: Char[1] val={}",
+    LOGINFO("NIL GET OP Result: Char[1] val={}",
              static_cast<int32_t>(remotePdx->getCharArray()[1]));
-    LOG_INFO("GET OP Result: Array of byte arrays [0]={:#04x}",
+    LOGINFO("GET OP Result: Array of byte arrays [0]={:#04x}",
              remotePdx->getArrayOfByteArrays()[0][0]);
-    LOG_INFO("GET OP Result: Array of byte arrays [1]={:#04x}",
+    LOGINFO("GET OP Result: Array of byte arrays [1]={:#04x}",
              remotePdx->getArrayOfByteArrays()[1][0]);
-    LOG_INFO("GET OP Result: Array of byte arrays [2]={:#04x}",
+    LOGINFO("GET OP Result: Array of byte arrays [2]={:#04x}",
              remotePdx->getArrayOfByteArrays()[1][1]);
 
     CacheableInt32 *element =
         dynamic_cast<CacheableInt32 *>(remotePdx->getArrayList()->at(0).get());
-    LOG_INFO("GET OP Result_1233: Array List element Value =%d",
+    LOGINFO("GET OP Result_1233: Array List element Value =%d",
              element->value());
 
     for (const auto &iter : *(remotePdx->getHashTable())) {
@@ -3692,24 +3692,24 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
           std::dynamic_pointer_cast<CacheableInt32>(iter.first);
       const auto remoteVal =
           std::dynamic_pointer_cast<CacheableString>(iter.second);
-      LOG_INFO("HashTable Key Val = %d", remoteKey->value());
-      LOG_INFO("HashTable Val = %s", remoteVal->value().c_str());
+      LOGINFO("HashTable Key Val = %d", remoteKey->value());
+      LOGINFO("HashTable Val = %s", remoteVal->value().c_str());
       //(*iter1).first.value();
       // output.writeObject( *iter );
     }
 
     // Now get values for key3 and 4 to asset against stats of this client
     const auto lregPtr = std::dynamic_pointer_cast<LocalRegion>(regPtr0);
-    LOG_INFO(
+    LOGINFO(
         "PdxSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxSerializations());
-    LOG_INFO(
+    LOGINFO(
         "PdxDeSerializations = %d ",
         lregPtr->getCacheImpl()->getCachePerfStats().getPdxDeSerializations());
-    LOG_INFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
+    LOGINFO("PdxSerializationBytes = %ld ", lregPtr->getCacheImpl()
                                                  ->getCachePerfStats()
                                                  .getPdxSerializationBytes());
-    LOG_INFO("PdxDeSerializationBytes = %ld ",
+    LOGINFO("PdxDeSerializationBytes = %ld ",
              lregPtr->getCacheImpl()
                  ->getCachePerfStats()
                  .getPdxDeSerializationBytes());
@@ -3731,35 +3731,35 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepFour)
            "Total pdxDeserializationBytes should be equal to Total "
            "pdxSerializationsBytes.");
 
-    // LOG_INFO("GET OP Result: IntVal1=%d", obj2->getInt1());
-    // LOG_INFO("GET OP Result: IntVal2=%d", obj2->getInt2());
-    // LOG_INFO("GET OP Result: IntVal3=%d", obj2->getInt3());
-    // LOG_INFO("GET OP Result: IntVal4=%d", obj2->getInt4());
-    // LOG_INFO("GET OP Result: IntVal5=%d", obj2->getInt5());
-    // LOG_INFO("GET OP Result: IntVal6=%d", obj2->getInt6());
+    // LOGINFO("GET OP Result: IntVal1=%d", obj2->getInt1());
+    // LOGINFO("GET OP Result: IntVal2=%d", obj2->getInt2());
+    // LOGINFO("GET OP Result: IntVal3=%d", obj2->getInt3());
+    // LOGINFO("GET OP Result: IntVal4=%d", obj2->getInt4());
+    // LOGINFO("GET OP Result: IntVal5=%d", obj2->getInt5());
+    // LOGINFO("GET OP Result: IntVal6=%d", obj2->getInt6());
 
-    // LOG_INFO("GET OP Result: BoolVal=%d", obj2->getBool());
-    // LOG_INFO("GET OP Result: ByteVal=%d", obj2->getByte());
-    // LOG_INFO("GET OP Result: ShortVal=%d", obj2->getShort());
+    // LOGINFO("GET OP Result: BoolVal=%d", obj2->getBool());
+    // LOGINFO("GET OP Result: ByteVal=%d", obj2->getByte());
+    // LOGINFO("GET OP Result: ShortVal=%d", obj2->getShort());
 
-    // LOG_INFO("GET OP Result: IntVal=%d", obj2->getInt());
+    // LOGINFO("GET OP Result: IntVal=%d", obj2->getInt());
 
-    // LOG_INFO("GET OP Result: LongVal=%ld", obj2->getLong());
-    // LOG_INFO("GET OP Result: FloatVal=%f", obj2->getFloat());
-    // LOG_INFO("GET OP Result: DoubleVal=%lf", obj2->getDouble());
-    // LOG_INFO("GET OP Result: StringVal=%s", obj2->getString());
-    // LOG_INFO("GET OP Result: BoolArray[0]=%d", obj2->getBoolArray()[0]);
-    // LOG_INFO("GET OP Result: BoolArray[1]=%d", obj2->getBoolArray()[1]);
-    // LOG_INFO("GET OP Result: BoolArray[2]=%d", obj2->getBoolArray()[2]);
+    // LOGINFO("GET OP Result: LongVal=%ld", obj2->getLong());
+    // LOGINFO("GET OP Result: FloatVal=%f", obj2->getFloat());
+    // LOGINFO("GET OP Result: DoubleVal=%lf", obj2->getDouble());
+    // LOGINFO("GET OP Result: StringVal=%s", obj2->getString());
+    // LOGINFO("GET OP Result: BoolArray[0]=%d", obj2->getBoolArray()[0]);
+    // LOGINFO("GET OP Result: BoolArray[1]=%d", obj2->getBoolArray()[1]);
+    // LOGINFO("GET OP Result: BoolArray[2]=%d", obj2->getBoolArray()[2]);
 
-    // LOG_INFO("GET OP Result: ByteArray[0]=%d", obj2->getByteArray()[0]);
-    // LOG_INFO("GET OP Result: ByteArray[1]=%d", obj2->getByteArray()[1]);
+    // LOGINFO("GET OP Result: ByteArray[0]=%d", obj2->getByteArray()[0]);
+    // LOGINFO("GET OP Result: ByteArray[1]=%d", obj2->getByteArray()[1]);
 
-    // LOG_INFO("GET OP Result: ShortArray[0]=%d", obj2->getShortArray()[0]);
-    // LOG_INFO("GET OP Result: IntArray[0]=%d", obj2->getIntArray()[0]);
-    // LOG_INFO("GET OP Result: LongArray[1]=%lld", obj2->getLongArray()[1]);
-    // LOG_INFO("GET OP Result: FloatArray[0]=%f", obj2->getFloatArray()[0]);
-    // LOG_INFO("GET OP Result: DoubleArray[1]=%lf", obj2->getDoubleArray()[1]);
+    // LOGINFO("GET OP Result: ShortArray[0]=%d", obj2->getShortArray()[0]);
+    // LOGINFO("GET OP Result: IntArray[0]=%d", obj2->getIntArray()[0]);
+    // LOGINFO("GET OP Result: LongArray[1]=%lld", obj2->getLongArray()[1]);
+    // LOGINFO("GET OP Result: FloatArray[0]=%f", obj2->getFloatArray()[0]);
+    // LOGINFO("GET OP Result: DoubleArray[1]=%lf", obj2->getDoubleArray()[1]);
 
     LOG("Done Getting PDX objects.....Success\n");
 

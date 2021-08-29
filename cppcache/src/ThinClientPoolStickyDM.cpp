@@ -44,7 +44,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
       ep = getSingleHopServer(request, version, slTmp, excludeServers);
     }
     if (ep != nullptr /*&& ep->connected()*/) {
-      // LOG_INFO(" getSingleHopServer returns ep");
+      // LOGINFO(" getSingleHopServer returns ep");
       m_manager->getSingleHopStickyConnection(*ep, conn);
       if (!conn) {
         conn = getFromEP(ep);
@@ -62,7 +62,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
         }
       }
     } else if (conn == nullptr) {
-      // LOG_INFO(" ep is null");
+      // LOGINFO(" ep is null");
       m_manager->getAnyConnection(conn);
       if (!conn) {
         conn =
@@ -86,7 +86,7 @@ TcrConnection* ThinClientPoolStickyDM::getConnectionFromQueueW(
       // anything else???
     }
 
-    LOG_DEBUG(
+    LOGDEBUG(
         "ThinClientPoolStickyDM::getConnectionFromQueueW return conn = {} "
         "match = {} connFound={}",
         static_cast<void*>(conn), match, connFound);

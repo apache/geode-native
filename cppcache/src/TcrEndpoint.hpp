@@ -105,13 +105,13 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
 
   // TODO: for single user mode only
   void setUniqueId(int64_t uniqueId) {
-    LOG_DEBUG("tcrEndpoint:setUniqueId:: %" PRId64, uniqueId);
+    LOGDEBUG("tcrEndpoint:setUniqueId:: %" PRId64, uniqueId);
     m_isAuthenticated = true;
     m_uniqueId = uniqueId;
   }
 
   int64_t getUniqueId() {
-    LOG_DEBUG("tcrEndpoint:getUniqueId:: %" PRId64, m_uniqueId);
+    LOGDEBUG("tcrEndpoint:getUniqueId:: %" PRId64, m_uniqueId);
     return m_uniqueId;
   }
 
@@ -163,7 +163,7 @@ class TcrEndpoint : public std::enable_shared_from_this<TcrEndpoint> {
   */
 
   void setDM(ThinClientBaseDM* dm) {
-    LOG_DEBUG("tcrendpoint setDM");
+    LOGDEBUG("tcrendpoint setDM");
     this->m_baseDM = dm;
   }
 

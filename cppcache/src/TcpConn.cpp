@@ -159,17 +159,17 @@ TcpConn::TcpConn(const std::string ipaddr,
 
 TcpConn::~TcpConn() {
   try {
-    LOG_FINE("Disconnected %s:%u -> %s:%u",
-             socket_.local_endpoint().address().to_string().c_str(),
-             socket_.local_endpoint().port(),
-             socket_.remote_endpoint().address().to_string().c_str(),
-             socket_.remote_endpoint().port());
+    LOGFINE("Disconnected %s:%u -> %s:%u",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port(),
+            socket_.remote_endpoint().address().to_string().c_str(),
+            socket_.remote_endpoint().port());
     socket_.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 
   } catch (...) {
-    LOG_FINE("Closed socket %s:%u ",
-             socket_.local_endpoint().address().to_string().c_str(),
-             socket_.local_endpoint().port());
+    LOGFINE("Closed socket %s:%u ",
+            socket_.local_endpoint().address().to_string().c_str(),
+            socket_.local_endpoint().port());
   }
 
   socket_.close();
@@ -177,21 +177,21 @@ TcpConn::~TcpConn() {
 
 size_t TcpConn::receive(char *buff, const size_t len,
                         std::chrono::milliseconds timeout) {
-  LOG_DEBUG("Receiving %d bytes from %s:%u -> %s:%u", len,
-            socket_.remote_endpoint().address().to_string().c_str(),
-            socket_.remote_endpoint().port(),
-            socket_.local_endpoint().address().to_string().c_str(),
-            socket_.local_endpoint().port());
+  LOGDEBUG("Receiving %d bytes from %s:%u -> %s:%u", len,
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, true);
 }
 
 size_t TcpConn::receive_nothrowiftimeout(char *buff, const size_t len,
                                          std::chrono::milliseconds timeout) {
-  LOG_DEBUG("Receiving an unknown number of bytes from %s:%d -> %s:%d",
-            socket_.remote_endpoint().address().to_string().c_str(),
-            socket_.remote_endpoint().port(),
-            socket_.local_endpoint().address().to_string().c_str(),
-            socket_.local_endpoint().port());
+  LOGDEBUG("Receiving an unknown number of bytes from %s:%d -> %s:%d",
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port(),
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port());
   return receive(buff, len, timeout, false);
 }
 
@@ -208,12 +208,12 @@ size_t TcpConn::receive(char *buff, const size_t len,
     io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    LOG_DEBUG("Throwing an unexpected read exception");
+    LOGDEBUG("Throwing an unexpected read exception");
     throw;
   }
 
   if (read_result && *read_result) {
-    LOG_DEBUG("Throwing a read exception: %s", read_result->message().c_str());
+    LOGDEBUG("Throwing a read exception: %s", read_result->message().c_str());
     socket_.cancel();
     // Get the abort
     io_context_.restart();
@@ -225,14 +225,14 @@ size_t TcpConn::receive(char *buff, const size_t len,
     auto elapsedTime = std::chrono::duration<double, std::micro>(
         std::chrono::system_clock::now() - beforeReadPoint);
     if (elapsedTime < timeout) {
-      LOG_DEBUG("Throwing an IO exception");
+      LOGDEBUG("Throwing an IO exception");
       socket_.cancel();
       // Get the abort
       io_context_.restart();
       io_context_.run();
       throw boost::system::system_error{boost::asio::error::broken_pipe};
     } else {
-      LOG_DEBUG("Throwing an eof exception");
+      LOGDEBUG("Throwing an eof exception");
       socket_.cancel();
       // Get the abort
       io_context_.restart();
@@ -242,7 +242,7 @@ size_t TcpConn::receive(char *buff, const size_t len,
   }
 
   if (bytes_read != len && throwTimeoutException) {
-    LOG_DEBUG("Throwing a read timeout exception");
+    LOGDEBUG("Throwing a read timeout exception");
     socket_.cancel();
     // Get the abort
     io_context_.restart();
@@ -255,11 +255,11 @@ size_t TcpConn::receive(char *buff, const size_t len,
 
 size_t TcpConn::send(const char *buff, const size_t len,
                      std::chrono::milliseconds timeout) {
-  LOG_DEBUG("Sending %d bytes from %s:%u -> %s:%u", len,
-            socket_.local_endpoint().address().to_string().c_str(),
-            socket_.local_endpoint().port(),
-            socket_.remote_endpoint().address().to_string().c_str(),
-            socket_.remote_endpoint().port());
+  LOGDEBUG("Sending %d bytes from %s:%u -> %s:%u", len,
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 
   boost::optional<boost::system::error_code> write_result;
   std::size_t bytes_written = 0;
@@ -269,18 +269,17 @@ size_t TcpConn::send(const char *buff, const size_t len,
     io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    LOG_DEBUG("Throwing an unexpected write exception");
+    LOGDEBUG("Throwing an unexpected write exception");
     throw;
   }
 
   if (write_result && *write_result) {
-    LOG_DEBUG("Throwing a write exception. %s",
-              write_result->message().c_str());
+    LOGDEBUG("Throwing a write exception. %s", write_result->message().c_str());
     throw boost::system::system_error{*write_result};
   }
 
   if (bytes_written != len) {
-    LOG_DEBUG("Throwing a write timeout exception");
+    LOGDEBUG("Throwing a write timeout exception");
     socket_.cancel();
     // Get the abort
     io_context_.restart();
@@ -311,26 +310,26 @@ void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
     io_context_.restart();
     io_context_.run_for(timeout);
   } catch (...) {
-    LOG_DEBUG("Throwing an unexpected connect exception");
+    LOGDEBUG("Throwing an unexpected connect exception");
     throw;
   }
 
   if (connect_result && *connect_result) {
-    LOG_DEBUG("Throwing a connect exception: %s",
-              connect_result->message().c_str());
+    LOGDEBUG("Throwing a connect exception: %s",
+             connect_result->message().c_str());
     throw boost::system::system_error{*connect_result};
   }
 
   if (!connect_result) {
-    LOG_DEBUG("Throwing a connect timeout exception");
+    LOGDEBUG("Throwing a connect timeout exception");
     throw boost::system::system_error{boost::asio::error::operation_aborted};
   }
 
-  LOG_DEBUG("Connected %s:%u -> %s:%u",
-            socket_.local_endpoint().address().to_string().c_str(),
-            socket_.local_endpoint().port(),
-            socket_.remote_endpoint().address().to_string().c_str(),
-            socket_.remote_endpoint().port());
+  LOGDEBUG("Connected %s:%u -> %s:%u",
+           socket_.local_endpoint().address().to_string().c_str(),
+           socket_.local_endpoint().port(),
+           socket_.remote_endpoint().address().to_string().c_str(),
+           socket_.remote_endpoint().port());
 }
 
 boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
@@ -342,8 +341,8 @@ boost::asio::ip::tcp::resolver::results_type TcpConn::resolve(
   results = resolver.resolve(host, std::to_string(port), resolve_result);
 
   if (resolve_result) {
-    LOG_DEBUG("Throwing a resolve exception: %s",
-              resolve_result.message().c_str());
+    LOGDEBUG("Throwing a resolve exception: %s",
+             resolve_result.message().c_str());
     throw boost::system::system_error{resolve_result};
   }
 

@@ -191,16 +191,16 @@ class APACHE_GEODE_EXPORT Log {
 }  // namespace apache
 
 #ifdef _MANAGED
-#define LOG_ERROR(...)
-#define LOG_WARN(...)
-#define LOG_INFO(...)
-#define LOG_CONFIG(...)
-#define LOG_FINE(...)
-#define LOG_FINER(...)
-#define LOG_FINEST(...)
-#define LOG_DEBUG(...)
+#define LOGERROR(...)
+#define LOGWARN(...)
+#define LOGINFO(...)
+#define LOGCONFIG(...)
+#define LOGFINE(...)
+#define LOGFINER(...)
+#define LOGFINEST(...)
+#define LOGDEBUG(...)
 #else
-#define LOG_ERROR(...)                                             \
+#define LOGERROR(...)                                              \
   do {                                                             \
     using ::apache::geode::client::Log;                            \
     using ::apache::geode::client::LogLevel;                       \
@@ -210,7 +210,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                              \
   } while (false)
 
-#define LOG_WARN(...)                                               \
+#define LOGWARN(...)                                                \
   do {                                                              \
     using ::apache::geode::client::Log;                             \
     using ::apache::geode::client::LogLevel;                        \
@@ -220,7 +220,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                               \
   } while (false)
 
-#define LOG_INFO(...)                                               \
+#define LOGINFO(...)                                                \
   do {                                                              \
     using ::apache::geode::client::Log;                             \
     using ::apache::geode::client::LogLevel;                        \
@@ -230,7 +230,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                               \
   } while (false)
 
-#define LOG_CONFIG(...)                                             \
+#define LOGCONFIG(...)                                              \
   do {                                                              \
     using ::apache::geode::client::Log;                             \
     using ::apache::geode::client::LogLevel;                        \
@@ -240,7 +240,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                               \
   } while (false)
 
-#define LOG_FINE(...)                                                \
+#define LOGFINE(...)                                                 \
   do {                                                               \
     using ::apache::geode::client::Log;                              \
     using ::apache::geode::client::LogLevel;                         \
@@ -250,7 +250,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                                \
   } while (false)
 
-#define LOG_FINER(...)                                               \
+#define LOGFINER(...)                                                \
   do {                                                               \
     using ::apache::geode::client::Log;                              \
     using ::apache::geode::client::LogLevel;                         \
@@ -260,7 +260,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                                \
   } while (false)
 
-#define LOG_FINEST(...)                                              \
+#define LOGFINEST(...)                                               \
   do {                                                               \
     using ::apache::geode::client::Log;                              \
     using ::apache::geode::client::LogLevel;                         \
@@ -270,7 +270,7 @@ class APACHE_GEODE_EXPORT Log {
     }                                                                \
   } while (false)
 
-#define LOG_DEBUG(...)                                               \
+#define LOGDEBUG(...)                                                \
   do {                                                               \
     using ::apache::geode::client::Log;                              \
     using ::apache::geode::client::LogLevel;                         \
