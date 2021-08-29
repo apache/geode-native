@@ -60,29 +60,20 @@ void RemoteQueryService::init() {
 }
 
 std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
+  boost::shared_lock<decltype(mutex_)> guard{mutex_};
+
+  if (m_invalid) {
+    throw CacheClosedException(
+        "QueryService::newQuery: Cache has been closed.");
+  }
+
   LOG_DEBUG("RemoteQueryService::newQuery: multiuserMode = %d ",
             m_tccdm->isMultiUserMode());
-  if (!m_tccdm->isMultiUserMode()) {
-    TryReadGuard guard(m_rwLock, m_invalid);
 
-    if (m_invalid) {
-      throw CacheClosedException(
-          "QueryService::newQuery: Cache has been closed.");
-    }
+  LOG_DEBUG("RemoteQueryService: creating a new query: " + querystring);
 
-    LOG_DEBUG("RemoteQueryService: creating a new query: " + querystring);
-    return std::shared_ptr<Query>(
-        new RemoteQuery(querystring, shared_from_this(), m_tccdm));
-  } else {
-    TryReadGuard guard(m_rwLock, m_invalid);
-
-    if (m_invalid) {
-      throw CacheClosedException(
-          "QueryService::newQuery: Cache has been closed.");
-    }
-
-    LOG_DEBUG("RemoteQueryService: creating a new query: " + querystring);
-    return std::shared_ptr<Query>(new RemoteQuery(
+  if (m_tccdm->isMultiUserMode()) {
+    return std::make_shared<RemoteQuery>(
         querystring, shared_from_this(), m_tccdm,
         UserAttributes::threadLocalUserAttributes->getAuthenticatedView());
   } else {
@@ -93,7 +84,7 @@ std::shared_ptr<Query> RemoteQueryService::newQuery(std::string querystring) {
 
 void RemoteQueryService::close() {
   LOG_FINEST("RemoteQueryService::close: starting close");
-  TryWriteGuard guard(m_rwLock, m_invalid);
+  boost::unique_lock<decltype(mutex_)> guard{mutex_};
 
   if (m_cqService != nullptr) {
     LOG_FINEST("RemoteQueryService::close: starting CQ service close");
