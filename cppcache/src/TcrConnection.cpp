@@ -443,7 +443,7 @@ Connector* TcrConnection::createConnection(
       socket = new TcpSslConn(
           address, connectTimeout, maxBuffSizePool, sniHostname, sniPort,
           systemProperties.sslTrustStore(), systemProperties.sslKeyStore(),
-          systemProperties.sslKeystorePassword();
+          systemProperties.sslKeystorePassword());
     }
   } else {
     socket = new TcpConn(address, connectTimeout, maxBuffSizePool);
