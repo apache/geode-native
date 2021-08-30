@@ -57,7 +57,7 @@ namespace Apache
         /// <returns>
         /// The value of the field or null if index is out of bounds.
         /// </returns>
-        property Object^ GFINDEXER( int32_t )
+        property Object^ default[ int32_t ]
         {
           Object^ get( int32_t index );
         }
@@ -69,7 +69,7 @@ namespace Apache
         /// <exception cref="IllegalArgumentException">
         /// if the field name is not found.
         /// </exception>
-        property Object^ GFINDEXER( String^ )
+        property Object^ default[ String^ ]
         {
           Object^ get( String^ fieldName );
         }

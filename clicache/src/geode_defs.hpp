@@ -23,7 +23,6 @@
 /// API documentation helper file for the Doxygen source-comment-extraction tool.
 
 #define STATICCLASS abstract sealed
-#define GFINDEXER(x) default[ x ]
 
 // Disable XML warnings
 #pragma warning(disable: 4635)

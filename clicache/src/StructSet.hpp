@@ -69,7 +69,7 @@ namespace Apache
         /// if the index is out of bounds.
         /// </exception>
         /// <returns>Item at the given index.</returns>
-        virtual property TResult GFINDEXER( size_t )
+        virtual property TResult default[ size_t ]
         {
           virtual TResult get( size_t index );
         }

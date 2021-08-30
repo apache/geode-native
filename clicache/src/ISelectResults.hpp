@@ -58,7 +58,7 @@ namespace Apache
         /// <summary>
         /// Get an object at the given index.
         /// </summary>
-        property TResult GFINDEXER( size_t )
+        property TResult default[ size_t ]
         {
           TResult get( size_t index );
         }

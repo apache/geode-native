@@ -277,7 +277,7 @@ namespace Apache
         /// <summary>
         /// Returns the value at the given index.
         /// </summary>
-        property TManaged GFINDEXER(System::Int32)
+        property TManaged default[ System::Int32 ]
         {
           inline TManaged get(System::Int32 index)
           {

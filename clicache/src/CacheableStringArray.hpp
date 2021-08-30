@@ -98,7 +98,7 @@ namespace Apache
         /// <summary>
         /// Returns a copy of the underlying string at the given index.
         /// </summary>
-        property String^ GFINDEXER(System::Int32)
+        property String^ default[ System::Int32 ]
         {
           String^ get(System::Int32 index);
         }
