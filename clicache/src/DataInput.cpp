@@ -61,29 +61,29 @@ namespace Apache
         if (buffer != nullptr && size > 0) {
           try {
 
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
-            std::make_unique<native::DataInput>(cache->GetNative()->createDataInput(buffer, size)));
-          m_cursor = 0;
-          m_isManagedObject = false;
-          m_forStringDecode = gcnew array<Char>(100);
+            m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+              std::make_unique<native::DataInput>(cache->GetNative()->createDataInput(buffer, size)));
+            m_cursor = 0;
+            m_isManagedObject = false;
+            m_forStringDecode = gcnew array<Char>(100);
 
-          try
-          {
-            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
-            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+              m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "
@@ -99,34 +99,34 @@ namespace Apache
         if (buffer != nullptr && buffer->Length > 0) {
           try {
 
-          auto len = buffer->Length;
-          m_ownedBuffer = make_native_unique<System::Byte[]>(len);
-          m_buffer = m_ownedBuffer->get();
-          pin_ptr<const Byte> pin_buffer = &buffer[0];
-          memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
-            std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
-          m_cursor = 0;
-          m_isManagedObject = false;
-          m_forStringDecode = gcnew array<Char>(100);
+            auto len = buffer->Length;
+            m_ownedBuffer = make_native_unique<System::Byte[]>(len);
+            m_buffer = m_ownedBuffer->get();
+            pin_ptr<const Byte> pin_buffer = &buffer[0];
+            memcpy(m_buffer, (void*)pin_buffer, len);
+            m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+              std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
+            m_cursor = 0;
+            m_isManagedObject = false;
+            m_forStringDecode = gcnew array<Char>(100);
 
-          try
-          {
-            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
-            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+              m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "
@@ -147,30 +147,30 @@ namespace Apache
           }
           try {
 
-          m_ownedBuffer = make_native_unique<System::Byte[]>(len);
-          m_buffer = m_ownedBuffer->get();
-          pin_ptr<const Byte> pin_buffer = &buffer[0];
-          memcpy(m_buffer, (void*)pin_buffer, len);
-          m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
-            std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
+            m_ownedBuffer = make_native_unique<System::Byte[]>(len);
+            m_buffer = m_ownedBuffer->get();
+            pin_ptr<const Byte> pin_buffer = &buffer[0];
+            memcpy(m_buffer, (void*)pin_buffer, len);
+            m_nativeptr = gcnew native_conditional_unique_ptr<native::DataInput>(
+              std::make_unique<native::DataInput>(m_cache->GetNative()->createDataInput(m_buffer, len)));
 
-          try
-          {
-            m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
-            m_bufferLength = m_nativeptr->get()->getBytesRemaining();
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              m_buffer = const_cast<System::Byte*>(m_nativeptr->get()->currentBufferPosition());
+              m_bufferLength = m_nativeptr->get()->getBytesRemaining();
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }
         }
         else {
           throw gcnew IllegalArgumentException("DataInput.ctor(): "

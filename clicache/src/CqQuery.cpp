@@ -282,11 +282,11 @@ namespace Apache
       }
 
       generic<class TKey, class TResult>
-        bool CqQuery<TKey, TResult>::IsClosed()
-        {
-          try {/* due to auto replace */
+      bool CqQuery<TKey, TResult>::IsClosed()
+      {
+        try {/* due to auto replace */
 
-            try
+          try
           {
             return m_nativeptr->get()->isClosed();
           }
@@ -295,7 +295,7 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-          }
+        }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
         }

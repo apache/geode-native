@@ -372,22 +372,22 @@ namespace Apache
           {
             try {/* due to auto replace */
 
-            try
-            {
-              dynamic_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
-            }
-            finally
-            {
-              GC::KeepAlive(m_nativeptr);
-            }
+              try
+              {
+                dynamic_cast<HSTYPE*>(m_nativeptr->get())->insert(Serializable::GetUnmanagedValueGeneric(item));
+              }
+              finally
+              {
+                GC::KeepAlive(m_nativeptr);
+              }
 
             }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+            catch (const apache::geode::client::Exception& ex) {
+              throw Apache::Geode::Client::GeodeException::Get(ex);
+            }
+            catch (System::AccessViolationException^ ex) {
+              throw ex;
+            }/* due to auto replace */
           }
 
           /// <summary>

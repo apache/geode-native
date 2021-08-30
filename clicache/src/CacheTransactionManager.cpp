@@ -34,9 +34,7 @@ namespace Apache
       void CacheTransactionManager::Begin( )
       {
         try {
-
           m_nativeptr->begin( );
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -49,9 +47,7 @@ namespace Apache
       void CacheTransactionManager::Prepare( )
       {
         try {
-
           m_nativeptr->prepare( );
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -64,9 +60,7 @@ namespace Apache
       void CacheTransactionManager::Commit( )
       {
         try {
-
             m_nativeptr->commit( );
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -79,9 +73,7 @@ namespace Apache
       void CacheTransactionManager::Rollback( )
       {
         try {
-
             m_nativeptr->rollback( );
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -94,9 +86,7 @@ namespace Apache
       bool CacheTransactionManager::Exists( )
       {
         try {
-
-        return m_nativeptr->exists( );
-
+          return m_nativeptr->exists( );
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -109,9 +99,7 @@ namespace Apache
       Apache::Geode::Client::TransactionId^ CacheTransactionManager::Suspend( )
       {
         try {
-       
           return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->suspend());
-       
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -120,12 +108,11 @@ namespace Apache
           throw ex;
         }
       }
+
 			Apache::Geode::Client::TransactionId^ CacheTransactionManager::TransactionId::get( )
       {
         try {
-
           return Apache::Geode::Client::TransactionId::Create(&m_nativeptr->getTransactionId());
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -134,12 +121,11 @@ namespace Apache
           throw ex;
         }
       }
+
       void CacheTransactionManager::Resume(Apache::Geode::Client::TransactionId^ transactionId)
       {
         try {
-
           return m_nativeptr->resume(transactionId->GetNative());
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -148,12 +134,11 @@ namespace Apache
           throw ex;
         }
       }
+
       bool CacheTransactionManager::IsSuspended(Apache::Geode::Client::TransactionId^ transactionId)
       {
         try {
-
           return m_nativeptr->isSuspended(transactionId->GetNative());
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -162,12 +147,11 @@ namespace Apache
           throw ex;
         }
       }
+
       bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId)
       {
         try {
-
           return m_nativeptr->tryResume(transactionId->GetNative());
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -176,12 +160,11 @@ namespace Apache
           throw ex;
         }
       }
+
       bool CacheTransactionManager::TryResume(Apache::Geode::Client::TransactionId^ transactionId, TimeSpan waitTime)
       {
         try {
-
           return m_nativeptr->tryResume(transactionId->GetNative(), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(waitTime));
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -190,12 +173,11 @@ namespace Apache
           throw ex;
         }
       }
+
       bool CacheTransactionManager::Exists(Apache::Geode::Client::TransactionId^ transactionId)
       {
         try {
-
           return m_nativeptr->exists(transactionId->GetNative());
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);

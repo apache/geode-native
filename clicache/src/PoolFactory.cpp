@@ -39,14 +39,14 @@ namespace Apache
 		  {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setFreeConnectionTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(connectionTimeout) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setFreeConnectionTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(connectionTimeout) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -63,14 +63,14 @@ namespace Apache
 		  {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setLoadConditioningInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(loadConditioningInterval) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setLoadConditioningInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(loadConditioningInterval) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -87,14 +87,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSocketBufferSize( bufferSize );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSocketBufferSize( bufferSize );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -111,14 +111,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setReadTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setReadTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -135,14 +135,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setMinConnections( minConnections );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setMinConnections( minConnections );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -159,14 +159,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setMaxConnections( maxConnections );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setMaxConnections( maxConnections );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -183,14 +183,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setIdleTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(idleTimeout) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setIdleTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(idleTimeout) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -207,14 +207,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setRetryAttempts( retryAttempts );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setRetryAttempts( retryAttempts );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -231,14 +231,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setPingInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(pingInterval) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setPingInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(pingInterval) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -255,14 +255,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setUpdateLocatorListInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(updateLocatorListInterval) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setUpdateLocatorListInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(updateLocatorListInterval) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -279,14 +279,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setStatisticInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(statisticInterval) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setStatisticInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(statisticInterval) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -302,14 +302,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setServerGroup( marshal_as<std::string>(group) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setServerGroup( marshal_as<std::string>(group) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -326,14 +326,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->addLocator( marshal_as<std::string>(host), port );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->addLocator( marshal_as<std::string>(host), port );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -350,14 +350,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->addServer( marshal_as<std::string>(host), port );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->addServer( marshal_as<std::string>(host), port );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -373,14 +373,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSniProxy( marshal_as<std::string>(hostname), port );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSniProxy( marshal_as<std::string>(hostname), port );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -396,14 +396,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSubscriptionEnabled( enabled );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSubscriptionEnabled( enabled );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -416,20 +416,20 @@ namespace Apache
 		  }
 
 
-          PoolFactory^ PoolFactory::SetPRSingleHopEnabled( Boolean enabled )
+      PoolFactory^ PoolFactory::SetPRSingleHopEnabled( Boolean enabled )
+      {
+        try {/* due to auto replace */
+
+          try
           {
-            try {/* due to auto replace */
+            m_nativeptr->get()->setPRSingleHopEnabled(enabled);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
-              try
-              {
-                m_nativeptr->get()->setPRSingleHopEnabled(enabled);
-              }
-              finally
-              {
-                GC::KeepAlive(m_nativeptr);
-              }
-
-             }
+        }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
         }
@@ -437,21 +437,21 @@ namespace Apache
           throw ex;
         }/* due to auto replace */
                return this;
-          }
+      }
 
     
 		  PoolFactory^ PoolFactory::SetSubscriptionRedundancy( Int32 redundancy )
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSubscriptionRedundancy( redundancy );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSubscriptionRedundancy( redundancy );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -468,14 +468,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(messageTrackingTimeout) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSubscriptionMessageTrackingTimeout( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(messageTrackingTimeout) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -492,14 +492,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->setSubscriptionAckInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(ackInterval) );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setSubscriptionAckInterval( TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(ackInterval) );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -514,14 +514,14 @@ namespace Apache
       {
 			  try {
 
-			  try
-			  {
-			    m_nativeptr->get()->setThreadLocalConnections( enabled );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->setThreadLocalConnections( enabled );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -537,14 +537,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-          try
-          {
-            m_nativeptr->get()->setMultiuserAuthentication( multiuserAuthentication );
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              m_nativeptr->get()->setMultiuserAuthentication( multiuserAuthentication );
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -561,14 +561,14 @@ namespace Apache
       {
 			  try {/* due to auto replace */
 
-			  try
-			  {
-			    m_nativeptr->get()->reset( );
-			  }
-			  finally
-			  {
-			    GC::KeepAlive(m_nativeptr);
-			  }
+			    try
+			    {
+			      m_nativeptr->get()->reset( );
+			    }
+			    finally
+			    {
+			      GC::KeepAlive(m_nativeptr);
+			    }
 
 			  }
         catch (const apache::geode::client::Exception& ex) {
@@ -585,14 +585,14 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-          try
-          {
-            return Pool::Create(m_nativeptr->get()->create(marshal_as<std::string>(name)));
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              return Pool::Create(m_nativeptr->get()->create(marshal_as<std::string>(name)));
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
         
         }
         catch (const apache::geode::client::Exception& ex) {

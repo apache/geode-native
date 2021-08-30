@@ -39,15 +39,15 @@ namespace Apache
       {
         try {
 
-        try
-        {
-          auto value = m_nativeptr->get()->getMessage();
-          return marshal_as<String^>(value);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            auto value = m_nativeptr->get()->getMessage();
+            return marshal_as<String^>(value);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -62,15 +62,15 @@ namespace Apache
       {
         try {
 
-        try
-        {
-          auto value = m_nativeptr->get()->getName();
-          return marshal_as<String^>(value);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            auto value = m_nativeptr->get()->getName();
+            return marshal_as<String^>(value);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {

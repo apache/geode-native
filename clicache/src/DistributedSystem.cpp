@@ -135,14 +135,14 @@ namespace Apache
         // TODO AppDomain should we be able to create a DS directly?
         try {
 
-        auto nativeDistributedSystem = native::DistributedSystem::create(to_utf8(name),
-                                                           config->GetNative());
-        nativeDistributedSystem.connect();
+          auto nativeDistributedSystem = native::DistributedSystem::create(to_utf8(name),
+                                                             config->GetNative());
+          nativeDistributedSystem.connect();
 
-        ManagedPostConnect(cache);
+          ManagedPostConnect(cache);
 
-        return gcnew DistributedSystem(std::unique_ptr<native::DistributedSystem>(
-            new native::DistributedSystem(std::move(nativeDistributedSystem))));
+          return gcnew DistributedSystem(std::unique_ptr<native::DistributedSystem>(
+              new native::DistributedSystem(std::move(nativeDistributedSystem))));
 
         }
         catch (const apache::geode::client::Exception& ex) {

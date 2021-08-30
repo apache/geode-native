@@ -192,16 +192,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          m_nativeptr->get()->put(keyptr, valueptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            m_nativeptr->get()->put(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -237,7 +237,7 @@ namespace Apache
           throw ex;
         }/* due to auto replace */
 
-          auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(static_cast<int>(vc.size()));
+        auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(static_cast<int>(vc.size()));
 
         for (System::Int32 index = 0; index < toArray->Length; index++)
         {
@@ -274,7 +274,7 @@ namespace Apache
           throw ex;
         }/* due to auto replace */
 
-         auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
+        auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
 
         for (System::Int32 index = 0; index < toArray->Length; index++)
         {
@@ -305,15 +305,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          return m_nativeptr->get()->containsKeyOnServer(keyptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            return m_nativeptr->get()->containsKeyOnServer(keyptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -328,17 +328,17 @@ namespace Apache
       bool Region<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {
         try {/* due to auto replace */
-        std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-        GC::KeepAlive(m_nativeptr);
-        auto nativeptr = this->get(keyptr);
-        if (nativeptr == nullptr) {
-          val = TValue();
-          return false;
-        }
-        else {
-          val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
-          return true;
-        }
+          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+          GC::KeepAlive(m_nativeptr);
+          auto nativeptr = this->get(keyptr);
+          if (nativeptr == nullptr) {
+            val = TValue();
+            return false;
+          }
+          else {
+            val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
+            return true;
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -354,23 +354,23 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::CacheableKey>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->serverKeys();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
-        for (System::Int32 index = 0; index < keyarr->Length; index++)
-        {
-          auto& nativeptr = vc[index];
-          keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
-        }
-        auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
-        return collectionlist;
+          std::vector<std::shared_ptr<native::CacheableKey>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->serverKeys();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
+          for (System::Int32 index = 0; index < keyarr->Length; index++)
+          {
+            auto& nativeptr = vc[index];
+            keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
+          }
+          auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
+          return collectionlist;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -386,23 +386,23 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::Cacheable>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->values();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto valarr = gcnew array<TValue>(static_cast<int>(vc.size()));
-        for (System::Int32 index = 0; index < vc.size(); index++)
-        {
-          auto& nativeptr = vc[index];
-          valarr[index] = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
-        }
-        auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
-        return collectionlist;
+          std::vector<std::shared_ptr<native::Cacheable>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->values();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto valarr = gcnew array<TValue>(static_cast<int>(vc.size()));
+          for (System::Int32 index = 0; index < vc.size(); index++)
+          {
+            auto& nativeptr = vc[index];
+            valarr[index] = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr);
+          }
+          auto collectionlist = (System::Collections::Generic::ICollection<TValue>^)valarr;
+          return collectionlist;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -418,16 +418,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          m_nativeptr->get()->create(keyptr, valueptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            m_nativeptr->get()->create(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -443,16 +443,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
-          m_nativeptr->get()->create(keyptr, valueptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
+            m_nativeptr->get()->create(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -468,17 +468,17 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          m_nativeptr->get()->create(keyptr, valueptr, callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            m_nativeptr->get()->create(keyptr, valueptr, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -494,15 +494,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          return m_nativeptr->get()->removeEx(keyptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            return m_nativeptr->get()->removeEx(keyptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -519,16 +519,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          return m_nativeptr->get()->removeEx(keyptr, callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            return m_nativeptr->get()->removeEx(keyptr, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -544,16 +544,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
-          return m_nativeptr->get()->remove(keyptr, valueptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValuePair.Key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValuePair.Value);
+            return m_nativeptr->get()->remove(keyptr, valueptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -569,18 +569,18 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          GC::KeepAlive(m_nativeptr);
-          return m_nativeptr->get()->remove(keyptr, valueptr, callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(value);
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            GC::KeepAlive(m_nativeptr);
+            return m_nativeptr->get()->remove(keyptr, valueptr, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -612,15 +612,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          m_nativeptr->get()->invalidateRegion(callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            m_nativeptr->get()->invalidateRegion(callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -652,15 +652,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          m_nativeptr->get()->destroyRegion(callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            m_nativeptr->get()->destroyRegion(callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -693,16 +693,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          m_nativeptr->get()->invalidate(keyptr, callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            m_nativeptr->get()->invalidate(keyptr, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -736,20 +736,20 @@ namespace Apache
         try {/* due to auto replace */
 
           native::HashMapOfCacheable nativeMap;
-        for each (KeyValuePair<TKey, TValue> keyValPair in map)
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
-          nativeMap.emplace(keyptr, valueptr);
-        }
-        try
-        {
-          m_nativeptr->get()->putAll(nativeMap, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          for each (KeyValuePair<TKey, TValue> keyValPair in map)
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
+            nativeMap.emplace(keyptr, valueptr);
+          }
+          try
+          {
+            m_nativeptr->get()->putAll(nativeMap, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -767,21 +767,21 @@ namespace Apache
         try {/* due to auto replace */
 
           native::HashMapOfCacheable nativeMap;
-        for each (KeyValuePair<TKey, TValue> keyValPair in map)
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
-          std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
-          nativeMap.emplace(keyptr, valueptr);
-        }
-        std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-        try
-        {
-          m_nativeptr->get()->putAll(nativeMap, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout), callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          for each (KeyValuePair<TKey, TValue> keyValPair in map)
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(keyValPair.Key);
+            std::shared_ptr<native::Cacheable> valueptr = Serializable::GetUnmanagedValueGeneric<TValue>(keyValPair.Value);
+            nativeMap.emplace(keyptr, valueptr);
+          }
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          try
+          {
+            m_nativeptr->get()->putAll(nativeMap, TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout), callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -823,37 +823,37 @@ namespace Apache
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
-          for each(TKey item in keys)
-          {
-            auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
-            vecKeys.push_back(v);
-          }
-
-         native::HashMapOfCacheable native_value;
-
-          try
-          {
-            native_value = m_nativeptr->get()->getAll(vecKeys);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-          if (values != nullptr) {
-            for (const auto& iter : native_value) {
-              TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
-              TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
-              values->Add(key, val);
+            for each(TKey item in keys)
+            {
+              auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
+              vecKeys.push_back(v);
             }
-          }
+
+           native::HashMapOfCacheable native_value;
+
+            try
+            {
+              native_value = m_nativeptr->get()->getAll(vecKeys);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
+            if (values != nullptr) {
+              for (const auto& iter : native_value) {
+                TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
+                TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
+                values->Add(key, val);
+              }
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }/* due to auto replace */
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -869,43 +869,43 @@ namespace Apache
         if (keys != nullptr) {
           try {/* due to auto replace */
 
-          std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
+            std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
-          for each(TKey item in keys)
-          {
-            auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
-            vecKeys.push_back(v);
-          }
-
-          std::shared_ptr<native::HashMapOfCacheable> valuesPtr;
-          if (values != nullptr) {
-            valuesPtr = std::make_shared<native::HashMapOfCacheable>();
-          }
-          auto callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          native::HashMapOfCacheable native_value;
-          try
-          {
-            native_value = m_nativeptr->get()->getAll(vecKeys, callbackptr);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-          if (values != nullptr) {
-            for (const auto& iter : native_value) {
-              TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
-              TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
-              values->Add(key, val);
+            for each(TKey item in keys)
+            {
+              auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
+              vecKeys.push_back(v);
             }
-          }
+
+            std::shared_ptr<native::HashMapOfCacheable> valuesPtr;
+            if (values != nullptr) {
+              valuesPtr = std::make_shared<native::HashMapOfCacheable>();
+            }
+            auto callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            native::HashMapOfCacheable native_value;
+            try
+            {
+              native_value = m_nativeptr->get()->getAll(vecKeys, callbackptr);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
+            if (values != nullptr) {
+              for (const auto& iter : native_value) {
+                TKey key = TypeRegistry::GetManagedValueGeneric<TKey>(iter.first);
+                TValue val = TypeRegistry::GetManagedValueGeneric<TValue>(iter.second);
+                values->Add(key, val);
+              }
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }/* due to auto replace */
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -935,23 +935,23 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
-        for each(TKey item in keys) 
-        {
-          auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
-          vecKeys.push_back(v);
-        }
+          std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
+          for each(TKey item in keys) 
+          {
+            auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
+            vecKeys.push_back(v);
+          }
 
-        std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
 
-        try
-        {
-          m_nativeptr->get()->removeAll(vecKeys, callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            m_nativeptr->get()->removeAll(vecKeys, callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -962,6 +962,7 @@ namespace Apache
         }/* due to auto replace */
 
       }
+
       generic<class TKey, class TValue>
       String^ Region<TKey, TValue>::Name::get()
       {
@@ -1140,24 +1141,24 @@ namespace Apache
         try {/* due to auto replace */
 
           std::vector<std::shared_ptr<native::Region>> vsr;
-        try
-        {
-          vsr = m_nativeptr->get()->subregions(recursive);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto subRegions =
-          gcnew array<IRegion<TKey, TValue>^>(static_cast<int>(vsr.size()));
+          try
+          {
+            vsr = m_nativeptr->get()->subregions(recursive);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto subRegions =
+            gcnew array<IRegion<TKey, TValue>^>(static_cast<int>(vsr.size()));
 
-        for (System::Int32 index = 0; index < subRegions->Length; index++)
-        {
-          auto subRegion = vsr[index];
-          subRegions[index] = Region<TKey, TValue>::Create(subRegion);
-        }
-        auto collection = (System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^)subRegions;
-        return collection;
+          for (System::Int32 index = 0; index < subRegions->Length; index++)
+          {
+            auto subRegion = vsr[index];
+            subRegions[index] = Region<TKey, TValue>::Create(subRegion);
+          }
+          auto collection = (System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^)subRegions;
+          return collection;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1173,16 +1174,16 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          auto nativeptr = m_nativeptr->get()->getEntry(keyptr);
-          return RegionEntry<TKey, TValue>::Create(nativeptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            auto nativeptr = m_nativeptr->get()->getEntry(keyptr);
+            return RegionEntry<TKey, TValue>::Create(nativeptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1198,25 +1199,25 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::RegionEntry>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->entries(recursive);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>(static_cast<int>(vc.size()));
+          std::vector<std::shared_ptr<native::RegionEntry>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->entries(recursive);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto entryarr = gcnew array<RegionEntry<TKey, TValue>^>(static_cast<int>(vc.size()));
 
-        for (System::Int32 index = 0; index < entryarr->Length; index++)
-        {
-          auto& nativeptr = vc[index];
-          entryarr[index] = RegionEntry<TKey, TValue>::Create(nativeptr);
-        }
-        auto collection = (System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^)entryarr;
+          for (System::Int32 index = 0; index < entryarr->Length; index++)
+          {
+            auto& nativeptr = vc[index];
+            entryarr[index] = RegionEntry<TKey, TValue>::Create(nativeptr);
+          }
+          auto collection = (System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^)entryarr;
 
-        return collection;
+          return collection;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1239,14 +1240,14 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
-          return m_nativeptr->get()->containsValueForKey(keyptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
+          try
+          {
+            std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
+            return m_nativeptr->get()->containsValueForKey(keyptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
         }
 
         }
@@ -1289,15 +1290,15 @@ namespace Apache
       void Region<TKey, TValue>::Clear(Object^ callbackArg)
       {
         try {/* due to auto replace */
-        try
-        {
-          std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
-          m_nativeptr->get()->clear(callbackptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
+            m_nativeptr->get()->clear(callbackptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -1322,29 +1323,29 @@ namespace Apache
 
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::RegionEntry>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->entries(false);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          std::vector<std::shared_ptr<native::RegionEntry>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->entries(false);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
-        if (toArray->Rank > 1 || (vc.size() > (toArray->Length - startIdx)))
-        {
-          throw gcnew System::ArgumentException;
-        }
+          if (toArray->Rank > 1 || (vc.size() > (toArray->Length - startIdx)))
+          {
+            throw gcnew System::ArgumentException;
+          }
 
-        for (System::Int32 index = 0; index < vc.size(); index++)
-        {
-          auto& nativeptr = vc[index];
-          auto key = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr->getKey());
-          auto val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr->getValue());
-          toArray[startIdx] = KeyValuePair<TKey, TValue>(key, val);
-          ++startIdx;
-        }
+          for (System::Int32 index = 0; index < vc.size(); index++)
+          {
+            auto& nativeptr = vc[index];
+            auto key = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr->getKey());
+            auto val = TypeRegistry::GetManagedValueGeneric<TValue>(nativeptr->getValue());
+            toArray[startIdx] = KeyValuePair<TKey, TValue>(key, val);
+            ++startIdx;
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1392,27 +1393,27 @@ namespace Apache
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
-          for each(TKey item in keys)
-          {
-            auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
-            vecKeys.push_back(v);
-          }
-          try
-          {
-            m_nativeptr->get()->registerKeys(vecKeys, isDurable, getInitialValues, receiveValues);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            for each(TKey item in keys)
+            {
+              auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
+              vecKeys.push_back(v);
+            }
+            try
+            {
+              m_nativeptr->get()->registerKeys(vecKeys, isDurable, getInitialValues, receiveValues);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }/* due to auto replace */
         }
       }
 
@@ -1425,28 +1426,28 @@ namespace Apache
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
-          for each(TKey item in keys)
-          {
-            auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
-            vecKeys.push_back(v);
-          }
+            for each(TKey item in keys)
+            {
+              auto v = Serializable::GetUnmanagedValueGeneric<TKey>(item);
+              vecKeys.push_back(v);
+            }
 
-          try
-          {
-            m_nativeptr->get()->unregisterKeys(vecKeys);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
+            try
+            {
+              m_nativeptr->get()->unregisterKeys(vecKeys);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }/* due to auto replace */
         }
       }
 
@@ -1476,14 +1477,14 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-            m_nativeptr->get()->registerAllKeys(isDurable, getInitialValues, receiveValues);
-        }
-        finally
-        {
-            GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+              m_nativeptr->get()->registerAllKeys(isDurable, getInitialValues, receiveValues);
+          }
+          finally
+          {
+              GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1499,24 +1500,24 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::CacheableKey>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->getInterestList();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
-        for (System::Int32 index = 0; index < keyarr->Length; index++)
-        {
-          auto& nativeptr = vc[index];
-          keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
-        }
+          std::vector<std::shared_ptr<native::CacheableKey>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->getInterestList();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto keyarr = gcnew array<TKey>(static_cast<int>(vc.size()));
+          for (System::Int32 index = 0; index < keyarr->Length; index++)
+          {
+            auto& nativeptr = vc[index];
+            keyarr[index] = TypeRegistry::GetManagedValueGeneric<TKey>(nativeptr);
+          }
 
-        auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
-        return collectionlist;
+          auto collectionlist = (System::Collections::Generic::ICollection<TKey>^)keyarr;
+          return collectionlist;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1532,23 +1533,23 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        std::vector<std::shared_ptr<native::CacheableString>> vc;
-        try
-        {
-          vc = m_nativeptr->get()->getInterestListRegex();
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
-        auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
-        for (System::Int32 index = 0; index < strarr->Length; index++)
-        {
-          strarr[index] = to_String(vc[index]->value());
-          //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
-        }
-        auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;
-        return collectionlist;
+          std::vector<std::shared_ptr<native::CacheableString>> vc;
+          try
+          {
+            vc = m_nativeptr->get()->getInterestListRegex();
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
+          auto strarr = gcnew array<String^>(static_cast<int>(vc.size()));
+          for (System::Int32 index = 0; index < strarr->Length; index++)
+          {
+            strarr[index] = to_String(vc[index]->value());
+            //collectionlist[ index ] = Serializable::GetManagedValue<TValue>(nativeptr);
+          }
+          auto collectionlist = (System::Collections::Generic::ICollection<String^>^)strarr;
+          return collectionlist;
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1607,15 +1608,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          m_nativeptr->get()->registerRegex(Apache::Geode::Client::to_utf8(regex), isDurable,
-            getInitialValues, receiveValues);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            m_nativeptr->get()->registerRegex(Apache::Geode::Client::to_utf8(regex), isDurable,
+              getInitialValues, receiveValues);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1631,14 +1632,14 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          m_nativeptr->get()->unregisterRegex(Apache::Geode::Client::to_utf8(regex));
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            m_nativeptr->get()->unregisterRegex(Apache::Geode::Client::to_utf8(regex));
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
@@ -1730,15 +1731,15 @@ namespace Apache
       {
         try {/* due to auto replace */
 
-        try
-        {
-          auto nativeptr = m_nativeptr->get()->selectValue(Apache::Geode::Client::to_utf8(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
-          return TypeRegistry::GetManagedValueGeneric<Object^>(nativeptr);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            auto nativeptr = m_nativeptr->get()->selectValue(Apache::Geode::Client::to_utf8(predicate), TimeUtils::TimeSpanToDurationCeil<std::chrono::seconds>(timeout));
+            return TypeRegistry::GetManagedValueGeneric<Object^>(nativeptr);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {

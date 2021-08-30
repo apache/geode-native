@@ -98,29 +98,29 @@ namespace Apache
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
           try {/* due to auto replace */
-          auto bytesRemaining = static_cast<int>(m_maxSize - m_buffer->BytesReadInternally);
-					if(bytesRemaining <= 0)
-						return bytesRemaining;
-          auto actual = static_cast<int>(bytesRemaining < count ? bytesRemaining : count);
-					if (actual > 0)
-          {
-            /*
-            array<Byte>::ConstrainedCopy(m_buffer->ReadBytesOnly(actual), 0,
-              buffer, offset, actual);
-              */
-            //pin_ptr<Byte> pin_buffer = &buffer[offset];
-            //m_buffer->NativePtr->readBytesOnly((System::Byte*)pin_buffer, actual);
-            m_buffer->ReadBytesOnly(buffer, offset, actual);
-            m_position += actual;
+            auto bytesRemaining = static_cast<int>(m_maxSize - m_buffer->BytesReadInternally);
+					  if(bytesRemaining <= 0)
+						  return bytesRemaining;
+            auto actual = static_cast<int>(bytesRemaining < count ? bytesRemaining : count);
+					  if (actual > 0)
+            {
+              /*
+              array<Byte>::ConstrainedCopy(m_buffer->ReadBytesOnly(actual), 0,
+                buffer, offset, actual);
+                */
+              //pin_ptr<Byte> pin_buffer = &buffer[offset];
+              //m_buffer->NativePtr->readBytesOnly((System::Byte*)pin_buffer, actual);
+              m_buffer->ReadBytesOnly(buffer, offset, actual);
+              m_position += actual;
+            }
+            return actual;
           }
-          return actual;
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }/* due to auto replace */
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }/* due to auto replace */
         }
 
         virtual void Flush() override { /* do nothing */ }

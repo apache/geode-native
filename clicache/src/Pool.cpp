@@ -462,7 +462,6 @@ namespace Apache
             GC::KeepAlive(m_nativeptr);
           }
 
-
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -484,7 +483,6 @@ namespace Apache
           {
             GC::KeepAlive(m_nativeptr);
           }
-
 
         }
         catch (const apache::geode::client::Exception& ex) {

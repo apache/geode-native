@@ -43,23 +43,23 @@ namespace Apache
       {
         if (routingObj != nullptr) {
           try {/* due to auto replace */
-          auto rsptr = native::CacheableVector::create();
+            auto rsptr = native::CacheableVector::create();
         
-          for each(TFilter item in routingObj)
-          {
-            auto v = Serializable::GetUnmanagedValueGeneric<TFilter>(item);
-            rsptr->push_back(v);
-          }
+            for each(TFilter item in routingObj)
+            {
+              auto v = Serializable::GetUnmanagedValueGeneric<TFilter>(item);
+              rsptr->push_back(v);
+            }
           
-          try
-          {
-            return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc);
-          }
-          finally
-          {
-            GC::KeepAlive(m_nativeptr);
-          }
-          }
+            try
+            {
+              return Execution<TResult>::Create(m_nativeptr->get()->withFilter(rsptr), this->m_rc);
+            }
+            finally
+            {
+              GC::KeepAlive(m_nativeptr);
+            }
+        }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
         }
@@ -100,19 +100,19 @@ namespace Apache
       {
         try {/* due to auto replace */
           std::shared_ptr<native::ResultCollector> rcptr;
-        if ( rc != nullptr ) {
-          auto rcg = gcnew ResultCollectorGeneric<TResult>();
-          rcg->SetResultCollector(rc); 
-          rcptr = std::shared_ptr<native::ManagedResultCollectorGeneric>(new native::ManagedResultCollectorGeneric(rcg));
-        }
-        try
-        {
-          return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          if ( rc != nullptr ) {
+            auto rcg = gcnew ResultCollectorGeneric<TResult>();
+            rcg->SetResultCollector(rc); 
+            rcptr = std::shared_ptr<native::ManagedResultCollectorGeneric>(new native::ManagedResultCollectorGeneric(rcg));
+          }
+          try
+          {
+            return Execution<TResult>::Create( m_nativeptr->get()->withCollector(rcptr), rc);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);
@@ -121,22 +121,23 @@ namespace Apache
           throw ex;
         }/* due to auto replace */
       }
+
       generic<class TResult>
       IResultCollector<TResult>^ Execution<TResult>::Execute(String^ func, TimeSpan timeout)
       {
         try {/* due to auto replace */
-        try
-        {
-          auto rc = m_nativeptr->get()->execute(to_utf8(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
-          if (m_rc == nullptr)
-            return gcnew ResultCollector<TResult>(rc);
-          else
-            return m_rc;
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            auto rc = m_nativeptr->get()->execute(to_utf8(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+            if (m_rc == nullptr)
+              return gcnew ResultCollector<TResult>(rc);
+            else
+              return m_rc;
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
         }
         catch (const apache::geode::client::Exception& ex) {
           throw Apache::Geode::Client::GeodeException::Get(ex);

@@ -129,7 +129,7 @@ namespace Apache
 
       CacheFactory^ CacheFactory::SetPdxReadSerialized(bool pdxReadSerialized)
       {
-        	try {
+        try {
 
           try
           {
@@ -174,7 +174,7 @@ namespace Apache
 
       CacheFactory^ CacheFactory::SetAuthInitialize(IAuthInitialize^ authInitialize)
       {
-        	try {
+        try {
 
           try
           {

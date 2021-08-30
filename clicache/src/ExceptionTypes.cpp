@@ -20,8 +20,6 @@
 #include "ExceptionTypes.hpp"
 #include <cstdlib>
 
-//#define _GF_MG_EXCEPTION_ADD4(x,y) { "apache::geode::client::" #y, gcnew CreateException2( x::Create ) }
-
 using namespace System;
 
 namespace Apache

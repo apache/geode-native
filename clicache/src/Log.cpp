@@ -37,7 +37,7 @@ namespace Apache
         try {
 
           ManagedString mg_lfname(logFileName);
-        apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
+          apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr);
 
         }
@@ -54,7 +54,7 @@ namespace Apache
         try {
 
           ManagedString mg_lfname(logFileName);
-        apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
+          apache::geode::client::Log::init(static_cast<apache::geode::client::LogLevel>(level),
                                          mg_lfname.CharPtr, logFileLimit);
 
         }
@@ -93,7 +93,7 @@ namespace Apache
         try {
 
           ManagedString mg_msg(msg);
-        apache::geode::client::Log::log(static_cast<apache::geode::client::LogLevel>(level),
+          apache::geode::client::Log::log(static_cast<apache::geode::client::LogLevel>(level),
                                         mg_msg.CharPtr);
 
         }

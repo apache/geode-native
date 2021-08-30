@@ -134,7 +134,7 @@ namespace Apache
       generic<class TPropKey, class TPropValue>
       void Properties<TPropKey, TPropValue>::ForEach( PropertyVisitorGeneric<TPropKey, TPropValue>^ visitor )
       {
-       if (visitor != nullptr)
+        if (visitor != nullptr)
         {
           native::ManagedVisitorGeneric mg_visitor( visitor );
 
@@ -156,12 +156,12 @@ namespace Apache
             }
 
           }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }
+          catch (const apache::geode::client::Exception& ex) {
+            throw Apache::Geode::Client::GeodeException::Get(ex);
+          }
+          catch (System::AccessViolationException^ ex) {
+            throw ex;
+          }
         }
       }
 
@@ -260,12 +260,12 @@ namespace Apache
                 m_nativeptr->get()->toData(*nativeOutput);
 
             }
-        catch (const apache::geode::client::Exception& ex) {
-          throw Apache::Geode::Client::GeodeException::Get(ex);
-        }
-        catch (System::AccessViolationException^ ex) {
-          throw ex;
-        }
+            catch (const apache::geode::client::Exception& ex) {
+              throw Apache::Geode::Client::GeodeException::Get(ex);
+            }
+            catch (System::AccessViolationException^ ex) {
+              throw ex;
+            }
           }
 
           if (output->IsManagedObject()) {
@@ -302,14 +302,14 @@ namespace Apache
       {
         try {
 
-        try
-        {
-          m_nativeptr->get()->fromData(input);
-        }
-        finally
-        {
-          GC::KeepAlive(m_nativeptr);
-        }
+          try
+          {
+            m_nativeptr->get()->fromData(input);
+          }
+          finally
+          {
+            GC::KeepAlive(m_nativeptr);
+          }
 
         }
         catch (const apache::geode::client::Exception& ex) {
