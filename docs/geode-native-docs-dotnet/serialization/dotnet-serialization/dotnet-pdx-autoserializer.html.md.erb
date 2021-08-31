@@ -27,11 +27,11 @@ cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
 (The autoserializer can be registered only in the application code. It cannot be configured declaratively in `cache.xml`.)
 
 After an autoserializer has been registered, all user classes can automatically be stored without needing to implement any
-interfaces. For example, the following `put` command stores `value`, which is an instance of a user defined class, in
+interfaces. For example, the following `Put` command stores `value`, which is an instance of a user defined class, in
 the region.
 
 ```csharp
-region.put(key, value);
+region.Put(key, value);
 ```
     
 The .NET client's `ReflectionBasedAutoSerializer` supports the full list of .NET primitives and other common

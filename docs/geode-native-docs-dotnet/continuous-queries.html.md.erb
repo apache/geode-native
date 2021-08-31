@@ -51,12 +51,12 @@ floating point values as keys or key components when constructing a query.
 ## <a id="cq_api"></a>Typical Continuous Query Lifecycle
 
 1.  The client creates the CQ. This sets up everything for running the query and provides the client with a `CqQuery` object, but does not execute the CQ. At this point, the query is in a `STOPPED `state, ready to be closed or run.
-2.  The client initiates the CQ with an API call to one of the `CqQuery execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.  The server remotely evaluates the query string, and optionally returns the results to the client. `CqQuery execute*` methods include:
+2.  The client initiates the CQ with an API call to one of the `CqQuery Execute*` methods. This puts the query into a `RUNNING` state on the client and on the server.  The server remotely evaluates the query string, and optionally returns the results to the client. `CqQuery Execute*` methods include:
   - `CqQuery.Execute()`
   - `CqQuery.ExecuteWithInitialResults()`
 
 1.  A CQ Listener waits for events. When it receives events, it takes action accordingly with the data in the CqEvent.
-3.  The CQ is closed by a client call to `CqQuery.close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
+3.  The CQ is closed by a client call to `CqQuery.Close`. This de-allocates all resources in use for the CQ on the client and server. At this point, the cycle could begin again with the creation of a new `CqQuery` instance.
 
 ## <a id="ExecutingACQ"></a>Executing a Continuous Query from the Client
 
@@ -64,7 +64,7 @@ The essential steps to create and execute a continuous query are:
 
 1.  Create an instance of the `QueryService` class. If you are using the pool API (recommended), you should obtain the `QueryService` from the pool.
 1.  Define a CQ Listener (an `ICqListener`) to field events sent from the server.
-1.  Use one of the `CqQuery execute*` methods to submit the query string to the cache server.
+1.  Use one of the `CqQuery Execute*` methods to submit the query string to the cache server.
 1.  The server remotely evaluates the query string, then monitors those results and notifies the client if they change.
 1.  The client listens for changes that match the query predicate.
 1.  Iterate through the returned objects.
