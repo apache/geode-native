@@ -604,21 +604,99 @@ namespace Apache
         };
       }
 
-      /// <summary>
-      /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
-      /// a distributable object for caching.
-      /// </summary>
-      public ref class CacheableHashSet : public Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableHashSet), apache::geode::client::CacheableHashSet> { public: inline CacheableHashSet() : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableHashSet), apache::geode::client::CacheableHashSet>() {} inline CacheableHashSet(System::Int32 size) : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableHashSet), apache::geode::client::CacheableHashSet>(size) {} inline static CacheableHashSet^ Create() { return gcnew CacheableHashSet(); } inline static CacheableHashSet^ Create(System::Int32 size) { return gcnew CacheableHashSet(size); } static ISerializable^ CreateDeserializable() { return gcnew CacheableHashSet(); } internal: static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj) { return gcnew CacheableHashSet(obj); } private: inline CacheableHashSet(std::shared_ptr<apache::geode::client::Serializable> nativeptr) : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableHashSet), apache::geode::client::CacheableHashSet>(nativeptr) { } };;
+    /// <summary>
+    /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
+    /// a distributable object for caching.
+    /// </summary>
+    public ref class CacheableHashSet
+          : public Internal::CacheableHashSetType<
+                static_cast<int8_t>(native::internal::DSCode::CacheableHashSet),
+                apache::geode::client::CacheableHashSet> {
+      public:
+        inline CacheableHashSet()
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableHashSet),
+                  apache::geode::client::CacheableHashSet>() {}
+        inline CacheableHashSet(System::Int32 size)
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableHashSet),
+                  apache::geode::client::CacheableHashSet>(size) {}
+        inline static CacheableHashSet ^
+            Create() {
+              return gcnew CacheableHashSet();
+            } inline static CacheableHashSet
+            ^
+            Create(System::Int32 size) {
+              return gcnew CacheableHashSet(size);
+            } static ISerializable
+            ^
+            CreateDeserializable() { return gcnew CacheableHashSet(); }
+        internal:
+          static ISerializable^
+              Create(std::shared_ptr<apache::geode::client::Serializable> obj) {
+                return gcnew CacheableHashSet(obj);
+              }
+        private:
+          inline CacheableHashSet(
+                  std::shared_ptr<apache::geode::client::Serializable>
+                      nativeptr)
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableHashSet),
+                  apache::geode::client::CacheableHashSet>(nativeptr) {}
+      };
 
-      /// <summary>
-      /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
-      /// a distributable object for caching. This is provided for compability
-      /// with java side though is functionally identical to
-      /// <c>CacheableHashSet</c> i.e. does not provide the linked semantics of
-      /// java <c>LinkedHashSet</c>.
-      /// </summary>
-      public ref class CacheableLinkedHashSet : public Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableLinkedHashSet), apache::geode::client::CacheableLinkedHashSet> { public: inline CacheableLinkedHashSet() : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableLinkedHashSet), apache::geode::client::CacheableLinkedHashSet>() {} inline CacheableLinkedHashSet(System::Int32 size) : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableLinkedHashSet), apache::geode::client::CacheableLinkedHashSet>(size) {} inline static CacheableLinkedHashSet^ Create() { return gcnew CacheableLinkedHashSet(); } inline static CacheableLinkedHashSet^ Create(System::Int32 size) { return gcnew CacheableLinkedHashSet(size); } static ISerializable^ CreateDeserializable() { return gcnew CacheableLinkedHashSet(); } internal: static ISerializable^ Create(std::shared_ptr<apache::geode::client::Serializable> obj) { return gcnew CacheableLinkedHashSet(obj); } private: inline CacheableLinkedHashSet(std::shared_ptr<apache::geode::client::Serializable> nativeptr) : Internal::CacheableHashSetType<static_cast<int8_t>(native::internal::DSCode::CacheableLinkedHashSet), apache::geode::client::CacheableLinkedHashSet>(nativeptr) { } };;
-    }  // namespace Client
+    /// <summary>
+    /// A mutable <c>ICacheableKey</c> hash set wrapper that can serve as
+    /// a distributable object for caching. This is provided for compability
+    /// with java side though is functionally identical to
+    /// <c>CacheableHashSet</c> i.e. does not provide the linked semantics of
+    /// java <c>LinkedHashSet</c>.
+    /// </summary>
+    public ref class CacheableLinkedHashSet
+          : public Internal::CacheableHashSetType<
+                static_cast<int8_t>(
+                    native::internal::DSCode::CacheableLinkedHashSet),
+                apache::geode::client::CacheableLinkedHashSet> {
+      public:
+        inline CacheableLinkedHashSet()
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableLinkedHashSet),
+                  apache::geode::client::CacheableLinkedHashSet>() {}
+        inline CacheableLinkedHashSet(System::Int32 size)
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableLinkedHashSet),
+                  apache::geode::client::CacheableLinkedHashSet>(size) {}
+        inline static CacheableLinkedHashSet ^
+            Create() {
+              return gcnew CacheableLinkedHashSet();
+            } inline static CacheableLinkedHashSet
+            ^
+            Create(System::Int32 size) {
+              return gcnew CacheableLinkedHashSet(size);
+            } static ISerializable
+            ^
+            CreateDeserializable() {
+              return gcnew CacheableLinkedHashSet();
+            }
+      internal:
+        static ISerializable^
+              Create(std::shared_ptr<apache::geode::client::Serializable> obj) {
+                return gcnew CacheableLinkedHashSet(obj);
+              } private
+            : inline CacheableLinkedHashSet(
+                  std::shared_ptr<apache::geode::client::Serializable>
+                      nativeptr)
+            : Internal::CacheableHashSetType<
+                  static_cast<int8_t>(
+                      native::internal::DSCode::CacheableLinkedHashSet),
+                  apache::geode::client::CacheableLinkedHashSet>(nativeptr) {}
+      };
+      } // namespace Client
   }  // namespace Geode
 }  // namespace Apache
 
