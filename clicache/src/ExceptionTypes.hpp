@@ -282,8 +282,8 @@ namespace Apache
       protected:
         AssertionException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : AssertionException(
+      internal:
+        AssertionException(
                   const apache::geode::client::AssertionException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -307,8 +307,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -337,7 +337,8 @@ namespace Apache
         IllegalArgumentException(SerializationInfo ^ info,
                                  StreamingContext context)
             : GeodeException(info, context) {}
-        internal : IllegalArgumentException(
+      internal:
+        IllegalArgumentException(
                        const apache::geode::client::IllegalArgumentException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -364,9 +365,9 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
-                    override {
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
+          override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
           if (this->InnerException != nullptr) {
@@ -394,8 +395,8 @@ namespace Apache
         IllegalStateException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : IllegalStateException(
+      internal:
+        IllegalStateException(
                   const apache::geode::client::IllegalStateException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -420,8 +421,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -449,8 +450,8 @@ namespace Apache
       protected:
         CacheExistsException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheExistsException(
+      internal:
+        CacheExistsException(
                   const apache::geode::client::CacheExistsException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -474,8 +475,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -502,7 +503,8 @@ namespace Apache
       protected:
         CacheXmlException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : CacheXmlException(
+      internal:
+        CacheXmlException(
                        const apache::geode::client::CacheXmlException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -526,8 +528,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -553,7 +555,8 @@ namespace Apache
       protected:
         TimeoutException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : TimeoutException(
+      internal:
+        TimeoutException(
                        const apache::geode::client::TimeoutException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -577,8 +580,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -606,8 +609,8 @@ namespace Apache
       protected:
         CacheWriterException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheWriterException(
+      internal:
+        CacheWriterException(
                   const apache::geode::client::CacheWriterException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -631,8 +634,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -661,8 +664,8 @@ namespace Apache
         CacheListenerException(SerializationInfo ^ info,
                                StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheListenerException(
+      internal:
+        CacheListenerException(
                   const apache::geode::client::CacheListenerException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -688,8 +691,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -718,8 +721,8 @@ namespace Apache
         RegionExistsException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : RegionExistsException(
+      internal:
+        RegionExistsException(
                   const apache::geode::client::RegionExistsException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -744,8 +747,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -773,8 +776,8 @@ namespace Apache
       protected:
         CacheClosedException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheClosedException(
+        internal:
+          CacheClosedException(
                   const apache::geode::client::CacheClosedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -798,8 +801,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -828,8 +831,8 @@ namespace Apache
         LeaseExpiredException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : LeaseExpiredException(
+      internal:
+        LeaseExpiredException(
                   const apache::geode::client::LeaseExpiredException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -854,8 +857,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -883,8 +886,8 @@ namespace Apache
       protected:
         CacheLoaderException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheLoaderException(
+      internal:
+        CacheLoaderException(
                   const apache::geode::client::CacheLoaderException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -908,8 +911,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -938,7 +941,8 @@ namespace Apache
         RegionDestroyedException(SerializationInfo ^ info,
                                  StreamingContext context)
             : GeodeException(info, context) {}
-        internal : RegionDestroyedException(
+      internal:
+        RegionDestroyedException(
                        const apache::geode::client::RegionDestroyedException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -965,8 +969,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -995,7 +999,8 @@ namespace Apache
         EntryDestroyedException(SerializationInfo ^ info,
                                 StreamingContext context)
             : GeodeException(info, context) {}
-        internal : EntryDestroyedException(
+      internal:
+        EntryDestroyedException(
                        const apache::geode::client::EntryDestroyedException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -1022,8 +1027,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1050,7 +1055,8 @@ namespace Apache
       protected:
         NoSystemException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : NoSystemException(
+      internal:
+        NoSystemException(
                        const apache::geode::client::NoSystemException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1074,8 +1080,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1105,7 +1111,8 @@ namespace Apache
         AlreadyConnectedException(SerializationInfo ^ info,
                                   StreamingContext context)
             : GeodeException(info, context) {}
-        internal : AlreadyConnectedException(
+      internal:
+        AlreadyConnectedException(
                        const apache::geode::client::AlreadyConnectedException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -1132,8 +1139,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1162,8 +1169,8 @@ namespace Apache
         FileNotFoundException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : FileNotFoundException(
+      internal:
+        FileNotFoundException(
                   const apache::geode::client::FileNotFoundException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1188,8 +1195,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1217,8 +1224,8 @@ namespace Apache
       protected:
         InterruptedException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : InterruptedException(
+      internal:
+        InterruptedException(
                   const apache::geode::client::InterruptedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1242,8 +1249,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1274,8 +1281,8 @@ namespace Apache
         UnsupportedOperationException(SerializationInfo ^ info,
                                       StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : UnsupportedOperationException(
+      internal:
+        UnsupportedOperationException(
                   const apache::geode::client::UnsupportedOperationException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -1303,8 +1310,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1335,7 +1342,8 @@ namespace Apache
         StatisticsDisabledException(SerializationInfo ^ info,
                                     StreamingContext context)
             : GeodeException(info, context) {}
-        internal : StatisticsDisabledException(
+      internal:
+        StatisticsDisabledException(
                        const apache::geode::client::StatisticsDisabledException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -1362,8 +1370,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1393,8 +1401,7 @@ namespace Apache
         ConcurrentModificationException(SerializationInfo ^ info,
                                         StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : ConcurrentModificationException(
+      internal: ConcurrentModificationException(
                   const apache::geode::client::ConcurrentModificationException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -1422,8 +1429,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1449,7 +1456,8 @@ namespace Apache
       protected:
         UnknownException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : UnknownException(
+      internal:
+        UnknownException(
                        const apache::geode::client::UnknownException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1473,8 +1481,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1501,8 +1509,8 @@ namespace Apache
       protected:
         ClassCastException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : ClassCastException(
+      internal:
+        ClassCastException(
                   const apache::geode::client::ClassCastException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1526,8 +1534,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1556,8 +1564,8 @@ namespace Apache
         EntryNotFoundException(SerializationInfo ^ info,
                                StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : EntryNotFoundException(
+      internal:
+        EntryNotFoundException(
                   const apache::geode::client::EntryNotFoundException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1583,8 +1591,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1610,7 +1618,8 @@ namespace Apache
       protected:
         GeodeIOException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : GeodeIOException(
+      internal:
+        GeodeIOException(
                        const apache::geode::client::GeodeIOException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1634,8 +1643,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1663,8 +1672,8 @@ namespace Apache
       protected:
         GeodeConfigException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : GeodeConfigException(
+      internal:
+        GeodeConfigException(
                   const apache::geode::client::GeodeConfigException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1688,8 +1697,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1718,8 +1727,8 @@ namespace Apache
       protected:
         NullPointerException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : NullPointerException(
+      internal:
+        NullPointerException(
                   const apache::geode::client::NullPointerException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1743,8 +1752,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1772,8 +1781,8 @@ namespace Apache
       protected:
         EntryExistsException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : EntryExistsException(
+      internal:
+        EntryExistsException(
                   const apache::geode::client::EntryExistsException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1797,8 +1806,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1828,8 +1837,8 @@ namespace Apache
         NotConnectedException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : NotConnectedException(
+      internal:
+        NotConnectedException(
                   const apache::geode::client::NotConnectedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1854,8 +1863,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1883,8 +1892,8 @@ namespace Apache
       protected:
         CacheProxyException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheProxyException(
+      internal:
+        CacheProxyException(
                   const apache::geode::client::CacheProxyException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1908,8 +1917,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1937,8 +1946,8 @@ namespace Apache
       protected:
         OutOfMemoryException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : OutOfMemoryException(
+      internal:
+        OutOfMemoryException(
                   const apache::geode::client::OutOfMemoryException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -1962,8 +1971,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -1991,7 +2000,8 @@ namespace Apache
       protected:
         NotOwnerException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : NotOwnerException(
+      internal:
+        NotOwnerException(
                        const apache::geode::client::NotOwnerException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2015,8 +2025,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2045,7 +2055,8 @@ namespace Apache
         WrongRegionScopeException(SerializationInfo ^ info,
                                   StreamingContext context)
             : GeodeException(info, context) {}
-        internal : WrongRegionScopeException(
+      internal:
+        WrongRegionScopeException(
                        const apache::geode::client::WrongRegionScopeException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2072,8 +2083,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2103,7 +2114,8 @@ namespace Apache
         BufferSizeExceededException(SerializationInfo ^ info,
                                     StreamingContext context)
             : GeodeException(info, context) {}
-        internal : BufferSizeExceededException(
+      internal:
+        BufferSizeExceededException(
                        const apache::geode::client::BufferSizeExceededException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2130,8 +2142,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2161,8 +2173,8 @@ namespace Apache
         RegionCreationFailedException(SerializationInfo ^ info,
                                       StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : RegionCreationFailedException(
+      internal:
+        RegionCreationFailedException(
                   const apache::geode::client::RegionCreationFailedException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2190,8 +2202,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2220,8 +2232,8 @@ namespace Apache
         FatalInternalException(SerializationInfo ^ info,
                                StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : FatalInternalException(
+      internal:
+        FatalInternalException(
                   const apache::geode::client::FatalInternalException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2247,8 +2259,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2277,8 +2289,8 @@ namespace Apache
       protected:
         DiskFailureException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : DiskFailureException(
+      internal:
+        DiskFailureException(
                   const apache::geode::client::DiskFailureException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2302,8 +2314,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2332,8 +2344,8 @@ namespace Apache
       protected:
         DiskCorruptException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : DiskCorruptException(
+      internal:
+        DiskCorruptException(
                   const apache::geode::client::DiskCorruptException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2357,8 +2369,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2386,8 +2398,8 @@ namespace Apache
       protected:
         InitFailedException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : InitFailedException(
+      internal:
+        InitFailedException(
                   const apache::geode::client::InitFailedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2411,8 +2423,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2441,7 +2453,8 @@ namespace Apache
         ShutdownFailedException(SerializationInfo ^ info,
                                 StreamingContext context)
             : GeodeException(info, context) {}
-        internal : ShutdownFailedException(
+      internal:
+        ShutdownFailedException(
                        const apache::geode::client::ShutdownFailedException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2468,8 +2481,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2497,8 +2510,8 @@ namespace Apache
       protected:
         CacheServerException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CacheServerException(
+      internal:
+        CacheServerException(
                   const apache::geode::client::CacheServerException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2522,8 +2535,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2551,8 +2564,8 @@ namespace Apache
       protected:
         OutOfRangeException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : OutOfRangeException(
+      internal:
+        OutOfRangeException(
                   const apache::geode::client::OutOfRangeException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2576,8 +2589,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2603,7 +2616,8 @@ namespace Apache
       protected:
         QueryException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : QueryException(
+      internal:
+        QueryException(
                        const apache::geode::client::QueryException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2626,8 +2640,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2653,7 +2667,8 @@ namespace Apache
       protected:
         MessageException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : MessageException(
+      internal:
+        MessageException(
                        const apache::geode::client::MessageException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2677,8 +2692,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2707,8 +2722,8 @@ namespace Apache
         NotAuthorizedException(SerializationInfo ^ info,
                                StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : NotAuthorizedException(
+      internal:
+        NotAuthorizedException(
                   const apache::geode::client::NotAuthorizedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -2734,8 +2749,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2765,8 +2780,8 @@ namespace Apache
         AuthenticationFailedException(SerializationInfo ^ info,
                                       StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : AuthenticationFailedException(
+      internal:
+        AuthenticationFailedException(
                   const apache::geode::client::AuthenticationFailedException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2794,8 +2809,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2826,8 +2841,8 @@ namespace Apache
         AuthenticationRequiredException(SerializationInfo ^ info,
                                         StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : AuthenticationRequiredException(
+      internal:
+        AuthenticationRequiredException(
                   const apache::geode::client::AuthenticationRequiredException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2855,8 +2870,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2886,8 +2901,8 @@ namespace Apache
         DuplicateDurableClientException(SerializationInfo ^ info,
                                         StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : DuplicateDurableClientException(
+      internal:
+        DuplicateDurableClientException(
                   const apache::geode::client::DuplicateDurableClientException
                       &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2915,8 +2930,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -2946,7 +2961,8 @@ namespace Apache
         NoAvailableLocatorsException(SerializationInfo ^ info,
                                      StreamingContext context)
             : GeodeException(info, context) {}
-        internal : NoAvailableLocatorsException(
+      internal:
+        NoAvailableLocatorsException(
                        const apache::geode::client::NoAvailableLocatorsException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -2973,8 +2989,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3004,7 +3020,8 @@ namespace Apache
         AllConnectionsInUseException(SerializationInfo ^ info,
                                      StreamingContext context)
             : GeodeException(info, context) {}
-        internal : AllConnectionsInUseException(
+      internal:
+        AllConnectionsInUseException(
                        const apache::geode::client::AllConnectionsInUseException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -3031,8 +3048,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3059,8 +3076,8 @@ namespace Apache
       protected:
         CqInvalidException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CqInvalidException(
+      internal:
+        CqInvalidException(
                   const apache::geode::client::CqInvalidException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3084,8 +3101,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3115,7 +3132,8 @@ namespace Apache
         FunctionExecutionException(SerializationInfo ^ info,
                                    StreamingContext context)
             : GeodeException(info, context) {}
-        internal : FunctionExecutionException(
+      internal:
+        FunctionExecutionException(
                        const apache::geode::client::FunctionExecutionException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -3142,8 +3160,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3169,8 +3187,8 @@ namespace Apache
       protected:
         CqException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : CqException(const apache::geode::client::CqException &nativeEx)
+      internal:
+        CqException(const apache::geode::client::CqException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
                                  GeodeException::GetStackTrace(nativeEx))) {}
@@ -3191,8 +3209,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3218,7 +3236,8 @@ namespace Apache
       protected:
         CqClosedException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : CqClosedException(
+      internal:
+        CqClosedException(
                        const apache::geode::client::CqClosedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3242,8 +3261,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3269,7 +3288,8 @@ namespace Apache
       protected:
         CqQueryException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : CqQueryException(
+      internal:
+        CqQueryException(
                        const apache::geode::client::CqQueryException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3293,8 +3313,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3321,7 +3341,8 @@ namespace Apache
       protected:
         CqExistsException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal : CqExistsException(
+      internal:
+        CqExistsException(
                        const apache::geode::client::CqExistsException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3345,8 +3366,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3372,8 +3393,8 @@ namespace Apache
         InvalidDeltaException(SerializationInfo ^ info,
                               StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : InvalidDeltaException(
+      internal:
+        InvalidDeltaException(
                   const apache::geode::client::InvalidDeltaException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3398,8 +3419,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3427,8 +3448,8 @@ namespace Apache
       protected:
         KeyNotFoundException(SerializationInfo ^ info, StreamingContext context)
             : GeodeException(info, context) {}
-        internal
-            : KeyNotFoundException(
+      internal:
+        KeyNotFoundException(
                   const apache::geode::client::KeyNotFoundException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
                              gcnew GeodeException(
@@ -3452,8 +3473,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3482,7 +3503,8 @@ namespace Apache
         CommitConflictException(SerializationInfo ^ info,
                                 StreamingContext context)
             : GeodeException(info, context) {}
-        internal : CommitConflictException(
+      internal:
+        CommitConflictException(
                        const apache::geode::client::CommitConflictException
                            &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -3509,8 +3531,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3541,7 +3563,8 @@ namespace Apache
         TransactionDataNodeHasDepartedException(SerializationInfo ^ info,
                                                 StreamingContext context)
             : GeodeException(info, context) {}
-        internal : TransactionDataNodeHasDepartedException(
+      internal:
+        TransactionDataNodeHasDepartedException(
                        const apache::geode::client::
                            TransactionDataNodeHasDepartedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -3571,8 +3594,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
@@ -3603,7 +3626,8 @@ namespace Apache
         TransactionDataRebalancedException(SerializationInfo ^ info,
                                            StreamingContext context)
             : GeodeException(info, context) {}
-        internal : TransactionDataRebalancedException(
+      internal:
+        TransactionDataRebalancedException(
                        const apache::geode::client::
                            TransactionDataRebalancedException &nativeEx)
             : GeodeException(marshal_as<String ^>(nativeEx.getMessage()),
@@ -3632,8 +3656,8 @@ namespace Apache
                 }
               }
               return nullptr;
-            } virtual std::
-                shared_ptr<apache::geode::client::Exception> GetNative()
+            }
+        virtual std::shared_ptr<apache::geode::client::Exception> GetNative()
                     override {
           auto message =
               marshal_as<std::string>(this->Message + ": " + this->StackTrace);
