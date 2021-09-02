@@ -32,6 +32,7 @@
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
@@ -52,6 +53,9 @@ std::shared_ptr<Region> setupRegion(Cache &cache) {
 }
 
 class TestResultCollector : public ResultCollector {
+ public:
+  bool isCleared = false;
+
   virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds) override {
     return std::shared_ptr<CacheableVector>();
@@ -61,7 +65,9 @@ class TestResultCollector : public ResultCollector {
 
   virtual void endResults() override {}
 
-  virtual void clearResults() override {}
+  virtual void clearResults() override { isCleared = true; }
+
+  bool isClearTriggered() { return isCleared; }
 };
 
 TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
@@ -175,6 +181,58 @@ TEST(FunctionExecutionTest,
   cache.close();
 }
 
+void populateRegion(const std::shared_ptr<Region> &region) {
+  for (int i = 0; i < 113; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+  }
+}
+
+TEST(FunctionExecutionTest, FunctionExecutionSingleHopNonHA) {
+  Cluster cluster{
+      LocatorCount{1}, ServerCount{3},
+      CacheXMLFiles(
+          {std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver1_pool_nonHA.xml",
+           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver2_pool_nonHA.xml",
+           std::string(getFrameworkString(FrameworkVariable::TestCacheXmlDir)) +
+               "/func_cacheserver3_pool_nonHA.xml"})};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  auto cache = CacheFactory().create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool =
+      poolFactory.setPRSingleHopEnabled(true).setRetryAttempts(0).create(
+          "pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  populateRegion(region);
+
+  for (int i = 0; i < 30; i++) {
+    auto functionService = FunctionService::onRegion(region);
+    auto rc =
+        functionService.withCollector(std::make_shared<TestResultCollector>())
+            .execute("MultiGetAllFunctionNonHA");
+
+    std::shared_ptr<TestResultCollector> resultCollector =
+        std::dynamic_pointer_cast<TestResultCollector>(rc);
+
+    ASSERT_FALSE(resultCollector->isClearTriggered());
+  }
+}
+
 const std::vector<std::string> serverResultsToStrings(
     std::shared_ptr<CacheableVector> serverResults) {
   std::vector<std::string> resultList;
@@ -191,6 +249,7 @@ const std::vector<std::string> serverResultsToStrings(
 
   return resultList;
 }
+
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
   Cluster cluster{
       LocatorCount{1}, ServerCount{2},
