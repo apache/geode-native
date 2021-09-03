@@ -25,10 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.geode.cache.Cache;
-import org.apache.geode.cache.CacheClosedException;
 import org.apache.geode.cache.CacheFactory;
-import org.apache.geode.cache.Declarable;
-import org.apache.geode.cache.execute.FunctionAdapter;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.Region;
 import org.apache.geode.cache.execute.ResultSender;
@@ -37,30 +34,30 @@ import org.apache.geode.cache.execute.Function;
 import org.apache.geode.cache.execute.FunctionContext;
 import org.apache.geode.cache.execute.RegionFunctionContext;
 import org.apache.geode.cache.partition.PartitionRegionHelper;
-import org.apache.geode.distributed.internal.InternalDistributedSystem;
-import org.apache.geode.internal.cache.execute.InternalFunctionInvocationTargetException;
 
-public class MultiGetAllFunctionNonHA extends FunctionAdapter implements Declarable{
+public class MultiGetAllFunctionNonHA implements Function {
 
+  @Override
   public void execute(FunctionContext context) {
     RegionFunctionContext regionContext = (RegionFunctionContext) context;
     final Region<String, String> region =
         PartitionRegionHelper.getLocalDataForContext(regionContext);
 
     Set<String> keys = region.keySet();
-    List<String> listKey = new ArrayList<>();
+    int counter = 1;
     for (String key : keys) {
-      listKey.add(key);
+      if (counter == keys.size()) {
+        context.getResultSender().lastResult(key);
+      } else {
+        context.getResultSender().sendResult(key);
+      }
+      counter++;
     }
-    context.getResultSender().lastResult(listKey);
   }
 
+  @Override
   public String getId() {
     return "MultiGetAllFunctionNonHA";
-  }
-
-  public void init(Properties arg0) {
-
   }
 
   @Override

@@ -197,6 +197,8 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                   func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
                   m_rc, (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
                   timeout);
+          dynamic_cast<ThinClientRegion*>(m_region.get())
+              ->setMetaDataRefreshed(false);
           cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
         } else {
           // convert server to bucket map to server to key map where bucket id

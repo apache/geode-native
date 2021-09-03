@@ -101,8 +101,8 @@ class ClientMetadata {
   }
   ClientMetadata(ClientMetadata& other);
   ClientMetadata& operator=(const ClientMetadata&) = delete;
-  std::vector<std::shared_ptr<BucketServerLocation>> adviseServerLocations(
-      int bucketId);
+  virtual std::vector<std::shared_ptr<BucketServerLocation>>
+  adviseServerLocations(int bucketId);
   std::shared_ptr<BucketServerLocation> advisePrimaryServerLocation(
       int bucketId);
   std::shared_ptr<BucketServerLocation> adviseRandomServerLocation();

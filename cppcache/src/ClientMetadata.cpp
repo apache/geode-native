@@ -85,7 +85,7 @@ ClientMetadata::ClientMetadata()
     : m_partitionNames(nullptr),
       m_previousOne(nullptr),
       m_totalNumBuckets(0),
-      m_colocatedWith(nullptr),
+      m_colocatedWith(),
       m_tcrdm(nullptr) {}
 
 ClientMetadata::~ClientMetadata() {}

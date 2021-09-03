@@ -158,6 +158,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
           m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
+      m_cache->setPrMetadataUpdatedFlag(true);
     }
   } else {
     newCptr = SendClientPRMetadata(colocatedWith.c_str(), cptr);
@@ -171,6 +172,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
+      m_cache->setPrMetadataUpdatedFlag(true);
     }
   }
 }
