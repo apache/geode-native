@@ -41,7 +41,7 @@ namespace Apache
       generic <class TKey, class TValue>
       Execution<TResult>^ FunctionService<TResult>::OnRegion( IRegion<TKey, TValue>^ rg )
       {
-        try {/* due to auto replace */
+        try {
           
           auto nativeRegion = ((Region<TKey, TValue>^)rg)->GetNative();
           auto execution = native::FunctionService::onRegion(nativeRegion);
@@ -53,13 +53,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic <class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServer( Pool^ pl )
       {
-        try {/* due to auto replace */
+        try {
 
           auto nativeptr = native::FunctionService::onServer(pl->GetNative());
           return Execution<TResult>::Create(std::move(nativeptr) , nullptr);
@@ -70,13 +70,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
       
       generic <class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServers( Pool^ pl )
       {
-        try {/* due to auto replace */
+        try {
 
           auto nativeptr = native::FunctionService::onServers(pl->GetNative());
           return Execution<TResult>::Create(std::move(nativeptr) , nullptr);
@@ -87,13 +87,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServer( IRegionService^ cache )
       {
-        try {/* due to auto replace */
+        try {
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
@@ -113,13 +113,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
       Execution<TResult>^ FunctionService<TResult>::OnServers( IRegionService^ cache )
       {
-        try {/* due to auto replace */
+        try {
 
           if(auto realCache = dynamic_cast<Cache^>(cache))
           {
@@ -139,7 +139,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

@@ -370,7 +370,7 @@ namespace Apache
           /// </param>
           virtual void Add(Object^ item)
           {
-            try {/* due to auto replace */
+            try {
 
               try
               {
@@ -387,7 +387,7 @@ namespace Apache
             }
             catch (System::AccessViolationException^ ex) {
               throw ex;
-            }/* due to auto replace */
+            }
           }
 
           /// <summary>

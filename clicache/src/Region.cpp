@@ -79,7 +79,7 @@ namespace Apache
       generic<class TKey, class TValue>
       std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr, std::shared_ptr<native::Serializable>& callbackptr)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             return m_nativeptr->get()->get(keyptr, callbackptr);
@@ -94,13 +94,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       std::shared_ptr<native::Serializable> Region<TKey, TValue>::get(std::shared_ptr<native::CacheableKey>& keyptr)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             return m_nativeptr->get()->get(keyptr);
@@ -115,13 +115,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::isPoolInMultiuserMode()
       {
-        try {/* due to auto replace */
+        try {
           auto rAttributes = this->Attributes;
           auto poolName = rAttributes->PoolName;
           if (poolName != nullptr) {
@@ -138,13 +138,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Put(TKey key, TValue value, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -164,7 +164,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -190,7 +190,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::default::set(TKey key, TValue value)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -209,7 +209,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -218,7 +218,7 @@ namespace Apache
       {
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -235,7 +235,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
         auto toArray = gcnew array<KeyValuePair<TKey, TValue>>(static_cast<int>(vc.size()));
 
@@ -255,7 +255,7 @@ namespace Apache
       {
         std::vector<std::shared_ptr<native::RegionEntry>> vc;
 
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -272,7 +272,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
         auto toArray = gcnew array<Object^>(static_cast<int>(vc.size()));
 
@@ -303,7 +303,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ContainsKey(TKey key)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -321,13 +321,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::TryGetValue(TKey key, TValue %val)
       {
-        try {/* due to auto replace */
+        try {
           std::shared_ptr<native::CacheableKey> keyptr = Serializable::GetUnmanagedValueGeneric<TKey>(key);
           GC::KeepAlive(m_nativeptr);
           auto nativeptr = this->get(keyptr);
@@ -346,13 +346,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TKey>^ Region<TKey, TValue>::Keys::get()
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::CacheableKey>> vc;
           try
@@ -378,13 +378,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TValue>^ Region<TKey, TValue>::Values::get()
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::Cacheable>> vc;
           try
@@ -410,13 +410,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(TKey key, TValue value)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -435,13 +435,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(KeyValuePair<TKey, TValue> keyValuePair)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -460,13 +460,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Add(TKey key, TValue value, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -486,13 +486,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -510,14 +510,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -536,13 +536,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(KeyValuePair<TKey, TValue> keyValuePair)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -561,13 +561,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::Remove(TKey key, TValue value, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -588,13 +588,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::InvalidateRegion()
       {
-        try {/* due to auto replace */
+        try {
 
           InvalidateRegion(nullptr);
 
@@ -604,13 +604,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::InvalidateRegion(Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -628,13 +628,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::DestroyRegion()
       {
-        try {/* due to auto replace */
+        try {
 
           DestroyRegion(nullptr);
 
@@ -644,13 +644,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::DestroyRegion(Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -668,13 +668,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Invalidate(TKey key)
       {
-        try {/* due to auto replace */
+        try {
 
           Invalidate(key, nullptr);
 
@@ -684,14 +684,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Invalidate(TKey key, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -710,13 +710,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map)
       {
-        try {/* due to auto replace */
+        try {
 
           return PutAll(map, TimeUtils::DurationToTimeSpan(native::DEFAULT_RESPONSE_TIMEOUT));
 
@@ -726,14 +726,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
 
           native::HashMapOfCacheable nativeMap;
           for each (KeyValuePair<TKey, TValue> keyValPair in map)
@@ -757,14 +757,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::PutAll(System::Collections::Generic::IDictionary<TKey, TValue>^ map, TimeSpan timeout, Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           native::HashMapOfCacheable nativeMap;
           for each (KeyValuePair<TKey, TValue> keyValPair in map)
@@ -789,7 +789,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -798,7 +798,7 @@ namespace Apache
                                         System::Collections::Generic::IDictionary<TKey, TValue>^ values,
                                         System::Collections::Generic::IDictionary<TKey, System::Exception^>^ exceptions)
       {
-        try {/* due to auto replace */
+        try {
 
           GetAll(keys, values, exceptions, false);
 
@@ -808,7 +808,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -819,7 +819,7 @@ namespace Apache
                                         bool addToLocalCache)
       {
         if (keys != nullptr) {
-          try {/* due to auto replace */
+          try {
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -853,7 +853,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -867,7 +867,7 @@ namespace Apache
                                         bool addToLocalCache, Object^ callbackArg)
       {
         if (keys != nullptr) {
-          try {/* due to auto replace */
+          try {
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -905,7 +905,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
         else {
           throw gcnew IllegalArgumentException("GetAll: null keys provided");
@@ -915,7 +915,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::RemoveAll(System::Collections::Generic::ICollection<TKey>^ keys)
       {
-        try {/* due to auto replace */
+        try {
 
           RemoveAll(keys, nullptr);
 
@@ -925,7 +925,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -933,7 +933,7 @@ namespace Apache
       void Region<TKey, TValue>::RemoveAll(System::Collections::Generic::ICollection<TKey>^ keys,
                                             Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
           for each(TKey item in keys) 
@@ -959,7 +959,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -992,7 +992,7 @@ namespace Apache
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::ParentRegion::get()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1010,13 +1010,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       Apache::Geode::Client::RegionAttributes<TKey, TValue>^ Region<TKey, TValue>::Attributes::get()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1034,13 +1034,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       AttributesMutator<TKey, TValue>^ Region<TKey, TValue>::AttributesMutator::get()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1058,13 +1058,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       Apache::Geode::Client::CacheStatistics^ Region<TKey, TValue>::Statistics::get()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1082,13 +1082,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::GetSubRegion(String^ path)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1106,14 +1106,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       IRegion<TKey, TValue>^ Region<TKey, TValue>::CreateSubRegion(String^ subRegionName,
                                                                     Apache::Geode::Client::RegionAttributes<TKey, TValue>^ attributes)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1131,14 +1131,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<IRegion<TKey, TValue>^>^ Region<TKey, TValue>::SubRegions(bool recursive)
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::Region>> vsr;
           try
@@ -1166,13 +1166,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       RegionEntry<TKey, TValue>^ Region<TKey, TValue>::GetEntry(TKey key)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1191,13 +1191,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<RegionEntry<TKey, TValue>^>^ Region<TKey, TValue>::GetEntries(bool recursive)
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::RegionEntry>> vc;
           try
@@ -1225,7 +1225,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -1238,7 +1238,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ContainsValueForKey(TKey key)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1256,13 +1256,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       int Region<TKey, TValue>::Count::get()
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             return m_nativeptr->get()->size();
@@ -1277,7 +1277,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -1289,7 +1289,7 @@ namespace Apache
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::Clear(Object^ callbackArg)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             std::shared_ptr<native::Serializable> callbackptr = Serializable::GetUnmanagedValueGeneric<Object^>(callbackArg);
@@ -1305,7 +1305,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -1321,7 +1321,7 @@ namespace Apache
           throw gcnew System::ArgumentOutOfRangeException;
         }
 
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::RegionEntry>> vc;
           try
@@ -1353,7 +1353,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -1389,7 +1389,7 @@ namespace Apache
       {
         if (keys != nullptr)
         {
-          try {/* due to auto replace */
+          try {
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -1413,7 +1413,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
       }
 
@@ -1422,7 +1422,7 @@ namespace Apache
       {
         if (keys != nullptr)
         {
-          try {/* due to auto replace */
+          try {
 
             std::vector<std::shared_ptr<native::CacheableKey>> vecKeys;
 
@@ -1447,7 +1447,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
       }
 
@@ -1475,7 +1475,7 @@ namespace Apache
                                                   bool getInitialValues,
                                                   bool receiveValues)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1492,13 +1492,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<TKey>^ Region<TKey, TValue>::GetInterestList()
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::CacheableKey>> vc;
           try
@@ -1525,13 +1525,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       System::Collections::Generic::ICollection<String^>^ Region<TKey, TValue>::GetInterestListRegex()
       {
-        try {/* due to auto replace */
+        try {
 
           std::vector<std::shared_ptr<native::CacheableString>> vc;
           try
@@ -1557,13 +1557,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::UnregisterAllKeys()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1580,7 +1580,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -1606,7 +1606,7 @@ namespace Apache
       void Region<TKey, TValue>::RegisterRegex(String^ regex, bool isDurable,
           bool getInitialValues, bool receiveValues)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1624,13 +1624,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
       void Region<TKey, TValue>::UnregisterRegex(String^ regex)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1647,7 +1647,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
       }
 
@@ -1662,7 +1662,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Region<TKey, TValue>::Query(String^ predicate, TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1688,7 +1688,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -1700,7 +1700,7 @@ namespace Apache
       generic<class TKey, class TValue>
       bool Region<TKey, TValue>::ExistsValue(String^ predicate, TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1717,7 +1717,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>
@@ -1729,7 +1729,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Object^ Region<TKey, TValue>::SelectValue(String^ predicate, TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -1747,7 +1747,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>

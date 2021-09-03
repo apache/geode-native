@@ -97,7 +97,7 @@ namespace Apache
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override
         {
-          try {/* due to auto replace */
+          try {
             auto bytesRemaining = static_cast<int>(m_maxSize - m_buffer->BytesReadInternally);
 					  if(bytesRemaining <= 0)
 						  return bytesRemaining;
@@ -120,7 +120,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
 
         virtual void Flush() override { /* do nothing */ }

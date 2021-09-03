@@ -49,7 +49,7 @@ namespace Apache
       generic<class TKey, class TResult>
       ICqResults<TResult>^ CqQuery<TKey, TResult>::ExecuteWithInitialResults(TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             auto nativeptr = m_nativeptr->get()->executeWithInitialResults(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
@@ -71,13 +71,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Execute()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -94,7 +94,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
@@ -192,7 +192,7 @@ namespace Apache
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Stop( )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -209,13 +209,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
       void CqQuery<TKey, TResult>::Close( )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -232,13 +232,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
       bool CqQuery<TKey, TResult>::IsRunning( )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -255,13 +255,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
       bool CqQuery<TKey, TResult>::IsStopped( )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -278,13 +278,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TResult>
       bool CqQuery<TKey, TResult>::IsClosed()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -301,7 +301,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

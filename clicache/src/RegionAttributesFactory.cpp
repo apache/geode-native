@@ -357,7 +357,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetInitialCapacity( System::Int32 initialCapacity )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -374,7 +374,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
         return this;
       }
@@ -382,7 +382,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetLoadFactor( Single loadFactor )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -399,7 +399,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
         return this;
       }
@@ -407,7 +407,7 @@ namespace Apache
       generic<class TKey, class TValue>
       RegionAttributesFactory<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::SetConcurrencyLevel( System::Int32 concurrencyLevel )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -424,7 +424,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
 
         return this;
       }
@@ -503,7 +503,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Apache::Geode::Client::RegionAttributes<TKey, TValue>^ RegionAttributesFactory<TKey, TValue>::Create()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -521,7 +521,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

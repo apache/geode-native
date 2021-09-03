@@ -47,7 +47,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute( TimeSpan timeout )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -64,7 +64,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 	
       generic<class TResult>
@@ -76,7 +76,7 @@ namespace Apache
       generic<class TResult>
       ISelectResults<TResult>^ Query<TResult>::Execute( array<Object^>^ paramList, TimeSpan timeout )
       {
-        try {/* due to auto replace */
+        try {
 
           auto rsptr = apache::geode::client::CacheableVector::create();
           for( int index = 0; index < paramList->Length; index++ )
@@ -100,7 +100,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
@@ -136,7 +136,7 @@ namespace Apache
       generic<class TResult>
       void Query<TResult>::Compile( )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -153,13 +153,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
       bool Query<TResult>::IsCompiled::get()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -176,7 +176,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

@@ -37,7 +37,7 @@ namespace Apache
 
       PoolFactory^ PoolFactory::SetFreeConnectionTimeout( TimeSpan connectionTimeout )
 		  {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -54,14 +54,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetLoadConditioningInterval( TimeSpan loadConditioningInterval )
 		  {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -78,14 +78,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSocketBufferSize( Int32 bufferSize )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -102,14 +102,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetReadTimeout( TimeSpan timeout )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -126,14 +126,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetMinConnections( Int32 minConnections )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -150,14 +150,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetMaxConnections( Int32 maxConnections )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -174,14 +174,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetIdleTimeout( TimeSpan idleTimeout )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -198,14 +198,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetRetryAttempts( Int32 retryAttempts )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -222,14 +222,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetPingInterval( TimeSpan pingInterval )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -246,14 +246,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetUpdateLocatorListInterval( TimeSpan updateLocatorListInterval )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -270,14 +270,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
       PoolFactory^ PoolFactory::SetStatisticInterval( TimeSpan statisticInterval )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -294,13 +294,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
       PoolFactory^ PoolFactory::SetServerGroup( String^ group )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -317,14 +317,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::AddLocator( String^ host, Int32 port )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -341,14 +341,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
       PoolFactory^ PoolFactory::AddServer( String^ host, Int32 port )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -365,13 +365,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 		  PoolFactory^ PoolFactory::SetSniProxy(String^ hostname, Int32 port)
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -388,13 +388,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 		  PoolFactory^ PoolFactory::SetSubscriptionEnabled( Boolean enabled )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -411,14 +411,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
       PoolFactory^ PoolFactory::SetPRSingleHopEnabled( Boolean enabled )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -435,14 +435,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
                return this;
       }
 
     
 		  PoolFactory^ PoolFactory::SetSubscriptionRedundancy( Int32 redundancy )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -459,14 +459,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSubscriptionMessageTrackingTimeout( TimeSpan messageTrackingTimeout )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -483,14 +483,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
 		  PoolFactory^ PoolFactory::SetSubscriptionAckInterval( TimeSpan ackInterval )
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -507,7 +507,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
       PoolFactory^ PoolFactory::SetThreadLocalConnections( Boolean enabled )
@@ -535,7 +535,7 @@ namespace Apache
 
       PoolFactory^ PoolFactory::SetMultiuserAuthentication( bool multiuserAuthentication )
       {
-			  try {/* due to auto replace */
+			  try {
 
             try
             {
@@ -552,14 +552,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 	   }
 
 
 		  PoolFactory^ PoolFactory::Reset()
       {
-			  try {/* due to auto replace */
+			  try {
 
 			    try
 			    {
@@ -576,14 +576,14 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
           return this;
 		  }
 
 
       Pool^ PoolFactory::Create(String^ name)
       {
-        try {/* due to auto replace */
+        try {
 
             try
             {
@@ -600,7 +600,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

@@ -373,7 +373,7 @@ namespace Apache
       generic <class TKey, class TValue>
       IRegion<TKey,TValue>^ RegionFactory::Create(String^ regionName)
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -391,7 +391,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic <class TKey, class TValue>

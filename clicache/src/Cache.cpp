@@ -177,7 +177,7 @@ namespace Apache
       generic<class TKey, class TValue>
       Client::IRegion<TKey,TValue>^ Cache::GetRegion( String^ path )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -194,7 +194,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TKey, class TValue>

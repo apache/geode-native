@@ -48,7 +48,7 @@ namespace Apache
       generic<class TResult>
       System::Collections::Generic::ICollection<TResult>^  ResultCollector<TResult>::GetResult(TimeSpan timeout)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             auto results = m_nativeptr->get()->getResult(TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
@@ -72,13 +72,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
       void ResultCollector<TResult>::EndResults()
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             m_nativeptr->get()->endResults();
@@ -93,13 +93,13 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
       void ResultCollector<TResult>::ClearResults(/*bool*/)
       {
-        try {/* due to auto replace */
+        try {
           try
           {
             m_nativeptr->get()->clearResults();
@@ -114,7 +114,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
     }  // namespace Client
   }  // namespace Geode

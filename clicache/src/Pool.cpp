@@ -451,7 +451,7 @@ namespace Apache
 
       QueryService^ Pool::GetQueryService()
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -468,7 +468,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
       
       Int32 Pool::PendingEventCount::get()

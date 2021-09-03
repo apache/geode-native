@@ -81,7 +81,7 @@ namespace Apache
 
         virtual void Write(array<Byte> ^ buffer, int offset, int count) override
         {
-          try {/* due to auto replace */
+          try {
             /*
             array<Byte> ^ chunk = gcnew array<Byte>(count);
             array<Byte>::ConstrainedCopy(buffer, offset, chunk, 0, count);
@@ -97,12 +97,12 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
 
         virtual void WriteByte(unsigned char value) override
         {
-          try {/* due to auto replace */
+          try {
             m_buffer->WriteByte(value);
             m_position++;
           }
@@ -111,7 +111,7 @@ namespace Apache
           }
           catch (System::AccessViolationException^ ex) {
             throw ex;
-          }/* due to auto replace */
+          }
         }
 
         virtual int Read(array<Byte> ^ buffer, int offset, int count) override

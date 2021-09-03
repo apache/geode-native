@@ -72,7 +72,7 @@ namespace Apache
       generic<class TResult>
       int32_t StructSet<TResult>::GetFieldIndex( String^ fieldName )
       {
-        try {/* due to auto replace */
+        try {
 
           try
           {
@@ -89,7 +89,7 @@ namespace Apache
         }
         catch (System::AccessViolationException^ ex) {
           throw ex;
-        }/* due to auto replace */
+        }
       }
 
       generic<class TResult>
