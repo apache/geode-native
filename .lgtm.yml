@@ -2,7 +2,7 @@ extraction:
   cpp:
     configure:
       command:
-        - GEODE_VERSION=1.13.4
+        - GEODE_VERSION=1.14.0
         - CMAKE_VERSION=3.18
         - mkdir _lgtm_build_dir
         - cd _lgtm_build_dir
