@@ -250,7 +250,7 @@ TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
   populateRegion(region);
 
   // Check that PR metadata is updated. This is done to be sure
-  // that that client will execute function in a single hop manner
+  // that client will execute function in a non single hop manner
   // because metadata doesn't contain all bucket locations.
   // After metadata is refreshed, it will contain at least one
   // bucket location.

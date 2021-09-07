@@ -70,7 +70,7 @@ class ClientMetadata {
   void setPreviousone(std::shared_ptr<ClientMetadata> cptr) {
     m_previousOne = cptr;
   }
-  ~ClientMetadata();
+  virtual ~ClientMetadata();
   ClientMetadata();
   ClientMetadata(
       int totalNumBuckets, std::string colocatedWith, ThinClientPoolDM* tcrdm,

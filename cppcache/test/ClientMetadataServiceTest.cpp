@@ -23,7 +23,7 @@
 #include "gmock/gmock.h"
 #include "mock/ClientMetadataMock.hpp"
 
-using ::testing::AtLeast;
+using ::testing::_;
 using ::testing::Return;
 
 namespace apache {
@@ -37,7 +37,7 @@ TEST(ClientMetadataServiceTest, testWhenBucketLocationIsNotAvailable) {
 
   std::vector<std::shared_ptr<BucketServerLocation>> emptyBucketList;
 
-  EXPECT_CALL(*mock, adviseServerLocations(3))
+  EXPECT_CALL(*mock, adviseServerLocations(_))
       .WillOnce(Return(emptyBucketList));
 
   ASSERT_EQ(nullptr, ClientMetadataService::pruneNodes(mock, bucketSet));
@@ -61,7 +61,7 @@ TEST(ClientMetadataServiceTest, testBucketAvailable) {
       m_bucketServerLocationsList1;
   m_bucketServerLocationsList1.push_back(bucket1);
 
-  EXPECT_CALL(*mock, adviseServerLocations)
+  EXPECT_CALL(*mock, adviseServerLocations(_))
       .WillOnce(Return(m_bucketServerLocationsList))
       .WillOnce(Return(m_bucketServerLocationsList1));
 

@@ -30,9 +30,7 @@ namespace client {
 class ClientMetadataMock : public ClientMetadata {
  public:
   MOCK_METHOD(std::vector<std::shared_ptr<BucketServerLocation>>,
-              adviseServerLocations, (int), ());
-  // MOCK_METHOD(std::vector<std::shared_ptr<BucketServerLocation>>,
-  // adviseServerLocations, (int));
+              adviseServerLocations, (int), (override));
 };
 }  // namespace client
 }  // namespace geode
