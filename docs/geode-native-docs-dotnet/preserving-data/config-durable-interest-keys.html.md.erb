@@ -1,4 +1,4 @@
----
+--
 title:  Configuring Durable Interest in Keys
 ---
 
@@ -25,7 +25,7 @@ This fine-grained control handles the constraints of queue size and memory by sa
 
 You still register interest for other keys, but not durable interest. When the client is connected to its servers, it receives messages for those non-durable keys. When the client is disconnected, its non-durable interest registrations are deleted but messages that are already in the queue remain there.
 
-For durable clients, all interest registration is done immediately after the regions are created. This is required whether interest registration is durable or not durable. An extra `registerInterest` parameter specified for durable clients indicates whether the registration is durable (true) or not (false).
+For durable clients, all interest registration is done immediately after the regions are created. This is required whether interest registration is durable or not durable. An extra `RegisterInterest` parameter specified for durable clients indicates whether the registration is durable (true) or not (false).
 
 ## API Client Durable Interest List Registration (C++)
 
@@ -36,7 +36,7 @@ The following programmatic example registers durable interest in Key-1. The inte
 // durable (true) or nondurable(default).
 VectorOfCacheableKey keys;
 keys.push_back( CacheableString::create("Key-1") );
-regionPtr->registerKeys(keys,true);
+regionPtr->RegisterKeys(keys,true);
 ```
 
 <a id="concept_6456354A9AD945C780A5AA864B41B564__section_3DE5872B0888410EB42D52CFB28C79E5"></a>

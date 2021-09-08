@@ -37,43 +37,43 @@ The client must connect to the server through a connection pool in order to invo
 
 ## <a id="nc-fe-how_functions_execute"></a>How Functions Execute
 
-1.  The calling client application runs the `execute` method on the `Execution` object. The function must already be registered on the servers.
-2.  The function is invoked on the servers where it needs to run. The servers are determined by the `FunctionService on*` 
+1.  The calling client application runs the `Execute` method on the `Execution` object. The function must already be registered on the servers.
+2.  The function is invoked on the servers where it needs to run. The servers are determined by the `FunctionService On*` 
 method calls, region configuration, and any filters.
 3.  If the function has results, the result is returned in a `ResultCollector` object.
-4.  The client collects results using the `ResultCollector.getResult()` method.
+4.  The client collects results using the `ResultCollector.GetResult()` method.
 
 In every client where you want to execute the function and process the results:
 
-- Use one of the `FunctionService on*` methods to create an `Execution` object. The `on*` methods,
-`onRegion`, `onServer` and `onServers`, define the highest level where the function is run.
-- If you use `onRegion` you can further narrow your run scope by setting key filters.
-- A function run using `onRegion` is a *data dependent* function – others are *data-independent* functions.
+- Use one of the `FunctionService On*` methods to create an `Execution` object. The `On*` methods,
+`OnRegion`, `OnServer` and `OnServers`, define the highest level where the function is run.
+- If you use `OnRegion` you can further narrow your run scope by setting key filters.
+- A function run using `OnRegion` is a *data dependent* function – others are *data-independent* functions.
 - You can run a data dependent function against partitioned and colocated partitioned regions. From the client, provide the appropriate key
  sets to the function call.
 
 -  The `Execution` object allows you to customize the invocation by:
-    -   Providing a set of data keys to `withFilter` to narrow the execution scope. This works only for `onRegion` Execution objects (data-dependent functions).
-    -   Providing function arguments to `withArgs`.
-    -   Defining a custom `ResultCollector` for `withCollector`.
+    -   Providing a set of data keys to `WithFilter` to narrow the execution scope. This works only for `OnRegion` Execution objects (data-dependent functions).
+    -   Providing function arguments to `WithArgs`.
+    -   Defining a custom `ResultCollector` for `WithCollector`.
 
--  Call the `Execution.execute()` method to run the function.
+-  Call the `Execution.Execute()` method to run the function.
 
 ## <a id="nc-fe-processing_function_results"></a>Processing Function Results
 
 To get the results from the function in the client app, use the result collector returned from the function execution.
-The `getResult` methods of the default result collector block until all results are received, then return the full result set.
+The `GetResult` methods of the default result collector block until all results are received, then return the full result set.
 
 The client can use the default result collector. If the client needs special results handling, code a custom `ResultsCollector` implementation to replace the default.
 Use the `Execution::withCollector` method to specify the custom collector.
 To handle the results in a custom manner:
 
 1.  Write a class that implements the `ResultCollector` interface to handle the results in a custom manner. The methods are of two types: one handles data and information from <%=vars.product_name%> and populates the results set, while the other returns the compiled results to the calling application:
-    -  `addResult` is called when results arrive from the `Function` methods. Use `addResult` to add a single result to the ResultCollector.
-    -  `endResults` is called to signal the end of all results from the function execution.
-    -  `getResult` is available to your executing application (the one that calls `Execution.execute`) to retrieve the results. This may block until all results are available.
-    -  `clearResults` is called to clear partial results from the results collector. This is used only for highly available `onRegion` functions where the calling application waits for the results. If the call fails, before <%=vars.product_name%> retries the execution, it calls `clearResults` to ready the instance for a clean set of results.
-2.  Use the `Execution` object in your executing member to call `withCollector`, passing your custom collector.
+    -  `AddResult` is called when results arrive from the `Function` methods. Use `AddResult` to add a single result to the ResultCollector.
+    -  `EndResults` is called to signal the end of all results from the function execution.
+    -  `GetResult` is available to your executing application (the one that calls `Execution.Execute`) to retrieve the results. This may block until all results are available.
+    -  `ClearResults` is called to clear partial results from the results collector. This is used only for highly available `OnRegion` functions where the calling application waits for the results. If the call fails, before <%=vars.product_name%> retries the execution, it calls `ClearResults` to ready the instance for a clean set of results.
+2.  Use the `Execution` object in your executing member to call `WithCollector`, passing your custom collector.
 
 ## <a id="nc-fe-examples"></a>Function Execution Example
 
@@ -83,7 +83,7 @@ The native client release contains an example of function execution in `../examp
 - The function is preloaded with a JAR file containing the server-side Java function code. 
 - The function, called "ExampleMultiGetFunction", is defined in the
 `examples/utilities` directory of your distribution. As its input parameter, the function takes an array of keys,
-then performs a `get` on each key and returns an array containing the results.
+then performs a `Get` on each key and returns an array containing the results.
 - The function does not load values into the data store. That is a separate operation, performed in these examples by
 the client, and does not involve the server-side function.
 
@@ -97,7 +97,7 @@ The client:
 - invokes the object's execute method to invoke the server-side function
 
 If the client expects results, it must create a result object.
-The .NET example uses a built-in result collector (`IResultCollector.getResults()`) to retrieve the function results.
+The .NET example uses a built-in result collector (`IResultCollector.GetResults()`) to retrieve the function results.
 
 ### <a id="nc-fe-dotnet_example"></a>.NET Example
 This section contains code snippets showing highlights of the .NET function execution example. They are not intended for cut-and-paste execution.
