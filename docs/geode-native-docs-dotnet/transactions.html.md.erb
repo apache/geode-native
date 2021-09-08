@@ -26,8 +26,8 @@ For complete information about how transactions are conducted on the <%=vars.pro
 
 ## <a id="client-transaction-apis"></a>Native Client Transaction APIs
 
-The API for distributed transactions has the familiar relational database methods, `begin`,
-`commit`, and `rollback`. There are also APIs available to suspend and resume transactions.
+The API for distributed transactions has the familiar relational database methods, `Begin`,
+`Commit`, and `Rollback`. There are also APIs available to suspend and resume transactions.
 
 The .NET classes for executing transactions are:
 
@@ -40,7 +40,7 @@ The syntax for writing client transactions is the same as with server or peer tr
 a client performs a transaction, the transaction is delegated to a server that brokers the
 transaction.
 
-Start each transaction with a `begin` operation, and end the transaction with a `commit` or a `rollback`.
+Start each transaction with a `Begin` operation, and end the transaction with a `Commit` or a `Rollback`.
 
 To maintain cache consistency, the local client cache is not used during a transaction.
 When the transaction completes or is suspended, local cache usage is reinstated.
@@ -112,7 +112,7 @@ Within the transaction, the client populates data store with 10 values associate
 ```csharp
        foreach(var key in keys)
        {
-         var value = getValueFromExternalSystem();
+         var value = GetValueFromExternalSystem();
          region.Put(key, value);
        }
 ```
