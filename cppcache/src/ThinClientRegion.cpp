@@ -3152,7 +3152,7 @@ bool ThinClientRegion::executeFunctionSH(
 
         if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
           abortError = err;
-        } else {
+        } else if (getResult & 1) {  // isHA = true
           reExecute = true;
           worker->getResultCollector()->reset();
           {
@@ -3186,7 +3186,7 @@ bool ThinClientRegion::executeFunctionSH(
 
         if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
           abortError = err;
-        } else {
+        } else if (getResult & 1) {  // isHA = true
           reExecute = true;
           worker->getResultCollector()->reset();
           {
