@@ -346,23 +346,15 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   // InternalFunctionInvocationTargetException will happen
   // on servers, because client will try to execute the single-hop function
   // using old PR metadata (PR metadata before rebalance operation)
-  // Client in this case should throw exception. Also client should not
-  // trigger ResultCollector::clear results. If this happens then
-  // TestResultCollector will throw the exception (Exception), and that case
-  // will fail.
+  // Client in this case should throw exception. Also client should not trigger
+  // ResultCollector::clear results. If this happens then TestResultCollector
+  // will throw the exception (Exception) and case will fail.
   bool isExceptionTriggered = false;
   auto functionService = FunctionService::onRegion(region);
-  try {
-    functionService.withCollector(std::make_shared<TestResultCollector>())
-        .execute("MultiGetAllFunctionNonHA");
-  } catch (const FunctionExecutionException) {
-    isExceptionTriggered = true;
-  }
-
-  // Check that exception is thrown
-  ASSERT_TRUE(isExceptionTriggered);
-
-  cache.close();
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
+               FunctionExecutionException);
 }
 
 TEST(FunctionExecutionTest,
@@ -409,24 +401,15 @@ TEST(FunctionExecutionTest,
   // InternalFunctionInvocationTargetException will happen
   // on servers, because client will try to execute the single-hop function
   // using old PR metadata (PR metadata before rebalance operation)
-  // Client in this case should throw exception. Also client should not
-  // trigger ResultCollector::clear results. If this happens then
-  // TestResultCollector will throw the exception (Exception), and test case
-  // will fail.
-  bool isExceptionTriggered = false;
+  // Client in this case should throw exception. Also client should not trigger
+  // ResultCollector::clear results. If this happens then TestResultCollector
+  // will throw the exception (Exception) and test case will fail.
   auto functionService = FunctionService::onRegion(region);
-  try {
-    functionService.withCollector(std::make_shared<TestResultCollector>())
-        .withFilter(filter)
-        .execute("MultiGetAllFunctionNonHA");
-  } catch (const FunctionExecutionException) {
-    isExceptionTriggered = true;
-  }
-
-  // Check that exception is thrown
-  ASSERT_TRUE(isExceptionTriggered);
-
-  cache.close();
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>())
+          .withFilter(filter);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
+               FunctionExecutionException);
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
