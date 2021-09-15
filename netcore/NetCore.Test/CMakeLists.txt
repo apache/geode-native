@@ -15,22 +15,4 @@
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
   add_custom_target(NetCore-Test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore VERBATIM)
-
-#
-# Move object files and binaries to build directory.  We do this for the sake
-# of tidiness in the source tree.  This method seems a little bit overwrought,
-# but reasoning is as follows:
-# i.  At the time of this writing, cmake does not properly support .net core
-#     builds.
-# ii. dotnet build command does not, as far as we can tell, support building
-#     outside of the source tree.
-# ii. cmake has a rename_directory command, but it does not work if the
-#     destination directory is empty.  We were left with a choice of
-#     delete-then-rename or copy-then-delete, and chose the latter.
-#
-  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/bin)
-
-  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj ${CMAKE_CURRENT_BINARY_DIR}/obj)
-  add_custom_command(TARGET NetCore-Test POST_BUILD COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/obj)
 endif()
