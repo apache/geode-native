@@ -18,7 +18,6 @@ option(INCLUDE_DOTNET_CORE "Build .NET Core client." ON)
 
 find_program(DOTNET dotnet)
 
-add_subdirectory(scripts)
 add_subdirectory(NetCore)
 add_subdirectory(NetCore.Session)
 add_subdirectory(NetCore.Test)
