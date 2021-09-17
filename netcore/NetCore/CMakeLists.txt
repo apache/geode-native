@@ -15,7 +15,8 @@
 project(netcore-lib LANGUAGES NONE)
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_custom_target(NetCore ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
+  add_custom_target(NetCore ALL COMMAND ${DOTNET} build NetCore.csproj --configuration $<CONFIG>
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
 
   install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
 endif()
