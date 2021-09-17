@@ -12,14 +12,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-project(netcore LANGUAGES NONE)
+project(netcore-session LANGUAGES NONE)
 
-option(INCLUDE_DOTNET_CORE "Build .NET Core client." ON)
+if(DOTNET AND INCLUDE_DOTNET_CORE)
+  add_custom_target(netcore-session ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
 
-find_program(DOTNET dotnet)
-
-add_subdirectory(NetCore)
-add_subdirectory(NetCore.Session)
-add_subdirectory(NetCore.Test)
-add_subdirectory(NetCore.Session.IntegrationTests)
-add_subdirectory(utility)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
+endif()

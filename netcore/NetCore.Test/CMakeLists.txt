@@ -12,7 +12,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+project(netcore-test LANGUAGES NONE)
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_custom_target(NetCore-Test ALL COMMAND ${DOTNET} build --configuration $<CONFIG> WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore VERBATIM)
+  add_custom_target(NetCore-Test ALL 
+    COMMAND ${DOTNET} build --configuration $<CONFIG> 
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore VERBATIM)
 endif()
