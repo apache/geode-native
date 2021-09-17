@@ -26,7 +26,7 @@ else
         Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
         Write-Host " OR"
         Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
-        exit
+        exit 1
     }
     else
     {
@@ -34,16 +34,9 @@ else
     }
 }
 
-if ($env:BUILD_HOME -eq "" -or $env:BUILD_HOME -eq $null)
-{
-    Write-Host "Please set BUILD_HOME path to the root directory of a geode-native examples build."
-    Write-Host "startserver.ps1 needs to find 'example.jar' under BUILD_HOME/utilities to work properly."
-    exit
-}
-
 $AUTH_OPTS="--J=-Dgemfire.security-username=server"
 $AUTH_OPTS="$AUTH_OPTS --J=-Dgemfire.security-password=server"
-$AUTH_OPTS="$AUTH_OPTS --classpath=$env:BUILD_HOME/utilities/example.jar"
+$AUTH_OPTS="$AUTH_OPTS --classpath=@GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH@"
 
 $AUTH_LOCATOR_OPTS="$AUTH_OPTS --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
 

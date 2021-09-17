@@ -26,7 +26,7 @@ else
         Write-Host "(Powershell) `$env:GEODE_HOME = <path to Geode>"
         Write-Host " OR"
         Write-Host "(Command-line) set %GEODE_HOME% = <path to Geode>"
-        exit
+        exit 1
     }
     else
     {

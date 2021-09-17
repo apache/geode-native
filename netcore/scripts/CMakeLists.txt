@@ -12,11 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-project(netcore-session-integrationtest LANGUAGES NONE)
+project(netcore-scripts LANGUAGES NONE)
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_custom_target(netcore-session-integrationtests ALL 
-    COMMAND ${DOTNET} build --configuration $<CONFIG> 
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
+  set(GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH ${CMAKE_CURRENT_BINARY_DIR}/../utility/netcore-utility.jar)
+  file(TO_NATIVE_PATH ${GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH} GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH)
+  message(STATUS "CLASSPATH: ${GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH}")
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startserver.ps1.in ${CMAKE_CURRENT_BINARY_DIR}/startserver.ps1)
 endif()
+
