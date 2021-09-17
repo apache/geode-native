@@ -28,17 +28,12 @@ else
     fi
 fi
 
-if [ "$NETCORE_JAVA_BUILD_HOME" == "" ]; then
-    NETCORE_JAVA_BUILD_HOME="`pwd -P`"/utility
-fi
-
-
 # These security items typically go into gfsecurity.properties file.    For 
 # simplicity we are including the security details on the commandline.
 
 AUTH_OPTS="--J=-Dgemfire.security-username=server"
 AUTH_OPTS="${AUTH_OPTS} --J=-Dgemfire.security-password=server"
-AUTH_OPTS="${AUTH_OPTS} --classpath=${NETCORE_JAVA_BUILD_HOME}/example.jar"
+AUTH_OPTS="${AUTH_OPTS} --classpath=@GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH@"
 
 AUTH_LOCATOR_OPTS="${AUTH_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager" 
 

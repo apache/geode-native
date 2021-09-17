@@ -18,6 +18,12 @@ if(DOTNET AND INCLUDE_DOTNET_CORE)
   set(GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH ${CMAKE_CURRENT_BINARY_DIR}/../utility/netcore-utility.jar)
   file(TO_NATIVE_PATH ${GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH} GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH)
   message(STATUS "CLASSPATH: ${GEODE_NATIVE_NETCORE_UTILITY_CLASSPATH}")
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startserver.ps1.in ${CMAKE_CURRENT_BINARY_DIR}/startserver.ps1)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startserver.ps1.in ${CMAKE_CURRENT_BINARY_DIR}/startserver.ps1
+    @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/stopserver.ps1.in ${CMAKE_CURRENT_BINARY_DIR}/stopserver.ps1
+    COPYONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/startserver.sh.in ${CMAKE_CURRENT_BINARY_DIR}/startserver.sh
+    @ONLY)
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/stopserver.sh.in ${CMAKE_CURRENT_BINARY_DIR}/stopserver.sh
+    COPYONLY)
 endif()
-
