@@ -36,7 +36,7 @@
 #@      "upload_source_bash_task",
 #@      "upload_geode_bash_task",
 #@      "extract_geode_bash_task",
-#@      "dotnet_test_bash_task",
+#@      "dotnet_bash_task",
 #@ )
 
 #@ load("@ytt:overlay", "overlay")
@@ -213,8 +213,16 @@ plan:
           - #@ bash_task("upload-source", [{"name":"instance"},{"name":"source"}], [], upload_source_bash_task())
           - #@ bash_task("upload-geode", [{"name":"instance"},{"name":"geode-latest"}], [], upload_geode_bash_task())
     - #@ build_task(config.config, build.params)
-    - #@ remote_task("netcore-integration-test", config.config, dotnet_test_bash_task("source/netcore/NetCore.Test"), "10m", build.params)
-    - #@ remote_task("netcore-session-integration-test", config.config, dotnet_test_bash_task("source/netcore/NetCore.Session.IntegrationTest"), "10m", build.params)
+    - #@ remote_task("cpp-unit-tests", config.config, ctest_bash_task("build/cppcache/test", parallel=8), "30m", build.params)
+    - #@ remote_task("cpp-integration-tests", config.config, ctest_bash_task("build/cppcache/integration/test", parallel=4), "1h", build.params)
+    - #@ remote_task("cpp-legacy-integration-tests", config.config, ctest_bash_task("build/cppcache/integration-test", timeout=500, parallel=4), "2h", build.params)
+    #@ if build.with_dot_net:
+    - #@ remote_task("net-unmanaged-unit-tests", config.config, ctest_bash_task("build/clicache/test", parallel=8), "10m", build.params)
+    - #@ remote_task("net-unit-tests", config.config, ctest_bash_task("build/clicache/test2", parallel=8), "30m", build.params)
+    - #@ remote_task("net-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test2"), "1h", build.params)
+    - #@ remote_task("net-legacy-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test", timeout=500, parallel=4), "2h", build.params)
+    #@ end
+    - #@ remote_task("netcore-tests", config.config, dotnet_bash_task("source/netcore/NetCore.Test"), "10m", build.params)
     on_failure:
       in_parallel:
         steps:
