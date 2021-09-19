@@ -78,10 +78,10 @@ set -ueo pipefail
 remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
-(@ def dotnet_bash_task(path): -@)
+(@ def dotnet_test_bash_task(path): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir (@= path @) dotnet test
+remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
 (@ def clang_tidy_bash_task(): -@)
