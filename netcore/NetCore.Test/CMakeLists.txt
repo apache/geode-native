@@ -17,7 +17,7 @@ project(netcore-test LANGUAGES NONE)
 if(DOTNET AND INCLUDE_DOTNET_CORE)
   add_custom_target(NetCore-Test ALL 
     COMMAND ${DOTNET} build NetCore.Test.csproj --configuration $<CONFIG>
-    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore netcore-utility VERBATIM)
 endif()
 
