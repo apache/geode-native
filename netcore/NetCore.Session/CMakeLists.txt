@@ -16,5 +16,5 @@ project(netcore-session LANGUAGES NONE)
 
 if(DOTNET AND INCLUDE_DOTNET_CORE)
   add_custom_target(netcore-session ALL COMMAND ${DOTNET} build NetCore.Session.csproj --configuration $<CONFIG>
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore-Test VERBATIM)
 endif()
