@@ -28,3 +28,7 @@ configs:
   #@overlay/append
   - name: release
     config: RelWithDebInfo
+
+netcore_runtime:
+  - version: netcoreapp3.1
+

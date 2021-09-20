@@ -78,10 +78,10 @@ set -ueo pipefail
 remote_shell cmake -E chdir (@= path @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
-(@ def netcore_ctest_bash_task(path, build_config, timeout=300, parallel=6): -@)
+(@ def netcore_ctest_bash_task(path, build_config, runtime_version, timeout=300, parallel=6): -@)
 set -ueo pipefail
 (@= remote_functions() @)
-remote_shell cmake -E chdir (@= path @)/bin/(@= build_config @) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
+remote_shell cmake -E chdir (@= path @)/bin/(@= build_config @)/(@= runtime_version) ctest -C ${CMAKE_CONFIG} -j(@= str(parallel) @) --timeout=(@= str(timeout) @) --output-on-failure --repeat until-pass:4 --schedule-random
 (@- end @)
 
 (@ def clang_tidy_bash_task(): -@)
