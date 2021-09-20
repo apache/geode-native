@@ -74,7 +74,6 @@ namespace Apache.Geode.Session {
 
   public class GeodeSessionStateCache : GeodeNativeObject, IDistributedCache {
     private readonly IGeodeCache _cache;
-    private ILogger<GeodeSessionStateCache> _logger;
     private static Region _region;
     private string _logLevel;
     private string _logFile;
@@ -276,19 +275,9 @@ namespace Apache.Geode.Session {
       }
 
       _connectLock.Wait();
-      try {
-        using var regionFactory = _cache.CreateRegionFactory(RegionShortcut.Proxy);
-        try {
-          _logger?.LogTrace("Create CacheRegion");
-          _region = regionFactory.CreateRegion(_regionName);
-          _logger?.LogTrace("CacheRegion created");
-        } catch (Exception e) {
-          _logger?.LogInformation(e, "Create CacheRegion failed... now trying to get the region");
-        }
-      } finally {
-        // regionFactory?.Dispose();
-        _connectLock.Release();
-      }
+      using var regionFactory = _cache.CreateRegionFactory(RegionShortcut.Proxy);
+      _region = regionFactory.CreateRegion(_regionName);
+      _connectLock.Release();
     }
 
     protected override void DestroyContainedObject() {
