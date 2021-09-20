@@ -219,7 +219,7 @@ plan:
     - #@ remote_task("net-legacy-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test", timeout=500, parallel=4), "2h", build.params)
     #@ end
     - #@ remote_task("netcore-integration-test", config.config, ctest_bash_task("build/netcore/NetCore.Test", config.config, parallel=1), "10m", build.params)
-    - #@ remote_task("netcore-session-integration-test", config.config, ctest_bash_task("build/netcore/NetCore.Session.IntegrationTests", config.config, parallel=1), "10m", build.params)
+    - #@ remote_task("netcore-session-integration-test", config.config, ctest_bash_task("build/netcore/NetCore.Session.IntegrationTests", parallel=1), "10m", build.params)
     on_failure:
       in_parallel:
         steps:
