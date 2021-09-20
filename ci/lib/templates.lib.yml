@@ -25,7 +25,6 @@
 #@      "instance_variables",
 #@      "google_variables",
 #@      "ctest_bash_task",
-#@      "netcore_ctest_bash_task",
 #@      "clang_tidy_bash_task",
 #@      "clang_format_bash_task",
 #@      "rat_check_bash_task",
@@ -219,8 +218,8 @@ plan:
     - #@ remote_task("net-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test2"), "1h", build.params)
     - #@ remote_task("net-legacy-integration-tests", config.config, ctest_bash_task("build/clicache/integration-test", timeout=500, parallel=4), "2h", build.params)
     #@ end
-    - #@ remote_task("netcore-integration-test", config.config, netcore_ctest_bash_task("source/netcore/NetCore.Test", config.config, netcore_runtime.version, parallel=1, netcore_runtime.version), "10m", build.params)
-    - #@ remote_task("netcore-session-integration-test", config.config, netcore_ctest_bash_task("source/netcore/NetCore.Session.IntegrationTests", config.config, netcore_runtime.version, parallel=1), "10m", build.params)
+    - #@ remote_task("netcore-integration-test", config.config, ctest_bash_task("build/netcore/NetCore.Test", config.config, parallel=1), "10m", build.params)
+    - #@ remote_task("netcore-session-integration-test", config.config, ctest_bash_task("build/netcore/NetCore.Session.IntegrationTests", config.config, parallel=1), "10m", build.params)
     on_failure:
       in_parallel:
         steps:
