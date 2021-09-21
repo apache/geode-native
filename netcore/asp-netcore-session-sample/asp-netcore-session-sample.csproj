@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCore.Session\NetCore.Session.csproj" />
+    <ProjectReference Include="..\netcore-session\netcore-session.csproj" />
   </ItemGroup>
 
 

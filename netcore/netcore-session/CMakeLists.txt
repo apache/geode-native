@@ -14,5 +14,5 @@
 # limitations under the License.
 project(netcore-session LANGUAGES NONE)
 
-add_custom_target(netcore-session ALL COMMAND ${DOTNET} build NetCore.Session.csproj --configuration $<CONFIG>
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c NetCore-Test VERBATIM)
+add_custom_target(netcore-session ALL COMMAND ${DOTNET} build netcore-session.csproj --configuration $<CONFIG>
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-integration-test VERBATIM)
