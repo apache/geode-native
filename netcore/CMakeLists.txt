@@ -18,9 +18,11 @@ option(INCLUDE_DOTNET_CORE "Build .NET Core client." ON)
 
 find_program(DOTNET dotnet)
 
-add_subdirectory(NetCore)
-add_subdirectory(NetCore.Session)
-add_subdirectory(NetCore.Test)
-add_subdirectory(NetCore.Session.IntegrationTests)
-add_subdirectory(utility)
+if(DOTNET AND INCLUDE_DOTNET_CORE)
+  add_subdirectory(NetCore)
+  add_subdirectory(NetCore.Session)
+  add_subdirectory(NetCore.Test)
+  add_subdirectory(NetCore.Session.IntegrationTests)
+  add_subdirectory(utility)
+endif()
 
