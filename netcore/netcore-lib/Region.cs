@@ -71,6 +71,43 @@ namespace Apache.Geode.Client {
       Marshal.FreeCoTaskMem(valuePtr);
     }
 
+    public void Put<TKey, TValue>(TKey key, TValue value)
+    {
+      // This is a generic, so can't do any marshaling directly.
+      if (key.GetType() == typeof(string))
+      {
+        var type = value.GetType();
+        if (!type.IsSerializable)
+          throw new Exception("Error: Object is not Serializable.");
+        //using (var _fs = new System.IO.MemoryStream())
+        //{
+        //  var _formatter = new BinaryFormatter();
+        //  _formatter.Serialize(_fs, value);
+        //  PutByteArray(key.ToString(), _fs.ToArray());
+        //}
+        if (value.GetType() == typeof(int)) {
+          //PutByteArray(key.ToString(), BitConverter.GetBytes(Convert.ToInt32(value)));
+          var byteArray = new byte[4];
+          Array.Copy(BitConverter.GetBytes(Convert.ToInt32(value)), byteArray, 4);
+          PutByteArray(key.ToString(), byteArray);
+        }
+
+      }
+      else {
+        throw new NotImplementedException();
+      }
+    }
+
+    public int Get<TKey>(TKey key)
+    {
+      // This is a generic, so can't do any marshaling directly.
+      //if (key.GetType() == typeof(string))
+      {
+        var value = GetByteArray(key.ToString());
+        return BitConverter.ToInt32(value);
+      }
+    }
+
     public string GetString(string key) {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       var result =
@@ -109,6 +146,39 @@ namespace Apache.Geode.Client {
     protected override void DestroyContainedObject() {
       apache_geode_DestroyRegion(_containedObject);
       _containedObject = IntPtr.Zero;
+    }
+  }
+
+  //  public class GenericRegion<TVal> : Region
+  //  {
+  //    // private Region regionBase_;
+  //    internal GenericRegion<TVal>(IntPtr regionFactory, string regionName) {}
+  //  //{
+  //  //  //regionBase_ = new Region(regionFactory, regionName);
+  //  //  var regionNamePtr = Marshal.StringToCoTaskMemUTF8(regionName);
+  //  //_containedObject = apache_geode_RegionFactory_CreateRegion(regionFactory, regionNamePtr);
+  //  //Marshal.FreeCoTaskMem(regionNamePtr);
+  //  //}
+
+  //}
+
+  public class Region<TVal>
+  {
+    Region region_;
+    internal Region(RegionFactory regionFactory, string regionName)
+    {
+      region_ = regionFactory.CreateRegion(regionName);
+    }
+
+    public TVal Get<TKey>(TKey key)
+    {
+      // This is a generic, so can't do any marshaling directly.
+      //if (key.GetType() == typeof(string))
+      {
+        var value = region_.GetByteArray(key.ToString());
+        return (TVal)Convert.ChangeType(value, typeof(TVal));
+        //return BitConverter.ToInt32(value);
+      }
     }
   }
 }
