@@ -39,4 +39,16 @@ namespace Apache.Geode.Client {
       _containedObject = IntPtr.Zero;
     }
   }
+
+  //public class RegionFactory<TVal> {
+  //  RegionFactory regionFactory_;
+  //  public RegionFactory(IntPtr cache, RegionShortcut regionType)
+  //  {
+  //    regionFactory_ = new RegionFactory(cache, regionType);
+  //  }
+  //  public Region<TVal> CreateRegion<TVal>(string regionName)
+  //  {
+  //    return new regionFactory_.CreateRegion(regionName);
+  //  }
+  //}
 }

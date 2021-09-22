@@ -49,6 +49,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     private const string Username1 = "rtimmons";
     private const string Username2 = "scharles";
+    private const string Username3 = "michael";
 
     private void createPool(IGeodeCache cache, int port) {
       using var poolManager = cache.PoolManager;
@@ -64,11 +65,15 @@ namespace Apache.Geode.Client.IntegrationTests {
       region.PutString(Username1, fullname1);
       region.PutString(Username2, fullname2);
 
+      region.Put(Username3,779);
+      var value3 = region.Get(Username3);
+
       var user1 = region.GetString(Username1);
       var user2 = region.GetString(Username2);
 
       Assert.Equal(user1, fullname1);
       Assert.Equal(user2, fullname2);
+      Assert.Equal(779, value3);
     }
 
     private void DoRemoves(Region region) {
@@ -86,6 +91,8 @@ namespace Apache.Geode.Client.IntegrationTests {
                                        RegionShortcut regionType) {
       using var regionFactory = cache.CreateRegionFactory(regionType);
       using var region = regionFactory.CreateRegion(regionName);
+      //using var region = regionFactory.CreateGenericRegion(regionName);
+      //Region<int> region = regionFactory.CreateRegion<int>(regionName);
 
       doPutsAndGets(region);
       DoRemoves(region);
