@@ -12,24 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+project(netcore-session LANGUAGES NONE)
 
-#!/usr/bin/env bash
-GFSH_PATH=""
-which gfsh 2> /dev/null
-
-if [ $? -eq 0 ]; then
-    GFSH_PATH="gfsh"
-else
-    if [ "$GEODE_HOME" == "" ]; then
-        echo "Could not find gfsh. Please set the GEODE_HOME path."
-        echo "e.g. export GEODE_HOME=<path to Geode>"
-    else
-        GFSH_PATH=$GEODE_HOME/bin/gfsh
-    fi
-fi
-
-$GFSH_PATH -e "connect --locator=localhost[10335] --user=server --password=server" -e "shutdown --include-locators=true"
-$GFSH_PATH -e "connect --locator=localhost[10334]" -e "shutdown --include-locators=true"
-
-rm -rf locator server auth_locator auth_server
-
+add_custom_target(netcore-session ALL COMMAND ${DOTNET} build netcore-session.csproj --configuration $<CONFIG>
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-integration-test VERBATIM)

@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCore\NetCore.csproj" />
+    <ProjectReference Include="..\netcore-lib\netcore-lib.csproj" />
   </ItemGroup>
 
 </Project>

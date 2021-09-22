@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 cmake_minimum_required (VERSION 3.10)
-project (example)
+project (netcore-utility)
 
 set (CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/../../cmake)
 
@@ -24,12 +24,11 @@ include(UseJava)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
-add_jar(example ${SOURCES}
+add_jar(netcore-utility ${SOURCES}
   INCLUDE_JARS ${Geode_CLASSPATH}
 )
 
 file(GLOB SSL_CERTIFICATES 
   "${CMAKE_CURRENT_SOURCE_DIR}/*Keys"
 )
-
 	

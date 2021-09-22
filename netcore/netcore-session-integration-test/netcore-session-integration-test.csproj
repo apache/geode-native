@@ -16,8 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCore.Session\NetCore.Session.csproj" />
-    <ProjectReference Include="..\NetCore\NetCore.csproj" />
+    <ProjectReference Include="..\netcore-session\netcore-session.csproj" />
+    <ProjectReference Include="..\netcore-lib\netcore-lib.csproj" />
   </ItemGroup>
 
 </Project>

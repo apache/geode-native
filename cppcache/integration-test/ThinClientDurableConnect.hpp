@@ -54,7 +54,6 @@ const char* durableId = "DurableId";
 
 
 std::string getServerEndPoint(int instance) {
-  char instanceStr[16];
   int port;
   if (instance == 1) {
     port = CacheHelper::staticHostPort1;
