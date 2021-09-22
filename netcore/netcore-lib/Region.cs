@@ -32,21 +32,11 @@ namespace Apache.Geode.Client {
                                                                 IntPtr value, int length);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern bool apache_geode_Region_PutByteArrayForInt32Key(IntPtr region,
-          [param: MarshalAs(UnmanagedType.I4)] Int32 key,
-          IntPtr value, int length);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     private static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     private static extern void apache_geode_Region_GetByteArray(IntPtr region, IntPtr key,
                                                                 ref IntPtr value, ref int size);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_Region_GetByteArrayForInt32Key(IntPtr region,
-          [param: MarshalAs(UnmanagedType.I4)] Int32 key,
-          ref IntPtr value, ref int size);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     private static extern void apache_geode_Region_Remove(IntPtr region, IntPtr key);
@@ -81,15 +71,6 @@ namespace Apache.Geode.Client {
       Marshal.FreeCoTaskMem(valuePtr);
     }
 
-    public void PutByteArray(Int32 key, byte[] value)
-    {
-      //var keyPtr = Marshal.AllocCoTaskMem(4);
-      var valuePtr = Marshal.AllocCoTaskMem(value.Length);
-      Marshal.Copy(value, 0, valuePtr, value.Length);
-      apache_geode_Region_PutByteArrayForInt32Key(_containedObject, key, valuePtr, value.Length);
-      Marshal.FreeCoTaskMem(valuePtr);
-    }
-
     public void Put<TKey, TValue>(TKey key, TValue value)
     {
       // This is a generic, so can't do any marshaling directly.
@@ -104,32 +85,13 @@ namespace Apache.Geode.Client {
         //  _formatter.Serialize(_fs, value);
         //  PutByteArray(key.ToString(), _fs.ToArray());
         //}
-        if (value.GetType() == typeof(int) || value.GetType() == typeof(uint)) {
-    
+        if (value.GetType() == typeof(int)) {
           //PutByteArray(key.ToString(), BitConverter.GetBytes(Convert.ToInt32(value)));
           var byteArray = new byte[4];
           Array.Copy(BitConverter.GetBytes(Convert.ToInt32(value)), byteArray, 4);
           PutByteArray(key.ToString(), byteArray);
         }
-      }
-      else if (key.GetType() == typeof(int) || key.GetType() == typeof(uint))
-      {
-        var type = value.GetType();
-        if (!type.IsSerializable)
-          throw new Exception("Error: Object is not Serializable.");
-        //using (var _fs = new System.IO.MemoryStream())
-        //{
-        //  var _formatter = new BinaryFormatter();
-        //  _formatter.Serialize(_fs, value);
-        //  PutByteArray(key.ToString(), _fs.ToArray());
-        //}
-        if (value.GetType() == typeof(int) || value.GetType() == typeof(uint))
-        {
-          //PutByteArray(key.ToString(), BitConverter.GetBytes(Convert.ToInt32(value)));
-          var byteArray = new byte[4];
-          Array.Copy(BitConverter.GetBytes(Convert.ToInt32(value)), byteArray, 4);
-          PutByteArray(Convert.ToInt32(key), byteArray);
-        }
+
       }
       else {
         throw new NotImplementedException();
@@ -139,18 +101,11 @@ namespace Apache.Geode.Client {
     public int Get<TKey>(TKey key)
     {
       // This is a generic, so can't do any marshaling directly.
-      if (key.GetType() == typeof(string))
+      //if (key.GetType() == typeof(string))
       {
         var value = GetByteArray(key.ToString());
         return BitConverter.ToInt32(value);
       }
-      if (key.GetType() == typeof(int))
-      {
-        var value = GetByteArray(Convert.ToInt32(key));
-        return BitConverter.ToInt32(value);
-      }
-      else
-        throw new NotImplementedException();
     }
 
     public string GetString(string key) {
@@ -172,22 +127,6 @@ namespace Apache.Geode.Client {
         Marshal.FreeCoTaskMem(valPtr);
         return byteArray;
       } else
-        return null;
-    }
-
-    public byte[] GetByteArray(int key)
-    {
-      var valPtr = (IntPtr)0;
-      int size = 0;
-      apache_geode_Region_GetByteArrayForInt32Key(_containedObject, key, ref valPtr, ref size);
-      if (size > 0)
-      {
-        Byte[] byteArray = new Byte[size];
-        Marshal.Copy(valPtr, byteArray, 0, size);
-        Marshal.FreeCoTaskMem(valPtr);
-        return byteArray;
-      }
-      else
         return null;
     }
 
