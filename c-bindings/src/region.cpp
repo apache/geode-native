@@ -55,6 +55,12 @@ void RegionWrapper::PutByteArray(const std::string& key, const char* value,
   region_->put(key, apache::geode::client::CacheableBytes::create(val));
 }
 
+void RegionWrapper::PutByteArray(const int32_t key, const char* value,
+                                 size_t size) {
+  std::vector<int8_t> val(value, value + size);
+  region_->put(key, apache::geode::client::CacheableBytes::create(val));
+}
+
 const char* RegionWrapper::GetString(const std::string& key) {
   auto value = region_->get(key);
   lastValue_ =
@@ -64,6 +70,27 @@ const char* RegionWrapper::GetString(const std::string& key) {
 }
 
 void RegionWrapper::GetByteArray(const std::string& key, char** value,
+                                 size_t* size) {
+  std::shared_ptr<apache::geode::client::Serializable> val = region_->get(key);
+
+  if (val.get() == nullptr) return;
+
+  auto bytes =
+      std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(val);
+  int valSize = val->objectSize();
+#if defined(_WIN32)
+  int8_t* byteArray = static_cast<int8_t*>(CoTaskMemAlloc(valSize));
+#else
+  int8_t* byteArray = static_cast<int8_t*>(malloc(valSize));
+#endif
+  if (bytes) {
+    memcpy(byteArray, bytes->value().data(), valSize);
+    *value = reinterpret_cast<char*>(byteArray);
+    *size = valSize;
+  }
+}
+
+void RegionWrapper::GetByteArray(const int32_t key, char** value,
                                  size_t* size) {
   std::shared_ptr<apache::geode::client::Serializable> val = region_->get(key);
 
@@ -108,6 +135,14 @@ void apache_geode_Region_PutByteArray(apache_geode_region_t* region,
   regionWrapper->PutByteArray(key, value, size);
 }
 
+void apache_geode_Region_PutByteArrayForInt32Key(apache_geode_region_t* region,
+                                                 const int32_t key,
+                                                 const char* value,
+                                                 size_t size) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  regionWrapper->PutByteArray(key, value, size);
+}
+
 const char* apache_geode_Region_GetString(apache_geode_region_t* region,
                                           const char* key) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
@@ -117,6 +152,13 @@ const char* apache_geode_Region_GetString(apache_geode_region_t* region,
 void apache_geode_Region_GetByteArray(apache_geode_region_t* region,
                                       const char* key, char** value,
                                       size_t* size) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  return regionWrapper->GetByteArray(key, value, size);
+}
+
+void apache_geode_Region_GetByteArrayForInt32Key(apache_geode_region_t* region,
+                                                 const int32_t key,
+                                                 char** value, size_t* size) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
   return regionWrapper->GetByteArray(key, value, size);
 }

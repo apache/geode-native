@@ -37,9 +37,13 @@ class RegionWrapper : public ClientKeeper {
 
   void PutByteArray(const std::string& key, const char* value, size_t size);
 
+  void PutByteArray(const int32_t key, const char* value, size_t size);
+
   const char* GetString(const std::string& key);
 
   void GetByteArray(const std::string& key, char** value, size_t* size);
+
+  void GetByteArray(const int32_t key, char** value, size_t* size);
 
   void Remove(const std::string& key);
 

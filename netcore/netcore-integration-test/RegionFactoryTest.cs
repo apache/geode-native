@@ -68,12 +68,20 @@ namespace Apache.Geode.Client.IntegrationTests {
       region.Put(Username3,779);
       var value3 = region.Get(Username3);
 
+      region.Put(666, 66666);
+      var value4 = region.Get(666);
+
+      region.Put((uint)333, 33333);
+      var value5 = region.Get(333);
+
       var user1 = region.GetString(Username1);
       var user2 = region.GetString(Username2);
 
       Assert.Equal(user1, fullname1);
       Assert.Equal(user2, fullname2);
       Assert.Equal(779, value3);
+      Assert.Equal(66666, value4);
+      Assert.Equal(33333, value5);
     }
 
     private void DoRemoves(Region region) {
