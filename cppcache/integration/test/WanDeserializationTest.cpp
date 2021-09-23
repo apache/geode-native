@@ -20,7 +20,7 @@
 #include <framework/Gfsh.h>
 
 #include <chrono>
-#include <thread>
+#include <future>
 
 #include <geode/Cache.hpp>
 #include <geode/EntryEvent.hpp>
@@ -42,26 +42,26 @@ using apache::geode::client::EntryEvent;
 using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+using apache::geode::client::Serializable;
 using std::chrono::minutes;
+using std::chrono::seconds;
 using WanDeserialization::Order;
 
 class GeodeCacheListener : public CacheListener {
+ private:
+  std::promise<
+      std::pair<std::shared_ptr<CacheableKey>, std::shared_ptr<Serializable>>>
+      promise_;
+
  public:
   void afterCreate(const EntryEvent& event) override {
-    numEvents++;
-    auto region = event.getRegion();
-    std::cout << "GeodeCacheListener::afterCreate  " << region->getName()
-              << std::endl;
+    promise_.set_value({event.getKey(), event.getNewValue()});
   }
 
-  int getNumEvents() { return numEvents; }
-
- private:
-  int numEvents = 0;
-};  // class GeodeCacheListener
+  decltype(promise_)& getPromise() { return promise_; }
+};
 
 const std::string regionName = "region";
-const std::chrono::seconds fiveSeconds(5);
 
 Cache createCache(std::string durableClientId) {
   using apache::geode::client::CacheFactory;
@@ -69,7 +69,6 @@ Cache createCache(std::string durableClientId) {
   auto cache = CacheFactory()
                    .set("log-level", "none")
                    .set("statistic-sampling-enabled", "false")
-                   .setPdxReadSerialized(true)
                    .set("durable-client-id", durableClientId)
                    .set("durable-timeout", "300s")
                    .create();
@@ -97,22 +96,16 @@ std::shared_ptr<Region> setupRegion(
   return region;
 }
 
-TEST(WanDeserializationTest, DISABLED_testEventsAreDeserializedCorrectly) {
-  uint16_t portSiteA = Framework::getAvailablePort();
-  uint16_t portSiteB = Framework::getAvailablePort();
+TEST(WanDeserializationTest, testEventsAreDeserializedCorrectly) {
+  const auto portSiteA = Framework::getAvailablePort();
+  const auto portSiteB = Framework::getAvailablePort();
 
-  std::vector<uint16_t> locatorPortsSiteA = {portSiteA};
-  std::vector<uint16_t> locatorPortsSiteB = {portSiteB};
-
-  std::vector<uint16_t> remoteLocatorPortsA = {portSiteB};
-  std::vector<uint16_t> remoteLocatorPortsB = {portSiteA};
-
-  Cluster clusterA{LocatorCount{1}, ServerCount{1}, locatorPortsSiteA,
-                   remoteLocatorPortsA, 1};
+  Cluster clusterA{
+      LocatorCount{1}, ServerCount{1}, {portSiteA}, {portSiteB}, 1};
   clusterA.start();
 
-  Cluster clusterB{LocatorCount{1}, ServerCount{1}, locatorPortsSiteB,
-                   remoteLocatorPortsB, 2};
+  Cluster clusterB{
+      LocatorCount{1}, ServerCount{1}, {portSiteB}, {portSiteA}, 2};
   clusterB.start();
 
   // Create gw receivers
@@ -167,13 +160,47 @@ TEST(WanDeserializationTest, DISABLED_testEventsAreDeserializedCorrectly) {
   cacheB.getTypeRegistry().registerPdxType(Order::createDeserializable);
   cacheB.readyForEvents();
 
+  auto key = std::make_shared<CacheableString>("order");
   auto order = std::make_shared<Order>(2, "product y", 37);
-  regionA->put("order", order);
+  regionA->put(key, order);
 
-  std::this_thread::sleep_for(fiveSeconds);  // wait for the event to be sent
-  ASSERT_EQ(cacheListenerA->getNumEvents(), 1);
-  ASSERT_EQ(cacheListenerB->getNumEvents(), 1);
+  {
+    auto future = cacheListenerA->getPromise().get_future();
+    ASSERT_EQ(std::future_status::ready, future.wait_for(seconds(10)));
 
-}  // TEST
+    auto kv = future.get();
+    auto eventKey = kv.first;
+    auto eventValue = kv.second;
+    auto eventOrder = std::dynamic_pointer_cast<Order>(eventValue);
+
+    ASSERT_NE(eventKey, nullptr);
+    EXPECT_EQ(*eventKey, *key);
+    ASSERT_NE(eventValue, nullptr);
+    ASSERT_NE(eventOrder, nullptr);
+    EXPECT_EQ(*eventOrder, *order);
+  }
+
+  {
+    auto future = cacheListenerB->getPromise().get_future();
+    ASSERT_EQ(std::future_status::ready, future.wait_for(seconds(10)));
+
+    auto kv = future.get();
+    auto eventKey = kv.first;
+    auto eventValue = kv.second;
+    auto eventOrder = std::dynamic_pointer_cast<Order>(eventValue);
+
+    ASSERT_NE(eventKey, nullptr);
+    EXPECT_EQ(*eventKey, *key);
+    ASSERT_NE(eventValue, nullptr);
+    ASSERT_NE(eventOrder, nullptr);
+    EXPECT_EQ(*eventOrder, *order);
+  }
+
+  auto valueB = regionB->get(key);
+  ASSERT_NE(valueB, nullptr);
+  auto orderB = std::dynamic_pointer_cast<Order>(valueB);
+  ASSERT_NE(valueB, nullptr);
+  EXPECT_EQ(*order, *orderB);
+}
 
 }  // namespace

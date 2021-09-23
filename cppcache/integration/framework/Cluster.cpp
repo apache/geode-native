@@ -233,8 +233,8 @@ void Server::stop() {
 }
 
 Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
-                 std::vector<uint16_t> &locatorPorts,
-                 std::vector<uint16_t> &remoteLocatorPort,
+                 std::vector<uint16_t> locatorPorts,
+                 std::vector<uint16_t> remoteLocatorPorts,
                  uint16_t distributedSystemId)
     : Cluster(
           Name(std::string(::testing::UnitTest::GetInstance()
@@ -243,34 +243,30 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
                "/DS" + std::to_string(distributedSystemId) + "/" +
                ::testing::UnitTest::GetInstance()->current_test_info()->name()),
           Classpath(""), SecurityManager(""), User(""), Password(""),
-          initialLocators, initialServers, CacheXMLFiles({}), locatorPorts,
-          remoteLocatorPort, distributedSystemId) {}
+          initialLocators, initialServers, CacheXMLFiles({}),
+          std::move(locatorPorts), std::move(remoteLocatorPorts),
+          distributedSystemId) {}
 
 Cluster::Cluster(Name name, Classpath classpath,
                  SecurityManager securityManager, User user, Password password,
                  LocatorCount initialLocators, ServerCount initialServers,
                  CacheXMLFiles cacheXMLFiles,
-                 std::vector<uint16_t> &locatorPorts,
-                 std::vector<uint16_t> &remoteLocatorPort,
+                 std::vector<uint16_t> locatorPorts,
+                 std::vector<uint16_t> remoteLocatorPorts,
                  uint16_t distributedSystemId)
     : name_(name.get()),
       classpath_(classpath.get()),
       securityManager_(securityManager.get()),
       user_(user.get()),
       password_(password.get()),
+      cacheXMLFiles_(cacheXMLFiles.get()),
       initialLocators_(initialLocators.get()),
+      locatorsPorts_(std::move(locatorPorts)),
+      remoteLocatorsPorts_(std::move(remoteLocatorPorts)),
       initialServers_(initialServers.get()),
       jmxManagerPort_(Framework::getAvailablePort()),
+      useIPv6_(false),
       distributedSystemId_(distributedSystemId) {
-  cacheXMLFiles_ = cacheXMLFiles.get();
-  useIPv6_ = false;
-
-  for (uint16_t port : locatorPorts) {
-    locatorsPorts_.push_back(port);
-  }
-  for (uint16_t port : remoteLocatorPort) {
-    remoteLocatorsPorts_.push_back(port);
-  }
   removeServerDirectory();
 }
 

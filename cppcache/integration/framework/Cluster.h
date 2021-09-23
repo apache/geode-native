@@ -136,15 +136,15 @@ class Cluster {
           std::vector<uint16_t> &serverPorts);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          std::vector<uint16_t> &locatorPorts,
-          std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> locatorPorts,
+          std::vector<uint16_t> remoteLocatorPorts,
           uint16_t distributedSystemId);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
           User user, Password password, LocatorCount initialLocators,
           ServerCount initialServers, CacheXMLFiles cacheXMLFiles,
-          std::vector<uint16_t> &locatorPorts,
-          std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> locatorPorts,
+          std::vector<uint16_t> remoteLocatorPorts,
           uint16_t distributedSystemId);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers);
