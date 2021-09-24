@@ -33,9 +33,9 @@ using apache::geode::client::PdxSerializable;
 
 class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
  private:
-  int32_t id;
+  int32_t _id;
 
-  std::string pkid;
+  std::string _pkid;
 
   std::shared_ptr<PositionPdx> _position1;
   std::shared_ptr<PositionPdx> _position2;
@@ -52,8 +52,8 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
 
  public:
   PortfolioPdx()
-      : id(0),
-        pkid(),
+      : _id(0),
+        _pkid(),
         _type(),
         _status(),
         _newVal(),
@@ -64,9 +64,9 @@ class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
   explicit PortfolioPdx(int32_t id, int32_t size = 0,
                         std::vector<std::string> nm = {});
 
-  int32_t getID() { return id; }
+  int32_t getID() { return _id; }
 
-  std::string getPkid() { return pkid; }
+  std::string getPkid() { return _pkid; }
 
   std::shared_ptr<PositionPdx> getP1() { return _position1; }
 

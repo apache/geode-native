@@ -92,7 +92,7 @@ std::string Portfolio::toString() const {
   std::stringstream result;
   result << "PortfolioObject: [ ID=" << _ID;
 
-  result << " _status=" << _status;
+  result << " status=" << _status;
 
   result << " type=" << _type ? _type->toString() : "NULL";
 
