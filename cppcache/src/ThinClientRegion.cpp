@@ -3870,11 +3870,8 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   input.readInt32();
   if (!input.readBoolean()) {
     // we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(
-        exMsg, 255,
+    throw MessageException(
         "ChunkedDurableCQListResponse::handleChunk: part is not object");
-    throw MessageException(exMsg);
   }
 
   input.advanceCursor(1);  // skip the CacheableArrayList type ID byte

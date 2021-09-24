@@ -154,34 +154,27 @@ void OsStatisticsImpl::close() {
 
 void OsStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "setInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   intStorage[offset] = value;
 }
 
 void OsStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setLong:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   longStorage[offset] = value;
 }
 
 void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "setDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setDouble:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   doubleStorage[offset] = value;
 }
@@ -190,11 +183,9 @@ void OsStatisticsImpl::_setDouble(int32_t offset, double value) {
 
 int32_t OsStatisticsImpl::_getInt(int32_t offset) const {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "getInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   return intStorage[offset];
@@ -202,11 +193,9 @@ int32_t OsStatisticsImpl::_getInt(int32_t offset) const {
 
 int64_t OsStatisticsImpl::_getLong(int32_t offset) const {
   if (offset >= statsType->getLongStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "getLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getLong:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   return longStorage[offset];
@@ -214,12 +203,9 @@ int64_t OsStatisticsImpl::_getLong(int32_t offset) const {
 
 double OsStatisticsImpl::_getDouble(int32_t offset) const {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "getDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getDouble:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   return doubleStorage[offset];
@@ -247,11 +233,9 @@ int64_t OsStatisticsImpl::_getRawBits(
 
 int32_t OsStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "incInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   intStorage[offset] += delta;
@@ -260,11 +244,9 @@ int32_t OsStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
 
 int64_t OsStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
   if (offset >= statsType->getLongStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "incLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incLong:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   longStorage[offset] += delta;
   return longStorage[offset];
@@ -272,12 +254,9 @@ int64_t OsStatisticsImpl::_incLong(int32_t offset, int64_t delta) {
 
 double OsStatisticsImpl::_incDouble(int32_t offset, double delta) {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "incDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incDouble:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   doubleStorage[offset] += delta;
   return doubleStorage[offset];

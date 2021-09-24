@@ -140,12 +140,10 @@ int32_t PdxFieldType::getFixedTypeSize() const {
 }
 
 std::string PdxFieldType::toString() const {
-  char stringBuf[1024];
-  std::snprintf(stringBuf, 1024,
-                " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
-                this->m_fieldName.c_str(), static_cast<int>(this->m_typeId),
-                this->m_varLenFieldIdx, this->m_sequenceId);
-  return std::string(stringBuf);
+  return std::string("PdxFieldName=") + m_fieldName +
+         " TypeId=" + std::to_string(static_cast<int>(m_typeId)) +
+         " VarLenFieldIdx=" + std::to_string(m_varLenFieldIdx) +
+         " sequenceid=" + std::to_string(m_sequenceId);
 }
 
 bool PdxFieldType::operator==(const PdxFieldType& other) const {

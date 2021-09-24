@@ -3177,12 +3177,8 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     return ChunkObjectType::NULL_OBJECT;
   } else if (!isObj) {
     // otherwise we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(exMsg, sizeof(exMsg),
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: part is not object",
-                  methodName);
-    LOGDEBUG("%s ", exMsg);
+    LOGDEBUG(std::string("TcrMessageHelper::readChunkPartHeader: ") +
+             methodName + ": part is not object");
     return ChunkObjectType::EXCEPTION;
   }
 
@@ -3198,11 +3194,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
       return ChunkObjectType::EXCEPTION;
     } else {
       char exMsg[256];
-      std::snprintf(exMsg, sizeof(exMsg),
-                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-                    "java serializable object from server",
-                    methodName);
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": cannot handle java serializable object from server");
     }
   } else if (partType == DSCode::NullObj) {
     // special null object is case for scalar query result
@@ -3212,12 +3206,10 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
   // TODO enum - wtf?
   if (expectedFirstType > DSCode::FixedIDDefault) {
     if (partType != expectedFirstType) {
-      char exMsg[256];
-      std::snprintf(exMsg, sizeof(exMsg),
-                    "TcrMessageHelper::readChunkPartHeader: "
-                    "%s: got unhandled object class = %" PRId8,
-                    methodName, static_cast<int8_t>(partType));
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": got unhandled object class = " +
+          std::to_string(static_cast<int8_t>(partType)));
     }
     // This is for GETALL
     if (expectedFirstType == DSCode::FixedIDShort) {
@@ -3228,12 +3220,11 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     }
   }
   if (compId != expectedPartType) {
-    char exMsg[256];
-    std::snprintf(exMsg, sizeof(exMsg),
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: got unhandled object type = %d, expected = %d, raw = %d",
-                  methodName, compId, expectedPartType, rawByte);
-    throw MessageException(exMsg);
+    throw MessageException(
+        std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+        ": got unhandled object type = " + std::to_string(compId) +
+        ", expected = " + std::to_string(expectedPartType) +
+        ", raw = " + std::to_string(static_cast<int>(rawByte)));
   }
   return ChunkObjectType::OBJECT;
 }
@@ -3249,12 +3240,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     return ChunkObjectType::NULL_OBJECT;
   } else if (!isObj) {
     // otherwise we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(exMsg, 255,
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: part is not object",
-                  methodName);
-    throw MessageException(exMsg);
+    throw MessageException(
+        std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+        ": part is not object");
   }
 
   const auto partType = static_cast<const DSCode>(input.read());
@@ -3265,12 +3253,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
       msg.setMessageType(TcrMessage::EXCEPTION);
       return ChunkObjectType::EXCEPTION;
     } else {
-      char exMsg[256];
-      std::snprintf(exMsg, 255,
-                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-                    "java serializable object from server",
-                    methodName);
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": cannot handle java serializable object from server");
     }
   } else if (partType == DSCode::NullObj) {
     // special null object is case for scalar query result

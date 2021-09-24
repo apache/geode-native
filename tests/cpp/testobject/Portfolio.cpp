@@ -16,116 +16,96 @@
  */
 #include "Portfolio.hpp"
 
-namespace testobject {
+#include <sstream>
 
-const char* Portfolio::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
-                                   "AOL", "APPL", "ORCL", "SAP",  "DELL"};
+namespace testobject {
+const char* Portfolio::_secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
+                                    "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
 Portfolio::Portfolio(int32_t i, uint32_t size,
                      std::shared_ptr<CacheableStringArray> nm)
-    : names(nm) {
-  ID = i;
-  char pkidbuf[1024];
-  sprintf(pkidbuf, "%d", i);
-  pkid = CacheableString::create(pkidbuf);
-  status = (i % 2 == 0) ? "active" : "inactive";
-  char buf[100];
-  sprintf(buf, "type%d", (i % 3));
-  type = CacheableString::create(buf);
-  int numSecIds = sizeof(secIds) / sizeof(char*);
-  position1 = std::make_shared<Position>(secIds[Position::cnt % numSecIds],
-                                         Position::cnt * 1000);
+    : _names(nm) {
+  _ID = i;
+  _pkid = CacheableString::create(std::to_string(i));
+  _status = (i % 2 == 0) ? "active" : "inactive";
+  _type = CacheableString::create("_type" + std::to_string(i % 3));
+  int numSecIds = sizeof(_secIds) / sizeof(char*);
+  _position1 = std::make_shared<Position>(_secIds[Position::cnt % numSecIds],
+                                          Position::cnt * 1000);
   if (i % 2 != 0) {
-    position2 = std::make_shared<Position>(secIds[Position::cnt % numSecIds],
-                                           Position::cnt * 1000);
+    _position2 = std::make_shared<Position>(_secIds[Position::cnt % numSecIds],
+                                            Position::cnt * 1000);
   } else {
-    position2 = nullptr;
+    _position2 = nullptr;
   }
-  positions = CacheableHashMap::create();
-  positions->emplace(CacheableString::create(secIds[Position::cnt % numSecIds]),
-                     position1);
-  newVal = new uint8_t[size + 1];
-  memset(newVal, 'B', size);
-  newVal[size] = '\0';
-  newValSize = size;
-  creationDate = CacheableDate::create(time(nullptr));
-  arrayNull = nullptr;
-  arrayZeroSize = nullptr;
+  _positions = CacheableHashMap::create();
+  _positions->emplace(
+      CacheableString::create(_secIds[Position::cnt % numSecIds]), _position1);
+  _newVal = new uint8_t[size + 1];
+  memset(_newVal, 'B', size);
+  _newVal[size] = '\0';
+  _newValSize = size;
+  _creationDate = CacheableDate::create(time(nullptr));
+  _arrayNull = nullptr;
+  _arrayZeroSize = nullptr;
 }
 
 Portfolio::~Portfolio() noexcept {
-  if (newVal) {
-    delete[] newVal;
-    newVal = nullptr;
+  if (_newVal) {
+    delete[] _newVal;
+    _newVal = nullptr;
   }
 }
 
 void Portfolio::toData(DataOutput& output) const {
-  output.writeInt(ID);
-  output.writeObject(pkid);
-  output.writeObject(position1);
-  output.writeObject(position2);
-  output.writeObject(positions);
-  output.writeObject(type);
-  output.writeUTF(status);
-  output.writeObject(names);
-  output.writeBytes(newVal, newValSize + 1);
-  output.writeObject(creationDate);
-  output.writeBytes(arrayNull, 0);
-  output.writeBytes(arrayZeroSize, 0);
+  output.writeInt(_ID);
+  output.writeObject(_pkid);
+  output.writeObject(_position1);
+  output.writeObject(_position2);
+  output.writeObject(_positions);
+  output.writeObject(_type);
+  output.writeUTF(_status);
+  output.writeObject(_names);
+  output.writeBytes(_newVal, _newValSize + 1);
+  output.writeObject(_creationDate);
+  output.writeBytes(_arrayNull, 0);
+  output.writeBytes(_arrayZeroSize, 0);
 }
 
 void Portfolio::fromData(DataInput& input) {
-  ID = input.readInt32();
-  pkid = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  position1 = std::dynamic_pointer_cast<Position>(input.readObject());
-  position2 = std::dynamic_pointer_cast<Position>(input.readObject());
-  positions = std::dynamic_pointer_cast<CacheableHashMap>(input.readObject());
-  type = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  status = input.readUTF();
-  names = std::dynamic_pointer_cast<CacheableStringArray>(input.readObject());
-  input.readBytes(&newVal, &newValSize);
-  creationDate = std::dynamic_pointer_cast<CacheableDate>(input.readObject());
+  _ID = input.readInt32();
+  _pkid = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  _position1 = std::dynamic_pointer_cast<Position>(input.readObject());
+  _position2 = std::dynamic_pointer_cast<Position>(input.readObject());
+  _positions = std::dynamic_pointer_cast<CacheableHashMap>(input.readObject());
+  _type = std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  _status = input.readUTF();
+  _names = std::dynamic_pointer_cast<CacheableStringArray>(input.readObject());
+  input.readBytes(&_newVal, &_newValSize);
+  _creationDate = std::dynamic_pointer_cast<CacheableDate>(input.readObject());
   int tmp = 0;
-  input.readBytes(&arrayNull, &tmp);
-  input.readBytes(&arrayZeroSize, &tmp);
+  input.readBytes(&_arrayNull, &tmp);
+  input.readBytes(&_arrayZeroSize, &tmp);
 }
-std::string Portfolio::toString() const {
-  char idbuf[1024];
-  sprintf(idbuf, "PortfolioObject: [ ID=%d", ID);
-  char pkidbuf[1024];
-  if (pkid != nullptr) {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
-            this->type->toString().c_str(), this->pkid->value().c_str());
-  } else {
-    sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
-            this->type->toString().c_str(), this->pkid->value().c_str());
-  }
-  char position1buf[2048];
-  if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
-  } else {
-    sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
-  }
-  char position2buf[2048];
-  if (position2 != nullptr) {
-    snprintf(position2buf, sizeof(position2buf), " P2: %s",
-             position2->toString().c_str());
-  } else {
-    snprintf(position2buf, sizeof(position2buf), " P2: %s ]", "NULL");
-  }
-  char creationdatebuf[2048];
-  if (creationDate != nullptr) {
-    sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString().c_str());
-  } else {
-    sprintf(creationdatebuf, "creation Date %s", "NULL");
-  }
 
-  char stringBuf[9000];
-  snprintf(stringBuf, sizeof(stringBuf), "%.1024s%.1024s%.1024s%.2048s%.2048s",
-           idbuf, pkidbuf, creationdatebuf, position1buf, position2buf);
-  return stringBuf;
+std::string Portfolio::toString() const {
+  std::stringstream result;
+  result << "PortfolioObject: [ ID=" << _ID;
+
+  result << " _status=" << _status;
+
+  result << " type=" << _type ? _type->toString() : "NULL";
+
+  result << " pkid=" << _pkid ? _pkid->toString() : "NULL";
+
+  result << " creation Date=" << _creationDate ? _creationDate->toString()
+                                               : "NULL";
+
+  result << "\t\t\t  P1: " << _position1 ? _position1->toString() : "NULL";
+
+  result << "\t\t\t  P2: " << _position2 ? _position2->toString() : "NULL";
+
+  return result.str();
 }
 
 }  // namespace testobject
