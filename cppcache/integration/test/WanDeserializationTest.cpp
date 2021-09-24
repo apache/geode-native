@@ -97,7 +97,7 @@ std::shared_ptr<Region> setupRegion(
   return region;
 }
 
-TEST(WanDeserializationTest, testEventsAreDeserializedCorrectly) {
+TEST(WanDeserializationTest, DISABLED_testEventsAreDeserializedCorrectly) {
   uint16_t portSiteA = Framework::getAvailablePort();
   uint16_t portSiteB = Framework::getAvailablePort();
 
