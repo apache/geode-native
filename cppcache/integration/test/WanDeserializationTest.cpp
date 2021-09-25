@@ -97,15 +97,20 @@ std::shared_ptr<Region> setupRegion(
 }
 
 TEST(WanDeserializationTest, testEventsAreDeserializedCorrectly) {
-  const auto portSiteA = Framework::getAvailablePort();
-  const auto portSiteB = Framework::getAvailablePort();
+  const auto& hostname = Framework::getHostname();
+  const auto locatorAddressA =
+      LocatorAddress{hostname, Framework::getAvailablePort()};
+  const auto locatorAddressB =
+      LocatorAddress{hostname, Framework::getAvailablePort()};
 
-  Cluster clusterA{
-      LocatorCount{1}, ServerCount{1}, {portSiteA}, {portSiteB}, 1};
+  Cluster clusterA{InitialLocators{{locatorAddressA}},
+                   InitialServers{{{hostname, 0}}},
+                   RemoteLocators{{locatorAddressB}}, DistributedSystemId(1)};
   clusterA.start();
 
-  Cluster clusterB{
-      LocatorCount{1}, ServerCount{1}, {portSiteB}, {portSiteA}, 2};
+  Cluster clusterB{InitialLocators{{locatorAddressB}},
+                   InitialServers{{{hostname, 0}}},
+                   RemoteLocators{{locatorAddressB}}, DistributedSystemId(2)};
   clusterB.start();
 
   // Create gw receivers

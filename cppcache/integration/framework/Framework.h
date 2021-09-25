@@ -21,10 +21,16 @@
 #define INTEGRATION_TEST_FRAMEWORK_FRAMEWORK_H
 
 #include <chrono>
+#include <string>
 
 class Framework {
  public:
   static uint16_t getAvailablePort();
+
+  static const std::string& getHostname();
+
+ private:
+  static std::string initHostname();
 };
 
 template <class _Rep, class _Period>

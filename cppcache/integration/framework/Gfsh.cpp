@@ -17,6 +17,8 @@
 
 #include "Gfsh.h"
 
+#include <sstream>
+
 Gfsh::Start Gfsh::start() { return Start{*this}; }
 
 Gfsh::Stop Gfsh::stop() { return Stop{*this}; }
@@ -65,20 +67,15 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withPort(const uint16_t &port) {
 }
 
 Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(
-    const std::vector<uint16_t> &locatorPorts) {
+    const std::vector<std::string> &remoteLocators) {
   // Example: --J='-Dgemfire.remote-locators=localhost[9009],localhost[9010]'
-  if (!locatorPorts.empty()) {
-    command_ += " --J='-Dgemfire.remote-locators=";
-    bool firstLocator = true;
-    for (uint16_t locatorPort : locatorPorts) {
-      if (firstLocator) {
-        command_ += "localhost[" + std::to_string(locatorPort) + "]";
-        firstLocator = false;
-      } else {
-        command_ += ",localhost[" + std::to_string(locatorPort) + "]";
-      }
-    }
-    command_ += "'";
+  if (!remoteLocators.empty()) {
+    std::ostringstream command;
+    command << " --J='-Dgemfire.remote-locators=";
+    std::copy(remoteLocators.begin(), remoteLocators.end(),
+              std::ostream_iterator<std::string>(command, ","));
+    command << "'";
+    command_ += command.str();
   }
   return *this;
 }
