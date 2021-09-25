@@ -44,7 +44,7 @@ Locator::Locator(Cluster &cluster, std::vector<Locator> &locators,
       remoteLocators_(remoteLocators),
       distributedSystemId_(distributedSystemId) {
   if (locatorAddress_.address.empty()) {
-    locatorAddress.address = "localhost";
+    locatorAddress_.address = "localhost";
   }
 
   if (0 == locatorAddress_.port) {
