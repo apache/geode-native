@@ -17,6 +17,7 @@
 
 #include "Gfsh.h"
 
+#include <iterator>
 #include <sstream>
 
 Gfsh::Start Gfsh::start() { return Start{*this}; }
