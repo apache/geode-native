@@ -90,20 +90,26 @@ void Portfolio::fromData(DataInput& input) {
 
 std::string Portfolio::toString() const {
   std::stringstream result;
-  result << "PortfolioObject: [ ID=" << _ID;
+  auto suffix = "\n    ";
 
-  result << " status=" << _status;
+  result << "PortfolioObject: [" << suffix;
 
-  result << " type=" << (_type ? _type->toString() : "NULL");
+  result << "ID = " << _ID << suffix;
 
-  result << " pkid=" << (_pkid ? _pkid->toString() : "NULL");
+  result << " status=" << _status << suffix;
+
+  result << " type=" << (_type ? _type->toString() : "NULL") << suffix;
+
+  result << " pkid=" << (_pkid ? _pkid->toString() : "NULL") << suffix;
 
   result << " creation Date="
-         << (_creationDate ? _creationDate->toString() : "NULL");
+         << (_creationDate ? _creationDate->toString() : "NULL") << suffix;
 
-  result << "\t\t\t  P1: " << (_position1 ? _position1->toString() : "NULL");
+  result << "P1: " << (_position1 ? _position1->toString() : "NULL") << suffix;
 
-  result << "\t\t\t  P2: " << (_position2 ? _position2->toString() : "NULL");
+  result << "P2: " << (_position2 ? _position2->toString() : "NULL") << "\n";
+
+  result << "]";
 
   return result.str();
 }

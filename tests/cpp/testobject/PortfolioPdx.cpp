@@ -120,20 +120,25 @@ void PortfolioPdx::fromData(PdxReader& pr) {
 }
 std::string PortfolioPdx::toString() const {
   std::stringstream result;
-  result << "PortfolioPdxObject: [ id=" << _id;
+  auto suffix = "\n    ";
+  result << "PortfolioPdxObject: [" << suffix;
 
-  result << " status=" << _status;
+  result << "id = " << _id << suffix;
 
-  result << " type=" << _type;
+  result << "status=" << _status << suffix;
 
-  result << " pkid=" << _pkid;
+  result << "type=" << _type << suffix;
 
-  result << " creation Date="
-         << (_creationDate ? _creationDate->toString() : "NULL");
+  result << "pkid=" << _pkid << suffix;
 
-  result << "\t\t\t  P1: " << (_position1 ? _position1->toString() : "NULL");
+  result << "creation Date="
+         << (_creationDate ? _creationDate->toString() : "NULL") << suffix;
 
-  result << "\t\t\t  P2: " << (_position2 ? _position2->toString() : "NULL");
+  result << "P1: " << (_position1 ? _position1->toString() : "NULL") << suffix;
+
+  result << "P2: " << (_position2 ? _position2->toString() : "NULL") << "\n";
+
+  result << "]";
 
   return result.str();
 }
