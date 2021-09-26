@@ -128,12 +128,12 @@ std::string PortfolioPdx::toString() const {
 
   result << " pkid=" << _pkid;
 
-  result << " creation Date=" << _creationDate ? _creationDate->toString()
-                                               : "NULL";
+  result << " creation Date="
+         << (_creationDate ? _creationDate->toString() : "NULL");
 
-  result << "\t\t\t  P1: " << _position1 ? _position1->toString() : "NULL";
+  result << "\t\t\t  P1: " << (_position1 ? _position1->toString() : "NULL");
 
-  result << "\t\t\t  P2: " << _position2 ? _position2->toString() : "NULL";
+  result << "\t\t\t  P2: " << (_position2 ? _position2->toString() : "NULL");
 
   return result.str();
 }

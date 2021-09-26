@@ -94,16 +94,16 @@ std::string Portfolio::toString() const {
 
   result << " status=" << _status;
 
-  result << " type=" << _type ? _type->toString() : "NULL";
+  result << " type=" << (_type ? _type->toString() : "NULL");
 
-  result << " pkid=" << _pkid ? _pkid->toString() : "NULL";
+  result << " pkid=" << (_pkid ? _pkid->toString() : "NULL");
 
-  result << " creation Date=" << _creationDate ? _creationDate->toString()
-                                               : "NULL";
+  result << " creation Date="
+         << (_creationDate ? _creationDate->toString() : "NULL");
 
-  result << "\t\t\t  P1: " << _position1 ? _position1->toString() : "NULL";
+  result << "\t\t\t  P1: " << (_position1 ? _position1->toString() : "NULL");
 
-  result << "\t\t\t  P2: " << _position2 ? _position2->toString() : "NULL";
+  result << "\t\t\t  P2: " << (_position2 ? _position2->toString() : "NULL");
 
   return result.str();
 }
