@@ -111,11 +111,10 @@ void executeTestCase(bool useSingleHopAndPR) {
   int MAX_ENTRY_KEY = 1000000;
   auto keyRangeSize = (MAX_ENTRY_KEY / NUM_THREADS);
 
-  //  std::vector<uint16_t> serverPorts;
-  //  serverPorts.push_back(Framework::getAvailablePort());
-  //  serverPorts.push_back(Framework::getAvailablePort());
-
-  Cluster cluster{LocatorCount{1}, ServerCount{2}};
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
   cluster.start();
   auto region_cmd =
       cluster.getGfsh().create().region().withName("region").withType(
