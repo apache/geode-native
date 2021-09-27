@@ -19,8 +19,6 @@
 
 #include <string.h>
 
-#define QUERY_SIZE 512
-
 int SqLiteHelper::initDB(const char* regionName, int maxPageCount, int pageSize,
                          const char* regionDBfile, int busy_timeout_ms) {
   // open the database
