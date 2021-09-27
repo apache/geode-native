@@ -23,6 +23,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <sstream>
+#include <iomanip>
 
 #include <geode/CacheableBuiltins.hpp>
 
@@ -61,6 +63,13 @@ class CacheableWrapper {
   uint32_t getCheckSum() const { return getCheckSum(m_cacheableObject); }
 
   virtual ~CacheableWrapper() {}
+
+protected:
+  std::string zeroPaddedStringFromIndex(int32_t indexVal) {
+    std::ostringstream indexStr;
+    indexStr << std::setw(10) << std::setfill('0') << indexVal;
+    return indexStr.str();
+  }
 };
 
 typedef CacheableWrapper* (*CacheableWrapperFunc)(void);

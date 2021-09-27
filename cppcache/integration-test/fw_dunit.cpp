@@ -122,9 +122,7 @@ class TaskQueues {
     }
     Task *task = tasks->front();
     if (task != nullptr) {
-      char logmsg[1024] = {0};
-      sprintf(logmsg, "received task: %s ", task->m_taskName.c_str());
-      LOG(logmsg);
+      LOG(std::string("receieved task: ") + task->m_taskName);
       tasks->pop_front();
     }
     return task;
@@ -135,9 +133,7 @@ class TaskQueues {
       return 0;
     }
     int sId = m_schedule.front();
-    char logmsg[1024] = {0};
-    sprintf(logmsg, "Next worker id is : %d", sId);
-    LOGCOORDINATOR(logmsg);
+    LOGCOORDINATOR(std::string("Next worker id id : ") + std::to_string(sId));
     m_schedule.pop_front();
     return sId;
   }
@@ -583,9 +579,9 @@ class TestDriver {
     auto state = DUNIT->getState();
     for (uint32_t i = 0; i < TestState::WORKER_COUNT; i++) {
       if (!m_workers[i]->running()) {
-        char msg[1000] = {0};
-        sprintf(msg, "Error: Worker %s terminated prematurely.",
-                m_workers[i]->getWorkerId().getIdName());
+        auto msg = std::string("Error: Worker ") +
+                   m_workers[i]->getWorkerId().getIdName() +
+                   " terminated prematurely";
         LOG(msg);
 
         state->fail();

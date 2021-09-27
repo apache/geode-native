@@ -371,9 +371,8 @@ class CacheableFileNameWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
+
 // make first caharacter as a '/' so java does not change the path
 // taking it to be a relative path
 #ifdef WIN32
@@ -403,6 +402,7 @@ class CacheableFileNameWrapper : public CacheableWrapper {
                       obj->length())
                 : 0);
   }
+
 };
 
 class CacheableFloatWrapper : public CacheableWrapper {
@@ -540,9 +540,7 @@ class CacheableStringWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 
@@ -582,9 +580,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
       maxSize += (0xFFFF + 1);
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 

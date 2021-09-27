@@ -160,10 +160,7 @@ class PdxDeltaEx : public PdxSerializable, public Delta {
   void setDelta(bool delta) { this->m_isDelta = delta; }
 
   std::string toString() const override {
-    char idbuf[1024];
-    sprintf(idbuf, "PdxDeltaEx :: [counter=%d]  [isDelta=%d]", m_counter,
-            m_isDelta);
-    return idbuf;
+    return std::string("PdxDeltaEx :: [counter=") + std::to_string(m_counter) + "] [isDelta=" + std::to_string(m_isDelta) + "]";
   }
 };
 
