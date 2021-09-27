@@ -383,22 +383,8 @@ class TestDriver {
     fprintf(stdout, "Coordinator starting workers.\n");
     for (uint32_t i = 1; i < 5; i++) {
       std::string cmdline;
-      auto profilerCmd = std::getenv("PROFILERCMD");
-      if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
-          profilerCmd[0] != '\0') {
-        // replace %d's in profilerCmd with PID and worker ID
-        char cmdbuf[2048] = {0};
-        auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(
-                       std::chrono::system_clock::now())
-                       .time_since_epoch()
-                       .count();
-        ::sprintf(cmdbuf, profilerCmd, now, g_coordinatorPid, i);
-        cmdline = std::string{cmdbuf} + ' ' + g_programName + " -s" +
-                  std::to_string(i) + " -m" + std::to_string(g_coordinatorPid);
-      } else {
-        cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
-                  std::to_string(g_coordinatorPid);
-      }
+      cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
+                std::to_string(g_coordinatorPid);
       fprintf(stdout, "%s\n", cmdline.c_str());
       m_workers[i - 1] = new TestProcess(cmdline, i);
     }
