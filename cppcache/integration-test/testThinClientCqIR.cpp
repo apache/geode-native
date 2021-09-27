@@ -235,7 +235,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
         count--;
 
         if (ser) {
-          printf(" query pulled object '%'s\n", ser->toString().c_str());
+          printf(" query pulled object '%s'\n", ser->toString().c_str());
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
