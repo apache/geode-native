@@ -48,7 +48,8 @@ int SqLiteHelper::initDB(const char* regionName, int maxPageCount, int pageSize,
 
 int SqLiteHelper::createTable() {
   // construct query
-  auto query = std::string("CREATE TABLE IF NOT EXISTS ") + m_tableName + "(key BLOB PRIMARY KEY, value BLOB);";
+  auto query = std::string("CREATE TABLE IF NOT EXISTS ") + m_tableName +
+               "(key BLOB PRIMARY KEY, value BLOB);";
   sqlite3_stmt* stmt;
 
   // prepare statement
@@ -68,7 +69,8 @@ int SqLiteHelper::insertKeyValue(void* keyData, int keyDataSize,
 
   // prepare statement
   sqlite3_stmt* stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
+  int retCode =
+      sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
     sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
@@ -86,7 +88,8 @@ int SqLiteHelper::removeKey(void* keyData, int keyDataSize) {
 
   // prepare statement
   sqlite3_stmt* stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
+  int retCode =
+      sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
     sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
@@ -100,11 +103,13 @@ int SqLiteHelper::removeKey(void* keyData, int keyDataSize) {
 int SqLiteHelper::getValue(void* keyData, int keyDataSize, void*& valueData,
                            int& valueDataSize) {
   // construct query
-  auto query = std::string("SELECT value, length(value) AS valLength FROM ") + m_tableName + " WHERE key=?;";
+  auto query = std::string("SELECT value, length(value) AS valLength FROM ") +
+               m_tableName + " WHERE key=?;";
 
   // prepare statement
   sqlite3_stmt* stmt;
-  int retCode = sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
+  int retCode =
+      sqlite3_prepare_v2(m_dbHandle, query.c_str(), -1, &stmt, nullptr);
   if (retCode == SQLITE_OK) {
     // bind parameters and execte statement
     sqlite3_bind_blob(stmt, 1, keyData, keyDataSize, nullptr);
@@ -149,7 +154,8 @@ int SqLiteHelper::closeDB() {
 
 int SqLiteHelper::executePragma(const char* pragmaName, int pragmaValue) {
   // create query
-  auto query = std::string("PRAGMA ") + pragmaName + " = " + std::to_string(pragmaValue) + ";";
+  auto query = std::string("PRAGMA ") + pragmaName + " = " +
+               std::to_string(pragmaValue) + ";";
 
   // prepare statement
   sqlite3_stmt* stmt;
