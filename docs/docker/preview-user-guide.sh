@@ -17,13 +17,10 @@
 # limitations under the License.
 
 function cleanup {
-  rm Gemfile Gemfile.lock
-  rm -r geode-native-book-* geode-native-docs-*
+  rm -f Gemfile Gemfile.lock
 }
 
 trap cleanup EXIT
-
-set -x -e
 
 if [ "$#" -ne 1 ]; then
   echo "ERROR: Illegal number of parameters"
@@ -43,13 +40,24 @@ fi
 BOOK_DIR_NAME=geode-native-book-${LANG}
 DOCS_DIR_NAME=geode-native-docs-${LANG}
 
-mkdir -p ${BOOK_DIR_NAME}
-mkdir -p ${DOCS_DIR_NAME}
-
+# Gemfile & Gemfile.lock are copied to avoid including the whole
+# geode-book folder to the image context
 cp ../${BOOK_DIR_NAME}/Gemfile* .
-cp -r ../${BOOK_DIR_NAME} ${BOOK_DIR_NAME}
-cp -r ../${DOCS_DIR_NAME} ${DOCS_DIR_NAME}
 
-docker build --build-arg lang=${LANG} -t geodenativedocs/temp:1.0 .
+docker build -t geodenativedocs/temp:1.0 .
 
-docker run -it -p 9292:9292 geodenativedocs/temp:1.0 /bin/bash -c "cd ${BOOK_DIR_NAME} && bundle exec bookbinder bind local && cd final_app && bundle exec rackup --host=0.0.0.0"
+
+# "${BOOK_DIR_NAME}/final_app" and "${BOOK_DIR_NAME}/output" are created
+# inside the container, so it is necessary to use the current user to
+# avoid these folders are owned by root user.
+export UID=$(id -u)
+export GID=$(id -g)
+docker run -it -p 9292:9292 --user $UID:$GID \
+    --workdir="/home/$USER" \
+    --volume="/etc/group:/etc/group:ro" \
+    --volume="/etc/passwd:/etc/passwd:ro" \
+    --volume="/etc/shadow:/etc/shadow:ro" \
+    --volume="$(pwd)/../${BOOK_DIR_NAME}:/${BOOK_DIR_NAME}:rw" \
+    --volume="$(pwd)/../${DOCS_DIR_NAME}:/${DOCS_DIR_NAME}:rw" \
+    geodenativedocs/temp:1.0 /bin/bash -c "cd /${BOOK_DIR_NAME} && bundle exec bookbinder bind local && cd final_app && bundle exec rackup --host=0.0.0.0"
+
