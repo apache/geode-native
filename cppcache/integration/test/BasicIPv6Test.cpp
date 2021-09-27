@@ -53,7 +53,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
  * Example test using 2 servers and waiting for async tasks to synchronize using
  * furtures.
  */
-TEST(BasicIPv6Test, queryResultForRange) {
+TEST(BasicIPv6Test, DISABLED_queryResultForRange) {
   Cluster cluster{InitialLocators{{{"localhost", 0}}},
                   InitialServers{{{"localhost", 0}}}, UseIpv6(true)};
   cluster.start();
