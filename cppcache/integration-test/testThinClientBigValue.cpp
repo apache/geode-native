@@ -22,7 +22,7 @@
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
-#include "TestUtils.hpp"
+#include "testUtils.hpp"
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -86,7 +86,7 @@ void verify(std::shared_ptr<CacheableBytes> &valuePtr, int size) {
       std::stringstream strm;
       strm << "verifying buf[" << i << "] == " << base << " for size " << size
            << ", found " << valuePtr->value()[i] << " instead";
-      ASSERT(FALSE, strm.str());
+      ASSERT(false, strm.str());
     }
     if (base == 255) {
       base = 0;
