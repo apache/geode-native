@@ -323,10 +323,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_VerifyDelta)
   {
     // Wait for notification
     SLEEP(5000);
-    char buff[100];
-    sprintf(buff, "From delta count %d  From data count %d",
-            DeltaEx::fromDeltaCount, DeltaEx::fromDataCount);
-    LOG(buff);
+    LOG(std::string("From delta count ") +
+        std::to_string(DeltaEx::fromDeltaCount) + "From data count " +
+        std::to_string(DeltaEx::fromDataCount));
     ASSERT(DeltaEx::fromDataCount == 13,
            "DeltaEx::fromDataCount should have been 13");
     // 1 for the first case when delta is false, 2 for the second case when
