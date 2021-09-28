@@ -145,14 +145,14 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   std::string msg;
   if (!isCreated) {
     if (noKey) {
-      msg = std::string("Verify key ") + key + " does not exist in region " + name;
-    }
-    else if (!val) {
+      msg = std::string("Verify key ") + key + " does not exist in region " +
+            name;
+    } else if (!val) {
       msg = std::string("Verify value for key ") + key +
-        " does not exist in region " + name;
-    }
-    else {
-      msg = std::string("Verify value for key ") + key + " is: " + value + " in region " + name;
+            " does not exist in region " + name;
+    } else {
+      msg = std::string("Verify value for key ") + key + " is: " + value +
+            " in region " + name;
     }
     LOG(msg);
   }
@@ -233,14 +233,14 @@ void _verifyIntEntry(const char *name, const char *key, const int val,
   std::string msg;
   if (!isCreated) {
     if (noKey) {
-      msg = std::string("Verify key ") + key + " does not exist in region " + name;
-    }
-    else if (!val) {
+      msg = std::string("Verify key ") + key + " does not exist in region " +
+            name;
+    } else if (!val) {
       msg = std::string("Verify value for key ") + key +
-        " does not exist in region " + name;
-    }
-    else {
-      msg = std::string("Verify value for key ") + key + " is: " + std::to_string(value) + " in region " + name;
+            " does not exist in region " + name;
+    } else {
+      msg = std::string("Verify value for key ") + key +
+            " is: " + std::to_string(value) + " in region " + name;
     }
     LOG(msg);
   }
@@ -328,13 +328,15 @@ void _verifyEntry(const char *name, const char *key, const char *val,
 
 void _verifyIntEntry(const char *name, const char *key, const int val,
                      int line) {
-  LOG(std::string("verifyIntEntry() called from ") + std::to_string(line) + "\n");
+  LOG(std::string("verifyIntEntry() called from ") + std::to_string(line) +
+      "\n");
   _verifyIntEntry(name, key, val, false);
   LOG("Entry verified.");
 }
 
 void _verifyCreated(const char *name, const char *key, int line) {
-  LOG(std::string("verifyCreated() called from ") + std::to_string(line) + "\n");
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }

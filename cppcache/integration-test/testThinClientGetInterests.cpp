@@ -92,8 +92,13 @@ DUNIT_TASK(CLIENT1, SetupClient1)
           break;
         }
       }
-      ASSERT(found, std::string("regex[") + std::to_string(i) + "]=" + reg +
-                        " not found!");
+
+      std::string msg;
+      if (!found) {
+        msg = std::string("regex[") + std::to_string(i) + "]=" + reg +
+              " not found!";
+      }
+      ASSERT(found, msg);
     }
     regPtr0->registerAllKeys(true);
     auto vreg1 = regPtr0->getInterestListRegex();

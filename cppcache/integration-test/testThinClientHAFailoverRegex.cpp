@@ -71,12 +71,14 @@ void _verifyEntry(const char *name, const char *key, const char *val,
   std::string msg;
   if (!isCreated) {
     if (noKey) {
-      msg = std::string("Verify key ") + key + " does not exist in region " + name;
+      msg = std::string("Verify key ") + key + " does not exist in region " +
+            name;
     } else if (!val) {
       msg = std::string("Verify value for key ") + key +
             " does not exist in region " + name;
     } else {
-      msg = std::string("Verify value for key ") + key + " is: " + value + " in region " + name;
+      msg = std::string("Verify value for key ") + key + " is: " + value +
+            " in region " + name;
     }
     LOG(msg);
   }
@@ -162,7 +164,8 @@ void _verifyEntry(const char *name, const char *key, const char *val,
 #define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char *name, const char *key, int line) {
-  LOG(std::string("verifyCreated() called from ") + std::to_string(line) + "\n");
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
@@ -252,7 +255,8 @@ void doNetsearch(const char *name, const char *key, const char *value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    LOG(std::string("In net search, get returned ") + checkPtr->value() + " for key " + key);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }
