@@ -31,6 +31,7 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheableWrapper.hpp"
 #include "CacheImpl.hpp"
+#include "testUtils.hpp"
 
 #include <geode/CacheableFileName.hpp>
 #include <geode/CacheableUndefined.hpp>
@@ -76,6 +77,8 @@ using apache::geode::client::internal::DSCode;
 
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
+
+using unitTests::TestUtils;
 
 const uint32_t m_crc32Table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
@@ -371,7 +374,7 @@ class CacheableFileNameWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
 
 // make first caharacter as a '/' so java does not change the path
 // taking it to be a relative path
@@ -540,7 +543,7 @@ class CacheableStringWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 
@@ -580,7 +583,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
       maxSize += (0xFFFF + 1);
     }
     std::string baseStr(maxSize - 10, 'A');
-    baseStr.append(zeroPaddedStringFromIndex(keyIndex));
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 

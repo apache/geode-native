@@ -16,11 +16,13 @@
  */
 
 #include <cinttypes>
+#include <sstream>
 
 #include <geode/internal/geode_base.hpp>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
+#include "TestUtils.hpp"
 
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
@@ -35,10 +37,11 @@ using apache::geode::client::CacheableBytes;
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
 
+using unitTests::TestUtils;
+
 void grow(int *iptr) { *iptr = *iptr + GROWTH; }
 
 void putSize(std::shared_ptr<Region> &rptr, const char *buf, int size) {
-  char msg[1024];
   auto keyPtr = CacheableKey::create(buf);
   uint8_t base = 0;
 
@@ -54,19 +57,17 @@ void putSize(std::shared_ptr<Region> &rptr, const char *buf, int size) {
   auto valPtr =
       CacheableBytes::create(std::vector<int8_t>(valbuf, valbuf + size));
   // auto valPtr = CacheableString::create( valbuf);
-  sprintf(msg, "about to put key: %s, with value size: %d", buf, size);
-  LOG(msg);
+  auto msg = std::string("put key: ") + buf +
+             ", with value size : " + std::to_string(size);
+  LOG(std::string("about to ") + msg);
   rptr->put(keyPtr, valPtr);
   delete[] valbuf;
-  sprintf(msg, "put key: %s, with value size: %d", buf, size);
   LOG(msg);
 }
 
 void verify(std::shared_ptr<CacheableBytes> &valuePtr, int size) {
-  char msg[200];
-  sprintf(msg, "verifying value of size %d", size);
-  ASSERT(size == 0 || valuePtr != nullptr, msg);
-  sprintf(msg, "value size is not %d", size);
+  ASSERT(size == 0 || valuePtr != nullptr,
+         std::string("verifying value of size ") + std::to_string(size));
   int tryCnt = 0;
   bool notIt = true;
   int valSize = (valuePtr != nullptr ? valuePtr->length() : 0);
@@ -75,16 +76,18 @@ void verify(std::shared_ptr<CacheableBytes> &valuePtr, int size) {
     SLEEP(100);
   }
 
-  ASSERT(valSize == size, msg);
+  ASSERT(valSize == size,
+         std::string("value size is not %d") + std::to_string(size));
 
   auto &&bytes = reinterpret_cast<const uint8_t *>(valuePtr->value().data());
   uint8_t base = 0;
   for (int i = 0; i < size; i++) {
     if (bytes[i] != base) {
-      sprintf(msg, "verifying buf[%d] == %d for size %d, found %d instead", i,
-              base, size, valuePtr->value()[i]);
+      std::stringstream strm;
+      strm << "verifying buf[" << i << "] == " << base << " for size " << size
+           << ", found " << valuePtr->value()[i] << " instead";
+      ASSERT(FALSE, strm.str());
     }
-    ASSERT(bytes[i] == base, msg);
     if (base == 255) {
       base = 0;
     } else {
@@ -135,11 +138,10 @@ DUNIT_TASK(CLIENT1, puts)
     LOG("Beginning puts.");
     int expectEntries = 0;
     for (int i = 0; i <= MAX_PAYLOAD; grow(&i)) {
-      sprintf(buf, "put size=%d\n", i);
-      LOG(buf);
-      char keybuf[100];
-      sprintf(keybuf, "key%010d", i);
-      putSize(regPtr, keybuf, i);
+      LOG(std::string("put size=") + std::to_string(i));
+      auto keyName =
+          std::string("key") + TestUtils::zeroPaddedStringFromInt(i, 10);
+      putSize(regPtr, keyName.c_str(), i);
       expectEntries++;
     }
 
@@ -154,9 +156,9 @@ DUNIT_TASK(CLIENT2, VerifyPuts)
     // region should already have n entries...
 
     for (int i = 0; i <= MAX_PAYLOAD; grow(&i)) {
-      char keybuf[100];
-      sprintf(keybuf, "key%010d", i);
-      auto keyPtr = CacheableKey::create(keybuf);
+      auto keyName =
+          std::string("key") + TestUtils::zeroPaddedStringFromInt(i, 10);
+      auto keyPtr = CacheableKey::create(keyName);
       auto valPtr =
           std::dynamic_pointer_cast<CacheableBytes>(regPtr->get(keyPtr));
       int ntry = 20;
@@ -179,9 +181,11 @@ DUNIT_TASK(CLIENT1, ManyPuts)
     char keybuf[100];
     char valbuf[200];
     for (int index = 0; index < MAX_PUTS; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
-      sprintf(valbuf, "values1%0100d", index);
-      regPtr->put(keybuf, valbuf);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
+      auto value = std::string("values1") +
+                   TestUtils::zeroPaddedStringFromInt(index, 100);
+      regPtr->put(key, value);
       expectEntries++;
     }
 
@@ -197,11 +201,11 @@ DUNIT_TASK(CLIENT2, VerifyManyPuts)
     auto entriesExpected = dunit::globals().find<int>("entriesToExpect").first;
     ASSERT(entriesExpected != nullptr, "entriesExpected is null");
 
-    char keybuf[100];
     for (int index = 0; index < *entriesExpected; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
       auto valPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 107, "unexpected size of value in verify");
     }
@@ -214,12 +218,12 @@ DUNIT_TASK(CLIENT1, UpdateManyPuts)
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     LOG("Beginning updated many puts.");
     int expectEntries = 0;
-    char keybuf[100];
-    char valbuf[1100];
     for (int index = 0; index < MAX_PUTS; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
-      sprintf(valbuf, "values2%01000d", index);
-      regPtr->put(keybuf, valbuf);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
+      auto value = std::string("values2") +
+                   TestUtils::zeroPaddedStringFromInt(index, 1000);
+      regPtr->put(key, value);
       expectEntries++;
     }
 
@@ -235,11 +239,11 @@ DUNIT_TASK(CLIENT2, VerifyOldManyPuts)
     auto entriesExpected = dunit::globals().find<int>("entriesToExpect").first;
     ASSERT(entriesExpected != nullptr, "entriesExpected is null");
 
-    char keybuf[100];
     for (int index = 0; index < *entriesExpected; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
       auto valPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 107, "unexpected size of value in verify");
     }
@@ -258,11 +262,11 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPuts)
     // invalidate the region to force getting new values
     regPtr->localInvalidateRegion();
 
-    char keybuf[100];
     for (int index = 0; index < *entriesExpected; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
       auto valPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 1007, "unexpected size of value in verify");
     }
@@ -282,17 +286,18 @@ DUNIT_TASK(CLIENT2, VerifyUpdatedManyPutsGetAll)
     regPtr->localInvalidateRegion();
 
     std::vector<std::shared_ptr<CacheableKey>> vec;
-    char keybuf[100];
     for (int index = 0; index < *entriesExpected; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
-      vec.push_back(CacheableKey::create(keybuf));
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
+      vec.push_back(CacheableKey::create(key));
     }
     regPtr->getAll(vec);
     LOG("On client getAll for entries completed.");
     for (int index = 0; index < *entriesExpected; ++index) {
-      sprintf(keybuf, "keys1%010d", index);
+      auto key =
+          std::string("keys1") + TestUtils::zeroPaddedStringFromInt(index, 10);
       auto valPtr =
-          std::dynamic_pointer_cast<CacheableString>(regPtr->get(keybuf));
+          std::dynamic_pointer_cast<CacheableString>(regPtr->get(key));
       ASSERT(valPtr != nullptr, "expected non-null value");
       ASSERT(valPtr->length() == 1007, "unexpected size of value in verify");
     }
@@ -309,8 +314,10 @@ DUNIT_TASK(CLIENT1, UpdateManyPutsInt64)
     char valbuf[1100];
     for (int64_t index = 0; index < MAX_PUTS; ++index) {
       int64_t key = index * index * index;
-      sprintf(valbuf, "values3%0200" PRId64, index);
-      regPtr->put(CacheableInt64::create(key), valbuf);
+      auto value =
+          std::string("values3") +
+          TestUtils::zeroPaddedStringFromInt(static_cast<int32_t>(index), 200);
+      regPtr->put(CacheableInt64::create(key), value);
       expectEntries++;
     }
 

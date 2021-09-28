@@ -171,7 +171,6 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
 // Testing for put operation
 void doNput(std::shared_ptr<Region> &regionPtr, uint32_t num,
             uint32_t start = 0) {
-  char keybuf[100];
   // Put 1 KB of data locally for each entry
   char text[1024];
   memset(text, 'A', 1023);
@@ -184,39 +183,6 @@ void doNput(std::shared_ptr<Region> &regionPtr, uint32_t num,
     printf("Putting key = %s\n", keyname.c_str());
     regionPtr->put(key, valuePtr);
   }
-}
-
-void doNputLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  // Put 1 MB of data locally for each entry
-  char *text = new char[1024 * 1024 /* 1 MB */];
-  memset(text, 'A', 1024 * 1024 - 1);
-  text[1024 * 1024 - 1] = '\0';
-  auto valuePtr = CacheableString::create(text);
-  for (int item = 0; item < num; item++) {
-    regionPtr->put(CacheableKey::create(item), valuePtr);
-  }
-
-  delete[] text;
-  LOGINFO("Put data locally");
-}
-
-// Testing for get operation
-uint32_t doNgetLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  uint32_t countFound = 0;
-  uint32_t countNotFound = 0;
-
-  for (int i = 0; i < num; i++) {
-    printf("Getting key = %d\n", i);
-    auto valuePtr =
-        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(i));
-    if (valuePtr == nullptr) {
-      countNotFound++;
-    } else {
-      countFound++;
-    }
-  }
-  LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
-  return countFound;
 }
 
 // Testing for get operation

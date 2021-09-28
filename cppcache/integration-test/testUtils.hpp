@@ -20,6 +20,9 @@
 #ifndef GEODE_INTEGRATION_TEST_TESTUTILS_H_
 #define GEODE_INTEGRATION_TEST_TESTUTILS_H_
 
+#include <sstream>
+#include <iomanip>
+
 /* use CacheHelper to gain the impl pointer from cache or region object
  */
 
@@ -184,6 +187,12 @@ class TestUtils {
               (value == nullptr) ? "nullptr VALUE" : value->value().c_str());
       LOG(buf);
     }
+  }
+
+  static std::string zeroPaddedStringFromInt(int32_t number, uint16_t width) {
+    std::ostringstream strm;
+    strm << std::setw(width) << std::setfill('0') << number;
+    return strm.str();
   }
 };
 }  // namespace unitTests
