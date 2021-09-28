@@ -4435,12 +4435,14 @@ DUNIT_MAIN
 
     // PDXReaderWriterInvalidUsage
     {
-      // disable see bug 999 for more details.
-      // testReaderWriterInvalidUsage();
+        // disable see bug 999 for more details.
+        // testReaderWriterInvalidUsage();
     }
 
     // Test LinkedList
-    { runJavaInterOpsUsingLinkedList(); }
+    {
+      runJavaInterOpsUsingLinkedList();
+    }
 
     // NestedPdxOps
     { runNestedPdxOps(); }
