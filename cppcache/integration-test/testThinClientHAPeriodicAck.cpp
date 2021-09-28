@@ -142,22 +142,20 @@ void _verifyEntry(const char *name, const char *key, const char *val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   const char *value = val ? val : "";
-  char *buf =
-      reinterpret_cast<char *>(malloc(1024 + strlen(key) + strlen(value)));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
+  std::string msg;
   if (!isCreated) {
     if (noKey) {
-      sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (!val) {
-      sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-              name);
-    } else {
-      sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-              name);
+      msg = std::string("Verify key ") + key + " does not exist in region " + name;
     }
-    LOG(buf);
+    else if (!val) {
+      msg = std::string("Verify value for key ") + key +
+        " does not exist in region " + name;
+    }
+    else {
+      msg = std::string("Verify value for key ") + key + " is: " + value + " in region " + name;
+    }
+    LOG(msg);
   }
-  free(buf);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -232,21 +230,20 @@ void _verifyIntEntry(const char *name, const char *key, const int val,
                      bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   int value = val;
-  char *buf = reinterpret_cast<char *>(malloc(1024 + strlen(key) + 20));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
+  std::string msg;
   if (!isCreated) {
     if (noKey) {
-      sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (val == 0) {
-      sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-              name);
-    } else {
-      sprintf(buf, "Verify value for key %s is: %d in region %s", key, value,
-              name);
+      msg = std::string("Verify key ") + key + " does not exist in region " + name;
     }
-    LOG(buf);
+    else if (!val) {
+      msg = std::string("Verify value for key ") + key +
+        " does not exist in region " + name;
+    }
+    else {
+      msg = std::string("Verify value for key ") + key + " is: " + std::to_string(value) + " in region " + name;
+    }
+    LOG(msg);
   }
-  free(buf);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -322,9 +319,7 @@ void _verifyIntEntry(const char *name, const char *key, const int val,
 
 void _verifyEntry(const char *name, const char *key, const char *val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -333,17 +328,13 @@ void _verifyEntry(const char *name, const char *key, const char *val,
 
 void _verifyIntEntry(const char *name, const char *key, const int val,
                      int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyIntEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyIntEntry() called from ") + std::to_string(line) + "\n");
   _verifyIntEntry(name, key, val, false);
   LOG("Entry verified.");
 }
 
 void _verifyCreated(const char *name, const char *key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyCreated() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
