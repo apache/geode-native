@@ -225,10 +225,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto &&qry = qs->newCq(cqName, qryStr, cqAttr);
       auto &&results = qry->executeWithInitialResults();
 
-      char buf[100];
       auto count = results->size();
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(count));
       for (auto &&ser : hacks::range(*results)) {
         count--;
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
@@ -244,8 +242,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
           printf("   query pulled nullptr object\n");
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
       //  ASSERT( count==0, "results traversal count incorrect!" );
       SLEEP(15000);
     } catch (IllegalStateException &ise) {
@@ -319,9 +316,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     kst = new KillServerThread(myListener);
     char buf[1024];
-    sprintf(buf, "before kill server 1, before=%d, after=%d",
-            myListener->getCountBefore(), myListener->getCountAfter());
-    LOG(buf);
+    LOG(std::string("before kill server 1, before=") +
+        std::to_string(myListener->getCountBefore()) +
+        ", after=" + std::to_string(myListener->getCountAfter()));
     ASSERT(myListener->getCountAfter() == 0,
            "cq after failover should be zero");
     ASSERT(myListener->getCountBefore() == 6108,
@@ -404,10 +401,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
     ASSERT(cqLstner != nullptr, "listener is nullptr");
     MyCqListener *myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
-    char buf[1024];
-    sprintf(buf, "after failed over: before=%d, after=%d",
-            myListener->getCountBefore(), myListener->getCountAfter());
-    LOG(buf);
+    LOG(std::string("after failed over: before=") +
+        std::to_string(myListener->getCountBefore()) +
+        ", after=" + std::to_string(myListener->getCountAfter()));
     ASSERT(myListener->getCountBefore() == 6108,
            "check cq event count before failover");
     ASSERT(myListener->getCountAfter() == 6109,

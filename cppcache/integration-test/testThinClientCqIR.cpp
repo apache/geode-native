@@ -185,10 +185,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       auto results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults done.");
 
-      char buf[100];
       auto count = results->size();
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(count));
       ASSERT(count > 0, "count should be > 0");
       for (auto &&ser : hacks::range(*results)) {
         count--;
@@ -218,8 +216,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           printf("   query pulled bad object\n");
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
 
       qry = qs->newCq("MyCq2", "select * from /Portfolios2", cqAttr);
 
@@ -228,8 +225,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       LOG("before executing executeWithInitialResults2 done.");
 
       count = results->size();
-      sprintf(buf, "results2 size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results2 size=") + std::to_string(count));
       ASSERT(count > 0, "count should be > 0");
       for (auto &&ser : hacks::range(*results)) {
         count--;
@@ -259,8 +255,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           printf("   query pulled bad object\n");
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
 
       {
         auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
@@ -268,8 +263,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       }
       SLEEP(20000);
       qry = qs->getCq(cqName);
-      sprintf(buf, "cq[%s] should have been removed after close!", cqName);
-      ASSERT(qry == nullptr, buf);
+      auto msg = std::string("cq[") + cqName +
+                 "] should have been removed after close!";
+      ASSERT(qry == nullptr, msg);
     } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
@@ -293,12 +289,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckRegionDestroy)
         LOG("regPtr0==nullptr");
       } else {
         LOG("regPtr0!=nullptr");
-        ASSERT(regPtr0->isDestroyed(), "should have been distroyed");
+        ASSERT(regPtr0->isDestroyed(), "should have been destroyed");
       }
     } catch (...) {
       LOG("exception in getting region");
     }
-    LOG("region has been destoryed");
+    LOG("region has been destroyed");
   }
 END_TASK_DEFINITION
 

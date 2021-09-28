@@ -54,7 +54,8 @@ class OperMonitor : public CacheListener {
     if (valuePtr != nullptr) {
       m_value = valuePtr->value();
     }
-    auto msg = std::string("Key = ") + keyPtr->toString() + ", Value = " + std::to_string(valuePtr->value());
+    auto msg = std::string("Key = ") + keyPtr->toString() +
+               ", Value = " + std::to_string(valuePtr->value());
     LOG(msg);
   }
 
@@ -70,13 +71,16 @@ class OperMonitor : public CacheListener {
     LOG("validate called");
 
     if (conflation) {
-      auto msg = std::string("Conflation On: Expected events = 2, Actual = ") +  std::to_string(m_events);
+      auto msg = std::string("Conflation On: Expected events = 2, Actual = ") +
+                 std::to_string(m_events);
       ASSERT(m_events == 2, msg);
     } else {
-      auto msg = std::string("Conflation Off: Expected events = 5, Actual = ") +  std::to_string(m_events);
+      auto msg = std::string("Conflation Off: Expected events = 5, Actual = ") +
+                 std::to_string(m_events);
       ASSERT(m_events == 5, msg);
     }
-    auto msg = std::string("Expected Value = 5, Actual = ") +  std::to_string(m_value);
+    auto msg =
+        std::string("Expected Value = 5, Actual = ") + std::to_string(m_value);
     ASSERT(m_value == 5, msg);
   }
 };
