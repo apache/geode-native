@@ -79,7 +79,12 @@ DUNIT_TASK(CLIENT1, SetupClient1)
           break;
         }
       }
-      LOG(std::string("key[") + std::to_string(i) + "]=" + key + " not found!");
+      std::string msg;
+      if (!found) {
+        msg = std::string("key[") + std::to_string(i) + "]=" + key +
+              " not found!";
+      }
+      ASSERT(found, msg);
     }
     for (size_t i = 0; i < vreg.size(); i++) {
       auto ptr = vreg[i];
