@@ -40,6 +40,9 @@ fi
 BOOK_DIR_NAME=geode-native-book-${LANG}
 DOCS_DIR_NAME=geode-native-docs-${LANG}
 
+BOOK_PATH="$(pwd)/../${BOOK_DIR_NAME}"
+DOCS_PATH="$(pwd)/../${DOCS_DIR_NAME}"
+
 # Gemfile & Gemfile.lock are copied to avoid including the whole
 # geode-book folder to the image context
 cp ../${BOOK_DIR_NAME}/Gemfile* .
@@ -57,7 +60,26 @@ docker run -it -p 9292:9292 --user $UID:$GID \
     --volume="/etc/group:/etc/group:ro" \
     --volume="/etc/passwd:/etc/passwd:ro" \
     --volume="/etc/shadow:/etc/shadow:ro" \
-    --volume="$(pwd)/../${BOOK_DIR_NAME}:/${BOOK_DIR_NAME}:rw" \
-    --volume="$(pwd)/../${DOCS_DIR_NAME}:/${DOCS_DIR_NAME}:rw" \
+    --volume="${BOOK_PATH}:/${BOOK_DIR_NAME}:rw" \
+    --volume="${DOCS_PATH}:/${DOCS_DIR_NAME}:rw" \
     geodenativedocs/temp:1.0 /bin/bash -c "cd /${BOOK_DIR_NAME} && bundle exec bookbinder bind local && cd final_app && bundle exec rackup --host=0.0.0.0"
+
+
+# Bookbinder creates the following links
+# <your geode native repo>/docs/geode-native-book-[cpp|dotnet]/output/master_middleman/source/docs/guide/<version> -> /geode-book/output/preprocessing/sections/docs/geode-native/[cpp|dotnet]/<version>
+# <your geode native repo>/docs/geode-native-book-[cpp|dotnet]/output/preprocessing/sections/docs/guide/<version> -> /geode-docs
+#
+# Following lines fix these wrong symbolic links:
+#
+ug_version=`ls ${BOOK_PATH}/final_app/public/docs/geode-native/${LANG}/`
+master_middleman_folder="${BOOK_PATH}/output/master_middleman/source/docs/geode-native/${LANG}/${ug_version}"
+preprocessing_folder="${BOOK_PATH}/output/preprocessing/sections/docs/geode-native/${LANG}/${ug_version}"
+echo $ug_version
+echo ${master_middleman_folder}
+echo ${preprocessing_folder}
+rm ${master_middleman_folder}
+rm ${preprocessing_folder}
+
+ln -s ${DOCS_PATH} ${preprocessing_folder}
+ln -s ${preprocessing_folder} ${master_middleman_folder}
 
