@@ -143,7 +143,7 @@ class TallyWriter : virtual public CacheWriter {
     strm << "TallyWriter state: (updates = " << getUpdates()
       << ", creates = " << getCreates()
       << ", invalidates = " << getInvalidates()
-      << ", destroys = " << getDestroys() + ")";
+      << ", destroys = " << getDestroys() << ")";
     LOG(strm.str());
   }
   void checkcallbackArg(const EntryEvent& event) {
