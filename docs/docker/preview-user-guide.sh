@@ -74,9 +74,6 @@ docker run -it -p 9292:9292 --user $UID:$GID \
 ug_version=`ls ${BOOK_PATH}/final_app/public/docs/geode-native/${LANG}/`
 master_middleman_folder="${BOOK_PATH}/output/master_middleman/source/docs/geode-native/${LANG}/${ug_version}"
 preprocessing_folder="${BOOK_PATH}/output/preprocessing/sections/docs/geode-native/${LANG}/${ug_version}"
-echo $ug_version
-echo ${master_middleman_folder}
-echo ${preprocessing_folder}
 rm ${master_middleman_folder}
 rm ${preprocessing_folder}
 
