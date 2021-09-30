@@ -16,140 +16,131 @@
  */
 #include "PortfolioPdx.hpp"
 
+#include <sstream>
 #include <util/Log.hpp>
 
 namespace testobject {
-
 using apache::geode::client::CacheableDate;
 using apache::geode::client::CacheableHashMap;
 using apache::geode::client::CacheableString;
 
-const char* PortfolioPdx::secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
-                                      "AOL", "APPL", "ORCL", "SAP",  "DELL"};
+const char* PortfolioPdx::_secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
+                                       "AOL", "APPL", "ORCL", "SAP",  "DELL"};
 
 PortfolioPdx::PortfolioPdx(int32_t i, int32_t size, std::vector<std::string> nm)
-    : names(nm) {
-  id = i;
+    : _names(nm) {
+  _id = i;
 
-  pkid = std::to_string(i);
+  _pkid = std::to_string(i);
 
-  status = (i % 2 == 0) ? "active" : "inactive";
+  _status = (i % 2 == 0) ? "active" : "inactive";
 
-  type = "type" + std::to_string(i % 3);
+  _type = "_type" + std::to_string(i % 3);
 
-  int numSecIds = sizeof(secIds) / sizeof(char*);
-  position1 = std::make_shared<PositionPdx>(
-      secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
+  int numSecIds = sizeof(_secIds) / sizeof(char*);
+  _position1 = std::make_shared<PositionPdx>(
+      _secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
   if (i % 2 != 0) {
-    position2 = std::make_shared<PositionPdx>(
-        secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
+    _position2 = std::make_shared<PositionPdx>(
+        _secIds[PositionPdx::cnt % numSecIds], PositionPdx::cnt * 1000);
   } else {
-    position2 = nullptr;
+    _position2 = nullptr;
   }
-  positions = CacheableHashMap::create();
-  positions->emplace(
-      CacheableString::create(secIds[PositionPdx::cnt % numSecIds]), position1);
+  _positions = CacheableHashMap::create();
+  _positions->emplace(
+      CacheableString::create(_secIds[PositionPdx::cnt % numSecIds]),
+      _position1);
 
   if (size > 0) {
-    newVal = std::vector<int8_t>(size);
+    _newVal = std::vector<int8_t>(size);
     for (int index = 0; index < size; index++) {
-      newVal[index] = static_cast<int8_t>('B');
+      _newVal[index] = static_cast<int8_t>('B');
     }
   }
-  newValSize = size;
+  _newValSize = size;
 
   time_t timeVal = 1310447869;
-  creationDate = CacheableDate::create(timeVal);
-  arrayZeroSize = std::vector<int8_t>(0);
+  _creationDate = CacheableDate::create(timeVal);
+  _arrayZeroSize = std::vector<int8_t>(0);
 }
 
 void PortfolioPdx::toData(PdxWriter& pw) const {
-  pw.writeInt("ID", id);
+  pw.writeInt("ID", _id);
   pw.markIdentityField("ID");
 
-  pw.writeString("pkid", pkid);
+  pw.writeString("pkid", _pkid);
   pw.markIdentityField("pkid");
 
-  pw.writeObject("position1", position1);
+  pw.writeObject("position1", _position1);
   pw.markIdentityField("position1");
 
-  pw.writeObject("position2", position2);
+  pw.writeObject("position2", _position2);
   pw.markIdentityField("position2");
 
-  pw.writeObject("positions", positions);
+  pw.writeObject("positions", _positions);
   pw.markIdentityField("positions");
 
-  pw.writeString("type", type);
+  pw.writeString("type", _type);
   pw.markIdentityField("type");
 
-  pw.writeString("status", status);
+  pw.writeString("status", _status);
   pw.markIdentityField("status");
 
-  pw.writeStringArray("names", names);
+  pw.writeStringArray("names", _names);
   pw.markIdentityField("names");
 
-  pw.writeByteArray("newVal", newVal);
+  pw.writeByteArray("newVal", _newVal);
   pw.markIdentityField("newVal");
 
-  pw.writeDate("creationDate", creationDate);
+  pw.writeDate("creationDate", _creationDate);
   pw.markIdentityField("creationDate");
 
-  pw.writeByteArray("arrayNull", arrayNull);
-  pw.writeByteArray("arrayZeroSize", arrayZeroSize);
+  pw.writeByteArray("arrayNull", _arrayNull);
+  pw.writeByteArray("arrayZeroSize", _arrayZeroSize);
 }
 
 void PortfolioPdx::fromData(PdxReader& pr) {
-  id = pr.readInt("ID");
-  pkid = pr.readString("pkid");
+  _id = pr.readInt("ID");
+  _pkid = pr.readString("pkid");
 
-  position1 =
+  _position1 =
       std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position1"));
-  position2 =
+  _position2 =
       std::dynamic_pointer_cast<PositionPdx>(pr.readObject("position2"));
-  positions =
+  _positions =
       std::dynamic_pointer_cast<CacheableHashMap>(pr.readObject("positions"));
-  type = pr.readString("type");
-  status = pr.readString("status");
+  _type = pr.readString("type");
+  _status = pr.readString("status");
 
-  names = pr.readStringArray("names");
-  newVal = pr.readByteArray("newVal");
-  creationDate = pr.readDate("creationDate");
-  arrayNull = pr.readByteArray("arrayNull");
-  arrayZeroSize = pr.readByteArray("arrayZeroSize");
+  _names = pr.readStringArray("names");
+  _newVal = pr.readByteArray("newVal");
+  _creationDate = pr.readDate("creationDate");
+  _arrayNull = pr.readByteArray("arrayNull");
+  _arrayZeroSize = pr.readByteArray("arrayZeroSize");
 }
 std::string PortfolioPdx::toString() const {
-  LOGINFO("PortfolioPdx::toString() Start");
-  char idbuf[1024];
-  sprintf(idbuf, "PortfolioPdxObject: [ id=%d ]", id);
+  std::stringstream result;
+  auto suffix = "\n    ";
+  result << "PortfolioPdxObject: [" << suffix;
 
-  char pkidbuf[1024];
-  sprintf(pkidbuf, " status=%s type=%s pkid=%s\n", this->status.c_str(),
-          this->type.c_str(), this->pkid.c_str());
+  result << "id = " << _id << suffix;
 
-  char position1buf[2048];
-  if (position1 != nullptr) {
-    sprintf(position1buf, "\t\t\t  P1: %s", position1->toString().c_str());
-  } else {
-    sprintf(position1buf, "\t\t\t  P1: %s", "NULL");
-  }
-  char position2buf[2048];
-  if (position2 != nullptr) {
-    sprintf(position2buf, " P2: %s", position2->toString().c_str());
-  } else {
-    sprintf(position2buf, " P2: %s ]", "NULL");
-  }
-  char creationdatebuf[2048];
-  if (creationDate != nullptr) {
-    sprintf(creationdatebuf, "creation Date %s",
-            creationDate->toString().c_str());
-  } else {
-    sprintf(creationdatebuf, "creation Date %s", "NULL");
-  }
+  result << "status=" << _status << suffix;
 
-  char stringBuf[9000];
-  snprintf(stringBuf, sizeof(stringBuf), "%s%s%s%s%s", idbuf, pkidbuf,
-           creationdatebuf, position1buf, position2buf);
-  return stringBuf;
+  result << "type=" << _type << suffix;
+
+  result << "pkid=" << _pkid << suffix;
+
+  result << "creation Date="
+         << (_creationDate ? _creationDate->toString() : "NULL") << suffix;
+
+  result << "P1: " << (_position1 ? _position1->toString() : "NULL") << suffix;
+
+  result << "P2: " << (_position2 ? _position2->toString() : "NULL") << "\n";
+
+  result << "]";
+
+  return result.str();
 }
 
 }  // namespace testobject

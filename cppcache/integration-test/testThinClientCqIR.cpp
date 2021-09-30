@@ -194,7 +194,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
         count--;
 
         if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          printf(" query pulled object '%s'\n", ser->toString().c_str());
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
@@ -204,7 +204,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
           if (serKey != nullptr) {
             LOG("got struct key ");
-            printf("  got struct key %s\n", serKey->toString().c_str());
+            printf("  got struct key '%s'\n", serKey->toString().c_str());
           }
 
           auto serVal = (*stPtr)["value"];
@@ -212,7 +212,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
 
           if (serVal != nullptr) {
             LOG("got struct value ");
-            printf("  got struct value %s\n", serVal->toString().c_str());
+            printf("  got struct value '%s'\n", serVal->toString().c_str());
           }
         } else {
           printf("   query pulled bad object\n");
@@ -235,7 +235,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
         count--;
 
         if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          printf(" query pulled object '%s'\n", ser->toString().c_str());
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
@@ -245,7 +245,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
           if (serKey != nullptr) {
             LOG("got struct key ");
-            printf("  got struct key %s\n", serKey->toString().c_str());
+            printf("  got struct key '%s'\n", serKey->toString().c_str());
           }
 
           auto serVal = (*stPtr)["value"];
@@ -253,7 +253,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
 
           if (serVal != nullptr) {
             LOG("got struct value ");
-            printf("  got struct value %s\n", serVal->toString().c_str());
+            printf("  got struct value '%s'\n", serVal->toString().c_str());
           }
         } else {
           printf("   query pulled bad object\n");

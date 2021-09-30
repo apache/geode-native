@@ -27,71 +27,70 @@
 #include "PositionPdx.hpp"
 
 namespace testobject {
-
 using apache::geode::client::CacheableDate;
 using apache::geode::client::CacheableHashMap;
 using apache::geode::client::PdxSerializable;
 
 class TESTOBJECT_EXPORT PortfolioPdx : public PdxSerializable {
  private:
-  int32_t id;
+  int32_t _id;
 
-  std::string pkid;
+  std::string _pkid;
 
-  std::shared_ptr<PositionPdx> position1;
-  std::shared_ptr<PositionPdx> position2;
-  std::shared_ptr<CacheableHashMap> positions;
-  std::string type;
-  std::string status;
-  std::vector<std::string> names;
-  static const char* secIds[];
-  std::vector<int8_t> newVal;
-  int32_t newValSize;
-  std::shared_ptr<CacheableDate> creationDate;
-  std::vector<int8_t> arrayNull;
-  std::vector<int8_t> arrayZeroSize;
+  std::shared_ptr<PositionPdx> _position1;
+  std::shared_ptr<PositionPdx> _position2;
+  std::shared_ptr<CacheableHashMap> _positions;
+  std::string _type;
+  std::string _status;
+  std::vector<std::string> _names;
+  static const char* _secIds[];
+  std::vector<int8_t> _newVal;
+  int32_t _newValSize;
+  std::shared_ptr<CacheableDate> _creationDate;
+  std::vector<int8_t> _arrayNull;
+  std::vector<int8_t> _arrayZeroSize;
 
  public:
   PortfolioPdx()
-      : id(0),
-        pkid(),
-        type(),
-        status(),
-        newVal(),
-        creationDate(nullptr),
-        arrayNull(),
-        arrayZeroSize() {}
+      : _id(0),
+        _pkid(),
+        _type(),
+        _status(),
+        _newVal(),
+        _creationDate(nullptr),
+        _arrayNull(),
+        _arrayZeroSize() {}
 
   explicit PortfolioPdx(int32_t id, int32_t size = 0,
                         std::vector<std::string> nm = {});
 
-  int32_t getID() { return id; }
+  int32_t getID() { return _id; }
 
-  std::string getPkid() { return pkid; }
+  std::string getPkid() { return _pkid; }
 
-  std::shared_ptr<PositionPdx> getP1() { return position1; }
+  std::shared_ptr<PositionPdx> getP1() { return _position1; }
 
-  std::shared_ptr<PositionPdx> getP2() { return position2; }
+  std::shared_ptr<PositionPdx> getP2() { return _position2; }
 
-  std::shared_ptr<CacheableHashMap> getPositions() { return positions; }
+  std::shared_ptr<CacheableHashMap> getPositions() { return _positions; }
 
   bool testMethod() { return true; }
 
-  const std::string& getStatus() { return status; }
+  const std::string& getStatus() { return _status; }
 
-  bool isActive() { return status == "active"; }
+  bool isActive() { return _status == "active"; }
 
-  std::vector<int8_t> getNewVal() { return newVal; }
+  std::vector<int8_t> getNewVal() { return _newVal; }
 
-  int32_t getNewValSize() { return newValSize; }
+  int32_t getNewValSize() { return _newValSize; }
 
-  const std::string& getClassName() { return this->type; }
+  const std::string& getClassName() { return this->_type; }
 
-  std::shared_ptr<CacheableDate> getCreationDate() { return creationDate; }
+  std::shared_ptr<CacheableDate> getCreationDate() { return _creationDate; }
 
-  std::vector<int8_t> getArrayNull() { return arrayNull; }
+  std::vector<int8_t> getArrayNull() { return _arrayNull; }
 
-  std::vector<int8_t> getArrayZeroSize() { return arrayZeroSize; }
+  std::vector<int8_t> getArrayZeroSize() { return _arrayZeroSize; }
 
   static std::shared_ptr<PdxSerializable> createDeserializable() {
     return std::make_shared<PortfolioPdx>();
