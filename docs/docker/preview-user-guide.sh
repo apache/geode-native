@@ -53,9 +53,9 @@ docker build -t geodenativedocs/temp:1.0 .
 # "${BOOK_DIR_NAME}/final_app" and "${BOOK_DIR_NAME}/output" are created
 # inside the container, so it is necessary to use the current user to
 # avoid these folders are owned by root user.
-export UID=$(id -u)
-export GID=$(id -g)
-docker run -it -p 9292:9292 --user $UID:$GID \
+MY_UID=$(id -u)
+MY_GID=$(id -g)
+docker run -it -p 9292:9292 --user $MY_UID:$MY_GID \
     --workdir="/home/$USER" \
     --volume="/etc/group:/etc/group:ro" \
     --volume="/etc/passwd:/etc/passwd:ro" \
