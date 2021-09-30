@@ -70,7 +70,7 @@ class ClientMetadata {
   void setPreviousone(std::shared_ptr<ClientMetadata> cptr) {
     m_previousOne = cptr;
   }
-  ~ClientMetadata();
+  virtual ~ClientMetadata();
   ClientMetadata();
   ClientMetadata(
       int totalNumBuckets, std::string colocatedWith, ThinClientPoolDM* tcrdm,
@@ -101,8 +101,8 @@ class ClientMetadata {
   }
   ClientMetadata(ClientMetadata& other);
   ClientMetadata& operator=(const ClientMetadata&) = delete;
-  std::vector<std::shared_ptr<BucketServerLocation>> adviseServerLocations(
-      int bucketId);
+  virtual std::vector<std::shared_ptr<BucketServerLocation>>
+  adviseServerLocations(int bucketId);
   std::shared_ptr<BucketServerLocation> advisePrimaryServerLocation(
       int bucketId);
   std::shared_ptr<BucketServerLocation> adviseRandomServerLocation();
