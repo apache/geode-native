@@ -3203,7 +3203,6 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     return ChunkObjectType::NULL_OBJECT;
   }
 
-  // TODO enum - wtf?
   if (expectedFirstType > DSCode::FixedIDDefault) {
     if (partType != expectedFirstType) {
       throw MessageException(
