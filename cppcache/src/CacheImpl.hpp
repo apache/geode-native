@@ -103,6 +103,14 @@ class APACHE_GEODE_EXPORT CacheImpl {
 
   void incBlackListBucketTimeouts() { ++m_blacklistBucketTimeout; }
 
+  void setPrMetadataUpdatedFlag(bool isPrUpdated) {
+    m_pr_metadata_updated = isPrUpdated;
+  }
+
+  bool getAndResetPrMetadataUpdatedFlag() {
+    return m_pr_metadata_updated.exchange(false);
+  }
+
   int8_t getAndResetServerGroupFlag() { return m_serverGroupFlag.exchange(0); }
 
   void setServerGroupFlag(int8_t serverGroupFlag) {
@@ -321,6 +329,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<int> m_blacklistBucketTimeout;
+  std::atomic<bool> m_pr_metadata_updated;
   std::atomic<int8_t> m_serverGroupFlag;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;

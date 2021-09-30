@@ -14,6 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <CacheImpl.hpp>
+#include <chrono>
+#include <thread>
+
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
@@ -25,6 +29,7 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+#include "CacheRegionHelper.hpp"
 #include "framework/Cluster.h"
 #include "framework/Gfsh.h"
 #include "framework/TestConfig.h"
@@ -32,9 +37,12 @@
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableArrayList;
+using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheImpl;
+using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::FunctionExecutionException;
 using apache::geode::client::FunctionService;
 using apache::geode::client::NotConnectedException;
@@ -42,6 +50,7 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
 const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
+const int PARTITION_REGION_ENTRIES_SIZE = 113;
 
 std::shared_ptr<Region> setupRegion(Cache &cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -52,16 +61,28 @@ std::shared_ptr<Region> setupRegion(Cache &cache) {
 }
 
 class TestResultCollector : public ResultCollector {
+ private:
+  bool isCleared = false;
+  std::shared_ptr<CacheableVector> resultList;
+
+ public:
+  TestResultCollector() : resultList(CacheableVector::create()) {}
+
   virtual std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds) override {
-    return std::shared_ptr<CacheableVector>();
+    return resultList;
   }
 
-  virtual void addResult(const std::shared_ptr<Cacheable> &) override {}
+  virtual void addResult(const std::shared_ptr<Cacheable> &result) override {
+    resultList->push_back(result);
+  }
 
   virtual void endResults() override {}
 
-  virtual void clearResults() override {}
+  // Do not clear in order to detect duplicate results
+  virtual void clearResults() override { isCleared = true; }
+
+  bool isClearTriggered() { return isCleared; }
 };
 
 TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
@@ -175,6 +196,88 @@ TEST(FunctionExecutionTest,
   cache.close();
 }
 
+void populateRegion(const std::shared_ptr<Region> &region) {
+  for (int i = 0; i < PARTITION_REGION_ENTRIES_SIZE; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+  }
+}
+
+void waitUntilPRMetadataIsRefreshed(CacheImpl *cacheImpl) {
+  auto end = std::chrono::system_clock::now() + std::chrono::minutes(2);
+  while (!cacheImpl->getAndResetPrMetadataUpdatedFlag()) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    ASSERT_FALSE(std::chrono::system_clock::now() > end);
+  }
+}
+
+TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  ServerAddress serverAddress = cluster.getServers()[2].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
+
+  auto pool =
+      poolFactory.setPRSingleHopEnabled(true).setRetryAttempts(0).create(
+          "pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  // Populate region in a way that not all buckets are created.
+  // Servers in this case will create 88 of possible 113 buckets.
+  populateRegion(region);
+
+  // Check that PR metadata is updated. This is done to be sure
+  // that client will execute function in a non single hop manner
+  // because metadata doesn't contain all bucket locations.
+  // After metadata is refreshed, it will contain at least one
+  // bucket location.
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  auto functionService = FunctionService::onRegion(region);
+  auto rc =
+      functionService.withCollector(std::make_shared<TestResultCollector>())
+          .execute("MultiGetAllFunctionNonHA");
+
+  std::shared_ptr<TestResultCollector> resultCollector =
+      std::dynamic_pointer_cast<TestResultCollector>(rc);
+
+  // check that function is not re-executed
+  ASSERT_FALSE(resultCollector->isClearTriggered());
+
+  // check that PR metadata is updated after function is executed
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  // check that correct nubmer of events is received in function result
+  auto result = rc->getResult(std::chrono::milliseconds(0));
+  ASSERT_EQ(result->size(), PARTITION_REGION_ENTRIES_SIZE);
+
+  cache.close();
+}
+
 const std::vector<std::string> serverResultsToStrings(
     std::shared_ptr<CacheableVector> serverResults) {
   std::vector<std::string> resultList;
@@ -191,6 +294,7 @@ const std::vector<std::string> serverResultsToStrings(
 
   return resultList;
 }
+
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
   Cluster cluster{
       LocatorCount{1}, ServerCount{2},

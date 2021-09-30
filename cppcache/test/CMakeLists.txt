@@ -32,6 +32,7 @@ add_executable(apache-geode_unittests
   CacheXmlParserTest.cpp
   ChunkedHeaderTest.cpp
   ClientConnectionResponseTest.cpp
+  ClientMetadataServiceTest.cpp
   ClientProxyMembershipIDTest.cpp
   DataInputTest.cpp
   DataOutputTest.cpp
@@ -57,6 +58,7 @@ add_executable(apache-geode_unittests
   mock/MapEntryImplMock.hpp
   mock/MockExpiryTask.hpp
   util/chrono/durationTest.cpp
+  mock/ClientMetadataMock.hpp
   util/functionalTests.cpp
   util/JavaModifiedUtf8Tests.cpp
   util/queueTest.cpp
