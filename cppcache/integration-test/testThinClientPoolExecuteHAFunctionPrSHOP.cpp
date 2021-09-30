@@ -31,6 +31,8 @@ using apache::geode::client::DefaultResultCollector;
 using apache::geode::client::Exception;
 using apache::geode::client::FunctionService;
 
+using unitTests::TestUtils;
+
 bool isLocalServer = false;
 bool isLocator = false;
 
@@ -47,20 +49,6 @@ const char *OnServerHAShutdownFunction = "OnServerHAShutdownFunction";
 const char *RegionOperationsHAFunction = "RegionOperationsHAFunction";
 const char *RegionOperationsHAFunctionPrSHOP =
     "RegionOperationsHAFunctionPrSHOP";
-#define verifyGetResults()                                      \
-  bool found = false;                                           \
-  for (int j = 0; j < 34; j++) {                                \
-    if (j % 2 == 0) continue;                                   \
-    sprintf(buf, "VALUE--%d", j);                               \
-    if (strcmp(buf, std::dynamic_pointer_cast<CacheableString>( \
-                        resultList->operator[](i))              \
-                        ->value()                               \
-                        .c_str()) == 0) {                       \
-      found = true;                                             \
-      break;                                                    \
-    }                                                           \
-  }                                                             \
-  ASSERT(found, "this returned value is invalid");
 
 class MyResultCollector : public DefaultResultCollector {
  public:
@@ -232,7 +220,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
                       ->value()
                       .c_str());
           LOG(buf);
-          verifyGetResults()
+          TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
     } catch (const Exception &excp) {
@@ -313,7 +301,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
                       ->value()
                       .c_str());
           LOG(buf);
-          verifyGetResults()
+          TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
 
@@ -353,7 +341,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
                       ->value()
                       .c_str());
           LOG(buf);
-          verifyGetResults()
+          TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
     } catch (const Exception &excp) {

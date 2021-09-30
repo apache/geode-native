@@ -483,12 +483,10 @@ DUNIT_TASK_DEFINITION(CLIENT2, verifyCacheableObjectArrayWithPdxField)
           cacheHelper->getCache()->createPdxInstanceFactory("PdxTests.Address");
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
+      auto streetStr = std::string("street") + std::to_string(i);
+      auto cityStr = std::string("city") + std::to_string(i);
       pdxFactory.writeInt("_aptNumber", static_cast<int32_t>(i + 1));
-      char streetStr[256] = {0};
-      sprintf(streetStr, "street%zd", i);
-      pdxFactory.writeString("_street", streetStr);
-      char cityStr[256] = {0};
-      sprintf(cityStr, "city%zd", i);
+      pdxFactory.writeString("_street", streetStr.c_str());
       pdxFactory.writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());
@@ -1207,11 +1205,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, accessPdxInstance)
       LOG("PdxInstanceFactoryPtr created for PdxTests.Address....");
 
       pdxFactory.writeInt("_aptNumber", static_cast<int32_t>(i + 1));
-      char streetStr[256] = {0};
-      sprintf(streetStr, "street%zd", i);
+      auto streetStr = std::string("street") + std::to_string(i);
+      auto cityStr = std::string("city") + std::to_string(i);
       pdxFactory.writeString("_street", streetStr);
-      char cityStr[256] = {0};
-      sprintf(cityStr, "city%zd", i);
       pdxFactory.writeString("_city", cityStr);
 
       auto addrPtr = std::dynamic_pointer_cast<Address>(pi->getObject());

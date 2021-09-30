@@ -27,6 +27,7 @@
  */
 
 #include <CacheRegionHelper.hpp>
+#include <geode/CacheableBuiltins.hpp>
 
 #ifdef _WIN32
 // ???
@@ -48,6 +49,7 @@ namespace { // NOLINT(google-build-namespaces)
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheImpl;
 using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::Region;
@@ -193,6 +195,22 @@ class TestUtils {
     std::ostringstream strm;
     strm << std::setw(width) << std::setfill('0') << number;
     return strm.str();
+  }
+
+  static void verifyGetResults(const CacheableVector *resultList, int index) {
+    bool found = false;
+    for (int j = 0; j < resultList->size() && !found; j++) {
+      if (j % 2) {
+        auto val = std::string("VALUE--") + std::to_string(j);
+        auto tmp1 = resultList->operator[](index);
+        auto tmp2 = std::dynamic_pointer_cast<CacheableString>(tmp1);
+        auto expected = tmp2->value();
+        if (val == expected) {
+          found = true;
+        }
+      }
+    }
+    ASSERT(found, "this returned value is invalid");
   }
 };
 }  // namespace unitTests

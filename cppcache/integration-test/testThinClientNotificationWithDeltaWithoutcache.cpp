@@ -209,12 +209,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_VerifyDelta)
   {
     // Wait for notification
     SLEEP(1000);
-    char buff[100];
-    sprintf(buff, "From delta count %d  From data count %d",
-            DeltaEx::fromDeltaCount, DeltaEx::fromDataCount);
-    LOG(buff);
+    LOG(std::string("From delta count ") +
+        std::to_string(DeltaEx::fromDeltaCount) + "  From data count " +
+        std::to_string(DeltaEx::fromDataCount));
     // In case of Cacheless client only full object would arrive on notification
-    // channel.
+    // channe
     ASSERT(DeltaEx::fromDataCount == 2,
            "DeltaEx::fromDataCount should have been 2");
     ASSERT(DeltaEx::fromDeltaCount == 0,
