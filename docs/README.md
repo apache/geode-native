@@ -15,21 +15,24 @@ The User Guide can be produced in two versions: one for the .NET native client, 
 
 Documentation can be built and previewed using the utility script at {geode-project-dir}/docs/docker. This script uses a Docker image that provides the tools to build and view the guide, including Ruby, Bookbinder, and Rackup.
 
-For C++ guide:
+For the C++ guide:
+
 ```
 $ cd {geode-native-project-dir}/docs/docker
 $ ./preview-user-guide.sh cpp
 ```
 
-For .NET guide:
+For the .NET guide:
+
 ```
 $ cd {geode-native-project-dir}/docs/docker
 $ ./preview-user-guide.sh dotnet
 ```
 
-Once the script shows it is listening on a local address, you could use a browser to view the user guide on that address.
+Once the script shows it is listening on a local address, you can use a browser to view the user guide on that address.
 
 For example:
+
 ```
 $ ./preview-user-guide.sh cpp
 ...
@@ -62,14 +65,14 @@ For Geode Native Client, a preconfigured **book** is provided for each user guid
 
 1. The GemFile in each book directory already defines the gem "bookbindery" dependency. Make sure you are in the `_geode-native-project-dir_/docs/geode-native-book-cpp` or `_geode-native-project-dir_/docs/geode-native-book-dotnet` (depending if you want to build the C++ or .NET user guide respectively) directory and enter:
 
-   For C++ guide:
+   For the C++ guide:
     
    ```bash
    $ cd docs/geode-native-book-cpp
    $ bundle install
    ```
 
-   For .NET guide:
+   For the .NET guide:
     
    ```bash
    $ cd docs/geode-native-book-dotnet
