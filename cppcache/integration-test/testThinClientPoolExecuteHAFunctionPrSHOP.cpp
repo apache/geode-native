@@ -16,6 +16,8 @@
  */
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
+#include "testUtils.hpp"
+
 #include <geode/FunctionService.hpp>
 #include <geode/Execution.hpp>
 #include <geode/DefaultResultCollector.hpp>
@@ -163,20 +165,19 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     char buf[128];
 
     for (int i = 0; i < 350; i++) {
-      sprintf(buf, "VALUE--%d", i);
-      auto value = CacheableString::create(buf);
+      auto value =
+          CacheableString::create(std::string("VALUE--") + std::to_string(i));
 
-      sprintf(buf, "KEY--%d", i);
-      auto key = CacheableString::create(buf);
+      auto key =
+          CacheableString::create(std::string("KEY--") + std::to_string(i));
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
-        if (i % 2 == 0) continue;
-        sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
+        auto key =
+            CacheableString::create(std::string("KEY--") + std::to_string(i));
         routingObj->push_back(key);
       }
       // UNUSED bool getResult = true;
@@ -192,9 +193,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %zd",
-                executeFunctionResult->size());
-        LOG(buf);
+        LOG(std::string("echo String : result count = ") +
+            std::to_string(executeFunctionResult->size()));
         resultList->clear();
 
         for (unsigned item = 0;
@@ -207,19 +207,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %zd", resultList->size());
-        LOG(buf);
+        LOG(std::string("get result count = ") +
+            std::to_string(resultList->size()));
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (size_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%zd] is null\n", i);
-          ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%zd]=%s", i,
-                  std::dynamic_pointer_cast<CacheableString>(
-                      resultList->operator[](i))
-                      ->value()
-                      .c_str());
-          LOG(buf);
+          ASSERT(resultList->operator[](i) != nullptr,
+                 std::string("result [") + std::to_string(i) + "] is null");
+          LOG(std::string("get result [") + std::to_string(i) + "] is " +
+              std::dynamic_pointer_cast<CacheableString>(
+                  resultList->operator[](i))
+                  ->value());
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
@@ -238,24 +236,24 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
   {
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    char buf[128];
 
     for (int i = 0; i < 34; i++) {
-      sprintf(buf, "VALUE--%d", i);
-      auto value = CacheableString::create(buf);
+      auto value =
+          CacheableString::create(std::string("VALUE--") + std::to_string(i));
 
-      sprintf(buf, "KEY--%d", i);
-      auto key = CacheableString::create(buf);
+      auto key =
+          CacheableString::create(std::string("KEY--") + std::to_string(i));
       regPtr0->put(key, value);
     }
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
       for (int i = 0; i < 34; i++) {
-        if (i % 2 == 0) continue;
-        sprintf(buf, "KEY--%d", i);
-        auto key = CacheableKey::create(buf);
-        routingObj->push_back(key);
+        if (i % 2) {
+          auto key =
+              CacheableString::create(std::string("KEY--") + std::to_string(i));
+          routingObj->push_back(key);
+        }
       }
 
       // UNUSED bool getResult = true;
@@ -274,9 +272,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       if (executeFunctionResult == nullptr) {
         ASSERT(false, "get executeFunctionResult is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %zd",
-                executeFunctionResult->size());
-        LOG(buf);
+        LOG(std::string("echo String : result count = ") +
+            std::to_string(executeFunctionResult->size()));
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult->size());
@@ -288,19 +285,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %zd", resultList->size());
-        LOG(buf);
+        LOG(std::string("get result count = ") +
+            std::to_string(resultList->size()));
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult count is not 17");
         for (size_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%zd] is null\n", i);
-          ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%zd]=%s", i,
-                  std::dynamic_pointer_cast<CacheableString>(
-                      resultList->operator[](i))
-                      ->value()
-                      .c_str());
-          LOG(buf);
+          ASSERT(resultList->operator[](i) != nullptr,
+                 std::string("result [") + std::to_string(i) + "] is null");
+          auto msg = std::string("get result [") + std::to_string(i) + "] is " +
+                     std::dynamic_pointer_cast<CacheableString>(
+                         resultList->operator[](i))
+                         ->value();
+          LOG(msg);
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
@@ -314,9 +310,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
       if (executeFunctionResult1 == nullptr) {
         ASSERT(false, "get executeFunctionResult1 is nullptr");
       } else {
-        sprintf(buf, "echo String : result count = %zd",
-                executeFunctionResult1->size());
-        LOG(buf);
+        LOG(std::string("echo String : result count = ") +
+            std::to_string(executeFunctionResult->size()));
         resultList->clear();
         for (unsigned item = 0;
              item < static_cast<uint32_t>(executeFunctionResult1->size());
@@ -328,19 +323,20 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
             resultList->push_back(arrayList->operator[](pos));
           }
         }
-        sprintf(buf, "get result count = %zd", resultList->size());
-        LOG(buf);
+        LOG(std::string("get result count = ") +
+            std::to_string(resultList->size()));
         ASSERT(resultList->size() == 17,
                "get executeFunctionResult1 count is not 17");
         for (size_t i = 0; i < resultList->size(); i++) {
-          sprintf(buf, "result[%zd] is null\n", i);
-          ASSERT(resultList->operator[](i) != nullptr, buf);
-          sprintf(buf, "get result[%zd]=%s", i,
-                  std::dynamic_pointer_cast<CacheableString>(
-                      resultList->operator[](i))
-                      ->value()
-                      .c_str());
-          LOG(buf);
+          LOG(std::string("get result count = ") +
+              std::to_string(resultList->size()));
+          ASSERT(resultList->operator[](i) != nullptr,
+                 std::string("result [") + std::to_string(i) + "] is null");
+          auto msg = std::string("get result [") + std::to_string(i) + "] is " +
+                     std::dynamic_pointer_cast<CacheableString>(
+                         resultList->operator[](i))
+                         ->value();
+          LOG(msg);
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }

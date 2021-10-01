@@ -199,7 +199,7 @@ class TestUtils {
 
   static void verifyGetResults(const CacheableVector *resultList, int index) {
     bool found = false;
-    for (auto j = 0; j < resultList->size() && !found; j++) {
+    for (decltype(resultList->size()) j = 0; j < resultList->size() && !found; j++) {
       if (j % 2) {
         auto val = std::string("VALUE--") + std::to_string(j);
         auto tmp1 = resultList->operator[](index);

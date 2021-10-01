@@ -220,11 +220,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
         for (size_t i = 0; i < resultList->size(); i++) {
           ASSERT(resultList->operator[](i) != nullptr,
                  std::string("result [") + std::to_string(i) + "] is null");
-          auto foo = std::string("get result [") + std::to_string(i) + "] is " +
+          auto msg = std::string("get result [") + std::to_string(i) + "] is " +
                      std::dynamic_pointer_cast<CacheableString>(
                          resultList->operator[](i))
                          ->value();
-          LOG(foo);
+          LOG(msg);
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }

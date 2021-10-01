@@ -257,6 +257,12 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     _city = city;
   }
 
+  Address(int32_t aptN, const std::string& street, const std::string& city) {
+    _aptNumber = aptN;
+    _street = street;
+    _city = city;
+  }
+
   bool equals(Address& other) const {
     LOGDEBUG("Inside Address equals");
     Address* ot = dynamic_cast<Address*>(&other);
