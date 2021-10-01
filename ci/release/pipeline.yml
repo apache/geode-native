@@ -17,6 +17,7 @@
 #@      "github_resource",
 #@      "gci_resource",
 #@      "registry_image_resource",
+#@      "bash_task",
 #@      "build_job_name",
 #@      "packer_job",
 #@      "packer_job_name",
@@ -27,6 +28,8 @@
 #@      "put_package",
 #@      "version_source_job",
 #@      "version_source_job_name")
+#@ load("templates.lib.txt",
+#@       "extract_geode_bash_task")
 #@ load("@ytt:data", "data")
 #@ load("@ytt:overlay", "overlay")
 
@@ -98,7 +101,7 @@ jobs:
               passed: [ version-source ]
 
   #@overlay/append
-  - name: github-pre-release
+  - name: native-passed
     plan:
       - in_parallel:
           fail_fast: true
@@ -127,6 +130,35 @@ jobs:
             - get: #@ package_resource_name(build, config, package)
               passed:
                 - #@ build_job_name(build, config)
+              trigger: true
+            #@ end
+            #@ end
+            #@ end
+            - do:
+              - get: task-image
+              - get: geode-latest
+              - #@ bash_task("extract-geode", [{"name":"geode-latest"}], [{"name":"geode"}], extract_geode_bash_task(), caches=[{"path":"geode"}])
+
+  #@overlay/append
+  - name: github-pre-release
+    plan:
+      - in_parallel:
+          fail_fast: true
+          steps:
+            - get: version
+              passed:
+                - native-passed
+              trigger: true
+            - get: source
+              passed:
+                - native-passed
+              trigger: true
+            #@ for build in data.values.builds:
+            #@ for config in data.values.configs:
+            #@ for package in build.packages:
+            - get: #@ package_resource_name(build, config, package)
+              passed:
+                - native-passed
               trigger: true
             #@ end
             #@ end
@@ -174,6 +206,8 @@ groups:
       - bump-minor-version
       #@overlay/append
       - github-pre-release
+      #@overlay/append
+      - native-passed
   #@overlay/match by="name"
   - name: version
     jobs:
