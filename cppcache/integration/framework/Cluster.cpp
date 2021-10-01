@@ -188,9 +188,16 @@ Server::Server(Server &&move)
 
 const ServerAddress &Server::getAddress() const { return serverAddress_; }
 
+void Server::removePidFile() const {
+  boost::system::error_code ec;
+  boost::filesystem::remove(name_ + "/vf.gf.server.pid", ec);
+}
+
 void Server::start() {
   auto safeName = name_;
   std::replace(safeName.begin(), safeName.end(), '/', '_');
+
+  removePidFile();
 
   auto server =
       cluster_.getGfsh()

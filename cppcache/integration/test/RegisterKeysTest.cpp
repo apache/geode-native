@@ -51,6 +51,7 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
+
 using ::testing::_;
 using ::testing::Return;
 

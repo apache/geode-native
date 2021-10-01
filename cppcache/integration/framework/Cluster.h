@@ -97,6 +97,8 @@ class Server {
 
   const ServerAddress &getAddress() const;
 
+  void removePidFile() const;
+
   void start();
 
   void stop();
