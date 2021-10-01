@@ -79,8 +79,7 @@ void initClientAuth(char userType, int clientNum = 1) {
       break;
     }
     case 'R': {
-      char clientStr[32];
-      sprintf(clientStr, "geode%d", clientNum);
+      auto clientStr = std::string("geode") + std::to_string(clientNum);
       config->insert("security-username", clientStr);
       config->insert("security-password", clientStr);
       break;
