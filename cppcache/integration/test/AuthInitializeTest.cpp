@@ -269,7 +269,7 @@ TEST(AuthInitializeTest, verifyReAuthAfterCredsExpire) {
           std::dynamic_pointer_cast<CacheableString>(retrievedValue)->value();
       ASSERT_EQ(retrivedValueAsString, value);
       numSuccessfulOps++;
-    } catch (Exception ex) {
+    } catch (const Exception& ex) {
       std::cout << "Caught unexpected exception: " << ex.what() << std::endl;
       numFailedOps++;
     }
