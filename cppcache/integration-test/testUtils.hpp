@@ -198,19 +198,10 @@ class TestUtils {
   }
 
   static void verifyGetResults(const CacheableVector *resultList, int index) {
-    bool found = false;
-    for (decltype(resultList->size()) j = 0; j < resultList->size() && !found; j++) {
-      if (j % 2) {
-        auto val = std::string("VALUE--") + std::to_string(j);
-        auto tmp1 = resultList->operator[](index);
-        auto tmp2 = std::dynamic_pointer_cast<CacheableString>(tmp1);
-        auto expected = tmp2->value();
-        if (val == expected) {
-          found = true;
-        }
-      }
-    }
-    ASSERT(found, "this returned value is invalid");
+    auto expected = std::string("VALUE--") + std::to_string((index * 2) + 1);
+    auto actual = std::dynamic_pointer_cast<CacheableString>(resultList->operator[](index))->value();
+    auto msg = std::string("Failed to find the value 'VALUE--") +  + "' in the result list.";
+    ASSERT(expected == actual, msg);
   }
 };
 }  // namespace unitTests

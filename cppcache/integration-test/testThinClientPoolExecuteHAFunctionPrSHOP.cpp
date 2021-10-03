@@ -175,7 +175,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
-      for (int i = 0; i < 34; i++) {
+      for (int i = 1; i < 35; i += 2) {
         auto key =
             CacheableString::create(std::string("KEY--") + std::to_string(i));
         routingObj->push_back(key);
@@ -248,12 +248,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
-      for (int i = 0; i < 34; i++) {
-        if (i % 2) {
-          auto key =
-              CacheableString::create(std::string("KEY--") + std::to_string(i));
-          routingObj->push_back(key);
-        }
+      for (int i = 1; i < 35; i += 2) {
+        auto key =
+            CacheableString::create(std::string("KEY--") + std::to_string(i));
+        routingObj->push_back(key);
       }
 
       // UNUSED bool getResult = true;

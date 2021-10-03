@@ -170,7 +170,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
-    for (int i = 0; i < 34; i++) {
+    for (int i = 1; i < 35; i++) {
       auto value =
           CacheableString::create(std::string("VALUE--") + std::to_string(i));
 
@@ -181,8 +181,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
-      for (int i = 0; i < 34; i++) {
-        if (i % 2 == 0) continue;
+      for (int i = 1; i < 35; i += 2) {
         auto key =
             CacheableString::create(std::string("KEY--") + std::to_string(i));
         routingObj->push_back(key);
@@ -291,7 +290,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
     char buf[128];
 
-    for (int i = 0; i < 34; i++) {
+    for (int i = 1; i < 35; i++) {
       auto value =
           CacheableString::create(std::string("VALUE--") + std::to_string(i));
 
@@ -302,12 +301,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
     SLEEP(10000);  // let the put finish
     try {
       auto routingObj = CacheableVector::create();
-      for (int i = 0; i < 34; i++) {
-        if (i % 2) {
-          auto key =
-              CacheableString::create(std::string("KEY--") + std::to_string(i));
-          routingObj->push_back(key);
-        }
+      for (int i = 1; i < 35; i += 2) {
+        auto key =
+            CacheableString::create(std::string("KEY--") + std::to_string(i));
+        routingObj->push_back(key);
       }
 
       // UNUSED bool getResult = true;
@@ -346,10 +343,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
         for (size_t i = 0; i < resultList->size(); i++) {
           ASSERT(resultList->operator[](i) != nullptr,
                  std::string("result [") + std::to_string(i) + "] is null");
-          LOG(std::string("get result [") + std::to_string(i) + "] is " +
-              std::dynamic_pointer_cast<CacheableString>(
-                  resultList->operator[](i))
-                  ->value());
+          auto msg = std::string("get result [") + std::to_string(i) + "] is " +
+                     std::dynamic_pointer_cast<CacheableString>(
+                         resultList->operator[](i))
+                         ->value();
+          LOG(msg);
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
@@ -383,10 +381,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OnServerHATest)
         for (size_t i = 0; i < resultList->size(); i++) {
           ASSERT(resultList->operator[](i) != nullptr,
                  std::string("result [") + std::to_string(i) + "] is null");
-          LOG(std::string("get result [") + std::to_string(i) + "] is " +
-              std::dynamic_pointer_cast<CacheableString>(
-                  resultList->operator[](i))
-                  ->value());
+          auto msg = std::string("get result [") + std::to_string(i) + "] is " +
+                     std::dynamic_pointer_cast<CacheableString>(
+                         resultList->operator[](i))
+                         ->value();
+          LOG(msg);
           TestUtils::verifyGetResults(resultList.get(), i);
         }
       }
