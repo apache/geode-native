@@ -254,7 +254,6 @@ TEST(AuthInitializeTest, verifyReAuthAfterCredsExpire) {
   auto pool = createPool(cluster, cache, false);
   auto region = setupRegion(cache, pool);
 
-  using namespace std::chrono_literals;
   int numSuccessfulOps = 0;
   int numFailedOps = 0;
   std::string key;
