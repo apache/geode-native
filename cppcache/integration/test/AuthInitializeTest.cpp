@@ -65,6 +65,7 @@ using apache::geode::client::RegionShortcut;
 using std::chrono::minutes;
 
 const int32_t CQ_PLUS_AUTH_TEST_REGION_ENTRY_COUNT = 100000;
+const int32_t CQ_REAUTH_TEST_REGION_ENTRY_COUNT = 5000;
 
 Cache createCache(std::shared_ptr<SimpleAuthInitialize> auth) {
   auto cache = CacheFactory()
@@ -220,4 +221,73 @@ TEST(AuthInitializeTest, badCredentialsWithSubscriptionEnabled) {
   }
 
   ASSERT_GT(authInitialize->getGetCredentialsCallCount(), 0);
+}
+
+TEST(AuthInitializeTest, verifyReAuthAfterCredsExpire) {
+  // Start a cluster with user expiration support
+
+  Cluster cluster(
+      Name(std::string(::testing::UnitTest::GetInstance()
+                           ->current_test_info()
+                           ->test_suite_name()) +
+           "/" +
+           ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      Classpath{getFrameworkString(FrameworkVariable::JavaObjectJarPath)},
+      SecurityManager{"javaobject.SimulatedExpirationSecurityManager"},
+      User{"root"}, Password{"root-password"}, LocatorCount{1}, ServerCount{1});
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  // Use a non-root user for reAuthentication testing.
+
+  auto authInitialize =
+      std::make_shared<SimpleAuthInitialize>("user", "user-password");
+
+  auto cache = createCache(authInitialize);
+  auto pool = createPool(cluster, cache, false);
+  auto region = setupRegion(cache, pool);
+
+  using namespace std::chrono_literals;
+  int numSuccessfulOps = 0;
+  int numFailedOps = 0;
+  std::string key;
+  std::string value;
+  for (int i = 0; i < CQ_REAUTH_TEST_REGION_ENTRY_COUNT; i++) {
+    try {
+      key = "foo" + std::to_string(i);
+      value = "bar" + std::to_string(i);
+      region->put(key, value);
+
+      auto retrievedValue = region->get(key);
+      auto retrivedValueAsString =
+          std::dynamic_pointer_cast<CacheableString>(retrievedValue)->value();
+      ASSERT_EQ(retrivedValueAsString, value);
+      numSuccessfulOps++;
+    } catch (Exception ex) {
+      std::cout << "Caught unexpected exception: " << ex.what() << std::endl;
+      numFailedOps++;
+    }
+  }
+
+  ASSERT_EQ(numSuccessfulOps, CQ_REAUTH_TEST_REGION_ENTRY_COUNT);
+  ASSERT_EQ(numFailedOps, 0);
+
+  // SimulatedExpirationSecurityManager is set to throw
+  // AuthenticationExpiredException for 1% of operations.
+  // If the random number generator were perfect we'd expect reauth
+  // to happen for 1% of the operations. Back it off to .5% since
+  // it's not perfect.
+  //
+  // Number of operations is 2 * CQ_REAUTH_TEST_REGION_ENTRY_COUNT
+  // since doing put and get.
+
+  EXPECT_GT(authInitialize->getGetCredentialsCallCount(),
+            2 * CQ_REAUTH_TEST_REGION_ENTRY_COUNT * .005);
 }
