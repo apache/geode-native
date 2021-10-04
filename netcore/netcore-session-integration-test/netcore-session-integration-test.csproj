@@ -2,10 +2,9 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
     <Platforms>x64</Platforms>
+	<Configurations>Debug;RelWithDebInfo</Configurations>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,5 +18,20 @@
     <ProjectReference Include="..\netcore-session\netcore-session.csproj" />
     <ProjectReference Include="..\netcore-lib\netcore-lib.csproj" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<WarningsAsErrors />
+	<DebugType>pdbonly</DebugType>
+	<DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	<WarningsAsErrors />
+	<Optimize>true</Optimize>
+	<DebugType>pdbonly</DebugType>
+	<DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
 
 </Project>
