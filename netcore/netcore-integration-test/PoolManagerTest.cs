@@ -17,7 +17,7 @@
 using System.Net.Cache;
 using Xunit;
 
-namespace Apache.Geode.Client {
+namespace Apache.Geode.Client.IntegrationTests {
   [Collection("Geode .net Core Collection")]
   public class PoolManagerTest {
     [Fact]

@@ -14,21 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using Xunit;
 
-namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .net Core Collection")]
-  public class ObjectLeakTest {
-    [Fact]
-    public void LeakCacheFactoryVerifyThrows() {
-      var client = new Client();
+// GENERATED FROM Config.cs.in DO NOT EDIT Config.cs
 
-      using (var cacheFactory =
-                 CacheFactory.Create())  // lgtm[cs / useless - assignment - to - local]
-      {
-        Assert.Throws<InvalidOperationException>(() => client.Dispose());
-      }
-    }
+public class Config
+{
+  public static string GeodeGfsh
+  {
+    get { return @"C:/Users/pivotal/Src/Repos/geode/geode-assembly/build/install/apache-geode/bin/gfsh.bat"; }
+  }
+
+  public static string JavaobjectJarPath
+  {
+    get { return @"C:/geode-native-develop/build/tests/javaobject/javaobject.jar"; }
+  }
+
+  public static string SslServerKeyPath
+  {
+	get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/server_keys"; }
+  }
+
+  public static string SslClientKeyPath
+  {
+	get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/client_keys"; }
+  }
+
+  public static string SniConfigPath
+  {
+	get { return @"C:/geode-native-develop/clicache/integration-test2/../../sni-test-config"; }
   }
 }

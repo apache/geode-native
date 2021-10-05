@@ -14,21 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using Xunit;
 
-namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .net Core Collection")]
-  public class ObjectLeakTest {
-    [Fact]
-    public void LeakCacheFactoryVerifyThrows() {
-      var client = new Client();
+ using System.Net;
+using System.IO;
+using System.Net.Sockets;
 
-      using (var cacheFactory =
-                 CacheFactory.Create())  // lgtm[cs / useless - assignment - to - local]
-      {
-        Assert.Throws<InvalidOperationException>(() => client.Dispose());
-      }
+namespace Apache.Geode.Client.IntegrationTests
+{
+    public abstract class Framework
+    {
+        public static int FreeTcpPort()
+        {
+            var tcpListner = new TcpListener(IPAddress.Loopback, 0);
+            tcpListner.Start();
+            var port = ((IPEndPoint)tcpListner.LocalEndpoint).Port;
+            tcpListner.Stop();
+            return port;
+        }
     }
-  }
 }

@@ -18,8 +18,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Cache;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Apache.Geode.Client {
+namespace Apache.Geode.Client.IntegrationTests {
   public class SimpleAuthInitialize : IAuthInitialize {
     public Dictionary<string, string> GetCredentials() {
       Console.WriteLine("SimpleAuthInitialize::GetCredentials called");
@@ -35,7 +36,12 @@ namespace Apache.Geode.Client {
   }
 
   [Collection("Geode .net Core Collection")]
-  public class RegionFactoryTest {
+  public class RegionFactoryTest : TestBase
+  {
+    public RegionFactoryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    {
+    }
+
     private const string Username1 = "rtimmons";
     private const string Username2 = "scharles";
 
@@ -82,25 +88,53 @@ namespace Apache.Geode.Client {
 
     [Fact]
     public void RegionFactoryCreateProxyRegionStringPutGet() {
-      using var cacheFactory = CacheFactory.Create()
-                                   .SetProperty("log-level", "debug")
-                                   .SetProperty("log-file", "geode_native.log");
-      using var cache = cacheFactory.CreateCache();
+      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+      {
+        Assert.True(cluster.Start());
+        Assert.Equal(0, cluster.Gfsh
+            .create()
+            .region()
+            .withName("exampleRegion")
+            .withType("PARTITION")
+            .execute());
 
-      createPool(cache, 10334);
-      CreateRegionAndDoWork(cache, "exampleRegion", RegionShortcut.Proxy);
+        using var cacheFactory = CacheFactory.Create()
+                                     .SetProperty("log-level", "debug")
+                                     .SetProperty("log-file", "geode_native.log");
+        using var cache = cacheFactory.CreateCache();
+
+        using var pool = cluster.ApplyLocators(cache.PoolFactory)
+                    .CreatePool("myPool");
+
+        //int port = cluster.
+        //createPool(cache, 10334);
+        CreateRegionAndDoWork(cache, "exampleRegion", RegionShortcut.Proxy);
+      }
     }
 
     [Fact]
     public void RegionFactoryCreateRegionStringPutGetWithAuthentication() {
-      using var cacheFactory = CacheFactory.Create()
+      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+      {
+        Assert.True(cluster.Start());
+        Assert.Equal(0, cluster.Gfsh
+            .create()
+            .region()
+            .withName("authExampleRegion")
+            .withType("PARTITION")
+            .execute());
+
+        using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "debug")
                                    .SetProperty("log-file", "geode_native_with_auth.log");
       cacheFactory.AuthInitialize = new SimpleAuthInitialize();
       using var cache = cacheFactory.CreateCache();
 
-      createPool(cache, 10335);
-      CreateRegionAndDoWork(cache, "authExampleRegion", RegionShortcut.CachingProxy);
+      using var pool = cluster.ApplyLocators(cache.PoolFactory)
+                    .CreatePool("myPool");
+
+        CreateRegionAndDoWork(cache, "authExampleRegion", RegionShortcut.CachingProxy);
+      }
     }
   }
 }
