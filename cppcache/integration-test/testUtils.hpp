@@ -44,7 +44,7 @@
 #include <DistributedSystemImpl.hpp>
 #include <CacheImpl.hpp>
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableKey;
@@ -131,63 +131,53 @@ class TestUtils {
     } while ((val != expected) && (tries < maxTry));
     return val;
   }
+
   static void showKeys(std::shared_ptr<Region>& rptr) {
-    char buf[2048];
-    if (rptr == nullptr) {
-      sprintf(buf, "this region does not exist!\n");
-      LOG(buf);
-      return;
+    if (!rptr) {
+      LOG("this region does not exist!\n");
     }
     std::vector<std::shared_ptr<CacheableKey>> v = rptr->keys();
     auto len = v.size();
-    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName().c_str(),
-            len);
-    LOG(buf);
+    LOG(std::string("Total keys in region ") + rptr->getName() + " : " +
+        std::to_string(len));
     for (uint32_t i = 0; i < len; i++) {
-      sprintf(buf, "key[%u] = '%s'\n", i,
-              (v[i] == nullptr) ? "nullptr KEY" : v[i]->toString().c_str());
-      LOG(buf);
+      LOG(std::string("key[") + std::to_string(i) + "] = '" +
+          (v[i] == nullptr ? "nullptr KEY" : v[i]->toString()) + "'");
     }
   }
+
   static void showKeyValues(std::shared_ptr<Region>& rptr) {
-    char buf[2048];
-    if (rptr == nullptr) {
-      sprintf(buf, "this region does not exist!\n");
-      LOG(buf);
-      return;
+    if (!rptr) {
+      LOG("this region does not exist!\n");
     }
     std::vector<std::shared_ptr<CacheableKey>> v = rptr->keys();
     auto len = v.size();
-    sprintf(buf, "Total keys in region %s : %zu\n", rptr->getName().c_str(),
-            len);
-    LOG(buf);
+    LOG(std::string("Total keys in region ") + rptr->getName() + " : " +
+        std::to_string(len));
     for (uint32_t i = 0; i < len; i++) {
+      std::stringstream strm;
       auto keyPtr = v[i];
       auto valPtr =
           std::dynamic_pointer_cast<CacheableString>(rptr->get(keyPtr));
-      sprintf(buf, "key[%u] = '%s', value[%u]='%s'\n", i,
-              (keyPtr == nullptr) ? "nullptr KEY" : keyPtr->toString().c_str(),
-              i, (valPtr == nullptr) ? "NULL_VALUE" : valPtr->value().c_str());
-      LOG(buf);
+      strm << "key[" << i << "]='"
+           << (keyPtr == nullptr ? "nullptr KEY" : keyPtr->toString())
+           << "', value[" << i << "]='"
+           << (valPtr == nullptr ? "NULL_VALUE" : valPtr->value()) << "'";
+      LOG(strm.str());
     }
   }
   static void showValues(std::shared_ptr<Region>& rptr) {
-    char buf[2048];
-    if (rptr == nullptr) {
-      sprintf(buf, "this region does not exist!\n");
-      LOG(buf);
-      return;
+    if (!rptr) {
+      LOG("this region does not exist!\n");
     }
     auto v = rptr->values();
     auto len = v.size();
-    sprintf(buf, "Total values in region %s : %zu\n", rptr->getName().c_str(),
-            len);
-    LOG(buf);
+    LOG(std::string("Total values in region ") + rptr->getName() + " : " +
+        std::to_string(len));
     for (size_t i = 0; i < len; i++) {
       auto value = std::dynamic_pointer_cast<CacheableString>(v[i]);
-      sprintf(buf, "value[%zu] = '%s'\n", i,
-              (value == nullptr) ? "nullptr VALUE" : value->value().c_str());
-      LOG(buf);
+      LOG(std::string("value[") + std::to_string(i) + "] = '" +
+          (v[i] == nullptr ? "nullptr VALUE" : value->value()) + "'");
     }
   }
 
@@ -197,10 +187,13 @@ class TestUtils {
     return strm.str();
   }
 
-  static void verifyGetResults(const CacheableVector *resultList, int index) {
+  static void verifyGetResults(const CacheableVector* resultList, int index) {
     auto expected = std::string("VALUE--") + std::to_string((index * 2) + 1);
-    auto actual = std::dynamic_pointer_cast<CacheableString>(resultList->operator[](index))->value();
-    auto msg = std::string("Failed to find the value 'VALUE--") +  + "' in the result list.";
+    auto actual = std::dynamic_pointer_cast<CacheableString>(
+                      resultList->operator[](index))
+                      ->value();
+    auto msg = std::string("Failed to find the value 'VALUE--") +
+               +"' in the result list.";
     ASSERT(expected == actual, msg);
   }
 };

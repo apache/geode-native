@@ -39,7 +39,6 @@ using apache::geode::client::Pool;
 static bool isLocalServer = false;
 static bool isLocator = false;
 static int numberOfLocators = 1;
-const char *endPoints = nullptr;
 const std::string locatorsG =
     CacheHelper::getLocatorHostPort(isLocator, isLocalServer, numberOfLocators);
 
@@ -89,8 +88,6 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST &locators,
                       int updateLocatorListInterval) {
   using apache::geode::internal::chrono::duration::to_string;
 
-  char logmsg[500] = {0};
-
   if (pool == nullptr) {
     LOG("checkPoolAttribs: std::shared_ptr<Pool> is nullptr");
     return false;
@@ -99,9 +96,8 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST &locators,
   std::cout << "Checking pool " << pool->getName() << std::endl;
 
   if (pool->getName() != name) {
-    sprintf(logmsg, "checkPoolAttribs: Pool name expected [%s], actual [%s]",
-            name.c_str(), pool->getName().c_str());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool name expected [") + name +
+        "], actual[" + pool->getName() + "]");
     return false;
   }
   if (!checkStringArray(locators, pool->getLocators())) {
@@ -114,149 +110,115 @@ bool checkPoolAttribs(std::shared_ptr<Pool> pool, SLIST &locators,
   }
   if (std::chrono::milliseconds(freeConnectionTimeout) !=
       pool->getFreeConnectionTimeout()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool freeConnectionTimeout expected [%d], "
-            "actual [%" PRId64 "]",
-            freeConnectionTimeout,
-            static_cast<int64_t>(pool->getFreeConnectionTimeout().count()));
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool freeConnectionTimeout expected [") +
+        std::to_string(freeConnectionTimeout) + ", actual[" +
+        std::to_string(pool->getFreeConnectionTimeout().count()) + "]");
     return false;
   }
   if (std::chrono::milliseconds(loadConditioningInterval) !=
       pool->getLoadConditioningInterval()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool loadConditioningInterval expected [%d], "
-            "actual [%" PRId64 "]",
-            loadConditioningInterval,
-            static_cast<int64_t>(pool->getLoadConditioningInterval().count()));
-    LOG(logmsg);
+    LOG(std::string(
+            "checkPoolAttribs: Pool loadConditioningInterval expected [") +
+        std::to_string(loadConditioningInterval) + ", actual[" +
+        std::to_string(pool->getLoadConditioningInterval().count()) + "]");
     return false;
   }
   if (minConnections != pool->getMinConnections()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool minConnections expected [%d], actual [%d]",
-            minConnections, pool->getMinConnections());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool minConnections expected [") +
+        std::to_string(minConnections) + ", actual[" +
+        std::to_string(pool->getMinConnections()) + "]");
     return false;
   }
   if (maxConnections != pool->getMaxConnections()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool maxConnections expected [%d], actual [%d]",
-            maxConnections, pool->getMaxConnections());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool maxConnections expected [") +
+        std::to_string(maxConnections) + ", actual[" +
+        std::to_string(pool->getMaxConnections()) + "]");
     return false;
   }
   if (retryAttempts != pool->getRetryAttempts()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool retryAttempts expected [%d], actual [%d]",
-            retryAttempts, pool->getRetryAttempts());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool retryAttempts expected [") +
+        std::to_string(retryAttempts) + ", actual[" +
+        std::to_string(pool->getRetryAttempts()) + "]");
     return false;
   }
   if (idleTimeout != pool->getIdleTimeout()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool idleTimeout expected [%s], actual [%s]",
-            to_string(idleTimeout).c_str(),
-            to_string(pool->getIdleTimeout()).c_str());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool idleTimeout expected [") +
+        std::to_string(idleTimeout.count()) + ", actual[" +
+        std::to_string(pool->getIdleTimeout().count()) + "]");
     return false;
   }
   if (std::chrono::milliseconds(pingInterval) != pool->getPingInterval()) {
-    sprintf(
-        logmsg,
-        "checkPoolAttribs: Pool pingInterval expected [%d], actual [%" PRId64
-        "]",
-        pingInterval, static_cast<int64_t>(pool->getPingInterval().count()));
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool pingInterval expected [") +
+        std::to_string(pingInterval) + ", actual[" +
+        std::to_string(pool->getPingInterval().count()) + "]");
     return false;
   }
   if (std::chrono::milliseconds(readTimeout) != pool->getReadTimeout()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool readTimeout expected [%d], actual [%" PRId64
-            "]",
-            readTimeout, static_cast<int64_t>(pool->getReadTimeout().count()));
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool readTimeout expected [") +
+        std::to_string(readTimeout) + ", actual[" +
+        std::to_string(pool->getReadTimeout().count()) + "]");
     return false;
   }
   if (serverGroup != pool->getServerGroup()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool serverGroup expected [%s], actual [%s]",
-            serverGroup.c_str(), pool->getServerGroup().c_str());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool serverGroup expected [") +
+        serverGroup + ", actual[" + pool->getServerGroup() + "]");
     return false;
   }
   if (socketBufferSize != pool->getSocketBufferSize()) {
-    sprintf(
-        logmsg,
-        "checkPoolAttribs: Pool socketBufferSize expected [%d], actual [%d]",
-        socketBufferSize, pool->getSocketBufferSize());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool socketBufferSize expected [") +
+        std::to_string(socketBufferSize) + ", actual[" +
+        std::to_string(pool->getSocketBufferSize()) + "]");
     return false;
   }
   if (subscriptionEnabled != pool->getSubscriptionEnabled()) {
-    sprintf(
-        logmsg,
-        "checkPoolAttribs: Pool subscriptionEnabled expected [%s], actual [%s]",
-        subscriptionEnabled ? "true" : "false",
-        pool->getSubscriptionEnabled() ? "true" : "false");
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool subscriptionEnabled expected [") +
+        (subscriptionEnabled ? "true" : "false") +
+        (pool->getSubscriptionEnabled() ? "true" : "false") + "]");
     return false;
   }
   if (std::chrono::milliseconds(subscriptionMessageTrackingTimeout) !=
       pool->getSubscriptionMessageTrackingTimeout()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool subscriptionMessageTrackingTimeout "
-            "expected [%d], actual [%" PRId64 "]",
-            subscriptionMessageTrackingTimeout,
-            static_cast<int64_t>(
-                pool->getSubscriptionMessageTrackingTimeout().count()));
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool subscriptionMessageTrackingTimeout "
+                    "expected [") +
+        std::to_string(subscriptionMessageTrackingTimeout) + ", actual[" +
+        std::to_string(pool->getSubscriptionMessageTrackingTimeout().count()) +
+        "]");
     return false;
   }
   if (std::chrono::milliseconds(subscriptionAckInterval) !=
       pool->getSubscriptionAckInterval()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool subscriptionAckInterval expected [%d], "
-            "actual [%" PRId64 "]",
-            subscriptionAckInterval,
-            static_cast<int64_t>(pool->getSubscriptionAckInterval().count()));
-    LOG(logmsg);
+    LOG(std::string(
+            "checkPoolAttribs: Pool subscriptionAckInterval expected [") +
+        std::to_string(subscriptionAckInterval) + ", actual[" +
+        std::to_string(pool->getSubscriptionAckInterval().count()) + "]");
     return false;
   }
   if (subscriptionRedundancy != pool->getSubscriptionRedundancy()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool subscriptionRedundancy expected [%d], "
-            "actual [%d]",
-            subscriptionRedundancy, pool->getSubscriptionRedundancy());
-    LOG(logmsg);
+    LOG(std::string(
+            "checkPoolAttribs: Pool subscriptionRedundancy expected [") +
+        std::to_string(subscriptionRedundancy) + ", actual[" +
+        std::to_string(pool->getSubscriptionRedundancy()) + "]");
     return false;
   }
   if (std::chrono::milliseconds(statisticInterval) !=
       pool->getStatisticInterval()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool statisticInterval expected [%d], actual "
-            "[%" PRId64 "]",
-            statisticInterval,
-            static_cast<int64_t>(pool->getStatisticInterval().count()));
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool statisticInterval expected [") +
+        std::to_string(statisticInterval) + ", actual[" +
+        std::to_string(pool->getStatisticInterval().count()) + "]");
     return false;
   }
   if (prSingleHopEnabled != pool->getPRSingleHopEnabled()) {
-    sprintf(
-        logmsg,
-        "checkPoolAttribs: Pool prSingleHopEnabled expected [%d], actual [%d]",
-        prSingleHopEnabled, pool->getPRSingleHopEnabled());
-    LOG(logmsg);
+    LOG(std::string("checkPoolAttribs: Pool subscriptionEnabled expected [") +
+        (prSingleHopEnabled ? "true" : "false") +
+        (pool->getPRSingleHopEnabled() ? "true" : "false") + "]");
     return false;
   }
   if (std::chrono::milliseconds(updateLocatorListInterval) !=
       pool->getUpdateLocatorListInterval()) {
-    sprintf(logmsg,
-            "checkPoolAttribs: Pool updateLocatorListInterval expected [%d], "
-            "actual [%" PRId64 "]",
-            updateLocatorListInterval,
-            static_cast<int64_t>(pool->getUpdateLocatorListInterval().count()));
-    LOG(logmsg);
+    LOG(std::string(
+            "checkPoolAttribs: Pool updateLocatorListInterval expected [") +
+        std::to_string(updateLocatorListInterval) + ", actual[" +
+        std::to_string(pool->getUpdateLocatorListInterval().count()) + "]");
     return false;
   }
   return true;
@@ -374,14 +336,13 @@ int testXmlCacheCreationWithPools() {
   locators.clear();
   servers.clear();
   emptylist.clear();
-  char tmp[128];
-  sprintf(tmp, "localhost:%d", CacheHelper::staticLocatorHostPort1);
 
-  locators.push_back(string(tmp));
-  sprintf(tmp, "localhost:%d", CacheHelper::staticHostPort1);
-  servers.push_back(string(tmp));
-  sprintf(tmp, "localhost:%d", CacheHelper::staticHostPort2);
-  servers.push_back(string(tmp));
+  locators.push_back(std::string("localhost:") +
+                     CacheHelper::getstaticLocatorHostPort1());
+  servers.push_back(std::string("localhost:") +
+                    std::to_string(CacheHelper::staticHostPort1));
+  servers.push_back(std::string("localhost:") +
+                    std::to_string(CacheHelper::staticHostPort2));
 
   // THIS MUST MATCH WITH THE CLIENT CACHE XML LOADED
 
@@ -470,8 +431,8 @@ int testXmlCacheCreationWithPools() {
 DUNIT_TASK_DEFINITION(CLIENT1, ValidXmlTestPools)
   {
     CacheHelper::initLocator(1);
-    char tmp[128];
-    sprintf(tmp, "localhost:%d", CacheHelper::staticLocatorHostPort1);
+    auto tmp = std::string("localhost:%d") +
+               std::to_string(CacheHelper::staticLocatorHostPort1);
     CacheHelper::initServer(1, "cacheserver1_pool.xml", tmp);
     CacheHelper::initServer(2, "cacheserver2_pool.xml", tmp);
 
