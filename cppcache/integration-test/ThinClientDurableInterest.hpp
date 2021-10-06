@@ -44,7 +44,7 @@ recieved.
 #define SERVER1 s2p1
 #define FEEDER s2p2
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::EntryEvent;
 using apache::geode::client::HashMapOfCacheable;
@@ -61,12 +61,9 @@ class OperMonitor : public CacheListener {
     auto key = event.getKey();
     auto value = std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
 
-    char buf[256];
-    sprintf(buf,
-            "Received event for Cachelistener id =%d with key %s and value %d.",
-            m_id, key->toString().c_str(), value->value());
-    LOG(buf);
-
+    LOG(std::string("Received event for Cachelistener id =") +
+        std::to_string(m_id) + " with key " + key->toString() + " and value " +
+        std::to_string(value->value()) + ".");
     m_map[key] = value;
   }
 
@@ -82,15 +79,16 @@ class OperMonitor : public CacheListener {
   void validate(size_t keyCount, int eventcount, int durableValue,
                 int nonDurableValue) {
     LOG("validate called");
-    char buf[256] = {'\0'};
+    std::stringstream strm;
 
-    sprintf(buf, "Expected %zd keys for the region, Actual = %zd", keyCount,
-            m_map.size());
-    ASSERT(m_map.size() == keyCount, buf);
+    strm << "Expected " << keyCount
+         << " keys for the region, Actual = " << m_map.size();
+    ASSERT(m_map.size() == keyCount, strm.str());
 
-    sprintf(buf, "Expected %d events for the region, Actual = %d", eventcount,
-            m_ops);
-    ASSERT(m_ops == eventcount, buf);
+    strm.str("");
+    strm << "Expected " << eventcount
+         << " events for the region, Actual = " << m_ops;
+    ASSERT(m_ops == eventcount, strm.str());
 
     for (const auto& item : m_map) {
       const auto keyPtr =
@@ -100,14 +98,15 @@ class OperMonitor : public CacheListener {
 
       if (keyPtr->toString().find('D') ==
           std::string::npos) { /*Non Durable Key */
-        sprintf(buf,
-                "Expected final value for nonDurable Keys = %d, Actual = %d",
-                nonDurableValue, valuePtr->value());
-        ASSERT(valuePtr->value() == nonDurableValue, buf);
+        strm.str("");
+        strm << "Expected final value for nonDurable Keys = " << nonDurableValue
+             << ", Actual = " << valuePtr->value();
+        ASSERT(valuePtr->value() == nonDurableValue, strm.str());
       } else { /*Durable Key */
-        sprintf(buf, "Expected final value for Durable Keys = %d, Actual = %d",
-                durableValue, valuePtr->value());
-        ASSERT(valuePtr->value() == durableValue, buf);
+        strm.str("");
+        strm << "Expected final value for Durable Keys = " << durableValue
+             << ", Actual = " << valuePtr->value();
+        ASSERT(valuePtr->value() == durableValue, strm.str());
       }
     }
   }
@@ -116,9 +115,9 @@ class OperMonitor : public CacheListener {
 
   void afterUpdate(const EntryEvent& event) override { check(event); }
 
-  void afterRegionInvalidate(const RegionEvent&) override{}
+  void afterRegionInvalidate(const RegionEvent&) override {}
 
-  void afterRegionDestroy(const RegionEvent&) override{}
+  void afterRegionDestroy(const RegionEvent&) override {}
 
   void afterRegionLive(const RegionEvent&) override {
     LOG("afterRegionLive called.");
@@ -214,8 +213,7 @@ void feederUpdate1(int value) {
 
 DUNIT_TASK_DEFINITION(FEEDER, FeederInit)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0, true);
     getHelper()->createPooledRegion(regionNames[0], USE_ACK, locatorsG,
                                     "__TEST_POOL1__", true, true);
     getHelper()->createPooledRegion(regionNames[1], NO_ACK, locatorsG,
