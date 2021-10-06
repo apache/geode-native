@@ -338,7 +338,7 @@ int testXmlCacheCreationWithPools() {
   emptylist.clear();
 
   locators.push_back(std::string("localhost:") +
-                     CacheHelper::getstaticLocatorHostPort1());
+                     std::to_string(CacheHelper::staticLocatorHostPort1));
   servers.push_back(std::string("localhost:") +
                     std::to_string(CacheHelper::staticHostPort1));
   servers.push_back(std::string("localhost:") +
