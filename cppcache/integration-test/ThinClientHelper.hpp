@@ -243,8 +243,6 @@ void _verifyIntEntry(const char* name, const char* key, const int val,
   // Verify key and value exist in this region, in this process.
   int value = val;
   std::string msg;
-  char* buf = reinterpret_cast<char*>(malloc(1024 + strlen(key) + 20));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
   if (!isCreated) {
     if (noKey) {
       msg = std::string("Verify key ") + key + " does not exist in region " +

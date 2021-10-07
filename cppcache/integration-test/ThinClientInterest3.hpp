@@ -79,6 +79,7 @@ void validateEventCount(int line) {
   msg = std::string("Got wrong number of invalidate events. expected[") +
         std::to_string(numInvalidates) + "], real[" + std::to_string(num) + "]";
   ASSERT(num == numInvalidates, msg);
+  num = reg1Listener1->getDestroys();
   msg = std::string("Got wrong number of destroys events. expected[") +
         std::to_string(numDestroys) + "], real[" + std::to_string(num) + "]";
   ASSERT(num == numDestroys, msg);
