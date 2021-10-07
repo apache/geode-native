@@ -15,8 +15,8 @@
 project(netcore-session-integrationtest LANGUAGES NONE)
 
 add_custom_target(netcore-session-integration-test ALL 
-  COMMAND ${DOTNET} build netcore-session-integration-test.csproj --configuration $<CONFIG>
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/
+  COMMAND ${DOTNET} build netcore-session-integration-test.csproj -p:platform=x64 --configuration $<CONFIG>
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-session VERBATIM)
 
 enable_testing()

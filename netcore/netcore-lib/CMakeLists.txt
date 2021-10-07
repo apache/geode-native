@@ -14,7 +14,12 @@
 # limitations under the License.
 project(netcore-lib LANGUAGES NONE)
 
-add_custom_target(netcore-lib ALL COMMAND ${DOTNET} build netcore-lib.csproj --configuration $<CONFIG>
+add_custom_target(netcore-lib ALL COMMAND ${DOTNET} build netcore-lib.csproj -p:platform=x64 --configuration $<CONFIG>
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c VERBATIM)
 
-install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
+if (WIN32)
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./bin)
+else ()
+  install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/Apache.Geode.NetCore.dll DESTINATION ./lib)
+endif()
+
