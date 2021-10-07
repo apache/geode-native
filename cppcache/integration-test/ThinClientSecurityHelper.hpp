@@ -259,9 +259,10 @@ class putThread : public ACE_Task_Base {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          auto tid = boost::lexical_cast<std::string>(std::this_thread::get_id());
-          printf("%d: %s exception got and exception message = %s\n",
-                 pid, tid.c_str(), ex.what());
+          auto tid =
+              boost::lexical_cast<std::string>(std::this_thread::get_id());
+          printf("%d: %s exception got and exception message = %s\n", pid,
+                 tid.c_str(), ex.what());
         }
       }
     }

@@ -41,7 +41,7 @@
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
@@ -113,12 +113,14 @@ void createRegionLocal(const char* name, bool ackMode, const char*,
   LOG("Region created.");
 }
 
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,

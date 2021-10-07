@@ -65,13 +65,12 @@ class ThinClientTallyLoader : public TallyLoader {
     int32_t loadValue = std::dynamic_pointer_cast<CacheableInt32>(
                             TallyLoader::load(rp, key, aCallbackArgument))
                             ->value();
-    char lstrvalue[32];
-    sprintf(lstrvalue, "%i", loadValue);
-    auto lreturnValue = CacheableString::create(lstrvalue);
+    auto lreturnValue = CacheableString::create(std::to_string(loadValue));
     if (key && (!rp.getAttributes().getEndpoints().empty() ||
                 !rp.getAttributes().getPoolName().empty())) {
       LOGDEBUG("Putting the value (%s) for local region clients only ",
-               lstrvalue);
+               lreturnValue->value().c_str());
+
       rp.put(key, lreturnValue);
     }
     return std::move(lreturnValue);

@@ -142,8 +142,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  LOG(std::string("verifyEntry() called from ") + std::to_string(line) +
-      "\n");
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -301,8 +300,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
-                             "__TEST_POOL1__");
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepOne_Pooled_Locator complete.");
   }
 END_TASK_DEFINITION
@@ -318,8 +316,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pooled_Locator_Sticky)
   {
     initClient(true);
-    createPooledRegionSticky(regionName, USE_ACK, locatorsG,
-                             "__TEST_POOL1__");
+    createPooledRegionSticky(regionName, USE_ACK, locatorsG, "__TEST_POOL1__");
     LOG("StepTwo complete.");
   }
 END_TASK_DEFINITION

@@ -33,7 +33,7 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
@@ -156,7 +156,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+            key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -199,12 +200,14 @@ void createRegion(const char* name, bool ackMode, bool isCacheEnabled,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -218,7 +221,8 @@ void createPooledRegionConcurrencyCheckDisabled(
     const std::string& poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
@@ -365,9 +369,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_ConcurrencyCheckDisabled)
   {
     initClient(true);
-    createPooledRegionConcurrencyCheckDisabled(regionNames[0], USE_ACK,
-                                               locatorsG, poolName, true, true,
-                                               false);
+    createPooledRegionConcurrencyCheckDisabled(
+        regionNames[0], USE_ACK, locatorsG, poolName, true, true, false);
     LOG("StepOne_Pooled_Locator_ConcurrencyCheckDisabled complete.");
   }
 END_TASK_DEFINITION

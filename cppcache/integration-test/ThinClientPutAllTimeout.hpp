@@ -29,7 +29,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Exception;
 using apache::geode::client::HashMapOfCacheable;

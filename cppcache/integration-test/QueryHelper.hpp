@@ -363,7 +363,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
       }
 
       if (foundFields != expectedFields) {
-        LOG(std::string("found fields ") + std::to_string(foundFields) + ", expected fields " + std::to_string(expectedFields) + " \n");
+        LOG(std::string("found fields ") + std::to_string(foundFields) +
+            ", expected fields " + std::to_string(expectedFields) + " \n");
         return false;
       }
     }
@@ -371,7 +372,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
     if (foundRows == expectedRows) return true;
 
     // lets log and return in case of error only situation
-    LOG(std::string("found rows ") + std::to_string(foundRows) + ", expected rows" + std::to_string(expectedRows) + " \n");
+    LOG(std::string("found rows ") + std::to_string(foundRows) +
+        ", expected rows" + std::to_string(expectedRows) + " \n");
   } else {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.

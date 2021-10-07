@@ -31,7 +31,7 @@
 
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -127,7 +127,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -161,8 +162,7 @@ void _verifyDestroyed(const char* name, const char* key, int line) {
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  LOG(std::string("verifyEntry() called from ") + std::to_string(line) +
-      "\n");
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -178,12 +178,14 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
@@ -346,8 +348,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
     char* buf = getcwd(buff, 2048);
     LOG(buf);
     initClient(true);
-    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__", true);
     auto regPtr = getHelper()->getRegion(regionName);
     regPtr->registerAllKeys(false, false, false);
     LOG("StepOne complete.");
@@ -360,8 +361,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
     char* buf = getcwd(buff, 2048);
     LOG(buf);
     initClient(true);
-    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__",
-                       true);
+    createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__", true);
     auto regPtr = getHelper()->getRegion(regionName);
     regPtr->registerAllKeys(false, false, false);
     LOG("StepTwo complete.");
@@ -433,7 +433,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
     // This step get the value from region, if key is inavalidate in region,
     // value
     // will get from server.
-    doNetsearch( regionName, keys[0], nvals[0] );
+    doNetsearch(regionName, keys[0], nvals[0]);
     updateEntry(regionName, keys[1], nvals[1]);
     LOG("StepSix complete.");
   }

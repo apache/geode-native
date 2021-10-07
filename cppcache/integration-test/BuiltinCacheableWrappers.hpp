@@ -405,7 +405,6 @@ class CacheableFileNameWrapper : public CacheableWrapper {
                       obj->length())
                 : 0);
   }
-
 };
 
 class CacheableFloatWrapper : public CacheableWrapper {

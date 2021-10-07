@@ -126,12 +126,13 @@ void setupCRTOutput();  // disable windows popups.
 class TestException {
  public:
   TestException(const std::string& msg, int lineno, const std::string& filename)
-      : m_message(msg),
-        m_lineno(lineno),
-        m_filename(filename) {}
+      : m_message(msg), m_lineno(lineno), m_filename(filename) {}
 
   void print() {
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n", apache::geode::client::Log::formatLogLine(apache::geode::client::LogLevel::Error).c_str(),
+    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n",
+            apache::geode::client::Log::formatLogLine(
+                apache::geode::client::LogLevel::Error)
+                .c_str(),
             m_message.c_str(), m_filename.c_str(), m_lineno);
   }
   std::string m_message;

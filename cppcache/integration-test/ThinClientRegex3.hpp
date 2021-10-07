@@ -33,7 +33,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableInt32;
@@ -149,7 +149,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+            key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -183,12 +184,14 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
+  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
+          ackMode);
   fflush(stdout);
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,

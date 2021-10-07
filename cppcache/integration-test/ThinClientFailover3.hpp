@@ -141,8 +141,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  LOG(std::string("verifyEntry() called from ") + std::to_string(line) +
-      "\n");
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }

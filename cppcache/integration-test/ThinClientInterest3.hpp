@@ -29,7 +29,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;
@@ -63,26 +63,25 @@ void setCacheWriter(const char* regName,
 void validateEventCount(int line) {
   LOGINFO("ValidateEvents called from line (%d).", line);
   int num = reg1Listener1->getCreates();
-  char buf[1024];
-  sprintf(buf, "Got wrong number of creation events. expected[%d], real[%d]",
-          numCreates, num);
-  ASSERT(num == numCreates, buf);
+  auto msg = std::string("Got wrong number of creation events. expected[") +
+             std::to_string(numCreates) + "], real[" + std::to_string(num) +
+             "]";
+  ASSERT(num == numCreates, msg);
   num = reg1Listener1->getUpdates();
-  sprintf(buf, "Got wrong number of update events. expected[%d], real[%d]",
-          numUpdates, num);
-  ASSERT(num == numUpdates, buf);
+  msg = std::string("Got wrong number of update events. expected[") +
+        std::to_string(numUpdates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numUpdates, msg);
   num = reg1Writer1->getCreates();
-  sprintf(buf, "Got wrong number of writer events. expected[%d], real[%d]",
-          numCreates, num);
-  ASSERT(num == numCreates, buf);
+  msg = std::string("Got wrong number of writer events. expected[") +
+        std::to_string(numCreates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numCreates, msg);
   num = reg1Listener1->getInvalidates();
-  sprintf(buf, "Got wrong number of invalidate events. expected[%d], real[%d]",
-          numInvalidates, num);
-  ASSERT(num == numInvalidates, buf);
-  num = reg1Listener1->getDestroys();
-  sprintf(buf, "Got wrong number of destroys events. expected[%d], real[%d]",
-          numDestroys, num);
-  ASSERT(num == numDestroys, buf);
+  msg = std::string("Got wrong number of invalidate events. expected[") +
+        std::to_string(numInvalidates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numInvalidates, msg);
+  msg = std::string("Got wrong number of destroys events. expected[") +
+        std::to_string(numDestroys) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numDestroys, msg);
 }
 
 DUNIT_TASK_DEFINITION(SERVER1, StartServer)
