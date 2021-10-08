@@ -47,7 +47,7 @@ add_test(NAME remove_dirs
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/remove_dirs.cmake)
 
 add_test(NAME netcore-test 
-  COMMAND dotnet test -c $<CONFIG>
+  COMMAND dotnet test -c $<CONFIG> -p:platform=x64
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 set_tests_properties(startclusters PROPERTIES FIXTURES_SETUP geode)
