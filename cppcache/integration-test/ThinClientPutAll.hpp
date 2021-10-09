@@ -577,7 +577,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepNine)
     LOG("Verify large PutAll");
     for (int i = 0; i < 100000; i++) {
       auto key0 = std::string("key-") + std::to_string(i);
-      verifyCreated(regionNames[0], key0);
+      verifyCreated(regionNames[0], key0.c_str());
     }
     LOG("StepNine complete.");
   }
