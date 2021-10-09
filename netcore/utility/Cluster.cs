@@ -43,13 +43,17 @@ namespace Apache.Geode.Client.IntegrationTests
 
         public bool UseSSL { get; set; }
 
-        internal PoolFactory ApplyLocators(PoolFactory poolFactory)
+        public List<Locator> Locators
+        {
+          get { return locators_; }
+        }
+
+    internal PoolFactory ApplyLocators(PoolFactory poolFactory)
         {
             foreach (var locator in locators_)
             {
                 poolFactory.AddLocator(locator.Address.address, locator.Address.port);
             }
-
             return poolFactory;
         }
 

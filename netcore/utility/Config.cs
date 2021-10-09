@@ -15,32 +15,39 @@
  * limitations under the License.
  */
 
-// GENERATED FROM Config.cs.in DO NOT EDIT Config.cs
+using System;
+using System.Runtime.InteropServices;
 
 public class Config
 {
   public static string GeodeGfsh
   {
-    get { return @"C:/Users/pivotal/Src/Repos/geode/geode-assembly/build/install/apache-geode/bin/gfsh.bat"; }
+    //get { return @"C:/Users/pivotal/Src/Repos/geode/geode-assembly/build/install/apache-geode/bin/gfsh.bat"; }
+     get {
+       if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) {
+         return Environment.GetEnvironmentVariable("GEODE_HOME") + "/bin/gfsh.bat";
+       }
+       else {
+         return Environment.GetEnvironmentVariable("GEODE_HOME") + "/bin/gfsh";
+       }
+     }
   }
 
   public static string JavaobjectJarPath
   {
-    get { return @"C:/geode-native-develop/build/tests/javaobject/javaobject.jar"; }
+    //get { return @"C:/geode-native-develop/build/tests/javaobject/javaobject.jar"; }
+    get { return Environment.GetEnvironmentVariable("GEODE_NATIVE_BUILD_DIR") + "/tests/javaobject/javaobject.jar"; }
   }
 
   public static string SslServerKeyPath
   {
-	get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/server_keys"; }
+	  //get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/server_keys"; }
+    get { return "../../ssl_keys/server_keys"; }
   }
 
   public static string SslClientKeyPath
   {
-	get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/client_keys"; }
-  }
-
-  public static string SniConfigPath
-  {
-	get { return @"C:/geode-native-develop/clicache/integration-test2/../../sni-test-config"; }
+	  //get { return @"C:/geode-native-develop/clicache/integration-test2/../../ssl_keys/client_keys"; }
+    get { return "../../ssl_keys/client_keys"; }
   }
 }
