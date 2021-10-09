@@ -154,9 +154,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 #define verifyDestroyed(x, y) _verifyDestroyed(x, y, __LINE__)
 
 void _verifyDestroyed(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyDestroyed() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyDestroyed() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, true);
   LOG("Entry destroyed.");
 }
@@ -165,9 +164,7 @@ void _verifyDestroyed(const char* name, const char* key, int line) {
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -175,9 +172,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 #define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyCreated() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
@@ -273,10 +269,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }

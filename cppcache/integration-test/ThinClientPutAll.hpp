@@ -576,8 +576,7 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepNine)
   {
     LOG("Verify large PutAll");
     for (int i = 0; i < 100000; i++) {
-      char key0[50] = {0};
-      sprintf(key0, "key-%d", i);
+      auto key0 = std::string("key-") + std::to_string(i);
       verifyCreated(regionNames[0], key0);
     }
     LOG("StepNine complete.");
@@ -743,9 +742,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
         const auto& mVal = iter.second;
         if (mVal != nullptr) {
           auto val1 = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(mVal);
-          sprintf(buf, "value from map %d , expected value %d ",
-                  val1->getm_i1(), 34324);
-          LOG(buf);
+          LOG(std::string("value from map ") + std::to_string(val1->getm_i1()) +
+              ", expected value 34324");
           ASSERT(val1->getm_i1() == 34324, "value not matched");
         }
       }
