@@ -51,7 +51,7 @@
   </PropertyGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="pwsh -ExecutionPolicy Bypass -File c:\geode-native-develop\netcore\\utility\\checkEnvironment.ps1" />
+    <Exec Command="pwsh -ExecutionPolicy Bypass -File ../utility/checkEnvironment.ps1" />
   </Target>
 
 </Project>
