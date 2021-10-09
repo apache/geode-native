@@ -69,26 +69,26 @@ void setCacheWriter(const char* regName,
 void validateEventCount(int line) {
   LOGINFO("ValidateEvents called from line (%d).", line);
   int num = reg1Listener1->getCreates();
-  char buf[1024];
-  sprintf(buf, "Got wrong number of creation events. expected[%d], real[%d]",
-          numCreates, num);
-  ASSERT(num == numCreates, buf);
+  auto msg = std::string("Got wrong number of creation events. expected[") +
+             std::to_string(numCreates) + "], real[" + std::to_string(num) +
+             "]";
+  ASSERT(num == numCreates, msg);
   num = reg1Listener1->getUpdates();
-  sprintf(buf, "Got wrong number of update events. expected[%d], real[%d]",
-          numUpdates, num);
-  ASSERT(num == numUpdates, buf);
+  msg = std::string("Got wrong number of update events. expected[") +
+        std::to_string(numUpdates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numUpdates, msg);
   num = reg1Writer1->getCreates();
-  sprintf(buf, "Got wrong number of writer events. expected[%d], real[%d]",
-          numCreates, num);
-  ASSERT(num == numCreates, buf);
+  msg = std::string("Got wrong number of writer events. expected[") +
+        std::to_string(numCreates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numCreates, msg);
   num = reg1Listener1->getInvalidates();
-  sprintf(buf, "Got wrong number of invalidate events. expected[%d], real[%d]",
-          numInvalidates, num);
-  ASSERT(num == numInvalidates, buf);
+  msg = std::string("Got wrong number of invalidate events. expected[") +
+        std::to_string(numInvalidates) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numInvalidates, msg);
   num = reg1Listener1->getDestroys();
-  sprintf(buf, "Got wrong number of destroys events. expected[%d], real[%d]",
-          numDestroys, num);
-  ASSERT(num == numDestroys, buf);
+  msg = std::string("Got wrong number of destroys events. expected[") +
+        std::to_string(numDestroys) + "], real[" + std::to_string(num) + "]";
+  ASSERT(num == numDestroys, msg);
 }
 
 DUNIT_TASK_DEFINITION(SERVER1, StartServer)
@@ -116,11 +116,11 @@ void putAllWithOneEntryTimeout(std::chrono::milliseconds timeout,
   map0.clear();
 
   for (int i = 0; i < 100000; i++) {
-    char key0[50] = {0};
-    char val0[2500] = {0};
-    sprintf(key0, "key-%d", i);
-    sprintf(val0, "%1000d", i);
-    map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
+    auto key0 = std::string("key-") + std::to_string(i);
+    std::ostringstream val0;
+    val0 << std::left << std::setfill('0') << std::setw(1000) << i;
+    map0.emplace(CacheableKey::create(key0),
+                 CacheableString::create(val0.str()));
   }
 
   map0.emplace(CacheableKey::create("timeout-this-entry"),
@@ -140,11 +140,11 @@ void putAllWithOneEntryTimeoutWithCallBackArg(
   map0.clear();
 
   for (int i = 0; i < 100000; i++) {
-    char key0[50] = {0};
-    char val0[2500] = {0};
-    sprintf(key0, "key-%d", i);
-    sprintf(val0, "%1000d", i);
-    map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
+    auto key0 = std::string("key-") + std::to_string(i);
+    std::ostringstream val0;
+    val0 << std::left << std::setfill('0') << std::setw(1000) << i;
+    map0.emplace(CacheableKey::create(key0),
+                 CacheableString::create(val0.str()));
   }
 
   map0.emplace(CacheableKey::create("timeout-this-entry"),

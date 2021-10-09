@@ -69,22 +69,18 @@ void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
-  if (!isCreated) {
-    if (noKey) {
-      sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (!val) {
-      sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-              name);
-    } else {
-      sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-              name);
-    }
-    LOG(buf);
+  std::string msg;
+  if (noKey) {
+    msg =
+        std::string("Verify key ") + key + " does not exist in region " + name;
+  } else if (!val) {
+    msg = std::string("Verify value for key ") + key +
+          " does not exist in region " + name;
+  } else {
+    msg = std::string("Verify value for key ") + key + " is: " + value +
+          " in region " + name;
   }
-  free(buf);
+  LOG(msg);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -158,9 +154,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -257,10 +251,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }
