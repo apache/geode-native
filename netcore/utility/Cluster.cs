@@ -17,11 +17,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Net;
 using System.IO;
-using System.Net.Sockets;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests

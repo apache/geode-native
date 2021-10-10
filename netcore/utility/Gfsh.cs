@@ -15,14 +15,8 @@
  * limitations under the License.
  */
 
-using System;
-using System.Diagnostics;
 using System.Net;
-using System.IO;
 using System.Net.Sockets;
-using System.Reflection;
-using Xunit;
-using System.Collections.Generic;
 
 namespace Apache.Geode.Client.IntegrationTests
 {

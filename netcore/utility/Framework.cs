@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
- using System.Net;
-using System.IO;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Apache.Geode.Client.IntegrationTests

@@ -17,11 +17,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Net;
-using System.IO;
-using System.Net.Sockets;
-using Xunit;
-using System.Collections;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Xunit.Abstractions;
