@@ -86,7 +86,7 @@ namespace Apache.Geode.Client.IntegrationTests
             // TODO escape commands
             var fullCmd = "\"" + string.Join("\" \"", commands) + "\"";
 
-            var gfsh = new Process
+            using var gfsh = new Process
             {
                 StartInfo =
                 {
