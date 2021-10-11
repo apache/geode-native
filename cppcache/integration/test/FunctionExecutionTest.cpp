@@ -324,6 +324,8 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
       .withType("PARTITION")
       .execute();
 
+  cluster.getServers()[2].stop();
+
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
@@ -336,12 +338,12 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
                     .create("partition_region");
 
   populateRegionReturnFilter(region, 1000);
-  //  Shut down the server
-  cluster.getServers()[2].stop();
+  //  Start the the server
+  cluster.getServers()[2].start();
 
-  //  Do the rebalance, so that buckets from shutdown server
-  //  are created on the running servers
-  cluster.getGfsh().rebalance();
+  // Do the rebalance, so that primary buckets
+  // are transferred to the newly added server
+  cluster.getGfsh().rebalance().execute();
 
   // InternalFunctionInvocationTargetException will happen
   // on servers, because client will try to execute the single-hop function
@@ -379,6 +381,8 @@ TEST(FunctionExecutionTest,
       .withType("PARTITION")
       .execute();
 
+  cluster.getServers()[2].stop();
+
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
@@ -391,12 +395,13 @@ TEST(FunctionExecutionTest,
                     .create("partition_region");
 
   auto filter = populateRegionReturnFilter(region, 1000);
-  //  Shut down the server
-  cluster.getServers()[2].stop();
 
-  //   Do the rebalance, so that buckets from shutdown server
-  //   are created on the running servers
-  cluster.getGfsh().rebalance();
+  //  Start the the server
+  cluster.getServers()[2].start();
+
+  // Do the rebalance, so that primary buckets
+  // are transferred to the newly added server
+  cluster.getGfsh().rebalance().execute();
 
   // InternalFunctionInvocationTargetException will happen
   // on servers, because client will try to execute the single-hop function
