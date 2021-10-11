@@ -211,11 +211,7 @@ void waitUntilPRMetadataIsRefreshed(CacheImpl *cacheImpl) {
 }
 
 TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -234,8 +230,7 @@ TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  ServerAddress serverAddress = cluster.getServers()[2].getAddress();
-  cluster.applyServer(poolFactory, serverAddress);
+  cluster.applyLocators(poolFactory);
 
   auto pool =
       poolFactory.setPRSingleHopEnabled(true).setRetryAttempts(0).create(
