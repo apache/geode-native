@@ -54,8 +54,8 @@
 	<DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="pwsh -ExecutionPolicy Bypass -File ../utility/checkEnvironment.ps1" />
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == true">
+	<Exec Command="pwsh -ExecutionPolicy Bypass -File ../utility/checkEnvironment.ps1" />
   </Target>
 
 </Project>
