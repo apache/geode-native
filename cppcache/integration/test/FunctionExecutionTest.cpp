@@ -212,11 +212,11 @@ void waitUntilPRMetadataIsRefreshed(CacheImpl *cacheImpl) {
 }
 
 TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -304,11 +304,11 @@ const std::vector<std::string> serverResultsToStrings(
 }
 
 TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -362,11 +362,11 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
 
 TEST(FunctionExecutionTest,
      testThatFunctionExecutionThrowsExceptionNonHAWithFilter) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
 
   cluster.start([&]() {
     cluster.getGfsh()
