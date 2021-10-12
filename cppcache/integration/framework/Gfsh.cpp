@@ -31,6 +31,8 @@ Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
 
 Gfsh::Deploy Gfsh::deploy() { return Deploy(*this); }
 
+Gfsh::Rebalance Gfsh::rebalance() { return Rebalance(*this); }
+
 Gfsh::ExecuteFunction Gfsh::executeFunction() { return ExecuteFunction(*this); }
 
 Gfsh::Verb::Verb(Gfsh &gfsh) : gfsh_(gfsh) {}
@@ -541,6 +543,8 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
 
   return *this;
 }
+
+Gfsh::Rebalance::Rebalance(Gfsh &gfsh) : Command{gfsh, "rebalance"} {}
 
 template <>
 void Gfsh::Command<void>::execute(const std::string &user,

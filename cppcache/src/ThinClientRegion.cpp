@@ -3142,7 +3142,6 @@ bool ThinClientRegion::executeFunctionSH(
 
     if (err != GF_NOERR) {
       if (err == GF_FUNCTION_EXCEPTION) {
-        reExecute = true;
         if (auto poolDM =
                 std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
           if (poolDM->getClientMetaDataService()) {
@@ -3150,25 +3149,30 @@ bool ThinClientRegion::executeFunctionSH(
                 this->getFullPath(), 0);
           }
         }
-        worker->getResultCollector()->reset();
-        {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(
-              *resultCollectorLock);
-          rc->clearResults();
-        }
-        std::shared_ptr<CacheableHashSet> failedNodeIds(
-            currentReply->getFailedNode());
-        if (failedNodeIds) {
-          LOGDEBUG(
-              "ThinClientRegion::executeFunctionSH with "
-              "GF_FUNCTION_EXCEPTION "
-              "failedNodeIds size = %zu ",
-              failedNodeIds->size());
-          failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
+
+        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
+          abortError = err;
+        } else if (getResult & 1) {  // isHA = true
+          reExecute = true;
+          worker->getResultCollector()->reset();
+          {
+            std::lock_guard<decltype(*resultCollectorLock)> guard(
+                *resultCollectorLock);
+            rc->clearResults();
+          }
+          std::shared_ptr<CacheableHashSet> failedNodeIds(
+              currentReply->getFailedNode());
+          if (failedNodeIds) {
+            LOGDEBUG(
+                "ThinClientRegion::executeFunctionSH with "
+                "GF_FUNCTION_EXCEPTION "
+                "failedNodeIds size = %zu ",
+                failedNodeIds->size());
+            failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
+          }
         }
       } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
                  (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
-        reExecute = true;
         LOGINFO(
             "ThinClientRegion::executeFunctionSH with GF_NOTCON or "
             "GF_CLIENT_WAIT_TIMEOUT ");
@@ -3179,11 +3183,17 @@ bool ThinClientRegion::executeFunctionSH(
                 this->getFullPath(), 0);
           }
         }
-        worker->getResultCollector()->reset();
-        {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(
-              *resultCollectorLock);
-          rc->clearResults();
+
+        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
+          abortError = err;
+        } else if (getResult & 1) {  // isHA = true
+          reExecute = true;
+          worker->getResultCollector()->reset();
+          {
+            std::lock_guard<decltype(*resultCollectorLock)> guard(
+                *resultCollectorLock);
+            rc->clearResults();
+          }
         }
       } else {
         if (ThinClientBaseDM::isFatalClientError(err)) {
@@ -3202,6 +3212,7 @@ bool ThinClientRegion::executeFunctionSH(
   if (abortError != GF_NOERR) {
     throwExceptionIfError("ExecuteOnRegion:", abortError);
   }
+
   return reExecute;
 }
 

@@ -44,6 +44,9 @@ public class MultiGetAllFunctionNonHA implements Function {
         PartitionRegionHelper.getLocalDataForContext(regionContext);
 
     Set<String> keys = region.keySet();
+    if (keys.isEmpty()) {
+      context.getResultSender().lastResult(null);
+    }
     int counter = 1;
     for (String key : keys) {
       if (counter == keys.size()) {
