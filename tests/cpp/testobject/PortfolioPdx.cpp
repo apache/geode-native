@@ -121,6 +121,7 @@ void PortfolioPdx::fromData(PdxReader& pr) {
 std::string PortfolioPdx::toString() const {
   std::stringstream result;
   auto suffix = "\n    ";
+
   result << "PortfolioPdxObject: [" << suffix;
 
   result << "id = " << _id << suffix;

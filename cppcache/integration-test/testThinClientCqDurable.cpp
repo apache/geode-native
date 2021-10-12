@@ -16,6 +16,7 @@
  */
 
 #include <string>
+#include <sstream>
 #include <thread>
 #include <chrono>
 
@@ -418,10 +419,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       auto &&results = qry->executeWithInitialResults();
 
       LOG("EXECUTE 1 STOP");
-      auto count = results->size();
-      char buf[100];
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(results->size()));
     } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
@@ -579,14 +577,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       cqy->stop();
       SLEEP(1500);  // sleep 0.025 min to allow server stop query to complete
       auto cqStats = cqy->getStatistics();
-      sprintf(buf,
-              "numInserts[%d], numDeletes[%d], numUpdates[%d], numEvents[%d]",
-              cqStats->numInserts(), cqStats->numDeletes(),
-              cqStats->numUpdates(), cqStats->numEvents());
-      LOG(buf);
-      sprintf(buf, "MyCount:onEventCount=%d, onErrorCount=%d", onEventCount,
-              onErrorCount);
-      LOG(buf);
+      std::stringstream strm;
+      strm << "numInserts[" << cqStats->numInserts() << "], numDeletes["
+           << cqStats->numDeletes() << "], numUpdates[" << cqStats->numUpdates()
+           << "], numEvents[" << cqStats->numEvents() << "]";
+      LOG(strm.str());
+      strm.str("");
+      strm << "MyCount:onEventCount=" << onEventCount
+           << ", onErrorCount = " << onErrorCount;
+      LOG(strm.str());
       ASSERT(cqStats->numEvents() > 0, "stats incorrect!");
       cqy->close();
     } catch (Exception &excp) {

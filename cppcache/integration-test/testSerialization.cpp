@@ -110,9 +110,7 @@ class OtherType : public DataSerializable {
   }
 
   static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {
-    char logmsg[1000];
-    sprintf(logmsg, "validateCT for %d", i);
-    LOG(logmsg);
+    LOG(std::string("validateCT for ") + std::to_string(i));
     XASSERT(otPtr != nullptr);
     auto ot = std::dynamic_pointer_cast<OtherType>(otPtr);
     XASSERT(ot != nullptr);

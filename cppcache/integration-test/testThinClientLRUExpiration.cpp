@@ -139,15 +139,11 @@ void ValidateDestroyRegion(const char *name) {
     rptr->put(1, 2);
     FAIL("Put should not be happened");
   } catch (RegionDestroyedException &ex) {
-    char buffer[1024];
-    sprintf(buffer, "Got expected exception %s: msg = %s", ex.getName().c_str(),
-            ex.what());
-    LOG(buffer);
+    LOG(std::string("Got expected exception ") + ex.getName() +
+        ": msg = " + ex.what());
   } catch (Exception &ex) {
-    char buffer[1024];
-    sprintf(buffer, "Got unexpected exception %s: msg = %s",
-            ex.getName().c_str(), ex.what());
-    FAIL(buffer);
+    FAIL(std::string("Got expected exception ") + ex.getName() +
+         ": msg = " + ex.what());
   }
 }
 
@@ -251,10 +247,8 @@ void createThinClientRegion(
     try {
       doRgnOperations(regionName, noOfEntry, rgnOpt);
     } catch (EntryNotFoundException &ex) {
-      char buffer[1024];
-      sprintf(buffer, "Got expected exception %s: msg = %s",
-              ex.getName().c_str(), ex.what());
-      LOG(buffer);
+      LOG(std::string("Got expected exception ") + ex.getName() +
+          ": msg = " + ex.what());
     }
     localDestroyRegion(regionName);
   }

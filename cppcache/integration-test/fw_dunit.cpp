@@ -122,9 +122,7 @@ class TaskQueues {
     }
     Task *task = tasks->front();
     if (task != nullptr) {
-      char logmsg[1024] = {0};
-      sprintf(logmsg, "received task: %s ", task->m_taskName.c_str());
-      LOG(logmsg);
+      LOG(std::string("receieved task: ") + task->m_taskName);
       tasks->pop_front();
     }
     return task;
@@ -135,9 +133,7 @@ class TaskQueues {
       return 0;
     }
     int sId = m_schedule.front();
-    char logmsg[1024] = {0};
-    sprintf(logmsg, "Next worker id is : %d", sId);
-    LOGCOORDINATOR(logmsg);
+    LOGCOORDINATOR(std::string("Next worker id id : ") + std::to_string(sId));
     m_schedule.pop_front();
     return sId;
   }
@@ -387,22 +383,8 @@ class TestDriver {
     fprintf(stdout, "Coordinator starting workers.\n");
     for (uint32_t i = 1; i < 5; i++) {
       std::string cmdline;
-      auto profilerCmd = std::getenv("PROFILERCMD");
-      if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
-          profilerCmd[0] != '\0') {
-        // replace %d's in profilerCmd with PID and worker ID
-        char cmdbuf[2048] = {0};
-        auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(
-                       std::chrono::system_clock::now())
-                       .time_since_epoch()
-                       .count();
-        ::sprintf(cmdbuf, profilerCmd, now, g_coordinatorPid, i);
-        cmdline = std::string{cmdbuf} + ' ' + g_programName + " -s" +
-                  std::to_string(i) + " -m" + std::to_string(g_coordinatorPid);
-      } else {
-        cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
-                  std::to_string(g_coordinatorPid);
-      }
+      cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
+                std::to_string(g_coordinatorPid);
       fprintf(stdout, "%s\n", cmdline.c_str());
       m_workers[i - 1] = new TestProcess(cmdline, i);
     }
@@ -583,9 +565,9 @@ class TestDriver {
     auto state = DUNIT->getState();
     for (uint32_t i = 0; i < TestState::WORKER_COUNT; i++) {
       if (!m_workers[i]->running()) {
-        char msg[1000] = {0};
-        sprintf(msg, "Error: Worker %s terminated prematurely.",
-                m_workers[i]->getWorkerId().getIdName());
+        auto msg = std::string("Error: Worker ") +
+                   m_workers[i]->getWorkerId().getIdName() +
+                   " terminated prematurely";
         LOG(msg);
 
         state->fail();

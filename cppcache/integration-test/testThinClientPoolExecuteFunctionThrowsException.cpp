@@ -153,14 +153,13 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
   {
     auto regPtr0 = getHelper()->getRegion(poolRegNames[0]);
-    char buf[128];
 
     for (int i = 0; i < 34; i++) {
-      sprintf(buf, "VALUE--%d", i);
-      auto value = CacheableString::create(buf);
+      auto value =
+          CacheableString::create(std::string("VALUE--") + std::to_string(i));
 
-      sprintf(buf, "KEY--%d", i);
-      auto key = CacheableString::create(buf);
+      auto key =
+          CacheableString::create(std::string("KEY--") + std::to_string(i));
       regPtr0->put(key, value);
     }
     std::this_thread::sleep_for(
@@ -172,8 +171,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     for (int i = 1; i <= 200; i++) {
       std::shared_ptr<Cacheable> value(CacheableInt32::create(i));
 
-      sprintf(buf, "execKey-%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key =
+          CacheableKey::create(std::string("execKey-") + std::to_string(i));
       regPtr0->put(key, value);
     }
     LOG("Put for execKey's on region complete.");
@@ -181,15 +180,15 @@ DUNIT_TASK_DEFINITION(CLIENT1, Client1OpTest)
     LOG("Adding filter");
     auto arrList = CacheableArrayList::create();
     for (int i = 100; i < 120; i++) {
-      sprintf(buf, "execKey-%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key =
+          CacheableKey::create(std::string("execKey-") + std::to_string(i));
       arrList->push_back(key);
     }
 
     auto filter = CacheableVector::create();
     for (int i = 100; i < 120; i++) {
-      sprintf(buf, "execKey-%d", i);
-      auto key = CacheableKey::create(buf);
+      auto key =
+          CacheableKey::create(std::string("execKey-") + std::to_string(i));
       filter->push_back(key);
     }
     LOG("Adding filter done.");

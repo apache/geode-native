@@ -32,7 +32,6 @@
 
 #include "CacheHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -136,9 +135,7 @@ void createOnekEntries() {
   std::vector<std::shared_ptr<RegionEntry>> me;
   dataReg->entries(me, false);
   LOG("Verifying size outside loop");
-  char buf[1024];
-  sprintf(buf, "region size is %d", me.size());
-  LOG(buf);
+  LOG(std::string("region size is ") + std::to_string(me.size()));
 
   ASSERT(me.size() <= 1024, "Should have evicted anything over 1024 entries");
 }

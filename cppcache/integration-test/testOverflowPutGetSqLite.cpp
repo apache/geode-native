@@ -171,51 +171,18 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
 // Testing for put operation
 void doNput(std::shared_ptr<Region> &regionPtr, uint32_t num,
             uint32_t start = 0) {
-  char keybuf[100];
   // Put 1 KB of data locally for each entry
-  char *text = new char[1024];
+  char text[1024];
   memset(text, 'A', 1023);
   text[1023] = '\0';
   auto valuePtr = CacheableString::create(text);
 
   for (uint32_t i = start; i < num; i++) {
-    sprintf(keybuf, "key-%d", i);
-    auto key = CacheableKey::create(keybuf);
-    printf("Putting key = %s\n", keybuf);
+    auto keyname = std::string("key-") + std::to_string(i);
+    auto key = CacheableKey::create(keyname);
+    printf("Putting key = %s\n", keyname.c_str());
     regionPtr->put(key, valuePtr);
   }
-}
-
-void doNputLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  // Put 1 MB of data locally for each entry
-  char *text = new char[1024 * 1024 /* 1 MB */];
-  memset(text, 'A', 1024 * 1024 - 1);
-  text[1024 * 1024 - 1] = '\0';
-  auto valuePtr = CacheableString::create(text);
-  for (int item = 0; item < num; item++) {
-    regionPtr->put(CacheableKey::create(item), valuePtr);
-  }
-
-  LOGINFO("Put data locally");
-}
-
-// Testing for get operation
-uint32_t doNgetLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  uint32_t countFound = 0;
-  uint32_t countNotFound = 0;
-
-  for (int i = 0; i < num; i++) {
-    printf("Getting key = %d\n", i);
-    auto valuePtr =
-        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(i));
-    if (valuePtr == nullptr) {
-      countNotFound++;
-    } else {
-      countFound++;
-    }
-  }
-  LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
-  return countFound;
 }
 
 // Testing for get operation
@@ -225,11 +192,10 @@ uint32_t doNget(std::shared_ptr<Region> &regionPtr, uint32_t num,
   uint32_t countNotFound = 0;
 
   for (uint32_t i = start; i < num; i++) {
-    char keybuf[100];
-    sprintf(keybuf, "key-%d", i);
+    auto keyname = std::string("key-") + std::to_string(i);
     auto valuePtr =
-        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keybuf));
-    printf("Getting key = %s\n", keybuf);
+        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyname));
+    printf("Getting key = %s\n", keyname.c_str());
     if (valuePtr == nullptr) {
       countNotFound++;
     } else {
@@ -508,10 +474,8 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
                  &ex) {  // expected sqlite full exception
                          // catching generic message as we dont
                          // have any specific sqlitefull exception
-      char buffer[1024];
-      sprintf(buffer, "Got expected exception %s: msg = %s",
-              ex.getName().c_str(), ex.what());
-      LOG(buffer);
+      LOG(std::string("Got expected exception ") + ex.getName() +
+          "; msg = " + ex.what());
     }
 
     // cache close

@@ -26,7 +26,7 @@
 #include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::AuthenticatedView;
 

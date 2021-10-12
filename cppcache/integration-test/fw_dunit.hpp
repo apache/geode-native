@@ -308,9 +308,7 @@ extern boost::interprocess::managed_shared_memory& globals();
 class TestException {
  public:
   TestException(const std::string& msg, int lineno, const std::string& filename)
-      : m_message(msg),
-        m_lineno(lineno),
-        m_filename(filename) {}
+      : m_message(msg), m_lineno(lineno), m_filename(filename) {}
 
   void print() {
     fprintf(stdout, "#### TestException: %s in %s at line %d\n",

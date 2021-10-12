@@ -125,9 +125,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StartClient1)
     // TOOD::check for poolwithendpoints or locators
 
     // By default poolwithendpoints
-    // char tmp1[100];
-    // sprintf( tmp1, "%d", CacheHelper::staticHostPort1 );
-    // gfendpoints1 += tmp1;
+    // gfendpoints1 += std::to_string(CacheHelper::staticHostPort1);
 
     // initClientWithPool(true/*isthinClient*/, nullptr/*poolName*/,
     // nullptr/*locators*/,serverGroup1, nullptr/*servers*/,
@@ -158,11 +156,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StartClient2)
     // TOOD::check for poolwithendpoints or locators
     /*	LOG( "Client-2 Init -1" );
     //By default poolwithendpoints
-          char tmp2[100];
           LOG( "Client-2 Init -2" );
-          sprintf( tmp2, "%d", CacheHelper::staticHostPort2 );
           LOG( "Client-2 Init -3" );
-          gfendpoints2 += tmp2;
+          gfendpoints2 += std::to_string(CacheHelper::staticHostPort2);
           LOG( "Client-2 Init -4" );
     initClientWithPool(true, nullptr, nullptr, serverGroup2,
     gfendpoints2.c_str(), nullptr, 0, true, -1, 5, 60000); LOG( "Client-2 Init

@@ -150,10 +150,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
     QueryHelper *qh = &QueryHelper::getHelper();
 
-    char buf[100];
-    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
-            qh->getPortfolioNumSets());
-    LOG(buf);
+    LOG(std::string("SetSize") + std::to_string(qh->getPortfolioSetSize()) +
+        ", NumSets " + std::to_string(qh->getPortfolioNumSets()));
 
     if (!m_isPdx) {
       qh->populatePortfolioData(regPtr0, qh->getPortfolioSetSize(),

@@ -38,12 +38,8 @@ class RegionWrapper {
   }
 
   void put(int key, int value) {
-    char keybuf[100];
-    char valbuf[100];
-    sprintf(keybuf, "key%d", key);
-    sprintf(valbuf, "%d", value);
-    auto valPtr = CacheableString::create(valbuf);
-    m_regionPtr->put(keybuf, valPtr);
+    auto valPtr = CacheableString::create(std::to_string(value));
+    m_regionPtr->put(std::string("key") + std::to_string(key), valPtr);
   }
 
   void waitForKey(std::shared_ptr<CacheableKey> &keyPtr) {
@@ -75,14 +71,12 @@ class RegionWrapper {
   // by convention, we'll accept value of -1 to mean not exists, 0 to mean
   // invalid, and otherwise we'll compare.
   void test(int key, int value, int line) {
-    char keybuf[100];
-    sprintf(keybuf, "key%d", key);
-    auto keyPtr = CacheableKey::create(keybuf);
+    auto keyPtr =
+        CacheableKey::create(std::string("key") + std::to_string(key));
 
     if (value == -1) {
-      char ebuf[1024];
-      sprintf(ebuf, "unexpected key found at %d", line);
-      ASSERT(!m_regionPtr->containsKey(keyPtr), ebuf);
+      ASSERT(!m_regionPtr->containsKey(keyPtr),
+             std::string("unexpected key found at ") + std::to_string(line));
     } else if (value == 0) {
       waitForKey(keyPtr);
       ASSERT(m_regionPtr->containsKey(keyPtr), "missing key.");
@@ -93,10 +87,10 @@ class RegionWrapper {
       ASSERT(m_regionPtr->containsKey(keyPtr), "missing key.");
       std::shared_ptr<CacheableString> valPtr;
       int val = waitForValue(keyPtr, value, valPtr);
-      char ebuf[1024];
-      sprintf(ebuf, "unexpected value: \"%s\", expected \"%d\" from line %d",
-              valPtr->value().c_str(), value, line);
-      ASSERT(val == value, ebuf);
+      ASSERT(val == value, std::string("unexpected value: \"") +
+                               valPtr->value() + "\", expected \"" +
+                               std::to_string(value) + "\" from line " +
+                               std::to_string(line));
     }
   }
 

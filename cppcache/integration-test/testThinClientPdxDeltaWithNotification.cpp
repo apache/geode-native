@@ -326,10 +326,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_PdxVerifyDelta)
   {
     // Wait for notification
     SLEEP(5000);
-    char buff[100];
-    sprintf(buff, "From Pdxdelta count %d  From data count %d",
-            PdxDeltaEx::m_fromDeltaCount, PdxDeltaEx::m_fromDataCount);
-    LOG(buff);
+    LOG(std::string("From PdxDelta count ") +
+        std::to_string(PdxDeltaEx::m_fromDeltaCount) + "  From data count " +
+        std::to_string(PdxDeltaEx::m_fromDataCount));
     ASSERT(PdxDeltaEx::m_fromDataCount == 13,
            "Client2_PdxVerifyDelta PdxDeltaEx::m_fromDataCount should have "
            "been 13");

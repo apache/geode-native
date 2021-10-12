@@ -100,10 +100,8 @@ DUNIT_TASK(CLIENT1, StepThree)
       auto &&qry = qs->newQuery(qryStr);
       auto &&results = qry->execute();
 
-      char buf[100];
       auto count = results->size();
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(count));
       for (auto &&ser : hacks::range(*results)) {
         count--;
 
@@ -120,8 +118,7 @@ DUNIT_TASK(CLIENT1, StepThree)
           printf("   query pulled nullptr object\n");
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
     } catch (IllegalStateException &ise) {
       std::string excpmsg = "IllegalStateException: " + std::string{ise.what()};
 

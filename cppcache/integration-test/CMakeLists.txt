@@ -191,7 +191,6 @@ set_tests_properties(
     testThinClientHAQueryFailover
     testThinClientLRUExpiration
     testThinClientLocatorFailover
-    testThinClientMultiDS
     testThinClientPartitionResolver
     testThinClientPdxDeltaWithNotification
     testThinClientPdxTests

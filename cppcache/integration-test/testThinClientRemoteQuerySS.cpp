@@ -321,10 +321,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     qh->populatePortfolioPdxData(regPtr4, qh->getPortfolioSetSize(),
                                  qh->getPortfolioNumSets());
 
-    char buf[100];
-    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
-            qh->getPortfolioNumSets());
-    LOG(buf);
+    LOG(std::string("SetSize") + std::to_string(qh->getPortfolioSetSize()) +
+        ", NumSets " + std::to_string(qh->getPortfolioNumSets()));
 
     LOG("StepThree complete.\n");
   }
