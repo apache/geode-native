@@ -55,6 +55,10 @@ class Order : public PdxSerializable {
 
   static std::shared_ptr<PdxSerializable> createDeserializable();
 
+  bool operator==(const Order& rhs) const;
+
+  bool operator!=(const Order& rhs) const;
+
  private:
   static const std::string ORDER_ID_KEY_;
   static const std::string NAME_KEY_;

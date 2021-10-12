@@ -108,7 +108,8 @@ class Gfsh {
 
       Locator &withPort(const uint16_t &port);
 
-      Locator &withRemoteLocators(const std::vector<uint16_t> &locatorPorts);
+      Locator &withRemoteLocators(
+          const std::vector<std::string> &remoteLocators);
 
       Locator &withDistributedSystemId(const uint16_t &dsId);
 
