@@ -12,18 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-project(netcore LANGUAGES NONE)
+project(netcore-shared LANGUAGES NONE)
 
-option(INCLUDE_DOTNET_CORE "Build .NET Core client." ON)
-
-find_program(DOTNET dotnet)
-
-if(DOTNET AND INCLUDE_DOTNET_CORE)
-  add_subdirectory(netcore-lib)
-  add_subdirectory(netcore-session)
-  add_subdirectory(netcore-integration-test)
-  add_subdirectory(netcore-session-integration-test)
-  add_subdirectory(utility)
-  add_subdirectory(shared)
-endif()
-
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cs.in ${CMAKE_CURRENT_SOURCE_DIR}/Config.cs)

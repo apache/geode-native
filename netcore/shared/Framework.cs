@@ -14,23 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Net.Cache;
-using Xunit;
 
-namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .Net Core Collection")]
-  public class PoolManagerTest {
-    [Fact]
-    public void PoolManagerCreatePoolFactoryAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create();
-      Assert.NotNull(cacheFactory);
-      using var cache = cacheFactory.CreateCache();
-      Assert.NotNull(cache);
-      using var poolManager = cache.PoolManager;
-      Assert.NotNull(poolManager);
-      using var poolFactory =
-          poolManager.CreatePoolFactory();  // lgtm[cs / useless - assignment - to - local]
-      Assert.NotNull(poolFactory);
+using System.Net;
+using System.Net.Sockets;
+
+namespace Apache.Geode.Client.IntegrationTests
+{
+    public abstract class Framework
+    {
+        public static int FreeTcpPort()
+        {
+            var tcpListner = new TcpListener(IPAddress.Loopback, 0);
+            tcpListner.Start();
+            var port = ((IPEndPoint)tcpListner.LocalEndpoint).Port;
+            tcpListner.Stop();
+            return port;
+        }
     }
-  }
 }

@@ -14,23 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Net.Cache;
-using Xunit;
 
-namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .Net Core Collection")]
-  public class PoolManagerTest {
-    [Fact]
-    public void PoolManagerCreatePoolFactoryAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create();
-      Assert.NotNull(cacheFactory);
-      using var cache = cacheFactory.CreateCache();
-      Assert.NotNull(cache);
-      using var poolManager = cache.PoolManager;
-      Assert.NotNull(poolManager);
-      using var poolFactory =
-          poolManager.CreatePoolFactory();  // lgtm[cs / useless - assignment - to - local]
-      Assert.NotNull(poolFactory);
-    }
+// GENERATED FROM Config.cs.in DO NOT EDIT Config.cs
+
+public class Config
+{
+  public static string GeodeGfsh
+  {
+    get { return @"@Geode_gfsh_EXECUTABLE@"; }
+  }
+
+  public static string JavaobjectJarPath
+  {
+    get { return @"@JAVAOBJECT_JAR_PATH@"; }
+  }
+
+  public static string SslServerKeyPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../ssl_keys/server_keys"; }
+  }
+
+  public static string SslClientKeyPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../ssl_keys/client_keys"; }
+  }
+
+  public static string SniConfigPath
+  {
+	get { return @"@CMAKE_CURRENT_SOURCE_DIR@/../../sni-test-config"; }
   }
 }

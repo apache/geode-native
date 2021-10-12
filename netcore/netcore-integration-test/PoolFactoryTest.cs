@@ -17,8 +17,8 @@
 using System.Net.Cache;
 using Xunit;
 
-namespace Apache.Geode.Client {
-  [Collection("Geode .net Core Collection")]
+namespace Apache.Geode.Client.IntegrationTests {
+  [Collection("Geode .Net Core Collection")]
   public class PoolFactoryTest {
     [Fact]
     public void PoolFactoryAddLocatorAllObjectsNotNull() {

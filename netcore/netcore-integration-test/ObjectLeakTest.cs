@@ -17,8 +17,8 @@
 using System;
 using Xunit;
 
-namespace Apache.Geode.Client {
-  [Collection("Geode .net Core Collection")]
+namespace Apache.Geode.Client.IntegrationTests {
+  [Collection("Geode .Net Core Collection")]
   public class ObjectLeakTest {
     [Fact]
     public void LeakCacheFactoryVerifyThrows() {

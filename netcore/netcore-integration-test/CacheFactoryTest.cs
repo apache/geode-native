@@ -16,10 +16,16 @@
  */
 using System;
 using Xunit;
+using Xunit.Abstractions;
 
-namespace Apache.Geode.Client {
-  [Collection("Geode .net Core Collection")]
-  public class CacheFactoryTest {
+namespace Apache.Geode.Client.IntegrationTests
+{
+  [Collection("Geode .Net Core Collection")]
+  public class CacheFactoryTest : TestBase {
+    public CacheFactoryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    {
+    }
+
     [Fact]
     public void CreateFactoryNotNull() {
       using (var cacheFactory = CacheFactory.Create()) {
