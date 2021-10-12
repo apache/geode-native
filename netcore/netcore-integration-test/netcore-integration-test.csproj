@@ -8,12 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<Compile Include="..\utility\Config.cs" Link="Config.cs" />
-	<Compile Include="..\utility\Cluster.cs" Link="Cluster.cs" />
-	<Compile Include="..\utility\Gfsh.cs" Link="Gfsh.cs" />
-	<Compile Include="..\utility\Framework.cs" Link="Framework.cs" />
-	<Compile Include="..\utility\GfshExecute.cs" Link="GfshExecute.cs" />
-	<Compile Include="..\utility\TestBase.cs" Link="TestBase.cs" />
+	<Compile Include="..\shared\Config.cs" Link="Config.cs" />
+	<Compile Include="..\shared\Cluster.cs" Link="Cluster.cs" />
+	<Compile Include="..\shared\Gfsh.cs" Link="Gfsh.cs" />
+	<Compile Include="..\shared\Framework.cs" Link="Framework.cs" />
+	<Compile Include="..\shared\GfshExecute.cs" Link="GfshExecute.cs" />
+	<Compile Include="..\shared\TestBase.cs" Link="TestBase.cs" />
   </ItemGroup>
 
   <ItemGroup>
