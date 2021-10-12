@@ -15,8 +15,8 @@
 project(netcore-test LANGUAGES NONE)
 
 add_custom_target(netcore-integration-test ALL 
-  COMMAND ${DOTNET} build netcore-integration-test.csproj --configuration $<CONFIG>
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/
+  COMMAND ${DOTNET} build netcore-integration-test.csproj -p:platform=x64 --configuration $<CONFIG>
+  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/x64/$<CONFIG>/netcoreapp3.1/
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-lib netcore-utility VERBATIM)
 
 enable_testing()
@@ -25,6 +25,6 @@ set(AUTH_OPTS "--J=-Dgemfire.security-username=server --J=-Dgemfire.security-pas
 set(AUTH_LOCATOR_OPTS "${AUTH_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager")
 
 add_test(NAME netcore-test 
-  COMMAND dotnet test -c $<CONFIG>
+  COMMAND dotnet test -c $<CONFIG> -p:platform=x64
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
