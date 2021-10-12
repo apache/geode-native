@@ -22,20 +22,27 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using Apache.Geode.Client.IntegrationTests;
+using Xunit.Sdk;
+using System.Reflection;
 
 namespace Apache.Geode.Session.IntegrationTests {
-  [Collection("Geode .Net Core Collection")]
-  public class SessionStateIntegrationTests : TestBase {
+  public class NetCoreSessionTestFixture : IDisposable
+  {
+    internal Cluster cluster;
+    public ITestOutputHelper Output { get; set; }
 
-    public SessionStateIntegrationTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    public NetCoreSessionTestFixture SetOutPut(ITestOutputHelper output)
     {
+      Output = output;
+      return this;
     }
 
-    [Fact]
-    public void SetGet()
+    public void CreateCluster()
     {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+      if (cluster == null)
       {
+        cluster = new Cluster(Output, "GeodeSessionStateTests", 1, 1);
+
         Assert.True(cluster.Start());
         Assert.Equal(0, cluster.Gfsh
             .create()
@@ -43,10 +50,34 @@ namespace Apache.Geode.Session.IntegrationTests {
             .withName("exampleRegion")
             .withType("PARTITION")
             .execute());
+      }
+    }
 
+    public void Dispose()
+    {
+      Output = null;
+      cluster.Dispose();
+    }
+  }
+
+  [Collection("Geode .Net Core Collection")]
+  public class SessionStateIntegrationTests : TestBase,  IClassFixture<NetCoreSessionTestFixture>
+  {
+    NetCoreSessionTestFixture fixture;
+
+    public SessionStateIntegrationTests(NetCoreSessionTestFixture fixture, ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    {
+      this.fixture = fixture;
+      this.fixture.Output = testOutputHelper;
+      this.fixture.CreateCluster();
+    }
+
+    [Fact]
+    public void SetGet()
+    {
         var ssCacheOptions = new GeodeSessionStateCacheOptions();
         ssCacheOptions.Host = "localhost";
-        ssCacheOptions.Port = cluster.Locators[0].Address.port;
+        ssCacheOptions.Port = fixture.cluster.Locators[0].Address.port;
         ssCacheOptions.RegionName = "exampleRegion";
 
         using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
@@ -61,24 +92,13 @@ namespace Apache.Geode.Session.IntegrationTests {
         var value = ssCache.Get("testKey");
         Assert.True(testValue.SequenceEqual(value));
       }
-    }
 
     [Fact]
     public void Refresh()
     {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
         var ssCacheOptions = new GeodeSessionStateCacheOptions();
         ssCacheOptions.Host = "localhost";
-        ssCacheOptions.Port = cluster.Locators[0].Address.port;
+        ssCacheOptions.Port = fixture.cluster.Locators[0].Address.port;
         ssCacheOptions.RegionName = "exampleRegion";
 
         using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
@@ -101,25 +121,14 @@ namespace Apache.Geode.Session.IntegrationTests {
         // Ensure it's not expired
         var value = ssCache.Get("testKey");
         Assert.True(testValue.SequenceEqual(value));
-      }
     }
 
     [Fact]
     public void SetWithAbsoluteExpiration()
     {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
         var ssCacheOptions = new GeodeSessionStateCacheOptions();
         ssCacheOptions.Host = "localhost";
-        ssCacheOptions.Port = cluster.Locators[0].Address.port;
+        ssCacheOptions.Port = fixture.cluster.Locators[0].Address.port;
         ssCacheOptions.RegionName = "exampleRegion";
 
         using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
@@ -130,25 +139,14 @@ namespace Apache.Geode.Session.IntegrationTests {
         System.Threading.Thread.Sleep(6000);
         var value = ssCache.Get("testKey");
         Assert.Null(value);
-      }
     }
 
     [Fact]
     public void Remove()
     {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
         var ssCacheOptions = new GeodeSessionStateCacheOptions();
         ssCacheOptions.Host = "localhost";
-        ssCacheOptions.Port = cluster.Locators[0].Address.port;
+        ssCacheOptions.Port = fixture.cluster.Locators[0].Address.port;
         ssCacheOptions.RegionName = "exampleRegion";
 
         using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
@@ -165,25 +163,14 @@ namespace Apache.Geode.Session.IntegrationTests {
         ssCache.Remove("testKey");
         value = ssCache.Get("testKey");
         Assert.Null(value);
-      }
     }
 
     [Fact]
     public void SetGetRemoveAsync()
     {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
         var ssCacheOptions = new GeodeSessionStateCacheOptions();
         ssCacheOptions.Host = "localhost";
-        ssCacheOptions.Port = cluster.Locators[0].Address.port;
+        ssCacheOptions.Port = fixture.cluster.Locators[0].Address.port;
         ssCacheOptions.RegionName = "exampleRegion";
 
         using var ssCache = new GeodeSessionStateCache(ssCacheOptions);
@@ -237,5 +224,4 @@ namespace Apache.Geode.Session.IntegrationTests {
         Assert.Null(ssCache.Get("testKey5"));
       }
     }
-  }
 }
