@@ -35,7 +35,7 @@ namespace Apache.Geode.Client.IntegrationTests {
     }
   }
 
-  [Collection("Geode .net Core Collection")]
+  [Collection("Geode .Net Core Collection")]
   public class RegionFactoryTest : TestBase
   {
     public RegionFactoryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)

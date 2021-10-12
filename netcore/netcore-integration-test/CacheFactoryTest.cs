@@ -20,7 +20,7 @@ using Xunit.Abstractions;
 
 namespace Apache.Geode.Client.IntegrationTests
 {
-  [Collection("Geode .net Core Collection")]
+  [Collection("Geode .Net Core Collection")]
   public class CacheFactoryTest : TestBase {
     public CacheFactoryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {

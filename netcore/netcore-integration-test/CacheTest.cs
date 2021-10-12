@@ -19,7 +19,7 @@ using System.Net.Cache;
 using Xunit;
 
 namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .net Core Collection")]
+  [Collection("Geode .Net Core Collection")]
   public class CacheTest {
     [Fact]
     public void ClientCacheGetPdxReadSerialized() {

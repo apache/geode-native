@@ -29,5 +29,5 @@ public class NetCoreCollectionFixture : IDisposable {
   Client client_;
 }
 
-[CollectionDefinition("Geode .net Core Collection")]
+[CollectionDefinition("Geode .Net Core Collection")]
 public class NetCoreCollection : ICollectionFixture<NetCoreCollectionFixture> {}

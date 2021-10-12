@@ -24,7 +24,7 @@ using Xunit.Abstractions;
 using Apache.Geode.Client.IntegrationTests;
 
 namespace Apache.Geode.Session.IntegrationTests {
-  [Collection("Geode .net Core Collection")]
+  [Collection("Geode .Net Core Collection")]
   public class SessionStateIntegrationTests : TestBase {
 
     public SessionStateIntegrationTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
