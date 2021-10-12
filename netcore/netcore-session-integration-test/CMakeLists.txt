@@ -21,33 +21,6 @@ add_custom_target(netcore-session-integration-test ALL
 
 enable_testing()
 
-add_test(NAME startclusters COMMAND ${Geode_gfsh_EXECUTABLE}
-         -e "start locator --name=locator --port=10334 --http-service-port=6060 --J=-Dgemfire.jmx-manager-port=1099"
-         -e "start server --name=server --server-port=0"
-         -e "create region --name=exampleRegion --type=PARTITION"
-         -e "create region --name=geodeSessionState --type=PARTITION"
-         -e "disconnect"
-         -e "start locator --name=auth_locator ${AUTH_LOCATOR_OPTS} --port=10335 --http-service-port=7070 --J=-Dgemfire.jmx-manager-port=2099"
-         -e "connect --locator=localhost[10335] --user=server --password=server"
-         -e "start server --name=auth_server ${AUTH_OPTS} --server-port=0"
-         -e "create region --name=authExampleRegion --type=PARTITION"
-         -e "create region --name=authGeodeSessionState --type=PARTITION")
-add_test(NAME stopclusters 
-  COMMAND ${Geode_gfsh_EXECUTABLE}
-     -e "connect --locator=localhost[10335] --user=server --password=server" 
-     -e "stop server --name=auth_server"
-     -e "stop locator --name=auth_locator"
-     -e "connect --locator=localhost[10334]" 
-     -e "stop server --name=server"
-     -e "stop locator --name=locator")
-add_test(NAME remove_dirs
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/remove_dirs.cmake)
-
 add_test(NAME netcore-session-test 
   COMMAND dotnet test -c $<CONFIG>
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-set_tests_properties(startclusters PROPERTIES FIXTURES_SETUP geode)
-set_tests_properties(netcore-session-test PROPERTIES FIXTURES_REQUIRED geode)
-set_tests_properties(stopclusters PROPERTIES FIXTURES_CLEANUP geode)
-set_tests_properties(remove_dirs PROPERTIES DEPENDS stopclusters)

@@ -17,41 +17,14 @@ project(netcore-test LANGUAGES NONE)
 add_custom_target(netcore-integration-test ALL 
   COMMAND ${DOTNET} build netcore-integration-test.csproj --configuration $<CONFIG>
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-lib netcore-utility VERBATIM)
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-lib netcore-utility netcore-shared VERBATIM)
 
 enable_testing()
 
 set(AUTH_OPTS "--J=-Dgemfire.security-username=server --J=-Dgemfire.security-password=server --classpath=$<SHELL_PATH:${CMAKE_CURRENT_BINARY_DIR}/../utility/netcore-utility.jar>")
 set(AUTH_LOCATOR_OPTS "${AUTH_OPTS} --J=-Dgemfire.security-manager=javaobject.SimpleSecurityManager")
 
-add_test(NAME startclusters COMMAND ${Geode_gfsh_EXECUTABLE}
-         -e "start locator --name=locator --port=10334 --http-service-port=6060 --J=-Dgemfire.jmx-manager-port=1099"
-         -e "start server --name=server --server-port=0"
-         -e "create region --name=exampleRegion --type=PARTITION"
-         -e "create region --name=geodeSessionState --type=PARTITION"
-         -e "disconnect"
-         -e "start locator --name=auth_locator ${AUTH_LOCATOR_OPTS} --port=10335 --http-service-port=7070 --J=-Dgemfire.jmx-manager-port=2099"
-         -e "connect --locator=localhost[10335] --user=server --password=server"
-         -e "start server --name=auth_server ${AUTH_OPTS} --server-port=0"
-         -e "create region --name=authExampleRegion --type=PARTITION"
-         -e "create region --name=authGeodeSessionState --type=PARTITION")
-add_test(NAME stopclusters 
-  COMMAND ${Geode_gfsh_EXECUTABLE}
-     -e "connect --locator=localhost[10335] --user=server --password=server" 
-     -e "stop server --name=auth_server"
-     -e "stop locator --name=auth_locator"
-     -e "connect --locator=localhost[10334]" 
-     -e "stop server --name=server"
-     -e "stop locator --name=locator")
-add_test(NAME remove_dirs
-  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/remove_dirs.cmake)
-
 add_test(NAME netcore-test 
   COMMAND dotnet test -c $<CONFIG>
   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-
-set_tests_properties(startclusters PROPERTIES FIXTURES_SETUP geode)
-set_tests_properties(netcore-test PROPERTIES FIXTURES_REQUIRED geode)
-set_tests_properties(stopclusters PROPERTIES FIXTURES_CLEANUP geode)
-set_tests_properties(remove_dirs PROPERTIES DEPENDS stopclusters)
 
