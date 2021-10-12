@@ -17,7 +17,7 @@ project(netcore-test LANGUAGES NONE)
 add_custom_target(netcore-integration-test ALL 
   COMMAND ${DOTNET} build netcore-integration-test.csproj --configuration $<CONFIG>
   COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:apache-geode-c> ${CMAKE_CURRENT_SOURCE_DIR}/bin/$<CONFIG>/netcoreapp3.1/
-  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-lib netcore-utility netcore-shared VERBATIM)
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DEPENDS apache-geode-c netcore-lib netcore-utility VERBATIM)
 
 enable_testing()
 
