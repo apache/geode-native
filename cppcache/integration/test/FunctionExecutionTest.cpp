@@ -329,7 +329,8 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  cluster.applyLocators(poolFactory);
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 
@@ -386,7 +387,8 @@ TEST(FunctionExecutionTest,
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  cluster.applyLocators(poolFactory);
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 
