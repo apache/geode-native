@@ -43,6 +43,7 @@ using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheImpl;
 using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::Exception;
 using apache::geode::client::FunctionExecutionException;
 using apache::geode::client::FunctionService;
 using apache::geode::client::NotConnectedException;
@@ -62,7 +63,6 @@ std::shared_ptr<Region> setupRegion(Cache &cache) {
 
 class TestResultCollector : public ResultCollector {
  private:
-  bool isCleared = false;
   std::shared_ptr<CacheableVector> resultList;
 
  public:
@@ -80,9 +80,10 @@ class TestResultCollector : public ResultCollector {
   virtual void endResults() override {}
 
   // Do not clear in order to detect duplicate results
-  virtual void clearResults() override { isCleared = true; }
-
-  bool isClearTriggered() { return isCleared; }
+  virtual void clearResults() override {
+    throw Exception(
+        "Clear should not be triggered when Function.isHa is set to false");
+  }
 };
 
 TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
@@ -260,9 +261,6 @@ TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
   std::shared_ptr<TestResultCollector> resultCollector =
       std::dynamic_pointer_cast<TestResultCollector>(rc);
 
-  // check that function is not re-executed
-  ASSERT_FALSE(resultCollector->isClearTriggered());
-
   // check that PR metadata is updated after function is executed
   waitUntilPRMetadataIsRefreshed(cacheImpl);
 
@@ -271,6 +269,16 @@ TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
   ASSERT_EQ(result->size(), PARTITION_REGION_ENTRIES_SIZE);
 
   cache.close();
+}
+
+std::shared_ptr<CacheableVector> populateRegionReturnFilter(
+    const std::shared_ptr<Region> &region, const int numberOfPuts) {
+  auto routingObj = CacheableVector::create();
+  for (int i = 0; i < numberOfPuts; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+    routingObj->push_back(CacheableKey::create("KEY--" + std::to_string(i)));
+  }
+  return routingObj;
 }
 
 const std::vector<std::string> serverResultsToStrings(
@@ -288,6 +296,122 @@ const std::vector<std::string> serverResultsToStrings(
   }
 
   return resultList;
+}
+
+TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .execute();
+
+  cluster.getServers()[2].stop();
+
+  auto cache = CacheFactory().create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
+
+  auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  populateRegionReturnFilter(region, 1000);
+  //  Start the the server
+  cluster.getServers()[2].start();
+
+  // Do the rebalance, so that primary buckets
+  // are transferred to the newly added server
+  cluster.getGfsh().rebalance().execute();
+
+  // InternalFunctionInvocationTargetException will happen
+  // on servers, because client will try to execute the single-hop function
+  // using old PR metadata (PR metadata before rebalance operation)
+  // Client in this case should throw exception. Also client should not trigger
+  // ResultCollector::clear results. If this happens then TestResultCollector
+  // will throw the exception (Exception) and case will fail.
+  bool isExceptionTriggered = false;
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
+               FunctionExecutionException);
+}
+
+TEST(FunctionExecutionTest,
+     testThatFunctionExecutionThrowsExceptionNonHAWithFilter) {
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .execute();
+
+  cluster.getServers()[2].stop();
+
+  auto cache = CacheFactory().create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
+
+  auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  auto filter = populateRegionReturnFilter(region, 1000);
+
+  //  Start the the server
+  cluster.getServers()[2].start();
+
+  // Do the rebalance, so that primary buckets
+  // are transferred to the newly added server
+  cluster.getGfsh().rebalance().execute();
+
+  // InternalFunctionInvocationTargetException will happen
+  // on servers, because client will try to execute the single-hop function
+  // using old PR metadata (PR metadata before rebalance operation)
+  // Client in this case should throw exception. Also client should not trigger
+  // ResultCollector::clear results. If this happens then TestResultCollector
+  // will throw the exception (Exception) and test case will fail.
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>())
+          .withFilter(filter);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
+               FunctionExecutionException);
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
@@ -346,8 +470,9 @@ TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
 
   for (decltype(resultList.size()) i = 0;
        i < ON_SERVERS_TEST_REGION_ENTRIES_SIZE / 2; i++) {
-    // Each entry in the first result set (first half of this vector) should be
-    // equal to its corresponding entry in the second set (2nd half of vector)
+    // Each entry in the first result set (first half of this vector) should
+    // be equal to its corresponding entry in the second set (2nd half of
+    // vector)
     ASSERT_EQ(resultList[i],
               resultList[i + ON_SERVERS_TEST_REGION_ENTRIES_SIZE / 2]);
   }

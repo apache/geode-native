@@ -232,14 +232,6 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                                               ? retryAttempts
                                               : 0,
                                           failedNodes, timeout);
-            } else {  // isHA = false
-              m_rc->clearResults();
-              dynamic_cast<ThinClientRegion*>(m_region.get())
-                  ->executeFunction(
-                      func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
-                      m_rc,
-                      (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                      timeout);
             }
           }
         }
@@ -287,14 +279,6 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
                                                 ? retryAttempts
                                                 : 0,
                                             failedNodes, timeout);
-              } else {  // isHA = false
-                m_rc->clearResults();
-                dynamic_cast<ThinClientRegion*>(m_region.get())
-                    ->executeFunction(
-                        func, m_args, m_routingObj,
-                        isHAHasResultOptimizeForWrite, m_rc,
-                        (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                        timeout);
               }
             }
           }

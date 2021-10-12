@@ -46,6 +46,8 @@ class Gfsh {
   class Deploy;
   Deploy deploy();
 
+  class Rebalance;
+  Rebalance rebalance();
   class Verb {
    public:
    protected:
@@ -289,6 +291,11 @@ class Gfsh {
     explicit Deploy(Gfsh &gfsh);
 
     Deploy &jar(const std::string &jarFile);
+  };
+
+  class Rebalance : public Command<void> {
+   public:
+    explicit Rebalance(Gfsh &gfsh);
   };
 
  protected:
