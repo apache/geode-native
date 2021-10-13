@@ -35,7 +35,7 @@ namespace Apache.Geode.Client.IntegrationTests
         internal string trustStore_ = Config.SslServerKeyPath + "/server_truststore_chained_root.jks";
         internal string trustStorePassword_ = "apachegeode";
 
-        public Gfsh Gfsh { get; private set; }
+        public GfshExecute Gfsh { get; private set; }
 
         public bool UseSSL { get; set; }
 

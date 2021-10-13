@@ -55,8 +55,11 @@ namespace Apache.Geode.Session.IntegrationTests {
 
     public void Dispose()
     {
-      Output = null;
+      // At this point, the last test has executed and the ITestOutputHelper is
+      // no longer available. Hence set the output to null in the cluster.
+      cluster.Gfsh.Output = null;
       cluster.Dispose();
+      Output = null;
     }
   }
 
