@@ -299,11 +299,7 @@ const std::vector<std::string> serverResultsToStrings(
 }
 
 TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -324,8 +320,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
-  cluster.applyServer(poolFactory, serverAddress);
+  cluster.applyLocators(poolFactory);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 
@@ -333,7 +328,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
                     .setPoolName("pool")
                     .create("partition_region");
 
-  populateRegionReturnFilter(region, 1000);
+  populateRegionReturnFilter(region, 4000);
   //  Start the the server
   cluster.getServers()[2].start();
 
@@ -357,11 +352,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
 
 TEST(FunctionExecutionTest,
      testThatFunctionExecutionThrowsExceptionNonHAWithFilter) {
-  std::vector<uint16_t> serverPorts;
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  serverPorts.push_back(Framework::getAvailablePort());
-  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -382,8 +373,7 @@ TEST(FunctionExecutionTest,
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
-  cluster.applyServer(poolFactory, serverAddress);
+  cluster.applyLocators(poolFactory);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 
@@ -391,7 +381,7 @@ TEST(FunctionExecutionTest,
                     .setPoolName("pool")
                     .create("partition_region");
 
-  auto filter = populateRegionReturnFilter(region, 1000);
+  auto filter = populateRegionReturnFilter(region, 4000);
 
   //  Start the the server
   cluster.getServers()[2].start();
