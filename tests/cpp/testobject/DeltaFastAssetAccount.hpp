@@ -21,6 +21,7 @@
 #define GEODE_TESTOBJECT_DELTAFASTASSETACCOUNT_H_
 
 #include <cinttypes>
+#include <sstream>
 #include <string>
 
 #include <geode/CacheableBuiltins.hpp>
@@ -72,12 +73,12 @@ class TESTOBJECT_EXPORT DeltaFastAssetAccount : public DataSerializable,
   void fromDelta(apache::geode::client::DataInput& input) override;
 
   std::string toString() const override {
-    char buf[102500];
-    sprintf(buf,
-            "DeltaFastAssetAccount:[acctId = %d customerName = %s netWorth = "
-            "%f timestamp = %" PRIu64 "]",
-            acctId, customerName->toString().c_str(), netWorth, timestamp);
-    return buf;
+    std::stringstream strm;
+
+    strm << "DeltaFastAssetAccount:[acctId = " << acctId
+         << " customerName = " << customerName->toString()
+         << " netWorth = " << netWorth << " timestamp = " << timestamp << "]";
+    return strm.str();
   }
 
   int getAcctId() { return acctId; }

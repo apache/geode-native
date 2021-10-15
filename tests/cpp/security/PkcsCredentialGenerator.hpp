@@ -77,7 +77,8 @@ class PKCSCredentialGenerator : public CredentialGenerator {
     p->insert(KEYSTORE_FILE_PATH, path + "/keystore/" + username + ".keystore");
   }
 
-  void setPKCSProperties(std::shared_ptr<Properties>& p, const std::string& username) {
+  void setPKCSProperties(std::shared_ptr<Properties>& p,
+                         const std::string& username) {
     p->insert(SECURITY_USERNAME, "geode");
     p->insert(KEYSTORE_ALIAS, username);
     p->insert(KEYSTORE_PASSWORD, "geode");
