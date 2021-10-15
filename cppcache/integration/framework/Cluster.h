@@ -85,7 +85,7 @@ struct ServerAddress {
 class Server {
  public:
   Server(Cluster &cluster, std::vector<Locator> &locators, std::string name,
-         std::string xmlFile, bool useIPv6);
+         std::string xmlFile, bool useIPv6, uint16_t port);
 
   std::string getCacheXMLFile();
 
@@ -132,7 +132,11 @@ class Cluster {
           UseIpv6 useIPv6);
 
   Cluster(LocatorCount initialLocators, ServerCount initialServers,
-          std::vector<uint16_t> &locatorPorts, std::vector<uint16_t> &remoteLocatorPort,
+          std::vector<uint16_t> &serverPorts);
+
+  Cluster(LocatorCount initialLocators, ServerCount initialServers,
+          std::vector<uint16_t> &locatorPorts,
+          std::vector<uint16_t> &remoteLocatorPort,
           uint16_t distributedSystemId);
 
   Cluster(Name name, Classpath classpath, SecurityManager securityManager,
@@ -236,6 +240,7 @@ class Cluster {
   std::vector<uint16_t> remoteLocatorsPorts_;
 
   size_t initialServers_;
+  std::vector<uint16_t> serverPorts_;
   std::vector<Server> servers_;
 
   bool started_ = false;

@@ -299,7 +299,11 @@ const std::vector<std::string> serverResultsToStrings(
 }
 
 TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
-  Cluster cluster{LocatorCount{1}, ServerCount{3}};
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -320,7 +324,8 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  cluster.applyLocators(poolFactory);
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 
@@ -352,7 +357,11 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
 
 TEST(FunctionExecutionTest,
      testThatFunctionExecutionThrowsExceptionNonHAWithFilter) {
-  Cluster cluster{LocatorCount{1}, ServerCount{3}};
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{LocatorCount{1}, ServerCount{3}, serverPorts};
 
   cluster.start([&]() {
     cluster.getGfsh()
@@ -373,7 +382,8 @@ TEST(FunctionExecutionTest,
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
 
-  cluster.applyLocators(poolFactory);
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
 
   auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
 

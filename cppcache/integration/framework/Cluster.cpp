@@ -150,8 +150,11 @@ void Locator::stop() {
   started_ = false;
 }
 
+const ServerAddress &Server::getAddress() const { return serverAddress_; }
+
 Server::Server(Cluster &cluster, std::vector<Locator> &locators,
-               std::string name, std::string xmlFile, bool useIPv6)
+               std::string name, std::string xmlFile, bool useIPv6,
+               uint16_t port)
     : cluster_(cluster),
       locators_(locators),
       name_(std::move(name)),
@@ -161,7 +164,6 @@ Server::Server(Cluster &cluster, std::vector<Locator> &locators,
     hostname = "ip6-localhost";
   }
 
-  auto port = static_cast<uint16_t>(0);
   serverAddress_ = ServerAddress{hostname, port};
 }
 
@@ -185,8 +187,6 @@ Server::Server(Server &&move)
       xmlFile_(move.xmlFile_) {
   move.started_ = false;
 }
-
-const ServerAddress &Server::getAddress() const { return serverAddress_; }
 
 void Server::removePidFile() const {
   boost::system::error_code ec;
@@ -303,6 +303,22 @@ Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
       jmxManagerPort_(Framework::getAvailablePort()) {
   removeServerDirectory();
   cacheXMLFiles_ = cacheXMLFiles.get();
+}
+
+Cluster::Cluster(LocatorCount initialLocators, ServerCount initialServers,
+                 std::vector<uint16_t> &serverPorts)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()),
+      jmxManagerPort_(Framework::getAvailablePort()) {
+  for (uint16_t port : serverPorts) {
+    serverPorts_.push_back(port);
+  }
+  removeServerDirectory();
 }
 
 Cluster::Cluster(Name name, LocatorCount initialLocators,
@@ -451,9 +467,16 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
                   : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
                                                : cacheXMLFiles_[i];
 
+    uint16_t serverPort;
+    if (serverPorts_.empty()) {
+      serverPort = static_cast<uint16_t>(0);
+    } else {
+      serverPort = serverPorts_.at(i);
+    }
+
     servers_.push_back({*this, locators_,
                         name_ + "/server/" + std::to_string(i), xmlFile,
-                        getUseIPv6()});
+                        getUseIPv6(), serverPort});
   }
 
   startLocators();
