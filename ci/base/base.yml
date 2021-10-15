@@ -72,7 +72,8 @@ builds:
     with_dot_net: #@ True
     #@yaml/map-key-override
     params:
-      CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      #CMAKE_CONFIGURE_FLAGS: "-A x64 -Tv141,version=14.16,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.16299.0"
+      CMAKE_CONFIGURE_FLAGS: ".."
       CMAKE_BUILD_FLAGS: "/m"
       CPACK_GENERATORS: "ZIP"
 
