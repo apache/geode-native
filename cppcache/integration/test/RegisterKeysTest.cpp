@@ -208,8 +208,12 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
 
   auto cache = createTestCache();
   {
-    auto poolFactory =
-        cache.getPoolManager().createFactory().setSubscriptionEnabled(true);
+
+    auto poolFactory = cache.getPoolManager()
+                           .createFactory()
+                           .setReadTimeout(std::chrono::seconds{1})
+                           .setPingInterval(std::chrono::seconds{1})
+                           .setSubscriptionEnabled(true);
     cluster.applyLocators(poolFactory);
     poolFactory.create("default");
   }
@@ -261,6 +265,8 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
     std::unique_lock<std::mutex> lock(mutex_shutdown);
     cv_shutdown.wait(lock);
   }
+
+  std::this_thread::sleep_for(std::chrono::seconds{7});
 
   for (auto& server : cluster.getServers()) {
     server.start();
