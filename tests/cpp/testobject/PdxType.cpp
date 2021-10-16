@@ -259,12 +259,7 @@ void PdxTests::PdxType::fromData(PdxReader& pr) {
   LOGINFO("PdxObject::readObject() for enum Done...");
 }
 std::string PdxTests::PdxType::toString() const {
-  char idbuf[1024];
-  // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
-  // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
-  // m_int16, m_int32, m_float, m_double, m_string);
-  sprintf(idbuf, "PdxObject:[m_int32=%d]", m_int32);
-  return idbuf;
+  return "PdxObject:[m_int32=" + std::to_string(m_int32) + "]";
 }
 
 bool PdxTests::PdxType::equals(PdxTests::PdxType& other,

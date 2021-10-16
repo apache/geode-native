@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "Position.hpp"
 
 #include <wchar.h>
 
 #include <cwchar>
+#include <sstream>
 
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -113,12 +115,12 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   pid = input.readInt32();
 }
 std::string Position::toString() const {
-  char buf[2048];
-  sprintf(buf,
-          "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
-          secId->toString().c_str(), this->secType.c_str(),
-          this->sharesOutstanding, this->pid);
-  return buf;
+  std::stringstream strm;
+
+  strm << "Position Object:[ secId=" << secId->toString()
+       << " type=" << std::string(secType.begin(), secType.end())
+       << " sharesOutstanding=" << sharesOutstanding << " id=" << pid << " ]";
+  return strm.str();
 }
 
 }  // namespace testobject
