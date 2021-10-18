@@ -20,6 +20,7 @@
 #ifndef GEODE_TESTOBJECT_PDXTYPE_H_
 #define GEODE_TESTOBJECT_PDXTYPE_H_
 
+#include <sstream>
 #include <util/Log.hpp>
 
 #include <geode/CacheableEnum.hpp>
@@ -106,9 +107,11 @@ class TESTOBJECT_EXPORT Child : public Parent, public PdxSerializable {
   int32_t getMember_f() { return m_f; }
 
   std::string toString() const override {
-    char idbuf[512];
-    sprintf(idbuf, " Child:: %d %d %d %d %d %d ", m_a, m_b, m_c, m_d, m_e, m_f);
-    return idbuf;
+    std::stringstream strm;
+
+    strm << "Child:: " << m_a << " " << m_b << " " << m_c << " " << m_d << " "
+         << m_e << " " << m_f;
+    return strm.str();
   }
 
   const std::string& getClassName() const override {
@@ -179,9 +182,10 @@ class TESTOBJECT_EXPORT CharTypes : public PdxSerializable {
   CharTypes() { init(); }
 
   std::string toString() const override {
-    char idbuf[1024];
-    sprintf(idbuf, "%c %c %c", m_ch, m_chArray[0], m_chArray[1]);
-    return idbuf;
+    std::stringstream strm;
+
+    strm << m_ch << " " << m_chArray[0] << " " << m_chArray[1];
+    return strm.str();
   }
 
   bool equals(CharTypes& other) const {

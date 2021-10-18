@@ -61,18 +61,14 @@ std::string PKCSCredentialGenerator::getInitArgs(std::string workingDir, bool) {
 
 void PKCSCredentialGenerator::getValidCredentials(
     std::shared_ptr<Properties>& p) {
-  char username[20] = {'\0'};
-  sprintf(username, "geode%d", randomValue(1, 10));
-  setPKCSProperties(p, username);
+  setPKCSProperties(p, "geode" + std::to_string(randomValue(1, 10)));
   BOOST_LOG_TRIVIAL(info) << "inserted valid security-username "
                           << p->find("security-username")->value();
 }
 
 void PKCSCredentialGenerator::getInvalidCredentials(
     std::shared_ptr<Properties>& p) {
-  char username[20] = {'\0'};
-  sprintf(username, "%dgeode", randomValue(1, 11));
-  setPKCSProperties(p, username);
+  setPKCSProperties(p, std::to_string(randomValue(1, 11)) + "geode");
   BOOST_LOG_TRIVIAL(info) << "inserted invalid security-username "
                           << p->find("security-username")->value();
 }

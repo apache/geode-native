@@ -17,6 +17,8 @@
 
 #include "PdxClassV2.hpp"
 
+#include <sstream>
+
 namespace PdxTests {
 
 using apache::geode::client::Exception;
@@ -106,12 +108,13 @@ void PdxTypes1V2::fromData(PdxReader& pr) {
   // LOGDEBUG("PdxType1V2::fromData() End...");
 }
 std::string PdxTypes1V2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxType1V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ] [ "
-          "m_i5=%d ] [ m_i6=%d ] [ m_diffInExtraFields=%d ]",
-          m_i1, m_i2, m_i3, m_i4, m_i5, m_i6, m_diffInExtraFields);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes1V2:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_i5 = " << m_i5 << "][m_i6 = " << m_i6
+       << "][m_diffInExtraFields = " << m_diffInExtraFields << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -193,12 +196,12 @@ void PdxTypes2V2::fromData(PdxReader& pr) {
   m_i4 = pr.readInt("i4");
 }
 std::string PdxTypes2V2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxTypes2V2:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ] [ "
-          "m_i5=%d ] [ m_i6=%d ]",
-          m_i1, m_i2, m_i3, m_i4, m_i5, m_i6);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes2V2:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_i5 = " << m_i5 << "][m_i6 = " << m_i6 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -379,12 +382,12 @@ void PdxTypesR1V2::fromData(PdxReader& pr) {
   m_i6 = pr.readInt("i6");
 }
 std::string PdxTypesR1V2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxTypesR1V2:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ] [ "
-          "m_i5=%d ] [ m_i6=%d ]",
-          m_i1, m_i2, m_i3, m_i4, m_i5, m_i6);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypesR1V2:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_i5 = " << m_i5 << "][m_i6 = " << m_i6 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -456,9 +459,7 @@ void PdxTypesR2V2::toData(PdxWriter& pw) const {
   m_diffInExtraFields++;
   m_diffInSameFields++;
 
-  char tmpBuf[512] = {0};
-  sprintf(tmpBuf, "%d", m_diffInExtraFields);
-  pw.writeString("m_str1", tmpBuf);
+  pw.writeString("m_str1", std::to_string(m_diffInExtraFields));
 }
 
 void PdxTypesR2V2::fromData(PdxReader& pr) {
@@ -587,12 +588,13 @@ void PdxTypesIgnoreUnreadFieldsV2::fromData(PdxReader& pr) {
   m_i6 = pr.readInt("i6");
 }
 std::string PdxTypesIgnoreUnreadFieldsV2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxTypesV1R1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_i5=%d] "
-          "[m_i6=%d]",
-          m_i1, m_i2, m_i3, m_i4, m_i5, m_i6);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypesIgnoreUnreadFieldsV2:[m_i1 = " << m_i1
+       << " ][m_i2 = " << m_i2 << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4
+       << "]"
+       << "[m_i5 = " << m_i5 << "][m_i6 = " << m_i6 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -694,12 +696,7 @@ void PdxVersionedV2::fromData(PdxReader& pr) {
   m_floatArray = pr.readFloatArray("m_floatArray");
   m_doubleArray = pr.readDoubleArray("m_doubleArray");
 }
-std::string PdxVersionedV2::toString() const {
-  char idbuf[4096];
-  // sprintf(idbuf,"PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d
-  // ]", m_i1, m_i2, m_i3, m_i4 );
-  return idbuf;
-}
+std::string PdxVersionedV2::toString() const { return ""; }
 
 /************************************************************
  *  TestKeyV2

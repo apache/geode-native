@@ -141,8 +141,7 @@ void PositionPdx::fromData(PdxReader& pr) {
 }
 std::string PositionPdx::toString() const {
   char buf[1024];
-  sprintf(buf, "PositionPdx Object:[ id=%d ]", this->pid);
-  return buf;
+  return "PositionPdx Object:[ id=" + std::to_string(pid) + "]";
 }
 
 }  // namespace testobject
