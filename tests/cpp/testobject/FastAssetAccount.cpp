@@ -72,4 +72,3 @@ std::string FastAssetAccount::toString() const {
 }
 
 }  // namespace testobject
-
