@@ -82,11 +82,12 @@ BEGIN_TEST.
 #endif
 #endif
 
-#include <typeinfo>
-#include <list>
-#include <string>
-#include <sstream>
 #include <cstdio>
+#include <iostream>
+#include <list>
+#include <sstream>
+#include <string>
+#include <typeinfo>
 
 #include <ace/ACE.h>
 #include <ace/OS.h>
@@ -129,11 +130,11 @@ class TestException {
       : m_message(msg), m_lineno(lineno), m_filename(filename) {}
 
   void print() {
-    fprintf(stdout, "--->%sTestException: %s in %s at line %d<---\n",
-            apache::geode::client::Log::formatLogLine(
-                apache::geode::client::LogLevel::Error)
-                .c_str(),
-            m_message.c_str(), m_filename.c_str(), m_lineno);
+    std::cout << "--->"
+              << apache::geode::client::Log::formatLogLine(
+                     apache::geode::client::LogLevel::Error)
+              << "TestException: " << m_message << " in " << m_filename
+              << " at line " << m_lineno << "<---\n";
   }
   std::string m_message;
   int m_lineno;
@@ -149,9 +150,9 @@ class TestOp {
 
   virtual ~TestOp() {}
   virtual void setup() {
-    fprintf(stdout, "## running test - %s ##\n", m_name.c_str());
+    std::cout << "## running test - " << m_name << " ##\n";
   }
-  virtual void doTest() { fprintf(stdout, "do something useful.\n"); }
+  virtual void doTest() { std::cout << "do something useful.\n"; }
   void run() {
     try {
       this->setup();
@@ -160,7 +161,7 @@ class TestOp {
       e.print();
       failed.push_back(m_name);
     } catch (apache::geode::client::Exception& ge) {
-      fprintf(stdout, "%s\n", ge.getStackTrace().c_str());
+      std::cout << ge.getStackTrace() << "\n";
       failed.push_back(m_name);
     }
   }
@@ -181,7 +182,7 @@ std::list<SuiteMember> tests;
 void TestOp::init() {
   m_name = this->typeName();
   tests.push_back(SuiteMember(this));
-  fprintf(stdout, "Queued test[%s].\n", m_name.c_str());
+  std::cout << "Queued test[" << m_name << "].\n";
 }
 
 // main - suite trigger
@@ -201,7 +202,7 @@ int main(int /*argc*/, char** /*argv*/)
   try {
     int testsRun = 0;
     int failures = 0;
-    fprintf(stdout, "Beginning test Suite.\n");
+    std::cout << "Beginning test Suite.\n";
     while (!tests.empty()) {
       SuiteMember aTest = tests.front();
       aTest.m_test->run();
@@ -210,19 +211,19 @@ int main(int /*argc*/, char** /*argv*/)
     }
     while (!failed.empty()) {
       std::string name = failed.front();
-      fprintf(stdout, "test named \"%s\" failed.\n", name.c_str());
+      std::cout << "test named \"" << name << "\" failed.\n";
       failures++;
       failed.pop_front();
     }
     if (failures != 0) {
-      fprintf(stdout, "%d tests failed.\n", failures);
+      std::cout << failures << " tests failed.\n";
     }
-    fprintf(stdout, "%d tests passed.\n", (testsRun - failures));
+    std::cout << (testsRun - failures) << " tests passed.\n";
     apache::geode::client::CppCacheLibrary::closeLib();
     return failures;
   } catch (...) {
-    printf("Exception: unhandled/unidentified exception reached main.\n");
-    fflush(stdout);
+    std::cout << "Exception: unhandled/unidentified exception reached main.\n"
+              << std::flush;
   }
   return 1;
 }

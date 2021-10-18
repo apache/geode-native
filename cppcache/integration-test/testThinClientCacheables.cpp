@@ -25,6 +25,7 @@
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
 
+#include <iostream>
 #include <string>
 
 #include "CacheHelper.hpp"
@@ -78,8 +79,9 @@ CacheHelper *getHelper() {
 void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << "  ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -107,8 +109,8 @@ void checkGets(int maxKeys, DSCode keyTypeId, DSCode valTypeId,
     auto int32val = std::dynamic_pointer_cast<CacheableInt32>(
         verifyReg->get(static_cast<int32_t>(keychksum)));
     if (int32val == nullptr) {
-      printf("GetsTask::keychksum: %u, key: %s\n", keychksum,
-             Utils::nullSafeToString(key).c_str());
+      std::cout << "GetsTask::keychksum: " << keychksum
+                << ", key: " << Utils::nullSafeToString(key) << "\n";
       FAIL("Could not find the checksum for the given key.");
     }
     uint32_t valchksum = static_cast<uint32_t>(int32val->value());
@@ -168,10 +170,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutsTask)
     DSCode keyTypeId = keyTypes[keyTypeIndex];
     DSCode valTypeId = valueTypes[valueTypeIndex];
 
-    printf("PutsTask::keyType = %s and valType = %s and taskIndexPut = %d\n",
-           CacheableWrapperFactory::getTypeForId(keyTypeId).c_str(),
-           CacheableWrapperFactory::getTypeForId(valTypeId).c_str(),
-           taskIndexPut);
+    std::cout << "PutsTask::keyType = "
+              << CacheableWrapperFactory::getTypeForId(keyTypeId)
+              << " and valType = "
+              << CacheableWrapperFactory::getTypeForId(valTypeId)
+              << " and taskIndexPut = " << taskIndexPut << "\n";
 
     CacheableWrapper *key = CacheableWrapperFactory::createInstance(keyTypeId);
     int maxKeys =
@@ -241,10 +244,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, GetsTask)
     DSCode keyTypeId = keyTypes[keyTypeIndex];
     DSCode valTypeId = valueTypes[valueTypeIndex];
 
-    printf("GetsTask::keyType = %s and valType = %s and taskIndexGet = %d\n",
-           CacheableWrapperFactory::getTypeForId(keyTypeId).c_str(),
-           CacheableWrapperFactory::getTypeForId(valTypeId).c_str(),
-           taskIndexGet);
+    std::cout << "GetsTask::keyType = "
+              << CacheableWrapperFactory::getTypeForId(keyTypeId)
+              << " and valType = "
+              << CacheableWrapperFactory::getTypeForId(valTypeId)
+              << " and taskIndexGet = " << taskIndexGet << "\n";
 
     CacheableWrapper *key = CacheableWrapperFactory::createInstance(keyTypeId);
     int maxKeys =

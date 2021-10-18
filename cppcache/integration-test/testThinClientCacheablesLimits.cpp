@@ -59,8 +59,9 @@ static char charArray[] = {
 void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                           clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
