@@ -22,6 +22,7 @@
 #include <chrono>
 #include <cstdio>
 #include <ctime>
+#include <iostream>
 #include <map>
 #include <mutex>
 #include <sstream>
@@ -277,15 +278,15 @@ void Log::writeBanner() {
 
     // fullpath empty --> we're logging to stdout
     if (g_fullpath.string().empty()) {
-      fprintf(stdout, "%s", bannertext.c_str());
-      fflush(stdout);
+      std::cout << bannertext << std::flush;
     } else {
       if (boost::filesystem::exists(
               g_fullpath.parent_path().string().c_str()) ||
           boost::filesystem::create_directories(g_fullpath.parent_path())) {
         g_log = fopen(g_fullpath.string().c_str(), "a");
         if (g_log) {
-          if (fprintf(g_log, "%s", bannertext.c_str())) {
+          if (fwrite(bannertext.c_str(), sizeof(char), bannertext.length(),
+                     g_log) == bannertext.length()) {
             g_bytesWritten += static_cast<int32_t>(bannertext.length());
             fflush(g_log);
           }
@@ -398,8 +399,7 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
   char fullpath[512] = {0};
 
   if (g_fullpath.string().empty()) {
-    fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
-    fflush(stdout);
+    std::cout << formatLogLine(level) << msg << "\n" << std::flush;
   } else {
     if (!g_log) {
       g_log = fopen(g_fullpath.string().c_str(), "a");
@@ -424,7 +424,9 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
         removeOldestRolledLogFile();
       }
 
-      if (fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str()) == 0 ||
+      auto logLine = buf + msg + "\n";
+      if (fwrite(logLine.c_str(), sizeof(char), logLine.length(), g_log) !=
+              logLine.length() ||
           ferror(g_log)) {
         // Let's continue without throwing the exception.  It should not cause
         // process to terminate
