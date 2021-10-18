@@ -35,11 +35,10 @@ namespace Apache.Geode.Client.IntegrationTests
         }
 
 
-    public GfshExecute(ITestOutputHelper output)
+        public GfshExecute(ITestOutputHelper output)
         {
-            //Output = output;
             this.output = output;
-    }
+        }
 
         private void ExtractConnectionCommand(String command)
         {
