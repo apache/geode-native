@@ -732,10 +732,10 @@ namespace Apache.Geode.Client.IntegrationTests
                     .Create<object, object>("testRegion");
                 Assert.NotNull(region);
 
+                putAndCheck(region, "CacheableInt32", (Int32)32);
                 putAndCheck(region, "CacheableString", "foo");
                 putAndCheck(region, "CacheableByte", (Byte)8);
                 putAndCheck(region, "CacheableInt16", (Int16)16);
-                putAndCheck(region, "CacheableInt32", (Int32)32);
                 putAndCheck(region, "CacheableInt64", (Int64)64);
                 putAndCheck(region, "CacheableBoolean", (Boolean)true);
                 putAndCheck(region, "CacheableCharacter", 'c');
