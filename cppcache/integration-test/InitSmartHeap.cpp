@@ -24,4 +24,4 @@ class InitSmartHeap {
   InitSmartHeap() {}
 
 } doInit;
-}
+}  // namespace geode_smartheap
