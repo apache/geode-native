@@ -130,7 +130,7 @@ void PdxHelper::serializePdx(
         auto mergedPdxType = pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
         return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
       } else {
-        return PdxRemoteWriter(output, className, pdxTypeRegistry);
+        return PdxRemoteWriter(output, localPdxType, pdxTypeRegistry);
       }
     };
 

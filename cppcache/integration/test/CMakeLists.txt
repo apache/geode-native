@@ -30,6 +30,7 @@ add_executable(cpp-integration-test
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp
   PdxSerializerTest.cpp
+  PdxSerializableTest.cpp
   Order.cpp
   Order.hpp
   RegionGetAllTest.cpp

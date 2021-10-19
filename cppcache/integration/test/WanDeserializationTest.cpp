@@ -43,7 +43,8 @@ using apache::geode::client::Pool;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using std::chrono::minutes;
-using WanDeserialization::Order;
+
+using PdxTests::Order;
 
 class GeodeCacheListener : public CacheListener {
  public:

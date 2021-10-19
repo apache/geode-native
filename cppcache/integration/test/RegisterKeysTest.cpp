@@ -31,15 +31,7 @@
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
-
-class CacheListenerMock : public apache::geode::client::CacheListener {
- public:
-  MOCK_METHOD1(afterDestroy, void(const apache::geode::client::EntryEvent&));
-  MOCK_METHOD1(afterCreate, void(const apache::geode::client::EntryEvent&));
-  MOCK_METHOD1(afterRegionLive,
-               void(const apache::geode::client::RegionEvent&));
-  MOCK_METHOD1(afterRegionDisconnected, void(apache::geode::client::Region&));
-};
+#include "mock/CacheListenerMock.hpp"
 
 namespace {
 
@@ -48,6 +40,7 @@ using apache::geode::client::CacheableInt16;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListenerMock;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
@@ -208,7 +201,6 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
 
   auto cache = createTestCache();
   {
-
     auto poolFactory = cache.getPoolManager()
                            .createFactory()
                            .setReadTimeout(std::chrono::seconds{1})

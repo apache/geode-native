@@ -292,6 +292,8 @@ class APACHE_GEODE_EXPORT CacheImpl {
     return m_poolManager->getDefaultPool();
   }
 
+  std::mutex& getPdxSerializationTestMutex() { return m_PdxSerializationMutex; }
+
   SystemProperties& getSystemProperties() const {
     this->throwIfClosed();
 
@@ -333,6 +335,7 @@ class APACHE_GEODE_EXPORT CacheImpl {
   std::atomic<int8_t> m_serverGroupFlag;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
+  std::mutex m_PdxSerializationMutex;
   std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;
 
   // CachePerfStats

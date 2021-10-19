@@ -48,6 +48,9 @@ class PdxRemoteWriter : public PdxLocalWriter {
                   std::shared_ptr<PdxRemotePreservedData> preservedData,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
+  PdxRemoteWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
+                  std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
+
   PdxRemoteWriter(DataOutput& output, std::string pdxClassName,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 

@@ -49,6 +49,20 @@ PdxRemoteWriter::PdxRemoteWriter(
 }
 
 PdxRemoteWriter::PdxRemoteWriter(
+    DataOutput& output, std::shared_ptr<PdxType> pdxType,
+    std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
+    : PdxLocalWriter(output, pdxType, pdxTypeRegistry),
+      m_preserveDataIdx(0),
+      m_currentDataIdx(-1),
+      m_remoteTolocalMapLength(0) {
+  m_preserveData = nullptr;
+  if (m_pdxType != nullptr) {
+    m_remoteTolocalMapLength = m_pdxType->getTotalFields();
+    m_remoteTolocalMap = m_pdxType->getRemoteToLocalMap();
+  }
+}
+
+PdxRemoteWriter::PdxRemoteWriter(
     DataOutput& output, std::string pdxClassName,
     std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry)
     : PdxLocalWriter(output, nullptr, pdxClassName, pdxTypeRegistry),
