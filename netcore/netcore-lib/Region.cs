@@ -98,17 +98,15 @@ namespace Apache.Geode.Client {
         var type = value.GetType();
         if (!type.IsSerializable)
           throw new Exception("Error: Object is not Serializable.");
-        //using (var _fs = new System.IO.MemoryStream())
-        //{
-        //  var _formatter = new BinaryFormatter();
-        //  _formatter.Serialize(_fs, value);
-        //  PutByteArray(key.ToString(), _fs.ToArray());
-        //}
+
         if (value.GetType() == typeof(int) || value.GetType() == typeof(uint)) {
-    
-          //PutByteArray(key.ToString(), BitConverter.GetBytes(Convert.ToInt32(value)));
-          var byteArray = new byte[4];
-          Array.Copy(BitConverter.GetBytes(Convert.ToInt32(value)), byteArray, 4);
+          var byteArray = new byte[5];
+          byteArray[0] = 57;
+          int v = Convert.ToInt32(value);
+          byteArray[1] = (byte)((v >> 24));
+          byteArray[2] = (byte)((v >> 16));
+          byteArray[3] = (byte)((v >> 8));
+          byteArray[4] = (byte)((v));
           PutByteArray(key.ToString(), byteArray);
         }
       }
@@ -117,18 +115,17 @@ namespace Apache.Geode.Client {
         var type = value.GetType();
         if (!type.IsSerializable)
           throw new Exception("Error: Object is not Serializable.");
-        //using (var _fs = new System.IO.MemoryStream())
-        //{
-        //  var _formatter = new BinaryFormatter();
-        //  _formatter.Serialize(_fs, value);
-        //  PutByteArray(key.ToString(), _fs.ToArray());
-        //}
+
         if (value.GetType() == typeof(int) || value.GetType() == typeof(uint))
         {
-          //PutByteArray(key.ToString(), BitConverter.GetBytes(Convert.ToInt32(value)));
-          var byteArray = new byte[4];
-          Array.Copy(BitConverter.GetBytes(Convert.ToInt32(value)), byteArray, 4);
-          PutByteArray(Convert.ToInt32(key), byteArray);
+          var byteArray = new byte[5];
+          byteArray[0] = 57;
+          int v = Convert.ToInt32(value);
+          byteArray[1] = (byte)((v >> 24));
+          byteArray[2] = (byte)((v >> 16));
+          byteArray[3] = (byte)((v >> 8));
+          byteArray[4] = (byte)((v));
+          PutByteArray(key.ToString(), byteArray);
         }
       }
       else {
