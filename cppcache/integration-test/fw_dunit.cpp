@@ -767,30 +767,31 @@ int dmain(int argc, char *argv[]) {
       dunit::TestDriver tdriver;
       result = tdriver.begin();
       if (result == 0) {
-        printf("#### All Tasks completed successfully. ####\n");
+        std::cout << "#### All Tasks completed successfully. ####\n";
       } else {
-        printf("#### FAILED. ####\n");
+        std::cout << "#### FAILED. ####\n";
       }
 
       fflush(stdout);
     }
-    printf("final worker id %d, result %d\n", workerId, result);
-    printf("before calling cleanup %d \n", workerId);
+    std::cout << "final worker id " << workerId << ", result " << result
+              << "\n";
+    std::cout << "before calling cleanup " << workerId << "\n";
     gClientCleanup.callClientCleanup();
-    printf("after calling cleanup\n");
+    std::cout << "after calling cleanup\n";
     return result;
 
   } catch (dunit::TestException &te) {
     te.print();
   } catch (apache::geode::client::testframework::FwkException &fe) {
-    printf("Exception: %s\n", fe.what());
-    fflush(stdout);
+    std::cout << "Exception: " << fe.what() << "\n" << std::flush;
   } catch (std::exception &ex) {
-    printf("Exception: system exception reached main: %s.\n", ex.what());
-    fflush(stdout);
+    std::cout << "Exception: system exception reached main: " << ex.what()
+              << ".\n"
+              << std::flush;
   } catch (...) {
-    printf("Exception: unhandled/unidentified exception reached main.\n");
-    fflush(stdout);
+    std::cout << "Exception: unhandled/unidentified exception reached main.\n"
+              << std::flush;
   }
 
   gClientCleanup.callClientCleanup();
