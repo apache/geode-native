@@ -290,7 +290,6 @@ void doGetAgain(const char *name, const char *key, const char *value) {
 
   auto regPtr = getHelper()->getRegion(name);
   std::cout << "get  region name " << regPtr->getName() << "\n" << std::flush;
-  fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
   auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
@@ -312,7 +311,6 @@ void doNetsearch(const char *name, const char *key, const char *value) {
   std::cout << "Netsearching for entry -- key: " << key
             << " expecting value: " << value << " in region " << name << "\n"
             << std::flush;
-  fflush(stdout);
   static int count = 0;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);

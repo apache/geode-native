@@ -93,8 +93,9 @@ const bool NO_ACK = false;
 void createRegion(const char* name, bool ackMode, const char*,
                   bool isCacheEnabled, bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, isCacheEnabled,
                                           nullptr, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -105,8 +106,9 @@ void createRegionLocal(const char* name, bool ackMode, const char*,
                        bool isCacheEnabled,
                        bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(
       name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled, true);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -119,9 +121,9 @@ void createPooledRegion(const std::string& name, bool ackMode,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
-          ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -134,8 +136,9 @@ void createPooledRegionConcurrencyCheckDisabled(
     const char* poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
