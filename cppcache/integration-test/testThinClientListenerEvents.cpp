@@ -104,11 +104,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, doRemoteGet)
     int toalFunCall = regListener1->getCount();
     ASSERT(4 == toalFunCall,
            "afterCreate() did not call expected number of times");
-    // printf("[NIL_DEBUG_DUnitTest:149] Total Function Call =
-    // %d.............\n",
-    // toalFunCall);
-    // printf("\n[NIL_DEBUG_DUnitTest:150:Remote get ended.
-    // ..................\n");
   }
 END_TASK_DEFINITION
 
