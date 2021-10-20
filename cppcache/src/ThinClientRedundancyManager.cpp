@@ -83,7 +83,8 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
     if (howMany == -1) howMany = m_servers->length();
     for (int attempts = 0; attempts < m_servers->length() && howMany > 0;
          attempts++) {
-      if (m_server >= m_servers->length()) {
+      if (m_servers->length() < 0 ||
+          m_server >= static_cast<std::size_t>(m_servers->length())) {
         m_server = 0;
       }
       ServerLocation location(Utils::convertHostToCanonicalForm(
@@ -1041,7 +1042,7 @@ void ThinClientRedundancyManager::getAllEndpoints(
     }
   } else {
     RandGen randgen;
-    std::random_shuffle(endpoints.begin(), endpoints.end(), randgen);
+    std::shuffle(endpoints.begin(), endpoints.end(), randgen);
   }
 }
 

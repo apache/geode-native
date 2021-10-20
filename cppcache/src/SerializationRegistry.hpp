@@ -46,19 +46,21 @@
 namespace std {
 
 template <>
-struct hash<apache::geode::client::internal::DSCode>
-    : public std::unary_function<apache::geode::client::internal::DSCode,
-                                 size_t> {
-  size_t operator()(apache::geode::client::internal::DSCode val) const {
+struct hash<apache::geode::client::internal::DSCode> {
+  using argument_type = apache::geode::client::internal::DSCode;
+  using result_type = std::size_t;
+
+  result_type operator()(argument_type val) const {
     return std::hash<int32_t>{}(static_cast<int32_t>(val));
   }
 };
 
 template <>
-struct hash<apache::geode::client::internal::DSFid>
-    : public std::unary_function<apache::geode::client::internal::DSFid,
-                                 size_t> {
-  size_t operator()(apache::geode::client::internal::DSFid val) const {
+struct hash<apache::geode::client::internal::DSFid> {
+  using argument_type = apache::geode::client::internal::DSFid;
+  using result_type = std::size_t;
+
+  result_type operator()(argument_type val) const {
     return std::hash<int32_t>{}(static_cast<int32_t>(val));
   }
 };
