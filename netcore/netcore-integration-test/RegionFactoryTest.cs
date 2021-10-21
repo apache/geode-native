@@ -36,10 +36,15 @@ namespace Apache.Geode.Client.IntegrationTests {
   }
 
   [Collection("Geode .Net Core Collection")]
-  public class RegionFactoryTest : TestBase
+  public class RegionFactoryTest : TestBase, IClassFixture<NetCoreTestFixture>
   {
-    public RegionFactoryTest(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    NetCoreTestFixture fixture;
+
+    public RegionFactoryTest(NetCoreTestFixture fixture, ITestOutputHelper testOutputHelper) : base(testOutputHelper)
     {
+      this.fixture = fixture;
+      this.fixture.Output = testOutputHelper;
+      this.fixture.CreateCluster();
     }
 
     private const string Username1 = "rtimmons";
@@ -88,41 +93,19 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void RegionFactoryCreateProxyRegionStringPutGet() {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
         using var cacheFactory = CacheFactory.Create()
                                      .SetProperty("log-level", "debug")
                                      .SetProperty("log-file", "geode_native.log");
         using var cache = cacheFactory.CreateCache();
 
-        using var pool = cluster.ApplyLocators(cache.PoolFactory)
+        using var pool = fixture.cluster.ApplyLocators(cache.PoolFactory)
                     .CreatePool("myPool");
 
-        //int port = cluster.
-        //createPool(cache, 10334);
         CreateRegionAndDoWork(cache, "exampleRegion", RegionShortcut.Proxy);
-      }
     }
 
     [Fact]
     public void RegionFactoryCreateRegionStringPutGetWithAuthentication() {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("authExampleRegion")
-            .withType("PARTITION")
-            .execute());
 
         using var cacheFactory = CacheFactory.Create()
                                    .SetProperty("log-level", "debug")
@@ -130,11 +113,10 @@ namespace Apache.Geode.Client.IntegrationTests {
       cacheFactory.AuthInitialize = new SimpleAuthInitialize();
       using var cache = cacheFactory.CreateCache();
 
-      using var pool = cluster.ApplyLocators(cache.PoolFactory)
+      using var pool = fixture.cluster.ApplyLocators(cache.PoolFactory)
                     .CreatePool("myPool");
 
         CreateRegionAndDoWork(cache, "authExampleRegion", RegionShortcut.CachingProxy);
-      }
     }
   }
 }

@@ -28,6 +28,13 @@ namespace Apache.Geode.Client.IntegrationTests
         private String connectionCommand_ = null;
         private ITestOutputHelper output;
 
+        public ITestOutputHelper Output
+        {
+          get { return output; }
+          set { output = value; }
+        }
+
+
         public GfshExecute(ITestOutputHelper output)
         {
             this.output = output;
