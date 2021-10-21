@@ -51,8 +51,7 @@ class TESTOBJECT_EXPORT Position : public DataSerializable {
   double qty;
   std::shared_ptr<CacheableString> secId;
   std::shared_ptr<CacheableString> secLinks;
-  // wchar_t* secType;
-  std::wstring secType;
+  std::string secType;
   int32_t sharesOutstanding;
   std::shared_ptr<CacheableString> underlyer;
   int64_t volatility;
