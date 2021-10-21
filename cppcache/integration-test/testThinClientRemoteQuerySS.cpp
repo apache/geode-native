@@ -161,7 +161,7 @@ void _printAllFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
   }
 }
 
-void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
+void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int) {
   std::cout << "query idx "
             << " \n";
   for (size_t rows = 0; rows < ssptr->size(); rows++) {
