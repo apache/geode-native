@@ -199,9 +199,9 @@ void createPooledRegionSticky(const std::string& name, bool ackMode,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
-          ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled);
@@ -850,10 +850,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateNonexistentServerRegion_Pooled_Locator)
       FAIL(
           "Expected exception when doing operations on a non-existent region.");
     } catch (const CacheServerException& ex) {
-      printf(
-          "Got expected CacheServerException when performing operation "
-          "on a non-existent region: %s\n",
-          ex.what());
+      std::cout << "Got expected CacheServerException when performing operation on a non-existent region: " << ex.what() << "\n";
     }
   }
 END_TASK_DEFINITION
@@ -868,10 +865,7 @@ DUNIT_TASK_DEFINITION(CLIENT1,
       FAIL(
           "Expected exception when doing operations on a non-existent region.");
     } catch (const CacheServerException& ex) {
-      printf(
-          "Got expected CacheServerException when performing operation "
-          "on a non-existent region: %s\n",
-          ex.what());
+      std::cout << "Got expected CacheServerException when performing operation on a non-existent region: " << ex.what() << "\n";
     }
   }
 END_TASK_DEFINITION

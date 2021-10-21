@@ -183,9 +183,9 @@ void createPooledRegionSticky(const std::string& name, bool ackMode,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
-          ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled);
@@ -380,11 +380,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepSix)
       FAIL("Expected exception when transaction delegate has gone away.");
     } catch (const TransactionDataNodeHasDepartedException& ex) {
       getHelper()->getCache()->getCacheTransactionManager()->rollback();
-      printf(
-          "Got expected TransactionDataNodeHasDepartedException when "
-          "transaction "
-          "delegate has gone away: %s\n",
-          ex.what());
+      std::cout << "Got expected TransactionDataNodeHasDepartedException when "
+                   "transaction delegate has gone away: "
+                << ex.what() << "\n";
     }
 
     LOG("StepSix complete.");

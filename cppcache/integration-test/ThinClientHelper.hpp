@@ -381,8 +381,9 @@ std::shared_ptr<Region> createPooledRegion(
     const std::shared_ptr<CacheListener>& listener = nullptr,
     bool caching = true) {
   LOG("createPooledRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true, poolname, locators, nullptr);
@@ -560,9 +561,9 @@ void doNetsearch(const char* name, const char* key, const char* value,
 void createIntEntry(const char* name, const char* key, const int value,
                     bool onlyCreate = false) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %d in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
 
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);

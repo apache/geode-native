@@ -82,8 +82,8 @@ std::string checkNullString(const std::string *str) {
   return ((str == nullptr) ? "(null)" : *str);
 }
 
-void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
-                  int32_t &fields) {
+void _printAllFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
+                     int32_t &fields) {
   try {
     if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
       std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- ID "
@@ -129,8 +129,8 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
           for (const auto &iter : *map) {
             std::cout << "   hashMap " << ++index << " of " << map->size()
                       << " ... \n";
-            _printFields(iter.first, ssptr, fields);
-            _printFields(iter.second, ssptr, fields);
+            _printAllFields(iter.first, ssptr, fields);
+            _printAllFields(iter.second, ssptr, fields);
           }
           std::cout << "   end of map \n";
         } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
@@ -145,7 +145,7 @@ void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
               continue;
             }
 
-            _printFields(innerField, structimpl.get(), inner_fields);
+            _printAllFields(innerField, structimpl.get(), inner_fields);
 
           }  // end of field iterations
           std::cout << "   } //end of " << ssptr->getFieldName(fields) << "\n";
@@ -183,7 +183,7 @@ void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
         continue;
       }
 
-      _printFields(field, siptr, fields);
+      _printAllFields(field, siptr, fields);
 
     }  // end of field iterations
   }    // end of row iterations

@@ -106,7 +106,7 @@ DUNIT_TASK_DEFINITION(LOCATORSERVER, CreateServer1)
         LOG("Server1 started");
       }
     } catch (...) {
-      printf("this is some exception");
+      std::cout << "this is some exception";
     }
   }
 END_TASK_DEFINITION

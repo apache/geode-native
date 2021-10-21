@@ -62,7 +62,7 @@ void createRegionForSecurity(
     poolName += "_" + std::to_string(index++);
   }
 
-  printf("createRegionForSecurity poolname = %s \n", poolName.c_str());
+  std::cout << "createRegionForSecurity poolname = " << poolName << "\n";
 
   getHelper()->createPoolWithLocators(
       poolName, locatorsG, clientNotificationEnabled, subscriptionRedundancy,

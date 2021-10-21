@@ -174,8 +174,7 @@ void _verifyCreated(const char* name, const char* key, int line) {
 void createRegion(const char* name, bool ackMode, const char* endpoints,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << "  ackMode is " << ackMode << "\n";
   // ack, not a mirror, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           endpoints, clientNotificationEnabled);
