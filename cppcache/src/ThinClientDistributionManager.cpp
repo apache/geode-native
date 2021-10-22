@@ -47,7 +47,7 @@ void ThinClientDistributionManager::init() {
     randIndex.push_back(index);
   }
   RandGen randGen;
-  std::random_shuffle(randIndex.begin(), randIndex.end(), randGen);
+  std::shuffle(randIndex.begin(), randIndex.end(), randGen);
   int index = -1;
   GfErrType err = GF_NOERR;
   while (m_activeEndpoint < 0 && ++index < numEndpoints) {
@@ -273,7 +273,7 @@ GfErrType ThinClientDistributionManager::selectEndpoint(
             randIndex.push_back(idx);
           }
         }
-        std::random_shuffle(randIndex.begin(), randIndex.end(), randGen);
+        std::shuffle(randIndex.begin(), randIndex.end(), randGen);
         doRand = false;
       }
       while (!randIndex.empty()) {

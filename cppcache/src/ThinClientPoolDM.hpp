@@ -291,7 +291,7 @@ class ThinClientPoolDM
   int m_numRegions;
 
   // for selectEndpoint
-  unsigned m_server;
+  std::size_t m_server;
 
   // Manage Connection thread
 

@@ -93,7 +93,7 @@ class ThinClientRedundancyManager {
 
   // for selectServers
   volatile bool m_allEndpointsDisconnected;
-  int m_server;
+  std::size_t m_server;
   bool m_sentReadyForEvents;
   int m_redundancyLevel;
   bool m_loggedRedundancyWarning;
