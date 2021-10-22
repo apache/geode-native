@@ -59,6 +59,20 @@ namespace Apache.Geode.Client.IntegrationTests {
     }
 
     private void doPutsAndGets(Region region) {
+      IDictionary<object, object> dict = new Dictionary<object, object>
+      {
+        { "stringKey", "stringValue" },
+        { "s32", 1 },
+        { "s16", (short)1 },
+        { "s64", (long)1 },
+        { 77, 177 },
+        { 78, (short)177 },
+        { 79, (long)177 }
+      };
+
+      var array = new KeyValuePair<object, object>[dict.Count];
+      dict.CopyTo(array, 0);
+
       var fullname1 = "Robert Timmons";
       var fullname2 = "Sylvia Charles";
 
