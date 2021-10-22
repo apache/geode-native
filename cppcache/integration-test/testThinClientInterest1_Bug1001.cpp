@@ -31,18 +31,16 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::Exception;
 
 std::shared_ptr<CacheableString> getUString(int index) {
+  std::wostringstream strm;
   std::wstring baseStr(40, L'\x20AC');
-  wchar_t indexStr[15];
-  swprintf(indexStr, 14, L"%10d", index);
-  baseStr.append(indexStr);
-  return CacheableString::create(baseStr);
+  strm << baseStr << std::setw(10) << std::setfill(L'0') << index;
+  return CacheableString::create(strm.str());
 }
 std::shared_ptr<CacheableString> getUAString(int index) {
+  std::wostringstream strm;
   std::wstring baseStr(40, L'A');
-  wchar_t indexStr[15];
-  swprintf(indexStr, 14, L"%10d", index);
-  baseStr.append(indexStr);
-  return CacheableString::create(baseStr);
+  strm << baseStr << std::setw(10) << std::setfill(L'0') << index;
+  return CacheableString::create(strm.str());
 }
 
 DUNIT_TASK_DEFINITION(CLIENT1, SetupClient1)
@@ -238,7 +236,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckUpdateBug1001)
       auto lCStringP = CacheableString::create(str);
       lCStringP->value();
     } catch (const Exception &geodeExcp) {
-      printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
+      std::cout << geodeExcp.getName() << " : " << geodeExcp.what();
       FAIL("Should not have got exception.");
     }
 
@@ -250,7 +248,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CheckUpdateBug1001)
       auto lCStringP = CacheableString::create(str);
       lCStringP->value();
     } catch (const Exception &geodeExcp) {
-      printf("%s: %s", geodeExcp.getName().c_str(), geodeExcp.what());
+      std::cout << geodeExcp.getName() << " : " << geodeExcp.what();
       FAIL("Should not have got exception.");
     }
 

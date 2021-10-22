@@ -344,8 +344,9 @@ void _verifyCreated(const char *name, const char *key, int line) {
 void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = true) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   char *endpoints = nullptr;
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
@@ -356,9 +357,9 @@ void createRegion(const char *name, bool ackMode,
 
 void createEntry(const char *name, const char *key, const char *value) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -381,9 +382,9 @@ void createEntry(const char *name, const char *key, const char *value) {
 
 void createIntEntry(const char *name, const char *key, const int value) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %d in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableInt32::create(value);

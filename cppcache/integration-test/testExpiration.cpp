@@ -198,7 +198,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     n = getNumOfEntries(R5);
 
-    printf("n ==  %zd\n", n);
+    std::cout << "n ==  " << n << "\n";
     ASSERT(n == 1, "Expected 1 entry");
 
     // std::this_thread::sleep_for(std::chrono::seconds(3));

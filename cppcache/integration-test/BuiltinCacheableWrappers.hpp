@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <wchar.h>
 #include <random>
+#include <sstream>
+#include <iomanip>
 
 #include <ace/Date_Time.h>
 
@@ -616,15 +618,15 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
   int32_t maxKeys() const override { return INT_MAX; }
 
   void initKey(int32_t keyIndex, int32_t maxSize) override {
+    std::wostringstream strm;
+
     if (maxSize <= 0xFFFF)  // ensure its larger than 64k
     {
       maxSize += (0xFFFF + 1);
     }
     std::wstring baseStr(maxSize - 10, L'\x0905');
-    wchar_t indexStr[15];
-    swprintf(indexStr, 14, L"%10d", keyIndex);
-    baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(baseStr);
+    strm << baseStr << std::setw(10) << std::setfill(L'0') << keyIndex;
+    m_cacheableObject = CacheableString::create(strm.str());
   }
 
   void initRandomValue(int32_t maxSize) override {
@@ -661,15 +663,16 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
   int32_t maxKeys() const override { return INT_MAX; }
 
   void initKey(int32_t keyIndex, int32_t maxSize) override {
+    std::wostringstream strm;
+
     maxSize %= 21800;  // so that encoded length is within 64k
     if (maxSize < 11) {
       maxSize = 11;
     }
     std::wstring baseStr(maxSize - 10, L'\x0905');
     wchar_t indexStr[15];
-    swprintf(indexStr, 14, L"%10d", keyIndex);
-    baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(baseStr);
+    strm << baseStr << std::setw(10) << std::setfill(L'0') << keyIndex;
+    m_cacheableObject = CacheableString::create(strm.str());
   }
 
   void initRandomValue(int32_t maxSize) override {

@@ -213,21 +213,21 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         if (!m_isPdx) {
           auto ser = (*rsptr)[rows];
           if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
-            printf(
-                "   query idx %d pulled portfolio object ID %d, pkid  :: %s\n",
-                i, portfolio->getID(), portfolio->getPkid()->value().c_str());
+            std::cout << "   query idx " << i << " pulled portfolio object ID "
+                      << portfolio->getID()
+                      << ", pkid  :: " << portfolio->getPkid()->value() << "\n";
           } else if (auto position = std::dynamic_pointer_cast<Position>(ser)) {
-            printf(
-                "   query idx %d pulled position object secId %s, shares  :: "
-                "%d\n",
-                i, position->getSecId()->value().c_str(),
-                position->getSharesOutstanding());
+            std::cout << "   query idx " << i
+                      << " pulled position object secId "
+                      << position->getSecId()->value()
+                      << ", shares  :: " << position->getSharesOutstanding()
+                      << "\n";
           } else {
             if (ser != nullptr) {
-              printf(" query idx %d pulled object %s \n", i,
-                     ser->toString().c_str());
+              std::cout << " query idx " << i << " pulled object "
+                        << ser->toString() << " \n";
             } else {
-              printf("   query idx %d pulled bad object \n", i);
+              std::cout << "   query idx " << i << " pulled bad object \n";
               FAIL("Unexpected object received in query");
             }
           }
@@ -235,24 +235,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
           auto pdxser = (*rsptr)[rows];
           if (auto portfoliopdx =
                   std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
-            printf(
-                "   query idx %d pulled portfolioPdx object ID %d, pkid %s  :: "
-                "\n",
-                i, portfoliopdx->getID(), portfoliopdx->getPkid().c_str());
+            std::cout << "   query idx " << i
+                      << " pulled portfolioPdx object ID "
+                      << portfoliopdx->getID() << ", pkid  "
+                      << portfoliopdx->getPkid() << "\n";
           } else if (auto positionpdx =
                          std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-            printf(
-                "   query idx %d pulled positionPdx object secId %s, shares %d "
-                " "
-                ":: \n",
-                i, positionpdx->getSecId().c_str(),
-                positionpdx->getSharesOutstanding());
+            std::cout << "   query idx " << i
+                      << " pulled positionPdx object secId "
+                      << positionpdx->getSecId() << ", shares "
+                      << positionpdx->getSharesOutstanding() << "  :: \n";
           } else {
             if (pdxser != nullptr) {
-              printf(" query idx %d pulled object %s  :: \n", i,
-                     pdxser->toString().c_str());
+              std::cout << " query idx " << i << " pulled object "
+                        << pdxser->toString() << "  :: \n";
             } else {
-              printf("   query idx %d pulled bad object  :: \n", i);
+              std::cout << "   query idx " << i << " pulled bad object  :: \n";
               FAIL("Unexpected object received in query");
             }
           }
@@ -261,7 +259,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     }
 
     if (!doAnyErrorOccured) {
-      printf("HURRAY !! StepFour PASSED \n\n");
+      std::cout << "HURRAY !! StepFour PASSED \n\n";
     } else {
       FAIL("Failed in StepFour verification");
     }
@@ -314,23 +312,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
           if (!m_isPdx) {
             auto ser = (*rsptr)[rows];
             if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
-              printf(
-                  "   query idx %d pulled portfolio object ID %d, pkid  :: "
-                  "%s\n",
-                  i, portfolio->getID(), portfolio->getPkid()->value().c_str());
+              std::cout << "   query idx " << i
+                        << " pulled portfolio object ID " << portfolio->getID()
+                        << ", pkid  :: " << portfolio->getPkid()->value()
+                        << "\n";
             } else if (auto position =
                            std::dynamic_pointer_cast<Position>(ser)) {
-              printf(
-                  "   query idx %d pulled position object secId %s, shares  :: "
-                  "%d\n",
-                  i, position->getSecId()->value().c_str(),
-                  position->getSharesOutstanding());
+              std::cout << "   query idx " << i
+                        << " pulled position object secId "
+                        << position->getSecId()->value()
+                        << ", shares  :: " << position->getSharesOutstanding()
+                        << "\n";
             } else {
               if (ser != nullptr) {
-                printf(" query idx %d pulled object %s \n", i,
-                       ser->toString().c_str());
+                std::cout << " query idx " << i << " pulled object "
+                          << ser->toString() << "\n";
               } else {
-                printf("   query idx %d pulled bad object \n", i);
+                std::cout << "   query idx " << i << " pulled bad object \n";
                 FAIL("Unexpected object received in query");
               }
             }
@@ -338,25 +336,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
             auto pdxser = (*rsptr)[rows];
             if (auto portfoliopdx =
                     std::dynamic_pointer_cast<PortfolioPdx>(pdxser)) {
-              printf(
-                  "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
-                  ":: "
-                  "\n",
-                  i, portfoliopdx->getID(), portfoliopdx->getPkid().c_str());
+              std::cout << "   query idx " << i
+                        << " pulled portfoliopdx object ID "
+                        << portfoliopdx->getID()
+                        << ", pkid  :: " << portfoliopdx->getPkid() << "\n";
             } else if (auto positionpdx =
                            std::dynamic_pointer_cast<PositionPdx>(pdxser)) {
-              printf(
-                  "   query idx %d pulled positionPdx object secId %s, shares "
-                  "%d "
-                  " :: \n",
-                  i, positionpdx->getSecId().c_str(),
-                  positionpdx->getSharesOutstanding());
+              std::cout << "   query idx " << i
+                        << " pulled positionpdx object secId "
+                        << positionpdx->getSecId() << ", shares  :: "
+                        << positionpdx->getSharesOutstanding() << "\n";
             } else {
               if (pdxser != nullptr) {
-                printf(" query idx %d pulled object %s  :: \n", i,
-                       pdxser->toString().c_str());
+                std::cout << " query idx " << i << " pulled object "
+                          << pdxser->toString() << "\n";
               } else {
-                printf("   query idx %d pulled bad object  :: \n", i);
+                std::cout << "   query idx " << i << " pulled bad object \n";
                 FAIL("Unexpected object received in query");
               }
             }
@@ -366,7 +361,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
     }
 
     if (!doAnyErrorOccured) {
-      printf("HURRAY !! We PASSED \n\n");
+      std::cout << "HURRAY !! We PASSED \n\n";
     } else {
       FAIL("Failed in StepFive verification");
     }
@@ -425,23 +420,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
           if (!m_isPdx) {
             auto ser = (*rsptr)[rows];
             if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
-              printf(
-                  "   query idx %d pulled portfolio object ID %d, pkid %s : \n",
-                  i, portfolio->getID(), portfolio->getPkid()->value().c_str());
+              std::cout << "   query idx " << i
+                        << " pulled portfolio object ID " << portfolio->getID()
+                        << ", pkid  :: " << portfolio->getPkid()->value()
+                        << "\n";
             } else if (auto position =
                            std::dynamic_pointer_cast<Position>(ser)) {
-              printf(
-                  "   query idx %d pulled position object secId %s, shares %d  "
-                  ": "
-                  "\n",
-                  i, position->getSecId()->value().c_str(),
-                  position->getSharesOutstanding());
+              std::cout << "   query idx " << i
+                        << " pulled position object secId "
+                        << position->getSecId()->value()
+                        << ", shares  :: " << position->getSharesOutstanding()
+                        << "\n";
             } else {
               if (ser != nullptr) {
-                printf(" query idx %d pulled object %s  : \n", i,
-                       ser->toString().c_str());
+                std::cout << " query idx " << i << " pulled object "
+                          << ser->toString() << "  : \n";
               } else {
-                printf("   query idx %d pulled bad object  \n", i);
+                std::cout << "   query idx " << i << " pulled bad object  \n";
                 FAIL("Unexpected object received in query");
               }
             }
@@ -449,25 +444,22 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
             auto ser = (*rsptr)[rows];
             if (auto portfoliopdx =
                     std::dynamic_pointer_cast<PortfolioPdx>(ser)) {
-              printf(
-                  "   query idx %d pulled portfolioPdx object ID %d, pkid %s  "
-                  ": "
-                  "\n",
-                  i, portfoliopdx->getID(), portfoliopdx->getPkid().c_str());
+              std::cout << "   query idx " << i
+                        << " pulled portfoliopdx object ID "
+                        << portfoliopdx->getID()
+                        << ", pkid  :: " << portfoliopdx->getPkid() << "\n";
             } else if (auto positionpdx =
                            std::dynamic_pointer_cast<PositionPdx>(ser)) {
-              printf(
-                  "   query idx %d pulled positionPdx object secId %s, shares "
-                  "%d "
-                  " : \n",
-                  i, positionpdx->getSecId().c_str(),
-                  positionpdx->getSharesOutstanding());
+              std::cout << "   query idx " << i
+                        << " pulled positionPdx object secId "
+                        << positionpdx->getSecId() << ", shares "
+                        << positionpdx->getSharesOutstanding() << "  :: \n";
             } else {
               if (ser != nullptr) {
-                printf(" query idx %d pulled object %s : \n", i,
-                       ser->toString().c_str());
+                std::cout << " query idx " << i << " pulled object "
+                          << ser->toString() << " \n";
               } else {
-                printf("   query idx %d pulled bad object\n", i);
+                std::cout << "   query idx " << i << " pulled bad object\n";
                 FAIL("Unexpected object received in query");
               }
             }
@@ -477,7 +469,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
     }
 
     if (!doAnyErrorOccured) {
-      printf("HURRAY !! We PASSED \n\n");
+      std::cout << "HURRAY !! We PASSED \n\n";
     } else {
       FAIL("Failed in StepSix verification");
     }

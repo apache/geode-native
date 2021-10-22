@@ -82,32 +82,32 @@ CacheHelper *getHelper() {
 void printAttribute(RegionAttributes attr) {
   using apache::geode::internal::chrono::duration::to_string;
 
-  printf("CachingEnable: %s\n",
-         attr.getCachingEnabled() ? "enabled" : "disabled");
-  printf("InitialCapacity: %d\n", attr.getInitialCapacity());
-  printf("LoadFactor: %f\n", attr.getLoadFactor());
-  printf("ConcurencyLevel: %d\n", attr.getConcurrencyLevel());
-  printf("RegionTimeToLive: %s\n",
-         to_string(attr.getRegionTimeToLive()).c_str());
-  printf("RegionIdleTimeout: %s\n",
-         to_string(attr.getRegionIdleTimeout()).c_str());
-  printf("EntryTimeToLive: %s\n", to_string(attr.getEntryTimeToLive()).c_str());
-  printf("EntryIdleTimeout: %s\n",
-         to_string(attr.getEntryIdleTimeout()).c_str());
-  printf("getLruEntriesLimit: %d\n", attr.getLruEntriesLimit());
-  printf("RegionTimeToLiveAction: %d\n",
-         static_cast<int>(attr.getRegionTimeToLiveAction()));
-  printf("RegionIdleTimeoutAction: %d\n",
-         static_cast<int>(attr.getRegionIdleTimeoutAction()));
-  printf("EntryTimeToLiveAction: %d\n",
-         static_cast<int>(attr.getEntryTimeToLiveAction()));
-  printf("EntryIdleTimeoutAction: %d\n",
-         static_cast<int>(attr.getEntryIdleTimeoutAction()));
-  printf("LruEvictionAction: %d\n",
-         static_cast<int>(attr.getLruEvictionAction()));
-  printf("ClientNotification: %s\n",
-         attr.getClientNotificationEnabled() ? "true" : "false");
-  // printf("getEndPoint: %s\n",attr.getEndpoints());
+  std::cout << "CachingEnable: "
+            << (attr.getCachingEnabled() ? "enabled" : "disabled") << "\n";
+  std::cout << "InitialCapacity: " << attr.getInitialCapacity() << "\n";
+  std::cout << "LoadFactor: " << attr.getLoadFactor() << "\n";
+  std::cout << "ConcurencyLevel: " << attr.getConcurrencyLevel() << "\n";
+  std::cout << "RegionTimeToLive: " << to_string(attr.getRegionTimeToLive())
+            << "\n";
+  std::cout << "RegionIdleTimeout: " << to_string(attr.getRegionIdleTimeout())
+            << "\n";
+  std::cout << "EntryTimeToLive: " << to_string(attr.getEntryTimeToLive())
+            << "\n";
+  std::cout << "EntryIdleTimeout: " << to_string(attr.getEntryIdleTimeout())
+            << "\n";
+  std::cout << "getLruEntriesLimit: " << attr.getLruEntriesLimit() << "\n";
+  std::cout << "RegionTimeToLiveAction: "
+            << static_cast<int>(attr.getRegionTimeToLiveAction()) << "\n";
+  std::cout << "RegionIdleTimeoutAction: "
+            << static_cast<int>(attr.getRegionIdleTimeoutAction()) << "\n";
+  std::cout << "EntryTimeToLiveAction: "
+            << static_cast<int>(attr.getEntryTimeToLiveAction()) << "\n";
+  std::cout << "EntryIdleTimeoutAction: "
+            << static_cast<int>(attr.getEntryIdleTimeoutAction()) << "\n";
+  std::cout << "LruEvictionAction: "
+            << static_cast<int>(attr.getLruEvictionAction()) << "\n";
+  std::cout << "ClientNotification: "
+            << (attr.getClientNotificationEnabled() ? "true" : "false") << "\n";
 }
 
 void setCacheListener(const char *regName,
@@ -153,8 +153,9 @@ void createRegion(const char *name, bool ackMode,
                   const std::chrono::seconds &rttl,
                   const std::chrono::seconds &rit, int lel,
                   ExpirationAction action = ExpirationAction::DESTROY) {
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto
       regPtr =  // getHelper()->createRegion( name, ackMode, true,
                 // ettl,eit,rttl,rit,lel,action,endpoints,clientNotificationEnabled
@@ -202,11 +203,12 @@ void doRgnOperations(const char *name, int n, int rgnOpt = 0) {
 
 void dumpCounters(const char *regName) {
   auto rptr = getHelper()->getRegion(regName);
-  printf("Region size: %d\n", rptr->size());
+  std::cout << "Region size: " << rptr->size() << "\n";
   if (regListener != nullptr) {
-    printf("counts:: creates: %d, updates: %d, invalidates: %d, destroys: %d\n",
-           regListener->getCreates(), regListener->getUpdates(),
-           regListener->getInvalidates(), regListener->getDestroys());
+    std::cout << "counts:: creates: " << regListener->getCreates()
+              << ", updates: " << regListener->getUpdates()
+              << ", invalidates: " << regListener->getInvalidates()
+              << ", destroys: " << regListener->getDestroys() << "\n";
   }
 }
 
@@ -218,11 +220,11 @@ size_t getNumOfEntries(const char *regName, bool isValue = false) {
   auto rptr = getHelper()->getRegion(regName);
   if (isValue) {
     auto v = rptr->values();
-    printf("Region value size: %zd\n", v.size());
+    std::cout << "Region value size: " << v.size() << "\n";
     return v.size();
   } else if (!useRegionSize) {
     auto v = rptr->keys();
-    printf("Region key size: %zd\n", v.size());
+    std::cout << "Region key size: " << v.size() << "\n";
     return v.size();
   } else {
     return rptr->size();

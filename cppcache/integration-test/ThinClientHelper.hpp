@@ -341,8 +341,9 @@ void createRegion(const char* name, bool ackMode,
                   const std::shared_ptr<CacheListener>& listener = nullptr,
                   bool caching = true) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, caching, listener,
                                           clientNotificationEnabled);
@@ -380,8 +381,9 @@ std::shared_ptr<Region> createPooledRegion(
     const std::shared_ptr<CacheListener>& listener = nullptr,
     bool caching = true) {
   LOG("createPooledRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
 
   if (cacheHelper == nullptr) {
     cacheHelper = new CacheHelper(true, poolname, locators, nullptr);
@@ -469,9 +471,9 @@ std::shared_ptr<Region> createRegionAndAttachPool(
 
 void createEntry(const std::string& name, const char* key, const char* value) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name.c_str());
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -495,9 +497,9 @@ void createEntry(const std::string& name, const char* key, const char* value) {
 void updateEntry(const char* name, const char* key, const char* value,
                  bool checkVal = true, bool checkKey = true) {
   LOG("updateEntry() entered.");
-  fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Updating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Update entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -524,16 +526,14 @@ void updateEntry(const char* name, const char* key, const char* value,
 void doNetsearch(const char* name, const char* key, const char* value,
                  bool checkVal = true) {
   LOG("doNetsearch() entered.");
-  fprintf(
-      stdout,
-      "Netsearching for entry -- key: %s  expecting value: %s in region %s\n",
-      key, value, name);
-  fflush(stdout);
+  std::cout << "Netsearching for entry -- key: " << key
+            << " expecting value: " << value << " in region " << name << "\n"
+            << std::flush;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
+  std::cout << "netsearch region " << regPtr->getName() << "\n" << std::flush;
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -561,9 +561,9 @@ void doNetsearch(const char* name, const char* key, const char* value,
 void createIntEntry(const char* name, const char* key, const int value,
                     bool onlyCreate = false) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %d in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
 
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
@@ -588,8 +588,7 @@ void createIntEntry(const char* name, const char* key, const int value,
 
 void invalidateEntry(const char* name, const char* key) {
   LOG("invalidateEntry() entered.");
-  fprintf(stdout, "Invalidating entry -- key: %s  in region %s\n", key, name);
-  fflush(stdout);
+  std::cout << "Invalidating entry -- key: " << key << " in region " << name << "\n" << std::flush;
   // Invalidate entry, verify entry is invalidated
   auto keyPtr = CacheableKey::create(key);
 
@@ -609,8 +608,7 @@ void invalidateEntry(const char* name, const char* key) {
 
 void destroyEntry(const char* name, const char* key) {
   LOG("destroyEntry() entered.");
-  fprintf(stdout, "Destroying entry -- key: %s  in region %s\n", key, name);
-  fflush(stdout);
+  std::cout << "Destroying entry -- key: " << key << " in region " << name << "\n" << std::flush;
   // Destroy entry, verify entry is destroyed
   auto keyPtr = CacheableKey::create(key);
 

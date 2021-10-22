@@ -230,16 +230,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
       for (auto &&ser : hacks::range(*results)) {
         count--;
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
-          printf("   query pulled portfolio object ID %d, pkid %s\n",
-                 portfolio->getID(), portfolio->getPkid()->value().c_str());
+          std::cout << "   query pulled portfolio object ID "
+                    << portfolio->getID() << ", pkid "
+                    << portfolio->getPkid()->value() << "\n";
         } else if (auto position = std::dynamic_pointer_cast<Position>(ser)) {
-          printf("   query  pulled position object secId %s, shares %d\n",
-                 position->getSecId()->value().c_str(),
-                 position->getSharesOutstanding());
+          std::cout << "   query  pulled position object secId "
+                    << position->getSecId()->value() << ", shares "
+                    << position->getSharesOutstanding() << "\n";
         } else if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          std::cout << " query pulled object " << ser->toString() << "\n";
         } else {
-          printf("   query pulled nullptr object\n");
+          std::cout << "   query pulled nullptr object\n";
         }
       }
       LOG(std::string("results last count=") + std::to_string(count));

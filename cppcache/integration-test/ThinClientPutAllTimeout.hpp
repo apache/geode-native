@@ -159,7 +159,7 @@ void putAllWithOneEntryTimeoutWithCallBackArg(
 
 DUNIT_TASK_DEFINITION(CLIENT1, testTimeoutException)
   {
-    printf("start task testTimeoutException\n");
+    std::cout << "start task testTimeoutException\n";
     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     regPtr->registerAllKeys();
@@ -198,7 +198,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
   {
-    printf("start task testWithoutTimeoutException\n");
+    std::cout << "start task testWithoutTimeoutException\n";
     auto regPtr = getHelper()->getRegion(regionNames[0]);
 
     // regPtr->registerAllKeys();
@@ -216,8 +216,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutException)
       logmsg += excp.what();
       LOG(logmsg.c_str());
     } catch (const Exception& ex) {
-      printf("Exception while putALL :: %s : %s\n", ex.getName().c_str(),
-             ex.what());
+      std::cout << "Exception while putAll :: " << ex.getName() << " : " << ex.what() << "\n";
     }
     FAIL("Something is wrong while putAll");
   }
@@ -238,10 +237,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, testWithoutTimeoutWithCallBackArgException)
       logmsg += excp.what();
       LOG(logmsg.c_str());
     } catch (const Exception& ex) {
-      printf(
-          "Exception while putAllWithOneEntryTimeoutWithCallBackArg :: %s : "
-          "%s\n",
-          ex.getName().c_str(), ex.what());
+      std::cout << "Exception while putAllWithOneEntryTimeoutWithCallBackArg :: " << ex.getName() << " : " << ex.what() << "\n";
     }
     FAIL("Something is wrong while putAllWithOneEntryTimeoutWithCallBackArg");
   }

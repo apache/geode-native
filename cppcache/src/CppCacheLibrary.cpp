@@ -17,6 +17,8 @@
 
 #include "CppCacheLibrary.hpp"
 
+#include <iostream>
+
 #include <ace/ACE.h>
 #include <ace/Init_ACE.h>
 
@@ -76,10 +78,9 @@ std::string CppCacheLibrary::initProductDir() {
   // otherwise... get the DLL path, and work backwards from it.
   auto productLibraryDirectoryName = getProductLibDir();
   if (productLibraryDirectoryName.empty()) {
-    fprintf(stderr,
-            "Cannot determine location of product directory.\n"
-            "Please set GEODE_NATIVE_HOME environment variable.\n");
-    fflush(stderr);
+    std::cerr << "Cannot determine location of product directory.\n"
+              << "Please set GEODE_NATIVE_HOME environment variable.\n"
+              << std::flush;
     throw apache::geode::client::IllegalStateException(
         "Product installation directory not found. Please set "
         "GEODE_NATIVE_HOME environment variable.");

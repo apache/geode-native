@@ -89,8 +89,9 @@ CacheHelper* getHelper() {
 void createRegion(const char* name, bool ackMode, const char* endpoints,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -102,8 +103,9 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
