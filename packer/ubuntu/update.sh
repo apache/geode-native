@@ -18,4 +18,4 @@
 set -x -e -o pipefail
 
 export DEBIAN_FRONTEND=noninteractive
-apt update && apt -yq full-upgrade && apt-get -y autoremove && apt remove -y unattended-upgrades
+apt update && apt-get -y autoremove && apt remove -y unattended-upgrades
