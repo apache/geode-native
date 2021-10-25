@@ -33,9 +33,9 @@
 #include "geode/region/factory.h"
 
 // C client private headers
+#include "data_serializable_raw.hpp"
 #include "region.hpp"
 #include "region/factory.hpp"
-#include "data_serializable_raw.hpp"
 
 RegionWrapper::RegionWrapper(
     std::shared_ptr<apache::geode::client::Region> region)
@@ -52,7 +52,9 @@ void RegionWrapper::PutString(const std::string& key,
 
 void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                                  size_t size) {
-  region_->put(key, apache::geode::client::internal::DataSerializableRaw::create((const int8_t*)value, size));
+  region_->put(key,
+               apache::geode::client::internal::DataSerializableRaw::create(
+                   (const int8_t*)value, size));
 }
 
 void RegionWrapper::PutByteArray(const int32_t key, const char* value,

@@ -18,8 +18,8 @@
 #include <iterator>
 
 // C++ client public headers
-#include "geode/internal/DataSerializablePrimitive.hpp"
 #include "geode/DataOutput.hpp"
+#include "geode/internal/DataSerializablePrimitive.hpp"
 
 // C client public headers
 #include "data_serializable_raw.hpp"
@@ -38,19 +38,20 @@ DataSerializableRaw::DataSerializableRaw(const int8_t* data, size_t size) {
   std::copy(data, data + size, std::back_inserter(bytes_));
 }
 
-std::shared_ptr<DataSerializableRaw> DataSerializableRaw::create(const int8_t* data, size_t size) {
+std::shared_ptr<DataSerializableRaw> DataSerializableRaw::create(
+    const int8_t* data, size_t size) {
   return std::make_shared<DataSerializableRaw>(data, size);
 }
 
 void DataSerializableRaw::toData(DataOutput& dataOutput) const {
-  dataOutput.writeBytesOnly(bytes_.data()+1, bytes_.size()-1);
+  dataOutput.writeBytesOnly(bytes_.data() + 1, bytes_.size() - 1);
 }
 
-void DataSerializableRaw::fromData(DataInput& dataInput) {
+void DataSerializableRaw::fromData(DataInput& dataInput) {}
 
+DSCode DataSerializableRaw::getDsCode() const {
+  return static_cast<DSCode>(bytes_[0]);
 }
-
-DSCode DataSerializableRaw::getDsCode() const { return static_cast<DSCode>(bytes_[0]); }
 
 }  // namespace internal
 }  // namespace client

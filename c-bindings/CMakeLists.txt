@@ -18,6 +18,7 @@ project(apache-geode-c)
 add_library(${PROJECT_NAME} SHARED "src/auth_initialize.cpp"
 "src/cache.cpp"
 "src/client.cpp"
+"src/data_serializable_raw.cpp"
 "src/pool.cpp"
 "src/region.cpp"
 "src/cache/factory.cpp"
