@@ -137,6 +137,8 @@ jobs:
             - do:
               - get: task-image
               - get: geode-latest
+                passed:
+                - check-source
               - #@ bash_task("extract-geode", [{"name":"geode-latest"}], [{"name":"geode"}], extract_geode_bash_task(), caches=[{"path":"geode"}])
 
   #@overlay/append
