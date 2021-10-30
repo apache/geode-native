@@ -203,6 +203,9 @@ git_rev=$(git rev-parse HEAD)
 popd
 version=$(cat version/number)
 builddate=$(date "+%Y-%m-%d")
+#@ if build.image_family == "build-windows-2019-vs-2019":
+  remote_shell 'c:/"Program Files (x86)\Microsoft Visual Studio"/2019/Community/VC/Auxiliary/Build/vcvarsall.bat x64 10.0.16299.0 -vcvars_ver=14.20'
+#@end
 remote_shell cmake -E make_directory build
 remote_shell cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
     -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
