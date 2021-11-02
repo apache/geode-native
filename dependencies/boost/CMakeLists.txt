@@ -18,7 +18,7 @@ project(boost VERSION 1.76.0 LANGUAGES NONE)
 set(SHA256 7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca)
 
 if (WIN32)
-  set(BOOTSTRAP_COMMAND ./bootstrap.bat)
+  set(BOOTSTRAP_COMMAND bootstrap.bat)
 else()
   set(BOOTSTRAP_COMMAND ./bootstrap.sh)
 endif()
