@@ -64,6 +64,11 @@ if (${WIN32})
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
   set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
+
+  if(CMAKE_GENERATOR_TOOLSET MATCHES "version=([0-9]+\.[0-9]+\.[0-9]+)")
+    list(APPEND _MSBUILD_FLAGS /p:VCToolsVersion=${CMAKE_MATCH_1})
+  endif()
+
   set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_${MPC_TYPE}_static )
 
   include(ProcessorCount)
@@ -85,7 +90,7 @@ if (${WIN32})
                            -value_template staticflags+=ACE_AS_STATIC_LIBS
                            -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll
   )
-  set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
+  set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS_STATIC}
   )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib <INSTALL_DIR>/lib
                  COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/ace <INSTALL_DIR>/include/ace
