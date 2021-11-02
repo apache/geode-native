@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.19.7)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
