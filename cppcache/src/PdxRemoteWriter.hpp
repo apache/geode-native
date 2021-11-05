@@ -22,11 +22,13 @@
 
 #include "PdxLocalWriter.hpp"
 
+#include <geode/internal/geode_globals.hpp>
+
 namespace apache {
 namespace geode {
 namespace client {
 
-class PdxRemoteWriter : public PdxLocalWriter {
+class APACHE_GEODE_EXPORT PdxRemoteWriter : public PdxLocalWriter {
  private:
   int32_t* m_remoteTolocalMap;
   int32_t m_preserveDataIdx;
@@ -45,10 +47,10 @@ class PdxRemoteWriter : public PdxLocalWriter {
   PdxRemoteWriter() = default;
 
   PdxRemoteWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
-                  std::shared_ptr<PdxRemotePreservedData> preservedData,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
-  PdxRemoteWriter(DataOutput& output, std::string pdxClassName,
+  PdxRemoteWriter(DataOutput& output, std::shared_ptr<PdxType> pdxType,
+                  std::shared_ptr<PdxRemotePreservedData> preservedData,
                   std::shared_ptr<PdxTypeRegistry> pdxTypeRegistry);
 
   PdxRemoteWriter(PdxRemoteWriter&& move) = default;

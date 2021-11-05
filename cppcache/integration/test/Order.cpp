@@ -20,7 +20,7 @@
 #include <geode/PdxReader.hpp>
 #include <geode/PdxWriter.hpp>
 
-namespace WanDeserialization {
+namespace PdxTests {
 
 void Order::fromData(PdxReader& pdxReader) {
   order_id_ = pdxReader.readInt(ORDER_ID_KEY_);
@@ -64,4 +64,4 @@ const std::string Order::ORDER_ID_KEY_ = "order_id";
 const std::string Order::NAME_KEY_ = "name";
 const std::string Order::QUANTITY_KEY_ = "quantity";
 
-}  // namespace WanDeserialization
+}  // namespace PdxTests

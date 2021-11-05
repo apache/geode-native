@@ -39,7 +39,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "mock/CacheListenerMock.hpp"
-#include "utility/make_unique.hpp"
+#include "util/cxx_extensions.hpp"
 
 namespace {
 // A simple comparator for cachables wrapped in shared pointers.
@@ -163,13 +163,13 @@ class HARegionCacheListenerWithClusterRegionTest : public ::testing::Test {
     listener_ =
         ::std::make_shared<::apache::geode::client::Nice_MockListener>();
 
-    cluster_ = ::make_unique<::Cluster>(
+    cluster_ = cxx::make_unique<::Cluster>(
         Name{"HARegionCacheListenerWithClusterRegionTest"}, LocatorCount{1},
         ServerCount{1});
 
     cluster_->start();
 
-    cache_ = ::make_unique<::apache::geode::client::Cache>(
+    cache_ = cxx::make_unique<::apache::geode::client::Cache>(
         cluster_->createCache({}, ::Cluster::SubscriptionState::Enabled));
 
     region_ = cache_

@@ -24,7 +24,7 @@
 
 #include <geode/PdxSerializable.hpp>
 
-namespace WanDeserialization {
+namespace PdxTests {
 
 using apache::geode::client::PdxReader;
 using apache::geode::client::PdxSerializable;
@@ -69,6 +69,6 @@ class Order : public PdxSerializable {
   int16_t quantity_;
 };
 
-}  // namespace WanDeserialization
+}  // namespace PdxTests
 
 #endif  // ORDER_H

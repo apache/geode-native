@@ -39,7 +39,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "mock/CacheListenerMock.hpp"
-#include "utility/make_unique.hpp"
+#include "util/cxx_extensions.hpp"
 
 namespace {
 class HARegionCacheListenerTest : public ::testing::Test {
@@ -198,12 +198,12 @@ class HARegionCacheListenerTest : public ::testing::Test {
           std::cout << "afterRegionDisconnected callback.\n";
         });
     */
-    cluster_ = ::make_unique<::Cluster>(Name{"HARegionCacheListenerTest"},
-                                        LocatorCount{1}, ServerCount{1});
+    cluster_ = cxx::make_unique<::Cluster>(Name{"HARegionCacheListenerTest"},
+                                           LocatorCount{1}, ServerCount{1});
 
     cluster_->start();
 
-    cache_ = make_unique<::apache::geode::client::Cache>(
+    cache_ = cxx::make_unique<::apache::geode::client::Cache>(
         cluster_->createCache({}, ::Cluster::SubscriptionState::Enabled));
 
     region_ = cache_

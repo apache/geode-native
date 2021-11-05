@@ -55,6 +55,7 @@ namespace client {
 class CacheFactory;
 class CacheStatistics;
 class ExpiryTaskManager;
+class PdxRemoteWriterFactory;
 class PdxTypeRegistry;
 class Pool;
 class RegionAttributes;
@@ -316,12 +317,20 @@ class APACHE_GEODE_EXPORT CacheImpl {
 
   bool isKeepAlive();
 
+  void setPdxRemoteWriterFactory(std::unique_ptr<PdxRemoteWriterFactory> factory);
+
+  PdxRemoteWriterFactory& getPdxRemoteWriterFactory() const
+  {
+    return *m_pdxRemoteWriterFactory;
+  }
+
  private:
   std::atomic<bool> m_networkhop;
   std::atomic<bool> m_pr_metadata_updated;
   std::atomic<int8_t> m_serverGroupFlag;
   bool m_ignorePdxUnreadFields;
   bool m_readPdxSerialized;
+  std::unique_ptr<PdxRemoteWriterFactory> m_pdxRemoteWriterFactory;
   std::unique_ptr<ExpiryTaskManager> m_expiryTaskManager;
 
   // CachePerfStats

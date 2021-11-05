@@ -27,11 +27,11 @@
 #include "AdminRegion.hpp"
 #include "AutoDelete.hpp"
 #include "CacheXmlParser.hpp"
-#include "ClientProxyMembershipID.hpp"
 #include "EvictionController.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "InternalCacheTransactionManager2PCImpl.hpp"
 #include "LocalRegion.hpp"
+#include "PdxRemoteWriterFactoryImpl.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "SerializationRegistry.hpp"
 #include "TcrConnectionManager.hpp"
@@ -44,6 +44,7 @@
 #include "ThinClientRegion.hpp"
 #include "ThreadPool.hpp"
 #include "Utils.hpp"
+#include "util/cxx_extensions.hpp"
 
 #define DEFAULT_DS_NAME "default_GeodeDS"
 
@@ -56,8 +57,8 @@ CacheImpl::CacheImpl(Cache* c, const std::shared_ptr<Properties>& dsProps,
                      const std::shared_ptr<AuthInitialize>& authInitialize)
     : m_ignorePdxUnreadFields(ignorePdxUnreadFields),
       m_readPdxSerialized(readPdxSerialized),
-      m_expiryTaskManager(
-          std::unique_ptr<ExpiryTaskManager>(new ExpiryTaskManager())),
+      m_pdxRemoteWriterFactory(cxx::make_unique<PdxRemoteWriterFactoryImpl>()),
+      m_expiryTaskManager(cxx::make_unique<ExpiryTaskManager>()),
       m_statisticsManager(nullptr),
       m_closed(false),
       m_initialized(false),
@@ -902,6 +903,11 @@ int CacheImpl::getNumberOfTimeEndpointDisconnected(
 }
 
 bool CacheImpl::isKeepAlive() { return m_keepAlive; }
+
+void CacheImpl::setPdxRemoteWriterFactory(
+    std::unique_ptr<PdxRemoteWriterFactory> factory) {
+  m_pdxRemoteWriterFactory = std::move(factory);
+}
 
 }  // namespace client
 }  // namespace geode

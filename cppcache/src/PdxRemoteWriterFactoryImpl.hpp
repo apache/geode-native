@@ -15,16 +15,31 @@
  * limitations under the License.
  */
 
-#ifndef INTEGRATION_TEST_UTILITY_MAKE_UNIQUE_H
-#define INTEGRATION_TEST_UTILITY_MAKE_UNIQUE_H
+#pragma once
 
-#include <memory>
-#include <utility>
+#ifndef GEODE_PDXREMOTEWRITERFACTORYIMPL_H_
+#define GEODE_PDXREMOTEWRITERFACTORYIMPL_H_
 
-// Until we get C++14 support...
-template <typename T, typename... Args>
-::std::unique_ptr<T> make_unique(Args &&... args) {
-  return ::std::unique_ptr<T>(new T(::std::forward<Args>(args)...));
-}
+#include "PdxRemoteWriterFactory.hpp"
 
-#endif
+
+namespace apache {
+namespace geode {
+namespace client {
+
+class APACHE_GEODE_EXPORT PdxRemoteWriterFactoryImpl : public virtual PdxRemoteWriterFactory {
+ public:
+  ~PdxRemoteWriterFactoryImpl() override;
+
+  std::unique_ptr<PdxRemoteWriter> create(
+      DataOutput& output,
+      const std::shared_ptr<PdxSerializable>& object,
+      const std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+      const std::shared_ptr<PdxType>& localType) override;
+};
+
+}  // namespace client
+}  // namespace geode
+}  // namespace apache
+
+#endif  // GEODE_PDXREMOTEWRITERFACTORYIMPL_H_

@@ -30,6 +30,7 @@
 #include "PdxReaderWithTypeCollector.hpp"
 #include "PdxRemoteReader.hpp"
 #include "PdxRemoteWriter.hpp"
+#include "PdxRemoteWriterFactory.hpp"
 #include "PdxType.hpp"
 #include "PdxTypeRegistry.hpp"
 #include "PdxWriterWithTypeCollector.hpp"
@@ -121,13 +122,11 @@ void PdxHelper::serializePdx(
     pdxTypeRegistry->addLocalPdxType(className, nType);
     pdxTypeRegistry->addPdxType(nTypeId, nType);
 
-    if (cacheImpl != nullptr) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       ptc.getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cachePerfStats.incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
-    }
+    uint8_t* stPos =
+        const_cast<uint8_t*>(output.getBuffer()) + ptc.getStartPositionOffset();
+    int pdxLen = PdxHelper::readInt32(stPos);
+    cachePerfStats.incPdxSerialization(
+        pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
 
   } else  // we know locasl type, need to see preerved data
   {
@@ -137,28 +136,18 @@ void PdxHelper::serializePdx(
     // so we don't know whether user has used those or not;; Can we do some
     // trick here?
 
-    auto createPdxRemoteWriter = [&]() -> PdxRemoteWriter {
-      if (auto pd = pdxTypeRegistry->getPreserveData(pdxObject)) {
-        auto mergedPdxType = pdxTypeRegistry->getPdxType(pd->getMergedTypeId());
-        return PdxRemoteWriter(output, mergedPdxType, pd, pdxTypeRegistry);
-      } else {
-        return PdxRemoteWriter(output, className, pdxTypeRegistry);
-      }
-    };
+    auto prw = cacheImpl->getPdxRemoteWriterFactory().create(
+        output, pdxObject, pdxTypeRegistry, localPdxType);
 
-    PdxRemoteWriter prw = createPdxRemoteWriter();
-
-    pdxObject->toData(prw);
-    prw.endObjectWriting();
+    pdxObject->toData(*prw);
+    prw->endObjectWriting();
 
     //[ToDo] need to write bytes for stats
-    if (cacheImpl != nullptr) {
-      uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
-                       prw.getStartPositionOffset();
-      int pdxLen = PdxHelper::readInt32(stPos);
-      cachePerfStats.incPdxSerialization(
-          pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
-    }
+    uint8_t* stPos = const_cast<uint8_t*>(output.getBuffer()) +
+                     prw->getStartPositionOffset();
+    int pdxLen = PdxHelper::readInt32(stPos);
+    cachePerfStats.incPdxSerialization(
+        pdxLen + 1 + 2 * 4);  // pdxLen + 93 DSID + len + typeID
   }
 }
 
