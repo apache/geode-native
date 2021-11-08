@@ -383,9 +383,7 @@ TEST_F(TcrMessageTest, testConstructor5WithUnregisterInteresetList) {
 
   TcrMessageUnregisterInterestList message(
       new DataOutputUnderTest(), static_cast<const Region *>(nullptr), keys,
-      false,  // isDurable
-      false,  // receiveValues
-      InterestResultPolicy::NONE, static_cast<ThinClientBaseDM *>(nullptr));
+      false, static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::UNREGISTER_INTEREST_LIST, message.getMessageType());
 
@@ -443,9 +441,9 @@ TEST_F(TcrMessageTest, testConstructor6WithCreateRegion) {
 }
 
 TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
-  using apache::geode::client::TcrMessageRegisterInterest;
+  using apache::geode::client::TcrMessageRegisterInterestRegex;
 
-  TcrMessageRegisterInterest message(
+  TcrMessageRegisterInterestRegex message(
       new DataOutputUnderTest(),
       "str1",  // TODO: what does this parameter do?!
       "str2",  // TODO: what does this parameter do?!
@@ -464,15 +462,13 @@ TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
 }
 
 TEST_F(TcrMessageTest, testConstructor6WithUnregisterInterest) {
-  using apache::geode::client::TcrMessageUnregisterInterest;
+  using apache::geode::client::TcrMessageUnregisterInterestRegex;
 
-  TcrMessageUnregisterInterest message(
+  TcrMessageUnregisterInterestRegex message(
       new DataOutputUnderTest(),
       "str1",  // TODO: what does this parameter do?!
       "str2",  // TODO: what does this parameter do?!
-      InterestResultPolicy::NONE,
-      false,  // isDurable
-      false,  // receiveValues
+      false,   // isDurable
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::UNREGISTER_INTEREST, message.getMessageType());
