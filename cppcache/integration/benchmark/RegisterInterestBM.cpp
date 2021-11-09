@@ -19,9 +19,16 @@
 #include <framework/Cluster.h>
 #include <framework/Gfsh.h>
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4596)
+#endif
 #include <boost/log/core.hpp>
 #include <boost/log/expressions.hpp>
 #include <boost/log/trivial.hpp>
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #include <geode/Cache.hpp>
 #include <geode/CacheableString.hpp>
@@ -67,7 +74,7 @@ class RegisterInterestBM : public benchmark::Fixture {
         {{"log-level", "finer"}}, Cluster::SubscriptionState::Enabled)));
     region = cache->createRegionFactory(RegionShortcut::PROXY)
                  .setPoolName("default")
-                 //.setCachingEnabled(true)
+                 .setCachingEnabled(true)
                  .create("region");
 
     BOOST_LOG_TRIVIAL(info)
@@ -132,8 +139,24 @@ BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeys)
     ->Repetitions(1)
     ->Iterations(10)
     ->Arg(1000000)
-    //        ->Arg(5000000)
-    //    ->Arg(10000000)
+    // ->Arg(5000000)
+    // ->Arg(10000000)
+    ;
+
+BENCHMARK_DEFINE_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
+(benchmark::State& state) {
+  for (auto _ : state) {
+    region->registerAllKeys(false, true);
+    unregisterInterestAllKeys(state);
+  }
+}
+BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
+    ->Unit(benchmark::kMillisecond)
+    ->Repetitions(1)
+    ->Iterations(10)
+    ->Arg(1000000)
+    // ->Arg(5000000)
+    // ->Arg(10000000)
     ;
 
 }  // namespace
