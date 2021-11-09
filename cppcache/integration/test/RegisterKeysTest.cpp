@@ -48,6 +48,7 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
 using ::testing::_;
+using ::testing::AtMost;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
@@ -573,6 +574,323 @@ TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
 
   EXPECT_THROW(region->registerKeys(keys, false, true), IllegalStateException);
   cache.close();
+}
+
+apache::geode::client::Cache createCache() {
+  return apache::geode::client::CacheFactory()
+      .set("log-level", "none")
+      .set("statistic-sampling-enabled", "false")
+      .create();
+}
+
+std::shared_ptr<apache::geode::client::Pool> createPool(
+    Cluster& cluster, apache::geode::client::Cache& cache) {
+  auto poolFactory = cache.getPoolManager().createFactory();
+  cluster.applyLocators(poolFactory);
+  poolFactory.setSubscriptionEnabled(true);  // Per the customer.
+  return poolFactory.create("default");
+}
+
+std::shared_ptr<apache::geode::client::Region> setupRegion(
+    apache::geode::client::Cache& cache,
+    const std::shared_ptr<apache::geode::client::Pool>& pool) {
+  auto region =
+      cache
+          .createRegionFactory(apache::geode::client::RegionShortcut::
+                                   CACHING_PROXY)  // Per the customer.
+          .setPoolName(pool->getName())
+          .create("region");
+
+  return region;
+}
+
+TEST(RegisterKeysTest, AllKeysWithoutInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerAllKeys();
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, AllKeysWithInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerAllKeys(false, true);
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, KeysWithoutInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerKeys({apache::geode::client::CacheableString::create("key")});
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, KeysWithInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerKeys({apache::geode::client::CacheableString::create("key")},
+                       false, true);
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, RegexWithoutInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerRegex("key");
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, RegexWithInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerRegex("key", false, true);
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, RegexAllWildcardWithoutInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerRegex(".*");
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, RegexAllWildcardWithInitialValue) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  {
+    auto cache = createCache();
+    auto pool = createPool(cluster, cache);
+    auto region = setupRegion(cache, pool);
+
+    region->put(apache::geode::client::CacheableString::create("key"),
+                apache::geode::client::CacheableString::create("value"));
+  }
+
+  auto cache = createCache();
+  auto pool = createPool(cluster, cache);
+  auto region = setupRegion(cache, pool);
+
+  auto listener = std::make_shared<::testing::StrictMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_)).Times(AtMost(1));
+  apache::geode::client::AttributesMutator(region).setCacheListener(listener);
+
+  region->registerRegex(".*", false, true);
+
+  apache::geode::client::AttributesMutator(region).setCacheListener({});
+
+  ::testing::Mock::VerifyAndClearExpectations(listener.get());
 }
 
 }  // namespace
