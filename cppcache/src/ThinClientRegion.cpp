@@ -431,53 +431,7 @@ void ThinClientRegion::unregisterKeys(
 void ThinClientRegion::registerAllKeys(const bool isDurable,
                                        const bool getInitialValues,
                                        const bool receiveValues) {
-  if (auto pool =
-          m_cacheImpl->getPoolManager().find(getAttributes().getPoolName())) {
-    if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
-          "Register all keys is supported only "
-          "if subscription-enabled attribute is true for pool " +
-          pool->getName());
-      throw UnsupportedOperationException(
-          "Register all keys is supported only "
-          "if pool subscription-enabled attribute is true.");
-    }
-  }
-
-  if (isDurable && !isDurableClient()) {
-    LOGERROR(
-        "Register all keys durable flag is only applicable for durable "
-        "clients");
-    throw IllegalStateException(
-        "Durable flag only applicable for durable clients");
-  }
-
-  if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
-    LOGERROR(
-        "Register all keys getInitialValues flag is only applicable for caching"
-        "clients");
-    throw IllegalStateException(
-        "getInitialValues flag only applicable for caching clients");
-  }
-
-  const auto interestPolicy = getInitialValues
-                                  ? InterestResultPolicy::KEYS_VALUES
-                                  : InterestResultPolicy::NONE;
-
-  LOGDEBUG("ThinClientRegion::registerAllKeys : interestPolicy is %d",
-           interestPolicy);
-
-  std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>> resultKeys;
-  const auto err =
-      registerRegexNoThrow(kAllKeysRegex, true, nullptr, isDurable, resultKeys,
-                           interestPolicy, receiveValues);
-
-  if (m_tcrdm->isFatalError(err)) {
-    throwExceptionIfError("Region::registerAllKeys", err);
-  }
-
-  // Get the entries from the server using a special GET_ALL message
-  throwExceptionIfError("Region::registerAllKeys", err);
+  registerRegex(kAllKeysRegex, isDurable, getInitialValues, receiveValues);
 }
 
 void ThinClientRegion::registerRegex(const std::string& regex,
@@ -498,7 +452,8 @@ void ThinClientRegion::registerRegex(const std::string& regex,
   }
 
   if (isDurable && !isDurableClient()) {
-    LOGERROR("Register regex durable flag only applicable for durable clients");
+    LOGERROR(
+        "Register regex durable flag is only applicable for durable clients");
     throw IllegalStateException(
         "Durable flag only applicable for durable clients");
   }
@@ -516,23 +471,16 @@ void ThinClientRegion::registerRegex(const std::string& regex,
         "Region::registerRegex: Regex string is empty");
   }
 
-  // Regex won't know the local keys to invalidate, so ask for at least keys.
-  const auto interestPolicy = getInitialValues
-                                  ? InterestResultPolicy::KEYS_VALUES
-                                  : InterestResultPolicy::KEYS;
+  const auto interestPolicy =
+      getInitialValues         ? InterestResultPolicy::KEYS_VALUES
+      : kAllKeysRegex == regex ? InterestResultPolicy::NONE
+                               : InterestResultPolicy::KEYS;
 
   LOGDEBUG("ThinClientRegion::registerRegex : interestPolicy is %d",
            interestPolicy);
 
-  auto resultKeys =
-      std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
-
-  //  if we need to fetch initial data for "allKeys" case, then we
-  // get the keys in that call itself using the special GET_ALL message and
-  // do not need to get the keys in the initial  register interest  call
-  const auto err =
-      registerRegexNoThrow(regex, true, nullptr, isDurable, resultKeys,
-                           interestPolicy, receiveValues);
+  const auto err = registerRegexNoThrow(regex, true, nullptr, isDurable,
+                                        nullptr, interestPolicy, receiveValues);
 
   if (m_tcrdm->isFatalError(err)) {
     throwExceptionIfError("Region::registerRegex", err);
@@ -564,22 +512,7 @@ void ThinClientRegion::unregisterRegex(const std::string& regex) {
   throwExceptionIfError("Region::unregisterRegex", err);
 }
 
-void ThinClientRegion::unregisterAllKeys() {
-  if (auto pool =
-          m_cacheImpl->getPoolManager().find(getAttributes().getPoolName())) {
-    if (!pool->getSubscriptionEnabled()) {
-      LOGERROR(
-          "Unregister all keys is supported only if "
-          "subscription-enabled attribute is true for pool " +
-          pool->getName());
-      throw UnsupportedOperationException(
-          "Unregister all keys is supported only if "
-          "pool subscription-enabled attribute is true.");
-    }
-  }
-  const auto err = unregisterRegexNoThrow(kAllKeysRegex);
-  throwExceptionIfError("Region::unregisterAllKeys", err);
-}
+void ThinClientRegion::unregisterAllKeys() { unregisterRegex(kAllKeysRegex); }
 
 std::shared_ptr<SelectResults> ThinClientRegion::query(
     const std::string& predicate, std::chrono::milliseconds timeout) {
@@ -2405,11 +2338,13 @@ GfErrType ThinClientRegion::registerRegexNoThrow(
     }
   } else {
     reply = &replyLocal;
+    if (!resultKeys) {
+      resultKeys =
+          std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
+    }
     if (interestPolicy == InterestResultPolicy::KEYS_VALUES) {
       auto values = std::make_shared<HashMapOfCacheable>();
       auto exceptions = std::make_shared<HashMapOfException>();
-      resultKeys =
-          std::make_shared<std::vector<std::shared_ptr<CacheableKey>>>();
       MapOfUpdateCounters trackers;
       int32_t destroyTracker = 1;
       resultCollector =
