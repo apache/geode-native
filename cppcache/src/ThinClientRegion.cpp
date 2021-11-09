@@ -458,7 +458,8 @@ void ThinClientRegion::registerRegex(const std::string& regex,
         "Durable flag only applicable for durable clients");
   }
 
-  if (getInitialValues && !m_regionAttributes.getCachingEnabled()) {
+  const auto caching = m_regionAttributes.getCachingEnabled();
+  if (getInitialValues && !caching) {
     LOGERROR(
         "Register regex getInitialValues flag is only applicable for caching"
         "clients");
@@ -472,9 +473,9 @@ void ThinClientRegion::registerRegex(const std::string& regex,
   }
 
   const auto interestPolicy =
-      getInitialValues         ? InterestResultPolicy::KEYS_VALUES
-      : kAllKeysRegex == regex ? InterestResultPolicy::NONE
-                               : InterestResultPolicy::KEYS;
+      getInitialValues                    ? InterestResultPolicy::KEYS_VALUES
+      : caching && kAllKeysRegex != regex ? InterestResultPolicy::KEYS
+                                          : InterestResultPolicy::NONE;
 
   LOGDEBUG("ThinClientRegion::registerRegex : interestPolicy is %d",
            interestPolicy);
