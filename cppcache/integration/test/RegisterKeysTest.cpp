@@ -16,6 +16,9 @@
 
 #include <gmock/gmock.h>
 
+#include <chrono>
+#include <thread>
+
 #include <boost/thread/latch.hpp>
 
 #include <gtest/gtest.h>
@@ -47,11 +50,14 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
+using namespace std::chrono_literals;
+
 using ::testing::_;
 using ::testing::AtMost;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
+
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -891,6 +897,164 @@ TEST(RegisterKeysTest, RegexAllWildcardWithInitialValue) {
   apache::geode::client::AttributesMutator(region).setCacheListener({});
 
   ::testing::Mock::VerifyAndClearExpectations(listener.get());
+}
+
+TEST(RegisterKeysTest, DontReceiveValues) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache1 = createCache();
+  auto pool1 = createPool(cluster, cache1);
+  auto region1 = setupRegion(cache1, pool1);
+  auto attrMutator = region1->getAttributesMutator();
+
+  // put key/value pairs in the region using cache2
+
+  auto cache2 = createCache();
+  auto pool2 = createPool(cluster, cache2);
+  auto region2 = setupRegion(cache2, pool2);
+
+  const int NUMKEYS = 100;
+  for (int i = 0; i < NUMKEYS; i++) {
+    region2->put(apache::geode::client::CacheableInt32::create(i),
+                 apache::geode::client::CacheableInt32::create(i));
+  }
+
+  // register for all keys, but don't get any data
+
+  region1->registerAllKeys(false, false, false);
+
+  // verify we didn't get any data
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto hasKey =
+        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+    EXPECT_FALSE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(
+        apache::geode::client::CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+
+  // load cache1 with data
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto value = region1->get(apache::geode::client::CacheableInt32::create(i));
+  }
+
+  // put new values in the region using cache2
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    region2->put(apache::geode::client::CacheableInt32::create(i),
+                 apache::geode::client::CacheableInt32::create(i + 1000));
+  }
+
+  // wait for cache1 invalidates due to receiveValues=false, and verify
+
+  std::this_thread::sleep_for(5000ms);
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto hasKey =
+        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(
+        apache::geode::client::CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+}
+
+TEST(RegisterKeysTest, ReceiveValues) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache1 = createCache();
+  auto pool1 = createPool(cluster, cache1);
+  auto region1 = setupRegion(cache1, pool1);
+  auto attrMutator = region1->getAttributesMutator();
+
+  // put key/value pairs in the region using cache2
+
+  auto cache2 = createCache();
+  auto pool2 = createPool(cluster, cache2);
+  auto region2 = setupRegion(cache2, pool2);
+
+  const int NUMKEYS = 100;
+  for (int i = 0; i < NUMKEYS; i++) {
+    region2->put(apache::geode::client::CacheableInt32::create(i),
+                 apache::geode::client::CacheableInt32::create(i));
+  }
+
+  // register for all keys and get data now and future updates
+
+  region1->registerAllKeys(false, true, true);
+
+  // verify we now have data in cache1
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto hasKey =
+        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(
+        apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasValue);
+  }
+
+  // invalidate data in cache1
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    region1->localInvalidate(apache::geode::client::CacheableInt32::create(i));
+  }
+
+  // verify cache1 data no longer valid
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto hasKey =
+        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(
+        apache::geode::client::CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+
+  // put new values in the region using cache2
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    region2->put(apache::geode::client::CacheableInt32::create(i),
+                 apache::geode::client::CacheableInt32::create(i + 2000));
+  }
+
+  // wait for the new values in cache1 due to receiveValues = true, and verify
+
+  std::this_thread::sleep_for(5000ms);
+
+  for (int i = 0; i < NUMKEYS; i++) {
+    auto hasKey =
+        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(
+        apache::geode::client::CacheableInt32::create(i));
+    EXPECT_TRUE(hasValue);
+  }
 }
 
 }  // namespace
