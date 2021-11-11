@@ -50,7 +50,7 @@ using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-using namespace std::chrono_literals;
+using namespace std::literals::chrono_literals;
 
 using ::testing::_;
 using ::testing::DoAll;
