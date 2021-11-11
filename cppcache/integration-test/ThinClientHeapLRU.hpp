@@ -32,7 +32,6 @@
 
 #include "CacheHelper.hpp"
 
-
 #define CLIENT1 s1p1
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
@@ -90,8 +89,9 @@ CacheHelper* getHelper() {
 void createRegion(const char* name, bool ackMode, const char* endpoints,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
                                           endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -103,8 +103,9 @@ void createPooledRegion(const char* name, bool ackMode, const char* locators,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -136,9 +137,7 @@ void createOnekEntries() {
   std::vector<std::shared_ptr<RegionEntry>> me;
   dataReg->entries(me, false);
   LOG("Verifying size outside loop");
-  char buf[1024];
-  sprintf(buf, "region size is %d", me.size());
-  LOG(buf);
+  LOG(std::string("region size is ") + std::to_string(me.size()));
 
   ASSERT(me.size() <= 1024, "Should have evicted anything over 1024 entries");
 }

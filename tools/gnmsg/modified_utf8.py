@@ -16,6 +16,7 @@
 # translated from: http://hg.openjdk.java.net/jdk8/jdk8/jdk/file/94cc251d0c45/src/share/npt/utf.c
 # Source:  https://gist.github.com/BarelyAliveMau5/000e7e453b6d4ebd0cb06f39bc2e7aec
 
+
 def utf8s_to_utf8m(string):
     """
     :param string: utf8 encoded string

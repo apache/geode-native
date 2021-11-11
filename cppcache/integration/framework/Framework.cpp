@@ -32,3 +32,10 @@ uint16_t Framework::getAvailablePort() {
 
   return port;
 }
+
+const std::string& Framework::getHostname() {
+  static const auto hostname = initHostname();
+  return hostname;
+}
+
+std::string Framework::initHostname() { return boost::asio::ip::host_name(); }

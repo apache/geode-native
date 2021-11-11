@@ -125,9 +125,7 @@ class TaskQueues {
     }
     Task *task = tasks->front();
     if (task != nullptr) {
-      char logmsg[1024] = {0};
-      sprintf(logmsg, "received task: %s ", task->m_taskName.c_str());
-      LOG(logmsg);
+      LOG(std::string("receieved task: ") + task->m_taskName);
       tasks->pop_front();
     }
     return task;
@@ -138,9 +136,7 @@ class TaskQueues {
       return 0;
     }
     int sId = m_schedule.front();
-    char logmsg[1024] = {0};
-    sprintf(logmsg, "Next worker id is : %d", sId);
-    LOGCOORDINATOR(logmsg);
+    LOGCOORDINATOR(std::string("Next worker id id : ") + std::to_string(sId));
     m_schedule.pop_front();
     return sId;
   }
@@ -387,29 +383,15 @@ class TestDriver {
  public:
   TestDriver() {
     dunit::Dunit::init(true);
-    fprintf(stdout, "Coordinator starting workers.\n");
+    std::cout << "Coordinator starting workers.\n";
     for (uint32_t i = 1; i < 5; i++) {
       std::string cmdline;
-      auto profilerCmd = std::getenv("PROFILERCMD");
-      if (profilerCmd != nullptr && profilerCmd[0] != '$' &&
-          profilerCmd[0] != '\0') {
-        // replace %d's in profilerCmd with PID and worker ID
-        char cmdbuf[2048] = {0};
-        auto now = std::chrono::time_point_cast<std::chrono::milliseconds>(
-                       std::chrono::system_clock::now())
-                       .time_since_epoch()
-                       .count();
-        ::sprintf(cmdbuf, profilerCmd, now, g_coordinatorPid, i);
-        cmdline = std::string{cmdbuf} + ' ' + g_programName + " -s" +
-                  std::to_string(i) + " -m" + std::to_string(g_coordinatorPid);
-      } else {
-        cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
-                  std::to_string(g_coordinatorPid);
-      }
-      fprintf(stdout, "%s\n", cmdline.c_str());
+      cmdline = g_programName + " -s" + std::to_string(i) + " -m" +
+                std::to_string(g_coordinatorPid);
+      std::cout << cmdline.c_str() << "\n";
       m_workers[i - 1] = new TestProcess(cmdline, i);
     }
-    fflush(stdout);
+    std::cout << std::flush;
     // start each of the workers...
     for (uint32_t j = 1; j < 5; j++) {
       m_workers[j - 1]->doWork();
@@ -431,9 +413,9 @@ class TestDriver {
   }
 
   int begin() {
-    fprintf(stdout, "Coordinator started with pid %d\n",
-            boost::this_process::get_id());
-    fflush(stdout);
+    std::cout << "Coordinator started with pid "
+              << boost::this_process::get_id() << "\n"
+              << std::flush;
     waitForReady();
     // dispatch task...
 
@@ -442,8 +424,8 @@ class TestDriver {
     while ((nextWorker = TaskQueues::getWorkerId()) != 0) {
       WorkerId sId(nextWorker);
       state->setWorkerState(nextWorker, WORKER_STATE_SCHEDULED);
-      fprintf(stdout, "Set next process to %s\n", sId.getIdName());
-      fflush(stdout);
+      std::cout << "Set next process to " << sId.getIdName() << "\n"
+                << std::flush;
 
       state->setNextWorker(nextWorker);
       waitForCompletion(sId);
@@ -472,9 +454,9 @@ class TestDriver {
       secs = TASK_TIMEOUT;
     }
 
-    fprintf(stdout, "Waiting %d seconds for %s to finish task.\n", secs,
-            sId.getIdName());
-    fflush(stdout);
+    std::cout << "Waiting " << secs << " seconds for " << sId.getIdName()
+              << " to finish task.\n"
+              << std::flush;
     auto end = std::chrono::steady_clock::now() + std::chrono::seconds{secs};
     while (state->getWorkerState(id) != WORKER_STATE_TASK_COMPLETE) {
       // sleep a bit..
@@ -493,8 +475,8 @@ class TestDriver {
   }
 
   void handleTimeout() {
-    fprintf(stdout, "Error: Timed out waiting for all workers to be ready.\n");
-    fflush(stdout);
+    std::cout << "Error: Timed out waiting for all workers to be ready.\n"
+              << std::flush;
 
     auto state = DUNIT->getState();
     state->terminate();
@@ -502,9 +484,9 @@ class TestDriver {
   }
 
   void handleTimeout(WorkerId &sId) {
-    fprintf(stdout, "Error: Timed out waiting for %s to finish task.\n",
-            sId.getIdName());
-    fflush(stdout);
+    std::cout << "Error: Timed out waiting for " << sId.getIdName()
+              << " to finish task.\n"
+              << std::flush;
 
     auto state = DUNIT->getState();
     state->terminate();
@@ -515,17 +497,16 @@ class TestDriver {
    * to be done initializing. */
   void waitForReady() {
     auto state = DUNIT->getState();
-    fprintf(stdout, "Waiting %d seconds for all workers to be ready.\n",
-            TASK_TIMEOUT);
-    fflush(stdout);
+    std::cout << "Waiting " << TASK_TIMEOUT
+              << " seconds for all workers to be ready.\n"
+              << std::flush;
 
     auto end =
         std::chrono::steady_clock::now() + std::chrono::seconds{TASK_TIMEOUT};
 
     uint32_t readyCount = 0;
     while (readyCount < TestState::WORKER_COUNT) {
-      fprintf(stdout, "Ready Count: %d\n", readyCount);
-      fflush(stdout);
+      std::cout << "Ready Count: " << readyCount << "\n" << std::flush;
 
       if (state->failed()) {
         return;
@@ -553,9 +534,9 @@ class TestDriver {
   /** wait for all workers to be destroyed. */
   void waitForDone() {
     auto state = DUNIT->getState();
-    fprintf(stdout, "Waiting %d seconds for all workers to complete.\n",
-            TASK_TIMEOUT);
-    fflush(stdout);
+    std::cout << "Waiting " << TASK_TIMEOUT
+              << " seconds for all workers to complete.\n"
+              << std::flush;
 
     uint32_t doneCount = 0;
     auto end =
@@ -586,9 +567,9 @@ class TestDriver {
     auto state = DUNIT->getState();
     for (uint32_t i = 0; i < TestState::WORKER_COUNT; i++) {
       if (!m_workers[i]->running()) {
-        char msg[1000] = {0};
-        sprintf(msg, "Error: Worker %s terminated prematurely.",
-                m_workers[i]->getWorkerId().getIdName());
+        auto msg = std::string("Error: Worker ") +
+                   m_workers[i]->getWorkerId().getIdName() +
+                   " terminated prematurely";
         LOG(msg);
 
         state->fail();
@@ -620,9 +601,9 @@ class TestWorker {
 
   void begin() {
     auto state = DUNIT->getState();
-    fprintf(stdout, "Worker %s started with pid %d\n", m_sId.getIdName(),
-            boost::this_process::get_id());
-    fflush(stdout);
+    std::cout << "Worker " << m_sId.getIdName() << " started with pid "
+              << boost::this_process::get_id() << "\n"
+              << std::flush;
 
     // consume tasks of this workers queue, only when it is his turn..
     while (!state->terminated()) {
@@ -766,18 +747,17 @@ int dmain(int argc, char *argv[]) {
       switch (option) {
         case 's':
           workerId = std::stoul(cmd_opts.opt_arg());
-          fprintf(stdout, "Using process id: %d\n", workerId);
-          fflush(stdout);
+          std::cout << "Using process id: " << workerId << "\n" << std::flush;
           break;
         case 'm':
           g_coordinatorPid = std::stoul(cmd_opts.opt_arg());
-          fprintf(stdout, "Using coordinator id: %d\n", g_coordinatorPid);
-          fflush(stdout);
+          std::cout << "Using coordinator id: " << g_coordinatorPid << "\n"
+                    << std::flush;
           break;
         default:
-          fprintf(stdout, "ignoring option: %s  with value %s\n",
-                  cmd_opts.last_option(), cmd_opts.opt_arg());
-          fflush(stdout);
+          std::cout << "ignoring option: " << cmd_opts.last_option()
+                    << " with value " << cmd_opts.opt_arg() << "\n"
+                    << std::flush;
       }
     }
 
@@ -792,30 +772,31 @@ int dmain(int argc, char *argv[]) {
       dunit::TestDriver tdriver;
       result = tdriver.begin();
       if (result == 0) {
-        printf("#### All Tasks completed successfully. ####\n");
+        std::cout << "#### All Tasks completed successfully. ####\n";
       } else {
-        printf("#### FAILED. ####\n");
+        std::cout << "#### FAILED. ####\n";
       }
 
       fflush(stdout);
     }
-    printf("final worker id %d, result %d\n", workerId, result);
-    printf("before calling cleanup %d \n", workerId);
-    gClientCleanup.trigger();
-    printf("after calling cleanup\n");
-    return result;
 
+    std::cout << "final worker id " << workerId << ", result " << result
+              << "\n";
+    std::cout << "before calling cleanup " << workerId << "\n";
+    gClientCleanup.trigger();
+    std::cout << "after calling cleanup\n";
+    return result;
   } catch (dunit::TestException &te) {
     te.print();
   } catch (apache::geode::client::testframework::FwkException &fe) {
-    printf("Exception: %s\n", fe.what());
-    fflush(stdout);
+    std::cout << "Exception: " << fe.what() << "\n" << std::flush;
   } catch (std::exception &ex) {
-    printf("Exception: system exception reached main: %s.\n", ex.what());
-    fflush(stdout);
+    std::cout << "Exception: system exception reached main: " << ex.what()
+              << ".\n"
+              << std::flush;
   } catch (...) {
-    printf("Exception: unhandled/unidentified exception reached main.\n");
-    fflush(stdout);
+    std::cout << "Exception: unhandled/unidentified exception reached main.\n"
+              << std::flush;
   }
 
   gClientCleanup.trigger();

@@ -135,11 +135,9 @@ void AtomicStatisticsImpl::close() {
 
 void AtomicStatisticsImpl::_setInt(int32_t offset, int32_t value) {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "setInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   intStorage[offset] = value;
 }
@@ -148,10 +146,9 @@ void AtomicStatisticsImpl::_setLong(int32_t offset, int64_t value) {
   if (offset >= statsType->getLongStatCount()) {
     char s[128] = {'\0'};
 
-    std::snprintf(
-        s, 128, "setLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setLong:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   longStorage[offset] = value;
@@ -159,12 +156,9 @@ void AtomicStatisticsImpl::_setLong(int32_t offset, int64_t value) {
 
 void AtomicStatisticsImpl::_setDouble(int32_t offset, double value) {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "setDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "setDouble:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   doubleStorage[offset] = value;
@@ -172,11 +166,9 @@ void AtomicStatisticsImpl::_setDouble(int32_t offset, double value) {
 
 int32_t AtomicStatisticsImpl::_getInt(int32_t offset) const {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "getInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   return intStorage[offset];
@@ -184,23 +176,18 @@ int32_t AtomicStatisticsImpl::_getInt(int32_t offset) const {
 
 int64_t AtomicStatisticsImpl::_getLong(int32_t offset) const {
   if (offset >= statsType->getLongStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "getLong:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getLong:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   return longStorage[offset];
 }
 
 double AtomicStatisticsImpl::_getDouble(int32_t offset) const {
   if (offset >= statsType->getDoubleStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128,
-        "getDouble:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "getDouble:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
   return doubleStorage[offset];
 }
@@ -236,11 +223,9 @@ int64_t AtomicStatisticsImpl::getRawBits(
 
 int32_t AtomicStatisticsImpl::_incInt(int32_t offset, int32_t delta) {
   if (offset >= statsType->getIntStatCount()) {
-    char s[128] = {'\0'};
-    std::snprintf(
-        s, 128, "incInt:The id (%d) of the Statistic Descriptor is not valid ",
-        offset);
-    throw IllegalArgumentException(s);
+    throw IllegalArgumentException(
+        "incInt:The id(" + std::to_string(offset) +
+        ") of the Statistic Descriptor is not valid");
   }
 
   return (intStorage[offset] += delta);

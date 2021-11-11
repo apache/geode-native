@@ -33,8 +33,7 @@ const std::string locatorsG =
 
 void createRegionForCQ(const std::string& name, bool ackMode,
                        bool clientNotificationEnabled = false,
-                       int redundancyLevel = 0,
-                       bool caching = true) {
+                       int redundancyLevel = 0, bool caching = true) {
   // Use region name as pool name to avoid recreating pools with the same name.
   getHelper()->createPoolWithLocators(name, locatorsG,
                                       clientNotificationEnabled,

@@ -251,6 +251,7 @@ geode_version=$(cat geode-latest/version)
 geode_name="apache-geode-${geode_version}"
 geode_artifact="${geode_name}.tgz"
 tar xvf geode-latest/${geode_artifact} --directory=geode --strip-components=1
+unzip -p geode/lib/geode-core-${geode_version}.jar org/apache/geode/internal/GemFireVersion.properties
 cp geode-latest/version geode/version
 (@- end @)
 

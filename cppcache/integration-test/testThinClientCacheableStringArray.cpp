@@ -100,28 +100,26 @@ DUNIT_TASK(CLIENT1, StepThree)
       auto &&qry = qs->newQuery(qryStr);
       auto &&results = qry->execute();
 
-      char buf[100];
       auto count = results->size();
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(count));
       for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(ser)) {
-          printf("   query pulled portfolio object ID %d, pkid %s\n",
-                 portfolio->getID(), portfolio->getPkid()->value().c_str());
+          std::cout << "   query pulled portfolio object ID "
+                    << portfolio->getID() << ", pkid "
+                    << portfolio->getPkid()->value() << "\n";
         } else if (auto position = std::dynamic_pointer_cast<Position>(ser)) {
-          printf("   query  pulled position object secId %s, shares %d\n",
-                 position->getSecId()->value().c_str(),
-                 position->getSharesOutstanding());
+          std::cout << "   query  pulled position object secId "
+                    << position->getSecId()->value() << ", shares "
+                    << position->getSharesOutstanding() << "\n";
         } else if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          std::cout << " query pulled object " << ser->toString() << "\n";
         } else {
-          printf("   query pulled nullptr object\n");
+          std::cout << "   query pulled nullptr object\n";
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
     } catch (IllegalStateException &ise) {
       std::string excpmsg = "IllegalStateException: " + std::string{ise.what()};
 

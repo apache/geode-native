@@ -120,8 +120,7 @@ class QueryHelper {
     for (int i = (sizeof(constantExpectedRowsRS) / sizeof(int)) - 1; i > -1;
          i--) {
       if (constantExpectedRowsRS[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsRS[i]);
+        std::cout << "index " << constantExpectedRowsRS[i] << " is having constant rows \n";
         return true;
       }
     }
@@ -133,8 +132,7 @@ class QueryHelper {
     for (int i = (sizeof(constantExpectedRowsPQRS) / sizeof(int)) - 1; i > -1;
          i--) {
       if (constantExpectedRowsPQRS[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsPQRS[i]);
+        std::cout << "index " << constantExpectedRowsPQRS[i] << " is having constant rows \n";
         return true;
       }
     }
@@ -146,8 +144,7 @@ class QueryHelper {
     for (int i = (sizeof(constantExpectedRowsSS) / sizeof(int)) - 1; i > -1;
          i--) {
       if (constantExpectedRowsSS[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsSS[i]);
+        std::cout << "index " << constantExpectedRowsSS[i] << " is having constant rows \n";
         return true;
       }
     }
@@ -159,8 +156,7 @@ class QueryHelper {
     for (int i = (sizeof(constantExpectedRowsSSPQ) / sizeof(int)) - 1; i > -1;
          i--) {
       if (constantExpectedRowsSSPQ[i] == queryindex) {
-        printf("index %d is having constant rows \n",
-               constantExpectedRowsSSPQ[i]);
+        std::cout << "index " << constantExpectedRowsSSPQ[i] << " is having constant rows \n";
         return true;
       }
     }
@@ -192,15 +188,11 @@ void QueryHelper::populatePortfolioData(
       std::string key =
           "port" + std::to_string(set) + '-' + std::to_string(current);
       auto keyport = CacheableKey::create(key);
-      // printf(" QueryHelper::populatePortfolioData creating key = %s and
-      // puting data \n",portname);
       rptr->put(keyport, port);
     }
   }
-  // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
-  // objSize;
 
-  printf("all puts done \n");
+  std::cout << "all puts done \n";
 }
 
 const char* secIds[] = {"SUN", "IBM",  "YHOO", "GOOG", "MSFT",
@@ -244,10 +236,8 @@ void QueryHelper::populatePortfolioPdxData(std::shared_ptr<Region>& rptr,
                current);
     }
   }
-  // portfolioSetSize = setSize; portfolioNumSets = numSets; objectSize =
-  // objSize;
 
-  printf("all puts done \n");
+  std::cout << "all puts done \n";
 }
 
 void QueryHelper::populatePositionPdxData(std::shared_ptr<Region>& rptr,
@@ -337,8 +327,10 @@ bool QueryHelper::verifyRS(std::shared_ptr<SelectResults>& resultSet,
       foundRows++;
     }
 
-    printf("found rows %zd, expected %zd \n", foundRows, expectedRows);
-    if (foundRows == expectedRows) return true;
+    std::cout << "found rows " << foundRows << ", expected " << expectedRows << "\n";
+    if (foundRows == expectedRows) {
+      return true;
+    }
   }
   return false;
 }
@@ -353,7 +345,7 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
       auto siptr = std::dynamic_pointer_cast<Struct>(ser);
 
       if (siptr == nullptr) {
-        printf("siptr is nullptr \n\n");
+        std::cout << "siptr is nullptr \n\n";
         return false;
       }
 
@@ -363,10 +355,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
       }
 
       if (foundFields != expectedFields) {
-        char buffer[1024] = {'\0'};
-        sprintf(buffer, "found fields %d, expected fields %d \n", foundFields,
-                expectedFields);
-        LOG(buffer);
+        LOG(std::string("found fields ") + std::to_string(foundFields) +
+            ", expected fields " + std::to_string(expectedFields) + " \n");
         return false;
       }
     }
@@ -374,10 +364,8 @@ bool QueryHelper::verifySS(std::shared_ptr<SelectResults>& structSet,
     if (foundRows == expectedRows) return true;
 
     // lets log and return in case of error only situation
-    char buffer[1024] = {'\0'};
-    sprintf(buffer, "found rows %zd, expected rows %zd\n", foundRows,
-            expectedRows);
-    LOG(buffer);
+    LOG(std::string("found rows ") + std::to_string(foundRows) +
+        ", expected rows" + std::to_string(expectedRows) + " \n");
   } else {
     if (expectedRows == 0 && expectedFields == 0) {
       return true;  // quite possible we got a null set back.

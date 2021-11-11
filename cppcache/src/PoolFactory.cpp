@@ -183,9 +183,8 @@ PoolFactory& PoolFactory::addServer(const std::string& host, int port) {
   return *this;
 }
 
-PoolFactory& PoolFactory::setSniProxy(const std::string& hostname,
-                                      const int port) {
-  m_attrs->setSniProxyHost(hostname);
+PoolFactory& PoolFactory::setSniProxy(std::string hostname, uint16_t port) {
+  m_attrs->setSniProxyHost(std::move(hostname));
   m_attrs->setSniProxyPort(port);
   return *this;
 }

@@ -58,16 +58,6 @@ const std::string locHostPort =
 const char* regionNamesAuth[] = {"DistRegionAck"};
 std::shared_ptr<CredentialGenerator> credentialGeneratorHandler;
 
-std::string getXmlPath() {
-  char xmlPath[1000] = {'\0'};
-  const char* path = std::getenv("TESTSRC");
-  ASSERT(path != nullptr,
-         "Environment variable TESTSRC for test source directory is not set.");
-  strncpy(xmlPath, path, strlen(path) - strlen("cppcache"));
-  strncat(xmlPath, "xml/Security/", sizeof(xmlPath) - strlen(xmlPath) - 1);
-  return std::string(xmlPath);
-}
-
 void initCredentialGenerator() {
   static int loopNum = 1;
 
@@ -142,29 +132,32 @@ void initClientAuth(char UserType) {
     case 'W':
       credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     case 'R':
       credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     case 'A':
       credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     default:
       break;
@@ -277,9 +270,9 @@ class PutThread {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          auto tid = boost::lexical_cast<std::string>(std::this_thread::get_id());
-          printf("%d: %s exception got and exception message = %s\n",
-                 pid, tid.c_str(), ex.what());
+          auto tid =
+              boost::lexical_cast<std::string>(std::this_thread::get_id());
+          std::cout << pid << ": " << tid << " exception got and exception message = " << ex.what() << "\n";
         }
       }
     }

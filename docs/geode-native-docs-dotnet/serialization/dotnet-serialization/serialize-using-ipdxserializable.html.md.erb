@@ -39,7 +39,7 @@ Use this procedure to program your domain object for PDX serialization using the
 
 3.  Program the `IPdxSerializable ToData` function to serialize your object as required by your application.
     1.  Write your domain class's standard .NET data fields using the `IPdxWriter` write methods. <%=vars.product_name%> automatically provides `IPdxWriter` to the `ToData` function for `IPdxSerializable` objects.
-    2.  Call the `ToData markIdentifyField` function for each field <%=vars.product_name%> should use to identify your object. This is used to compare objects for operations like `DISTINCT` queries. The `markIdentifyField` call must come after the associated field write methods.
+    2.  Call the `ToData MarkIdentifyField` function for each field <%=vars.product_name%> should use to identify your object. This is used to compare objects for operations like `DISTINCT` queries. The `MarkIdentifyField` call must come after the associated field write methods.
 
         Example:
 
@@ -117,5 +117,5 @@ Use this procedure to program your domain object for PDX serialization using the
     }
     ```
 
-5.  Optionally, program your domain object's `equals` and `hashcode` methods.
+5.  Optionally, program your domain object's `Equals` and `Hashcode` methods.
 

@@ -16,13 +16,14 @@
  */
 
 #include <fstream>
-#include <regex>
+#include <iostream>
 #include <list>
 
 #include <ace/INET_Addr.h>
 #include <ace/SOCK_Acceptor.h>
 
 #include <boost/process.hpp>
+#include <boost/regex.hpp>
 
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
@@ -224,8 +225,9 @@ CacheHelper::CacheHelper(const bool, const char *poolName,
 
     poolFactory.setPRSingleHopEnabled(prSingleHop);
     poolFactory.setThreadLocalConnections(threadLocal);
-    printf(" Setting pr-single-hop to prSingleHop = %d ", prSingleHop);
-    printf("Setting threadLocal to %d ", threadLocal);
+    std::cout << " Setting pr-single-hop to prSingleHop = " << prSingleHop
+              << "\n";
+    std::cout << "Setting threadLocal to " << threadLocal << "\n";
     if (!locators.empty()) {
       addServerLocatorEPs(locators, poolFactory);
       if (serverGroup) {
@@ -239,7 +241,7 @@ CacheHelper::CacheHelper(const bool, const char *poolName,
       poolFactory.setLoadConditioningInterval(
           std::chrono::milliseconds(loadConditioningInterval));
     }
-    printf("Setting connections to %d ", connections);
+    std::cout << "Setting connections to " << connections << "\n";
     if (connections >= 0) {
       poolFactory.setMinConnections(connections);
       poolFactory.setMaxConnections(connections);
@@ -405,7 +407,6 @@ std::shared_ptr<Pool> CacheHelper::createPool(
     const std::string &serverGroup, int redundancy, bool clientNotification,
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     int loadConditioningInterval, bool isMultiuserMode) {
-  // printf(" in createPool isMultiuserMode = %d \n", isMultiuserMode);
   auto poolFac = getCache()->getPoolManager().createFactory();
 
   addServerLocatorEPs(locators, poolFac);
@@ -502,7 +503,8 @@ void CacheHelper::createPoolWithLocators(
     std::chrono::milliseconds subscriptionAckInterval, int connections,
     bool isMultiuserMode, const std::string &serverGroup) {
   LOG("createPool() entered.");
-  printf(" in createPoolWithLocators isMultiuserMode = %d\n", isMultiuserMode);
+  std::cout << " in createPoolWithLocators isMultiuserMode = "
+            << isMultiuserMode << "\n";
   auto poolPtr = createPool(name, locators, serverGroup, subscriptionRedundancy,
                             clientNotificationEnabled, subscriptionAckInterval,
                             connections, -1, isMultiuserMode);
@@ -841,26 +843,27 @@ std::shared_ptr<CacheableString> CacheHelper::createCacheable(
 
 void CacheHelper::showKeys(
     std::vector<std::shared_ptr<CacheableKey>> &vecKeys) {
-  fprintf(stdout, "vecKeys.size() = %zd\n", vecKeys.size());
+  std::cout << "vecKeys.size() = " << vecKeys.size() << "\n";
   for (size_t i = 0; i < vecKeys.size(); i++) {
-    fprintf(stdout, "key[%zd] - %s\n", i, vecKeys.at(i)->toString().c_str());
+    std::cout << "key[" << i << "] -" << vecKeys.at(i)->toString() << "\n";
   }
-  fflush(stdout);
+  std::cout << std::flush;
 }
 
 void CacheHelper::showRegionAttributes(RegionAttributes attributes) {
-  printf("caching=%s\n", attributes.getCachingEnabled() ? "true" : "false");
-  printf("Entry Time To Live = %s\n",
-         to_string(attributes.getEntryTimeToLive()).c_str());
-  printf("Entry Idle Timeout = %s\n",
-         to_string(attributes.getEntryIdleTimeout()).c_str());
-  printf("Region Time To Live = %s\n",
-         to_string(attributes.getRegionTimeToLive()).c_str());
-  printf("Region Idle Timeout = %s\n",
-         to_string(attributes.getRegionIdleTimeout()).c_str());
-  printf("Initial Capacity = %d\n", attributes.getInitialCapacity());
-  printf("Load Factor = %f\n", attributes.getLoadFactor());
-  printf("End Points = %s\n", attributes.getEndpoints().c_str());
+  std::cout << "caching=" << (attributes.getCachingEnabled() ? "true" : "false")
+            << "\n";
+  std::cout << "Entry Time To Live = "
+            << to_string(attributes.getEntryTimeToLive()) << "\n";
+  std::cout << "Entry Idle Timeout = "
+            << to_string(attributes.getEntryIdleTimeout()) << "\n";
+  std::cout << "Region Time To Live = "
+            << to_string(attributes.getRegionTimeToLive()) << "\n";
+  std::cout << "Region Idle Timeout = "
+            << to_string(attributes.getRegionIdleTimeout()) << "\n";
+  std::cout << "Initial Capacity = " << attributes.getInitialCapacity() << "\n";
+  std::cout << "Load Factor = " << attributes.getLoadFactor() << "\n";
+  std::cout << "End Points = " << attributes.getEndpoints() << "\n";
 }
 
 std::shared_ptr<QueryService> CacheHelper::getQueryService() {
@@ -928,7 +931,7 @@ const std::string CacheHelper::getTcrEndpoints(bool &isLocalServer,
   }
 
   isLocalServer = gflocalserver;
-  printf("getHostPort :: %s \n", gfendpoints.c_str());
+  std::cout << "getHostPort :: " << gfendpoints << "\n";
 
   return gfendpoints;
 }
@@ -992,7 +995,7 @@ std::string CacheHelper::getLocatorHostPort(bool &isLocator,
 
   isLocator = gflocator;
   isLocalServer = gflocalserver;
-  printf("getLocatorHostPort  :: %s  \n", gflchostport.c_str());
+  std::cout << "getLocatorHostPort  :: " << gflchostport << "\n";
 
   return gflchostport;
 }
@@ -1015,13 +1018,13 @@ void CacheHelper::initServer(int instance, const std::string &xml,
                              bool untrustedCert, bool useSecurityManager) {
   if (!isServerCleanupCallbackRegistered) {
     isServerCleanupCallbackRegistered = true;
-
     gClientCleanup.registerCallback(
         []() { CacheHelper::cleanupServerInstances(); });
 
-    printf("TimeBomb registered server cleanupcallback \n");
+    std::cout << "TimeBomb registered server cleanupcallback \n";
   }
-  printf("Inside initServer added\n");
+
+  std::cout << "Inside initServer added\n";
 
   static const auto gfjavaenv = Utils::getEnv("GFJAVA");
   static auto gfLogLevel = Utils::getEnv("GFE_LOGLEVEL");
@@ -1090,10 +1093,10 @@ void CacheHelper::initServer(int instance, const std::string &xml,
   }
 
   std::string xmlFile_new;
-  printf(" xml file name = %s \n", xmlFile.c_str());
+  std::cout << " xml file name = " << xmlFile << "\n";
   xmlFile = CacheHelper::createDuplicateXMLFile(xmlFile);
 
-  printf("  creating dir = %s \n", sname.c_str());
+  std::cout << "  creating dir = " << sname << "\n";
   boost::filesystem::create_directory(sname);
 
   int64_t defaultTombstone_timeout = 600000;
@@ -1144,7 +1147,7 @@ void CacheHelper::initServer(int instance, const std::string &xml,
   server.execute();
 
   staticServerInstanceList.push_back(instance);
-  printf("added server instance %d\n", instance);
+  std::cout << "added server instance " << instance << "\n";
 }
 
 std::string CacheHelper::createDuplicateXMLFile(const std::string &source,
@@ -1168,8 +1171,8 @@ std::string CacheHelper::createDuplicateXMLFile(const std::string &source,
                      dest);
 
   CacheHelper::staticConfigFileList.push_back(dest);
-  printf("createDuplicateXMLFile added file %s %zd", dest.c_str(),
-         CacheHelper::staticConfigFileList.size());
+  std::cout << "createDuplicateXMLFile added file " << dest.c_str() << " "
+            << CacheHelper::staticConfigFileList.size() << "\n";
 
   return dest;
 }
@@ -1222,18 +1225,18 @@ void CacheHelper::replacePortsInFile(int hostPort1, int hostPort2,
                     std::istreambuf_iterator<char>());
     in.close();
 
-    contents = std::regex_replace(contents, std::regex("HOST_PORT1"),
-                                  std::to_string(hostPort1));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT2"),
-                                  std::to_string(hostPort2));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT3"),
-                                  std::to_string(hostPort3));
-    contents = std::regex_replace(contents, std::regex("HOST_PORT4"),
-                                  std::to_string(hostPort4));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT1"),
-                                  std::to_string(locPort1));
-    contents = std::regex_replace(contents, std::regex("LOC_PORT2"),
-                                  std::to_string(locPort2));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT1"),
+                                    std::to_string(hostPort1));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT2"),
+                                    std::to_string(hostPort2));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT3"),
+                                    std::to_string(hostPort3));
+    contents = boost::regex_replace(contents, boost::regex("HOST_PORT4"),
+                                    std::to_string(hostPort4));
+    contents = boost::regex_replace(contents, boost::regex("LOC_PORT1"),
+                                    std::to_string(locPort1));
+    contents = boost::regex_replace(contents, boost::regex("LOC_PORT2"),
+                                    std::to_string(locPort2));
 
     std::ofstream out(outFile, std::ios::out);
     out << contents;
@@ -1502,7 +1505,7 @@ bool CacheHelper::setSeed() {
          "Environment variable TESTNAME for test name is not set.");
 
   int seed = std::hash<std::string>{}(testnameenv);
-  printf("seed for process %d\n", seed);
+  std::cout << "seed for process " << seed << "\n";
   // The integration tests rely on the pseudo-random
   // number generator being seeded with a very particular
   // value specific to the test by way of the test name.

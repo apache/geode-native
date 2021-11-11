@@ -82,91 +82,88 @@ std::string checkNullString(const std::string *str) {
   return ((str == nullptr) ? "(null)" : *str);
 }
 
-void _printFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
-                  int32_t &fields) {
+void _printAllFields(std::shared_ptr<Cacheable> field, Struct *ssptr,
+                     int32_t &fields) {
   try {
     if (auto portfolio = std::dynamic_pointer_cast<Portfolio>(field)) {
-      printf("   pulled %s :- ID %d, pkid %s\n",
-             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-             checkNullString(portfolio->getPkid()->value().c_str()));
-      printf("   pulled %s :- ID %d, pkid %s\n",
-             ssptr->getFieldName(fields).c_str(), portfolio->getID(),
-             checkNullString(portfolio->getPkid()->value().c_str()));
+      std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- ID "
+                << portfolio->getID() << ", pkid "
+                << (portfolio->getPkid()->value()) << "\n";
     } else if (auto position = std::dynamic_pointer_cast<Position>(field)) {
-      printf("   pulled %s :- secId %s, shares %d\n",
-             ssptr->getFieldName(fields).c_str(),
-             checkNullString(position->getSecId()->value().c_str()),
-             position->getSharesOutstanding());
+      std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- secId "
+                << position->getSecId()->value() << ", shares "
+                << position->getSharesOutstanding() << "\n";
     } else if (auto portfolioPdx =
                    std::dynamic_pointer_cast<PortfolioPdx>(field)) {
-      printf("   pulled %s :- ID %d, pkid %s\n",
-             ssptr->getFieldName(fields).c_str(), portfolioPdx->getID(),
-             portfolioPdx->getPkid().c_str());
+      std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- ID "
+                << portfolioPdx->getID() << ", pkid " << portfolioPdx->getPkid()
+                << "\n";
     } else if (auto positionPdx =
                    std::dynamic_pointer_cast<PositionPdx>(field)) {
-      printf("   pulled %s :- secId %s, shares %d\n",
-             ssptr->getFieldName(fields).c_str(),
-             positionPdx->getSecId().c_str(),
-             positionPdx->getSharesOutstanding());
+      std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- secId "
+                << positionPdx->getSecId() << ", shares "
+                << positionPdx->getSharesOutstanding() << "\n";
     } else {
       if (auto str = std::dynamic_pointer_cast<CacheableString>(field)) {
-        printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
-               checkNullString(str->value().c_str()));
+        std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- "
+                  << str->value() << "\n";
       } else if (auto boolptr =
                      std::dynamic_pointer_cast<CacheableBoolean>(field)) {
-        printf("   pulled %s :- %s\n", ssptr->getFieldName(fields).c_str(),
-               boolptr->toString().c_str());
+        std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- "
+                  << boolptr->toString() << "\n";
       } else {
         if (auto ptr = std::dynamic_pointer_cast<CacheableKey>(field)) {
-          printf("   pulled %s :- %s \n", ssptr->getFieldName(fields).c_str(),
-                 ptr->toString().c_str());
+          std::cout << "   pulled " << ssptr->getFieldName(fields) << " :- "
+                    << ptr->toString() << " \n";
         } else if (auto strArr =
                        std::dynamic_pointer_cast<CacheableStringArray>(field)) {
-          printf(" string array object printing \n\n");
+          std::cout << " string array object printing \n\n";
           for (int stri = 0; stri < strArr->length(); stri++) {
-            printf("   pulled %s(%d) - %s \n",
-                   ssptr->getFieldName(fields).c_str(), stri,
-                   strArr->operator[](stri)->value().c_str());
+            std::cout << "   pulled " << ssptr->getFieldName(fields) << "("
+                      << stri << ") - " << strArr->operator[](stri)->value()
+                      << " \n";
           }
         } else if (auto map =
                        std::dynamic_pointer_cast<CacheableHashMap>(field)) {
           int index = 0;
           for (const auto &iter : *map) {
-            printf("   hashMap %d of %zd ... \n", ++index, map->size());
-            _printFields(iter.first, ssptr, fields);
-            _printFields(iter.second, ssptr, fields);
+            std::cout << "   hashMap " << ++index << " of " << map->size()
+                      << " ... \n";
+            _printAllFields(iter.first, ssptr, fields);
+            _printAllFields(iter.second, ssptr, fields);
           }
-          printf("   end of map \n");
+          std::cout << "   end of map \n";
         } else if (auto structimpl = std::dynamic_pointer_cast<Struct>(field)) {
-          printf("   structImpl %s {\n", ssptr->getFieldName(fields).c_str());
+          std::cout << "   structImpl " << ssptr->getFieldName(fields)
+                    << " {\n";
           for (int32_t inner_fields = 0; inner_fields < structimpl->size();
                inner_fields++) {
             auto innerField = (*structimpl)[inner_fields];
             if (innerField == nullptr) {
-              printf(
-                  "we got null fields here, probably we have nullptr data\n");
+              std::cout
+                  << "we got null fields here, probably we have nullptr data\n";
               continue;
             }
 
-            _printFields(innerField, structimpl.get(), inner_fields);
+            _printAllFields(innerField, structimpl.get(), inner_fields);
 
           }  // end of field iterations
-          printf("   } //end of %s\n", ssptr->getFieldName(fields).c_str());
+          std::cout << "   } //end of " << ssptr->getFieldName(fields) << "\n";
         } else {
-          printf(
-              "unknown field data.. couldn't even convert it to Cacheable "
-              "variants\n");
+          std::cout << "unknown field data.. couldn't even convert it to "
+                       "Cacheable variants\n";
         }
       }
 
     }  // end of else
   } catch (const std::out_of_range &e) {
-    printf("Caught a non-fatal out_of_range exception: %s", e.what());
+    std::cout << "Caught a non-fatal out_of_range exception: " << e.what();
   }
 }
 
-void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
-  printf("query idx %d \n", i);
+void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int) {
+  std::cout << "query idx "
+            << " \n";
   for (size_t rows = 0; rows < ssptr->size(); rows++) {
     if (rows > QueryHelper::getHelper().getPortfolioSetSize()) {
       continue;
@@ -174,19 +171,19 @@ void _verifyStructSet(std::shared_ptr<StructSet> &ssptr, int i) {
 
     Struct *siptr = dynamic_cast<Struct *>(((*ssptr)[rows]).get());
     if (siptr == nullptr) {
-      printf("siptr is nullptr \n\n");
+      std::cout << "siptr is nullptr \n\n";
       continue;
     }
 
-    printf("   Row : %zd \n", rows);
+    std::cout << "   Row : " << rows << " \n";
     for (int32_t fields = 0; fields < siptr->size(); fields++) {
       auto field = (*siptr)[fields];
       if (field == nullptr) {
-        printf("we got null fields here, probably we have nullptr data\n");
+        std::cout << "we got null fields here, probably we have nullptr data\n";
         continue;
       }
 
-      _printFields(field, siptr, fields);
+      _printAllFields(field, siptr, fields);
 
     }  // end of field iterations
   }    // end of row iterations
@@ -321,10 +318,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
     qh->populatePortfolioPdxData(regPtr4, qh->getPortfolioSetSize(),
                                  qh->getPortfolioNumSets());
 
-    char buf[100];
-    sprintf(buf, "SetSize %zd, NumSets %zd", qh->getPortfolioSetSize(),
-            qh->getPortfolioNumSets());
-    LOG(buf);
+    LOG(std::string("SetSize") + std::to_string(qh->getPortfolioSetSize()) +
+        ", NumSets " + std::to_string(qh->getPortfolioNumSets()));
 
     LOG("StepThree complete.\n");
   }
@@ -363,7 +358,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       _verifyStructSet(ssptr, i);
     }
 
-    if (!doAnyErrorOccured) printf("HURRAY !! StepFour PASSED \n\n");
+    if (!doAnyErrorOccured) {
+      std::cout << "HOORAY !! StepFour PASSED \n\n";
+    }
 
     LOG("StepFour complete.");
   }
@@ -412,7 +409,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFive)
       }
     }
 
-    printf("HURRAY !! We PASSED \n\n");
+    std::cout << "HOORAY !! We PASSED \n\n";
     LOG("StepFive complete.");
   }
 END_TASK_DEFINITION
@@ -472,7 +469,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepSix)
         _verifyStructSet(ssptr, i);
       }
     }
-    if (!doAnyErrorOccured) printf("HURRAY !! We PASSED \n\n");
+    if (!doAnyErrorOccured) {
+      std::cout << "HOORAY !! We PASSED \n\n";
+    }
+
     LOG("StepSix complete.");
   }
 END_TASK_DEFINITION
@@ -587,7 +587,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, DoQuerySSError)
           FAIL(failmsg);
         } catch (apache::geode::client::QueryException &ex) {
           // ok, expecting an exception, do nothing
-          fprintf(stdout, "Got expected exception: %s", ex.what());
+          std::cout << "Got expected exception: " << ex.what();
         } catch (...) {
           ASSERT(false, "Got unexpected exception");
         }

@@ -62,7 +62,6 @@ void TcrPoolEndPoint::closeNotification() {
 GfErrType TcrPoolEndPoint::registerDM(bool, bool isSecondary, bool,
                                       ThinClientBaseDM*) {
   GfErrType err = GF_NOERR;
-  std::lock_guard<decltype(m_dm->getPoolLock())> _guard(m_dm->getPoolLock());
   std::lock_guard<decltype(getQueueHostedMutex())> guardQueueHosted(
       getQueueHostedMutex());
   auto& sysProp = m_cacheImpl->getDistributedSystem().getSystemProperties();

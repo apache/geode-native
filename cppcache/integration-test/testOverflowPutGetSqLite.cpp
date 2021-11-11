@@ -53,16 +53,16 @@ using apache::geode::client::RegionShortcut;
 uint32_t numOfEnt;
 std::string sqlite_dir = "SqLiteRegionData";
 
-static constexpr char const *MAX_PAGE_COUNT = "MaxPageCount";
-static constexpr char const *PAGE_SIZE = "PageSize";
-static constexpr char const *PERSISTENCE_DIR = "PersistenceDirectory";
+static constexpr char const *kMaxPageCountStr = "MaxPageCount";
+static constexpr char const *kPageSizeStr = "PageSize";
+static constexpr char const *kPersistenceDirStr = "PersistenceDirectory";
 
 // Return the number of keys and values in entries map.
 void getNumOfEntries(std::shared_ptr<Region> &regionPtr, uint32_t num) {
   auto v = regionPtr->keys();
   auto vecValues = regionPtr->values();
-  printf("Values vector size is %zd\n", vecValues.size());
-  printf("Num is %d\n", num);
+  std::cout << "Values vector size is " << vecValues.size() << "\n";
+  std::cout << "Num is " << num << "\n";
   ASSERT(vecValues.size() == num, "size of value vec and num not equal");
 }
 
@@ -138,7 +138,7 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
   int normalCount = 0;
   int overflowCount = 0;
   int invalidCount = 0;
-  int destoyedCount = 0;
+  int destroyedCount = 0;
   int tombstoneCount = 0;
   for (uint32_t i = 0; i < static_cast<uint32_t>(v.size()); i++) {
     keyPtr = v.at(i);
@@ -151,19 +151,19 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
     } else if (CacheableToken::isInvalid(valuePtr)) {
       invalidCount++;
     } else if (CacheableToken::isDestroyed(valuePtr)) {
-      destoyedCount++;
+      destroyedCount++;
     } else if (valuePtr != nullptr) {
       normalCount++;
     }
     valuePtr = nullptr;
   }
-  printf("Keys vector size is %zd\n", v.size());
-  printf("Normal entries count is %d\n", normalCount);
-  printf("Overflow entries count is %d\n", overflowCount);
-  printf("Invalid entries count is %d\n", invalidCount);
-  printf("Destoyed entries count is %d\n", destoyedCount);
-  printf("Tombstone entries count is %d\n", tombstoneCount);
-  printf("LRU entries limit is %d\n", lruLimit);
+  std::cout << "Keys vector size is " << v.size() << "\n";
+  std::cout << "Normal entries count is " << normalCount << "\n";
+  std::cout << "Overflow entries count is " << overflowCount << "\n";
+  std::cout << "Invalid entries count is " << invalidCount << "\n";
+  std::cout << "Destoyed entries count is " << destroyedCount << "\n";
+  std::cout << "Tombstone entries count is " << tombstoneCount << "\n";
+  std::cout << "LRU entries limit is " << lruLimit << "\n";
   ASSERT(normalCount <= static_cast<int>(lruLimit),
          "Normal entries count should not exceed LRU entries limit.");
 }
@@ -171,51 +171,18 @@ void checkOverflowToken(std::shared_ptr<Region> &regionPtr, uint32_t lruLimit) {
 // Testing for put operation
 void doNput(std::shared_ptr<Region> &regionPtr, uint32_t num,
             uint32_t start = 0) {
-  char keybuf[100];
   // Put 1 KB of data locally for each entry
-  char *text = new char[1024];
+  char text[1024];
   memset(text, 'A', 1023);
   text[1023] = '\0';
   auto valuePtr = CacheableString::create(text);
 
   for (uint32_t i = start; i < num; i++) {
-    sprintf(keybuf, "key-%d", i);
-    auto key = CacheableKey::create(keybuf);
-    printf("Putting key = %s\n", keybuf);
+    auto keyname = std::string("key-") + std::to_string(i);
+    auto key = CacheableKey::create(keyname);
+    std::cout << "Putting key = " << keyname << "\n";
     regionPtr->put(key, valuePtr);
   }
-}
-
-void doNputLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  // Put 1 MB of data locally for each entry
-  char *text = new char[1024 * 1024 /* 1 MB */];
-  memset(text, 'A', 1024 * 1024 - 1);
-  text[1024 * 1024 - 1] = '\0';
-  auto valuePtr = CacheableString::create(text);
-  for (int item = 0; item < num; item++) {
-    regionPtr->put(CacheableKey::create(item), valuePtr);
-  }
-
-  LOGINFO("Put data locally");
-}
-
-// Testing for get operation
-uint32_t doNgetLargeData(std::shared_ptr<Region> &regionPtr, int num) {
-  uint32_t countFound = 0;
-  uint32_t countNotFound = 0;
-
-  for (int i = 0; i < num; i++) {
-    printf("Getting key = %d\n", i);
-    auto valuePtr =
-        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(i));
-    if (valuePtr == nullptr) {
-      countNotFound++;
-    } else {
-      countFound++;
-    }
-  }
-  LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
-  return countFound;
 }
 
 // Testing for get operation
@@ -225,20 +192,19 @@ uint32_t doNget(std::shared_ptr<Region> &regionPtr, uint32_t num,
   uint32_t countNotFound = 0;
 
   for (uint32_t i = start; i < num; i++) {
-    char keybuf[100];
-    sprintf(keybuf, "key-%d", i);
+    auto keyname = std::string("key-") + std::to_string(i);
     auto valuePtr =
-        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keybuf));
-    printf("Getting key = %s\n", keybuf);
+        std::dynamic_pointer_cast<CacheableString>(regionPtr->get(keyname));
+    std::cout << "Getting key = " << keyname << "\n";
     if (valuePtr == nullptr) {
       countNotFound++;
     } else {
       countFound++;
     }
   }
-  printf("completed doNget");
-  printf("count found %d", countFound);
-  printf("num found %d", num);
+  std::cout << "completed doNget";
+  std::cout << "count found " << countFound;
+  std::cout << "num found " << num;
   ASSERT(countFound == (num - start),
          "Number of entries found and put should match");
   LOGINFO("found:%d and Not found: %d", countFound, countNotFound);
@@ -351,9 +317,9 @@ void setSqLiteProperties(std::shared_ptr<Properties> &sqliteProperties,
                          int maxPageCount = 1073741823, int pageSize = 65536,
                          std::string pDir = sqlite_dir) {
   sqliteProperties = Properties::create();
-  sqliteProperties->insert(MAX_PAGE_COUNT, maxPageCount);
-  sqliteProperties->insert(PAGE_SIZE, pageSize);
-  sqliteProperties->insert(PERSISTENCE_DIR, pDir.c_str());
+  sqliteProperties->insert(kMaxPageCountStr, maxPageCount);
+  sqliteProperties->insert(kPageSizeStr, pageSize);
+  sqliteProperties->insert(kPersistenceDirStr, pDir.c_str());
   ASSERT(sqliteProperties != nullptr,
          "Expected sqlite properties to be NON-nullptr");
 }
@@ -514,10 +480,8 @@ BEGIN_TEST(OverFlowTest_SqLiteFull)
                  &ex) {  // expected sqlite full exception
                          // catching generic message as we dont
                          // have any specific sqlitefull exception
-      char buffer[1024];
-      sprintf(buffer, "Got expected exception %s: msg = %s",
-              ex.getName().c_str(), ex.what());
-      LOG(buffer);
+      LOG(std::string("Got expected exception ") + ex.getName() +
+          "; msg = " + ex.what());
     }
 
     // cache close

@@ -139,12 +139,12 @@ class TallyWriter : virtual public CacheWriter {
   std::shared_ptr<Cacheable> getLastValue() { return m_lastValue; }
 
   void showTallies() {
-    char buf[1024];
-    sprintf(buf,
-            "TallyWriter state: (updates = %d, creates = %d, invalidates = %d, "
-            "destroy = %d)",
-            getUpdates(), getCreates(), getInvalidates(), getDestroys());
-    LOG(buf);
+    std::stringstream strm;
+    strm << "TallyWriter state: (updates = " << getUpdates()
+         << ", creates = " << getCreates()
+         << ", invalidates = " << getInvalidates()
+         << ", destroys = " << getDestroys() << ")";
+    LOG(strm.str());
   }
   void checkcallbackArg(const EntryEvent& event) {
     if (!isWriterInvoke) isWriterInvoke = true;

@@ -17,6 +17,8 @@
 
 #include "DeltaTestImpl.hpp"
 
+#include <sstream>
+
 namespace testobject {
 
 uint8_t DeltaTestImpl::INT_MASK = 0x1;
@@ -128,10 +130,11 @@ void DeltaTestImpl::fromDelta(DataInput& input) {
 }
 
 std::string DeltaTestImpl::toString() const {
-  char buf[102500];
-  sprintf(buf, "DeltaTestImpl[hasDelta=%d int=%d double=%f str=%s \n",
-          m_hasDelta, intVar, doubleVar, str->toString().c_str());
-  return buf;
+  std::stringstream strm;
+
+  strm << "DeltaTestImpl[hasDelta=" << m_hasDelta << " int = " << intVar
+       << " double = " << doubleVar << " str = " << str->toString() << "\n";
+  return strm.str();
 }
 
 }  // namespace testobject

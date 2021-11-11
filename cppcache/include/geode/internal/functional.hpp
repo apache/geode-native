@@ -36,17 +36,21 @@ template <class _T>
 struct dereference_hash;
 
 template <class _T>
-struct dereference_hash<std::shared_ptr<_T>>
-    : public std::unary_function<std::shared_ptr<_T>, size_t> {
-  size_t operator()(const std::shared_ptr<_T>& val) const {
+struct dereference_hash<std::shared_ptr<_T>> {
+  using argument_type = std::shared_ptr<_T>;
+  using result_type = std::size_t;
+
+  result_type operator()(const argument_type& val) const {
     return std::hash<_T>{}(*val);
   }
 };
 
 template <class _T>
-struct dereference_hash<_T*> : public std::unary_function<_T*, size_t> {
-  typedef _T* argument_type;
-  size_t operator()(const argument_type& val) const {
+struct dereference_hash<_T*> {
+  using argument_type = _T*;
+  using result_type = std::size_t;
+
+  result_type operator()(const argument_type& val) const {
     return std::hash<_T>{}(*val);
   }
 };
@@ -55,11 +59,13 @@ template <class _T>
 struct dereference_equal_to;
 
 template <class _T>
-struct dereference_equal_to<std::shared_ptr<_T>>
-    : public std::binary_function<std::shared_ptr<_T>, std::shared_ptr<_T>,
-                                  bool> {
-  constexpr bool operator()(const std::shared_ptr<_T>& lhs,
-                            const std::shared_ptr<_T>& rhs) const {
+struct dereference_equal_to<std::shared_ptr<_T>> {
+  using first_argument_type = std::shared_ptr<_T>;
+  using second_argument_type = std::shared_ptr<_T>;
+  using result_type = bool;
+
+  constexpr result_type operator()(const first_argument_type& lhs,
+                                   const second_argument_type& rhs) const {
     return std::equal_to<_T>{}(*lhs, *rhs);
   }
 };

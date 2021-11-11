@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project( ACE VERSION 7.0.0 LANGUAGES NONE )
+project( ACE VERSION 7.0.3 LANGUAGES NONE )
 
-set( SHA256 9dfdc31664bc2faf7832e50197203fe274c661a56f17b18af2b227ddb34174be )
+set( SHA256 96998d1e710b6d88416640caeb76915518c8d85d3f10c02079bf0dd4e57cf60a )
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   set( ACE_PLATFORM sunos5_sunc++ )
@@ -64,6 +64,11 @@ if (${WIN32})
   set ( _COMMAND_PREFIX ${CMAKE_COMMAND} -E chdir ace )
 
   set ( _MSBUILD_FLAGS /m /p:Platform=${_PLATFORM} /p:Configuration=$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>)
+
+  if(CMAKE_GENERATOR_TOOLSET MATCHES "version=([0-9]+\.[0-9]+\.[0-9]+)")
+    list(APPEND _MSBUILD_FLAGS /p:VCToolsVersion=${CMAKE_MATCH_1})
+  endif()
+
   set ( _MSBUILD_FLAGS_STATIC ${_MSBUILD_FLAGS} /t:ace_${MPC_TYPE}_static )
 
   include(ProcessorCount)
@@ -79,17 +84,23 @@ if (${WIN32})
   set ( _CONFIGURE_COMMAND ${MPC} -static ${MPC_FLAGS}
                            -name_modifier "*_${MPC_TYPE}_static"
                            -value_template MultiProcessorCompilation=true
-                           -value_template WindowsTargetPlatformVersion=${CMAKE_SYSTEM_VERSION}
+                           -value_template WindowsTargetPlatformVersion=${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}
                            -value_template staticflags+=__ACE_INLINE__
                            -value_template staticflags+=ACE_BUILD_DLL
                            -value_template staticflags+=ACE_AS_STATIC_LIBS
                            -value_template runtime_library=Multithreaded$<$<CONFIG:Debug>:Debug>Dll
   )
-  set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS} ${_MSBUILD_FLAGS_STATIC}
+  set ( _BUILD_COMMAND ${CMAKE_VS_MSBUILD_COMMAND} ACE_${MPC_TYPE}_static.sln ${_MSBUILD_FLAGS_STATIC}
   )
   set ( _INSTALL_COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/lib <INSTALL_DIR>/lib
                  COMMAND ${CMAKE_COMMAND} -E copy_directory <SOURCE_DIR>/ace <INSTALL_DIR>/include/ace
   )
+
+  if(MSVC_TOOLSET_VERSION LESS 142)
+    set ( _INSTALL_COMMAND ${_INSTALL_COMMAND}
+                   COMMAND ${CMAKE_COMMAND} -E copy <SOURCE_DIR>/ace/Static_$<$<CONFIG:Debug>:Debug>$<$<NOT:$<CONFIG:Debug>>:Release>/ace_${MPC_TYPE}_static/AMD64/ACE_${MPC_TYPE}_static.pdb <INSTALL_DIR>/lib
+    )
+  endif()
 
   set(CMAKE_STATIC_LIBRARY_SUFFIX s$<${MSVC}:$<$<CONFIG:Debug>:d>>.lib)
 

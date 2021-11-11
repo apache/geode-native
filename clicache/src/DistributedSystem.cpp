@@ -51,6 +51,7 @@
 #include "CacheableObjectXml.hpp"
 #include "CacheableBuiltins.hpp"
 #include "Log.hpp"
+#include "String.hpp"
 #include "Struct.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/PdxType.hpp"
@@ -134,7 +135,7 @@ namespace Apache
         // TODO AppDomain should we be able to create a DS directly?
         _GF_MG_EXCEPTION_TRY2
 
-        auto nativeDistributedSystem = native::DistributedSystem::create(marshal_as<std::string>(name),
+        auto nativeDistributedSystem = native::DistributedSystem::create(to_utf8(name),
                                                            config->GetNative());
         nativeDistributedSystem.connect();
 

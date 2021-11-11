@@ -18,6 +18,7 @@
 #include "DeltaPSTObject.hpp"
 
 #include <fwklib/GsRandom.hpp>
+#include <sstream>
 
 #include "ArrayOfByte.hpp"
 
@@ -59,12 +60,12 @@ void DeltaPSTObject::fromData(apache::geode::client::DataInput& input) {
   valueData = std::dynamic_pointer_cast<CacheableBytes>(input.readObject());
 }
 std::string DeltaPSTObject::toString() const {
-  char buf[102500];
-  sprintf(buf,
-          "DeltaPSTObject:[timestamp = %" PRIu64
-          " field1 = %d field2 = %c valueData=%d ]",
-          timestamp, field1, field2, valueData->length());
-  return buf;
+  std::stringstream strm;
+
+  strm << "DeltaPSTObject:[timestamp = " << timestamp << " field1 = " << field1
+       << " field2 = " << field2 << " valueData = " << valueData->length()
+       << "]";
+  return strm.str();
 }
 
 }  // namespace testobject

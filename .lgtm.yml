@@ -2,15 +2,14 @@ extraction:
   cpp:
     configure:
       command:
-        - GEODE_VERSION=1.13.2
-        - CMAKE_VERSION=3.18
+        - GEODE_VERSION=1.14.0
         - mkdir _lgtm_build_dir
         - cd _lgtm_build_dir
         - wget -O apache-geode.tgz https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz
         - tar xzf apache-geode.tgz
-        - wget -O cmake.tgz https://cmake.org/files/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}.0-Linux-x86_64.tar.gz
-        - tar xzf cmake.tgz
-        - PATH="`pwd`/cmake-${CMAKE_VERSION}.0-Linux-x86_64/bin":$PATH
+        - "curl -o cmake.tgz -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases | grep -P -i 'browser_download_url.*cmake-\\d+\\.\\d+\\.\\d+-linux-x86_64\\.sh' | head -n 1 | cut -d: -f 2,3 | tr -d \\\")"
+        - bash cmake.tgz --skip-license --prefix=`pwd`
+        - PATH="`pwd`/bin":$PATH
         - cmake -DGEODE_ROOT="`pwd`/apache-geode-${GEODE_VERSION}" ..
         - cd dependencies && cmake --build . -- -j2
     index:

@@ -17,6 +17,8 @@
 
 #include "PdxClassV1.hpp"
 
+#include <sstream>
+
 namespace PdxTests {
 
 using apache::geode::client::Exception;
@@ -145,19 +147,11 @@ void PdxType1V1::fromData(PdxReader& pr) {
   LOGDEBUG("PdxObject::fromData() End...");
 }
 std::string PdxType1V1::toString() const {
-  char idbuf[4096];
-  // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
-  // [m_int32=%d] [m_long=%lld] [m_float=%f] [ m_string=%s ]",m_bool, m_byte,
-  // m_int16, m_int32, m_long, m_float, m_string);
-  // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
-  // [m_int32=%d] [m_long=%lld] [m_float=%f] [m_double=%Lf] [ m_string=%s
-  // ]",m_bool, m_byte, m_int16, m_int32, m_long, m_float, m_double, m_string);
-  // sprintf(idbuf,"PdxObject: [ m_bool=%d ] [m_byte=%d] [m_int16=%d]
-  // [m_int32=%d] [m_float=%f] [m_double=%lf] [ m_string=%s ]",m_bool, m_byte,
-  // m_int16, m_int32, m_float, m_double, m_string);
-  sprintf(idbuf, "PdxType1V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-          m_i1, m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxType1V1:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -226,10 +220,11 @@ void PdxType2V1::fromData(PdxReader& pr) {
   m_i4 = pr.readInt("i4");
 }
 std::string PdxType2V1::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxType2V1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-          m_i1, m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxType2V1:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -392,10 +387,11 @@ void PdxTypesV1R1::fromData(PdxReader& pr) {
   m_i4 = pr.readInt("i4");
 }
 std::string PdxTypesV1R1::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-          m_i1, m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypesV1R1:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -461,10 +457,11 @@ void PdxTypesV1R2::fromData(PdxReader& pr) {
   m_i4 = pr.readInt("i4");
 }
 std::string PdxTypesV1R2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-          m_i1, m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypesV1R2:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -541,10 +538,12 @@ void PdxTypesIgnoreUnreadFieldsV1::fromData(PdxReader& pr) {
   if (!hasField) throw Exception("i4 is an valid field");
 }
 std::string PdxTypesIgnoreUnreadFieldsV1::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d ]",
-          m_i1, m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypesIgnoreUnreadFieldsV1:[m_i1 = " << m_i1
+       << " ][m_i2 = " << m_i2 << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4
+       << "]";
+  return strm.str();
 }
 
 /************************************************************
@@ -648,12 +647,7 @@ void PdxVersionedV1::fromData(PdxReader& pr) {
   m_floatArray = pr.readFloatArray("m_floatArray");
   m_doubleArray = pr.readDoubleArray("m_doubleArray");
 }
-std::string PdxVersionedV1::toString() const {
-  char idbuf[4096];
-  // sprintf(idbuf,"PdxTypesV1R1:[ m_i1=%d ] [ m_i2=%d ] [ m_i3=%d ] [ m_i4=%d
-  // ]", m_i1, m_i2, m_i3, m_i4 );
-  return idbuf;
-}
+std::string PdxVersionedV1::toString() const { return ""; }
 
 /************************************************************
  *  TestKey
@@ -717,9 +711,10 @@ void TestEqualsV1::fromData(PdxReader& pr) {
   // sArr = (string[]) reader.ReadObject("sArrObject");
 }
 std::string TestEqualsV1::toString() const {
-  char idbuf[1024];
-  sprintf(idbuf, "TestEqualsV1:[i1=%d ] [i2=%d] ", i1, i2);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "TestEqualsV1:[i1 = " << i1 << " ][i2 = " << i2 << "]";
+  return strm.str();
 }
 
 }  // namespace PdxTests

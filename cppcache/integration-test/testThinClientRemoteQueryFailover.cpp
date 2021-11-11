@@ -181,7 +181,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, ValidateQueryExecutionAcrossServerFailure)
         auto resultsize = results->size();
 
         if (i % 100 == 0) {
-          printf("Iteration upto %d done, result size is %zd\n", i, resultsize);
+          std::cout << "Iteration upto " << i << " done, result size is "
+                    << resultsize << "\n";
         }
 
         if (resultsize != 4)  // the XMLs for server 1 and server 2 have 1 and 2

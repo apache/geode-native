@@ -209,9 +209,25 @@ class APACHE_GEODE_EXPORT Utils {
 // Generate random numbers 0 to max-1
 class RandGen {
  public:
-  template <typename T, class G = std::default_random_engine>
-  inline T operator()(T max) {
-    return std::uniform_int_distribution<T>{0, max - 1}(generator<G>());
+  typedef std::size_t argument_type, result_type;
+
+  template <class G = std::default_random_engine>
+  result_type operator()(argument_type max) {
+    return std::uniform_int_distribution<result_type>{0,
+                                                      max - 1}(generator<G>());
+  }
+
+  template <class G = std::default_random_engine>
+  result_type operator()() {
+    return std::uniform_int_distribution<result_type>{
+        0, (max)() - 1}(generator<G>());
+  }
+
+  static constexpr result_type(min)() {
+    return (std::numeric_limits<result_type>::min)();
+  }
+  static constexpr result_type(max)() {
+    return (std::numeric_limits<result_type>::max)();
   }
 
  private:

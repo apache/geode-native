@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "Position.hpp"
 
 #include <wchar.h>
 
 #include <cwchar>
+#include <sstream>
 
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
@@ -35,7 +37,7 @@ Position::Position(const char* id, int32_t out) {
   qty = out - (cnt % 2 == 0 ? 1000 : 100);
   mktValue = qty * 1.2345998;
   sharesOutstanding = out;
-  secType = L"a";
+  secType = "a";
   pid = cnt++;
 }
 
@@ -52,7 +54,7 @@ Position::Position(int32_t iForExactVal) {
   qty = (iForExactVal % 2 == 0 ? 1000 : 100);
   mktValue = qty * 2;
   sharesOutstanding = iForExactVal;
-  secType = L"a";
+  secType = "a";
   pid = iForExactVal;
 }
 
@@ -68,7 +70,7 @@ void Position::init() {
   qty = 0.0;
   secId = nullptr;
   secLinks = nullptr;
-  secType = L"";
+  secType = "";
   sharesOutstanding = 0;
   underlyer = nullptr;
   volatility = 0;
@@ -106,19 +108,18 @@ void Position::fromData(apache::geode::client::DataInput& input) {
   qty = input.readDouble();
   secId = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   secLinks = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  secType = input.readUTF<wchar_t>();
+  secType = input.readUTF<char>();
   sharesOutstanding = input.readInt32();
   underlyer = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   volatility = input.readInt64();
   pid = input.readInt32();
 }
 std::string Position::toString() const {
-  char buf[2048];
-  sprintf(buf,
-          "Position Object:[ secId=%s type=%ls sharesOutstanding=%d id=%d ]",
-          secId->toString().c_str(), this->secType.c_str(),
-          this->sharesOutstanding, this->pid);
-  return buf;
+  std::stringstream strm;
+
+  strm << "Position Object:[ secId=" << secId->toString() << " type=" << secType
+       << " sharesOutstanding=" << sharesOutstanding << " id=" << pid << " ]";
+  return strm.str();
 }
 
 }  // namespace testobject

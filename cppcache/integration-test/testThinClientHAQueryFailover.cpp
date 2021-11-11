@@ -124,8 +124,9 @@ CacheHelper *getHelper() {
 void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = true) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   char *endpoints = nullptr;
   auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                           endpoints, clientNotificationEnabled);
@@ -211,24 +212,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
 
         std::shared_ptr<SelectResults> results;
 
-        // try
-        //{
         results = qry->execute();
-        //}
-        /*
-        catch(IllegalStateException &)
-        {
-          printf("IllegalStateException occurred at iteration %d\n", i);
-          //SLEEP(1000);
-          continue;
-        }
-        catch(Exception &)
-        {
-          printf("Exception occurred at iteration %d\n", i);
-          //SLEEP(1000);
-          continue;
-        }
-        */
 
         if (i == 10) {
           kst->start();
@@ -238,10 +222,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree)
         auto resultsize = results->size();
 
         if (i % 100 == 0) {
-          printf("Iteration upto %d done, result size is %zd\n", i, resultsize);
+          std::cout << "Iteration upto " << i << " done, result size is "
+                    << resultsize << "\n";
         }
-
-        // ASSERT(resultsize==4, "Failed verification");
 
         if (resultsize != 4)  // the XMLs for server 1 and server 2 have 1 and 2
                               // entries respectively

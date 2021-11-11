@@ -198,7 +198,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
   if (!props.isEndpointShufflingDisabled()) {
     if (!m_attrs->m_initServList.empty()) {
       RandGen randgen;
-      m_server = randgen(static_cast<uint32_t>(m_attrs->m_initServList.size()));
+      m_server = randgen(m_attrs->m_initServList.size());
     }
   }
   if (m_attrs->getPRSingleHopEnabled()) {
@@ -1189,7 +1189,7 @@ TcrEndpoint* ThinClientPoolDM::getEndPoint(
 
 std::shared_ptr<TcrEndpoint> ThinClientPoolDM::getEndpoint(
     const std::string& endpointName) {
-  m_endpoints.make_lock();
+  const auto& ignored = m_endpoints.make_lock();
   const auto& find = m_endpoints.find(endpointName);
   if (find == m_endpoints.end()) {
     return {};

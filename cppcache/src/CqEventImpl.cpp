@@ -94,15 +94,12 @@ std::shared_ptr<Cacheable> CqEventImpl::getNewValue() const {
 bool CqEventImpl::getError() { return m_error; }
 
 std::string CqEventImpl::toString() {
-  char buffer[1024];
-  std::snprintf(
-      buffer, 1024,
-      "CqEvent CqName=%s; base operation=%d; cq operation= %d;key=%s;value=%s",
-      m_cQuery->getName().c_str(), static_cast<int>(m_baseOp),
-      static_cast<int>(m_queryOp), m_key->toString().c_str(),
-      m_newValue->toString().c_str());
-  return buffer;
+  return std::string("CqEvent CqName=") + m_cQuery->getName() +
+         "; base operation=" + std::to_string(static_cast<int>(m_baseOp)) +
+         "; cq operation=" + std::to_string(static_cast<int>(m_queryOp)) +
+         "; key=" + m_key->toString() + "; value=" + m_newValue->toString();
 }
+
 std::shared_ptr<CacheableBytes> CqEventImpl::getDeltaValue() const {
   return m_deltaValue;
 }
