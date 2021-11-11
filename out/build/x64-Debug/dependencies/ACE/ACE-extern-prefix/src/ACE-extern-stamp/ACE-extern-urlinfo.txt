@@ -1,3 +1,0 @@
-repository='external project URL'
-module='https://github.com/DOCGroup/ACE_TAO/releases/download/ACE%2BTAO-7_0_3/ACE-7.0.3.tar.gz'
-tag='SHA256=96998d1e710b6d88416640caeb76915518c8d85d3f10c02079bf0dd4e57cf60a'
