@@ -64,7 +64,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteChar(String^ fieldName, Char value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::CHAR_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR, native::PdxTypes::kPdxCharSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -72,7 +72,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteBoolean(String^ fieldName, Boolean value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::BOOLEAN_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "boolean", PdxFieldTypes::BOOLEAN, native::PdxTypes::kPdxBooleanSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -80,7 +80,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteByte(String^ fieldName, SByte value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::BYTE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE, native::PdxTypes::kPdxByteSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -88,7 +88,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteShort(String^ fieldName, Int16 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::SHORT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT, native::PdxTypes::kPdxShortSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -96,7 +96,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteInt(String^ fieldName, Int32 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::INTEGER_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT, native::PdxTypes::kPdxIntegerSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -104,7 +104,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteLong(String^ fieldName, Int64 value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::LONG_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG, native::PdxTypes::kPdxLongSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -112,7 +112,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteFloat(String^ fieldName, float value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::FLOAT_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT, native::PdxTypes::kPdxFloatSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -120,7 +120,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteDouble(String^ fieldName, double value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::DOUBLE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE, native::PdxTypes::kPdxDoubleSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }
@@ -128,7 +128,7 @@ namespace Apache
         IPdxInstanceFactory^ PdxInstanceFactoryImpl::WriteDate(String^ fieldName, System::DateTime value)
         {
           isFieldAdded(fieldName);
-          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::DATE_SIZE);
+          m_pdxType->AddFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE, native::PdxTypes::kPdxDateSize);
           m_FieldVsValues->Add(fieldName, value);
           return this;
         }

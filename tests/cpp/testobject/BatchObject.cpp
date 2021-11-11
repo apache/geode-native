@@ -17,6 +17,8 @@
 
 #include "BatchObject.hpp"
 
+#include <sstream>
+
 namespace testobject {
 
 using apache::geode::client::CacheableBytes;
@@ -42,12 +44,11 @@ void BatchObject::fromData(apache::geode::client::DataInput& input) {
   byteArray = std::dynamic_pointer_cast<CacheableBytes>(input.readObject());
 }
 std::string BatchObject::toString() const {
-  char buf[102500];
-  sprintf(buf,
-          "BatchObject:[index = %d timestamp = %" PRIu64
-          " batch = %d byteArray=%d ]",
-          index, timestamp, batch, byteArray->length());
-  return buf;
+  std::stringstream strm;
+
+  strm << "BatchObject:[index = " << index << " timestamp = " << timestamp
+       << " batch = " << batch << " byteArray = " << byteArray->length() << "]";
+  return strm.str();
 }
 
 }  // namespace testobject

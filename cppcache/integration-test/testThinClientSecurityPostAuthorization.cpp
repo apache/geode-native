@@ -79,8 +79,7 @@ void initClientAuth(char userType, int clientNum = 1) {
       break;
     }
     case 'R': {
-      char clientStr[32];
-      sprintf(clientStr, "geode%d", clientNum);
+      auto clientStr = std::string("geode") + std::to_string(clientNum);
       config->insert("security-username", clientStr);
       config->insert("security-password", clientStr);
       break;
@@ -148,8 +147,8 @@ void checkValuesMap(HashMapOfCacheable &values, int clientNum, int numKeys) {
     expectedVal = CacheableString::create(nvals[index]);
     ASSERT(*val == *expectedVal, "unexpected value in values map");
   }
-  printf("Expected number of values: %zd; got values: %zd", expectedNum,
-         values.size());
+  std::cout << "Expected number of values: " << expectedNum
+            << "; got values: " << values.size() << "\n";
   ASSERT(values.size() == expectedNum, "unexpected number of values");
 }
 
@@ -166,11 +165,12 @@ void checkExceptionsMap(HashMapOfException &exceptions, int clientNum,
       ASSERT(std::dynamic_pointer_cast<std::shared_ptr<NotAuthorizedException>>(
                  iter->second),
              "unexpected exception type in exception map");
-      printf("Got expected NotAuthorizedException: %s", iter->second->what());
+      std::cout << "Got expected NotAuthorizedException: "
+                << iter->second->what() << "\n";
     }
   }
-  printf("Expected number of exceptions: %zd; got exceptions: %zd", expectedNum,
-         exceptions.size());
+  std::cout << "Expected number of exceptions: " << expectedNum
+            << "; got exceptions: " << exceptions.size() << "\n";
   ASSERT(exceptions.size() == expectedNum, "unexpected number of exceptions");
 }
 

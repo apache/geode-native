@@ -28,6 +28,9 @@ You can optimize your queries by defining indexes on the cache server.
 
 Querying and indexing operate only on remote cache server contents.
 
+**Note:** Because floating point numbers can not reliably be compared for equality, do not use
+floating point values as keys or key components when constructing a query.
+
 ### <a id="QueryLanguage"></a>Query language: OQL
 <%=vars.product_name%> provides a SQL-like querying language called OQL that allows you to access data stored in <%=vars.product_name%> regions.
 OQL is very similar to SQL, but OQL allows you to query complex objects, object attributes, and methods.
@@ -69,7 +72,7 @@ The essential steps to create and execute a query are:
 
 1.  Create an instance of the `QueryService` class. If you are using the pool API (recommended), you should obtain the `QueryService` from the pool.
 1.  Create a `Query` instance that is compatible with the OQL specification.
-1.  Use the `Query.execute()` method to submit the query string to the cache server. The server
+1.  Use the `Query.Execute()` method to submit the query string to the cache server. The server
    remotely evaluates the query string and returns the results to the client.
 1.  Iterate through the returned objects.
 

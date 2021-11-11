@@ -29,12 +29,6 @@
 #include <sys/stat.h>
 #endif
 
-#ifdef _WIN32
-#define SNPRINTF _snprintf
-#else
-#define SNPRINTF snprintf
-#endif
-
 class SqLiteHelper {
  public:
   int initDB(const char* regionName, int maxPageCount, int pageSize,
@@ -50,7 +44,6 @@ class SqLiteHelper {
   sqlite3* m_dbHandle;
 
   const char* m_tableName;
-  // std::string regionName;
   int dropTable();
   int createTable();
   int executePragma(const char* pragmaName, int pragmaValue);

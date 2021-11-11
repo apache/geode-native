@@ -22,6 +22,7 @@
 #include "end_native.hpp"
 
 #include "Properties.hpp"
+#include "String.hpp"
 #include "impl/ManagedVisitor.hpp"
 #include "impl/SafeConvert.hpp"
 #include "ExceptionTypes.hpp"
@@ -187,7 +188,7 @@ namespace Apache
 
           try
           {
-            m_nativeptr->get()->load( marshal_as<std::string>(fileName) );
+            m_nativeptr->get()->load( Apache::Geode::Client::to_utf8(fileName) );
           }
           finally
           {

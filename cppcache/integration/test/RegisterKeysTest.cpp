@@ -16,9 +16,6 @@
 
 #include <gmock/gmock.h>
 
-#include <condition_variable>
-#include <mutex>
-
 #include <boost/thread/latch.hpp>
 
 #include <gtest/gtest.h>
@@ -33,6 +30,7 @@
 #include "framework/Cluster.h"
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
+#include "gmock_actions.hpp"
 #include "mock/CacheListenerMock.hpp"
 #include "util/concurrent/binary_semaphore.hpp"
 
@@ -53,10 +51,6 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
-
-ACTION_P(ReleaseSem, sem) { sem->release(); }
-ACTION_P(AcquireSem, sem) { sem->acquire(); }
-ACTION_P(CountDownLatch, latch) { latch->count_down(); }
 
 Cache createTestCache() {
   CacheFactory cacheFactory;

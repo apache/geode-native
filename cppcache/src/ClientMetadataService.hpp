@@ -153,7 +153,7 @@ class ClientMetadataService {
       dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ServerToBucketsMap;
 
-  std::shared_ptr<BucketServerLocation> findNextServer(
+  static std::shared_ptr<BucketServerLocation> findNextServer(
       const ServerToBucketsMap& serverToBucketsMap,
       const BucketSet& currentBucketSet);
 
@@ -181,7 +181,7 @@ class ClientMetadataService {
   groupByServerToBuckets(const std::shared_ptr<ClientMetadata>& metadata,
                          const BucketSet& bucketSet, bool optimizeForWrite);
 
-  std::shared_ptr<ClientMetadataService::ServerToBucketsMap> pruneNodes(
+  static std::shared_ptr<ClientMetadataService::ServerToBucketsMap> pruneNodes(
       const std::shared_ptr<ClientMetadata>& metadata,
       const BucketSet& buckets);
 

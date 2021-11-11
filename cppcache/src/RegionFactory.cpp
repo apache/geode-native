@@ -150,10 +150,8 @@ RegionFactory& RegionFactory::setRegionTimeToLive(
 }
 
 RegionFactory& RegionFactory::setInitialCapacity(int initialCapacity) {
-  char excpStr[256] = {0};
   if (initialCapacity < 0) {
-    std::snprintf(excpStr, 256, "initialCapacity must be >= 0 ");
-    throw IllegalArgumentException(excpStr);
+    throw IllegalArgumentException("initialCapacity must be >= 0");
   }
   m_regionAttributesFactory->setInitialCapacity(initialCapacity);
   return *this;

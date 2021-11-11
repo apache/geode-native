@@ -27,7 +27,6 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-
 bool isLocalServer = true;
 static bool isLocator = false;
 const std::string locatorsG =
@@ -77,9 +76,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, verify)
     auto regPtr = getHelper()->getRegion(regionNames[0]);
     for (int i = 0; i < 5; i++) {
       auto keyPtr1 = CacheableKey::create(keys[i]);
-      char buf[1024];
-      sprintf(buf, "key[%s] should have been found", keys[i]);
-      ASSERT(regPtr->containsKey(keyPtr1), buf);
+      auto msg = std::string("key[") + keys[i] + "] should have been found";
+      ASSERT(regPtr->containsKey(keyPtr1), msg);
     }
   }
 END_TASK_DEFINITION

@@ -185,16 +185,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       auto results = qry->executeWithInitialResults();
       LOG("before executing executeWithInitialResults done.");
 
-      char buf[100];
       auto count = results->size();
-      sprintf(buf, "results size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results size=") + std::to_string(count));
       ASSERT(count > 0, "count should be > 0");
       for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          std::cout << " query pulled object '" << ser->toString() << "'\n";
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
@@ -204,7 +202,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
           if (serKey != nullptr) {
             LOG("got struct key ");
-            printf("  got struct key %s\n", serKey->toString().c_str());
+            std::cout << "  got struct key '" << serKey->toString() << "'\n";
           }
 
           auto serVal = (*stPtr)["value"];
@@ -212,14 +210,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
 
           if (serVal != nullptr) {
             LOG("got struct value ");
-            printf("  got struct value %s\n", serVal->toString().c_str());
+            std::cout << "  got struct value '" << serVal->toString() << "'\n";
           }
         } else {
-          printf("   query pulled bad object\n");
+          std::cout << "   query pulled bad object\n";
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
 
       qry = qs->newCq("MyCq2", "select * from /Portfolios2", cqAttr);
 
@@ -228,14 +225,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       LOG("before executing executeWithInitialResults2 done.");
 
       count = results->size();
-      sprintf(buf, "results2 size=%zd", count);
-      LOG(buf);
+      LOG(std::string("results2 size=") + std::to_string(count));
       ASSERT(count > 0, "count should be > 0");
       for (auto &&ser : hacks::range(*results)) {
         count--;
 
         if (ser) {
-          printf(" query pulled object %s\n", ser->toString().c_str());
+          std::cout << " query pulled object '" << ser->toString() << "'\n";
 
           auto stPtr = std::dynamic_pointer_cast<Struct>(ser);
           ASSERT(stPtr != nullptr, "Failed to get struct in CQ result.");
@@ -245,7 +241,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
           ASSERT(serKey != nullptr, "Failed to get KEY in CQ result.");
           if (serKey != nullptr) {
             LOG("got struct key ");
-            printf("  got struct key %s\n", serKey->toString().c_str());
+            std::cout << "  got struct key '" << serKey->toString() << "'\n";
           }
 
           auto serVal = (*stPtr)["value"];
@@ -253,14 +249,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
 
           if (serVal != nullptr) {
             LOG("got struct value ");
-            printf("  got struct value %s\n", serVal->toString().c_str());
+            std::cout << "  got struct value '" << serVal->toString() << "'\n";
           }
         } else {
-          printf("   query pulled bad object\n");
+          std::cout << "   query pulled bad object\n";
         }
       }
-      sprintf(buf, "results last count=%zd", count);
-      LOG(buf);
+      LOG(std::string("results last count=") + std::to_string(count));
 
       {
         auto regPtr0 = getHelper()->getRegion(regionNamesCq[0]);
@@ -268,8 +263,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, QueryData)
       }
       SLEEP(20000);
       qry = qs->getCq(cqName);
-      sprintf(buf, "cq[%s] should have been removed after close!", cqName);
-      ASSERT(qry == nullptr, buf);
+      auto msg = std::string("cq[") + cqName +
+                 "] should have been removed after close!";
+      ASSERT(qry == nullptr, msg);
     } catch (const Exception &excp) {
       std::string logmsg = "";
       logmsg += excp.getName();
@@ -293,12 +289,12 @@ DUNIT_TASK_DEFINITION(CLIENT2, CheckRegionDestroy)
         LOG("regPtr0==nullptr");
       } else {
         LOG("regPtr0!=nullptr");
-        ASSERT(regPtr0->isDestroyed(), "should have been distroyed");
+        ASSERT(regPtr0->isDestroyed(), "should have been destroyed");
       }
     } catch (...) {
       LOG("exception in getting region");
     }
-    LOG("region has been destoryed");
+    LOG("region has been destroyed");
   }
 END_TASK_DEFINITION
 

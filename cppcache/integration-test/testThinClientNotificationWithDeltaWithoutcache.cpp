@@ -87,9 +87,9 @@ void createPooledRegion(const std::string &name, bool ackMode,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
-          ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -100,8 +100,9 @@ void createPooledRegion(const std::string &name, bool ackMode,
 void createRegionCachingDisabled(const char *name, bool ackMode,
                                  bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, false, nullptr,
                                           clientNotificationEnabled);
@@ -209,12 +210,11 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_VerifyDelta)
   {
     // Wait for notification
     SLEEP(1000);
-    char buff[100];
-    sprintf(buff, "From delta count %d  From data count %d",
-            DeltaEx::fromDeltaCount, DeltaEx::fromDataCount);
-    LOG(buff);
+    LOG(std::string("From delta count ") +
+        std::to_string(DeltaEx::fromDeltaCount) + "  From data count " +
+        std::to_string(DeltaEx::fromDataCount));
     // In case of Cacheless client only full object would arrive on notification
-    // channel.
+    // channe
     ASSERT(DeltaEx::fromDataCount == 2,
            "DeltaEx::fromDataCount should have been 2");
     ASSERT(DeltaEx::fromDeltaCount == 0,

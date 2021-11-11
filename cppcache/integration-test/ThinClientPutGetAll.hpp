@@ -38,7 +38,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using PdxTests::PdxTypes1;
 using PdxTests::PdxTypes10;
@@ -93,8 +93,10 @@ void verifyGetAll(std::shared_ptr<Region> region, const char** _values,
       const auto key = std::dynamic_pointer_cast<CacheableKey>(iter.first);
       const auto& mVal = iter.second;
       if (mVal != nullptr) {
-        LOG(std::string("Value from map ") + mVal->toString() + ", expected value " + expected[key->toString()]);
-        ASSERT(mVal->toString() == expected[key->toString()], "value not matched");
+        LOG(std::string("Value from map ") + mVal->toString() +
+            ", expected value " + expected[key->toString()]);
+        ASSERT(mVal->toString() == expected[key->toString()],
+               "value not matched");
       } else {
         ASSERT(key->toString() == "keyNotThere",
                "keyNotThere value is not null");
@@ -109,13 +111,15 @@ void verifyGetAllWithCallBackArg(std::shared_ptr<Region> region,
   verifyGetAll(region, values, startIndex, callBack);
 }
 
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);

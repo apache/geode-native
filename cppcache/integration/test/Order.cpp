@@ -53,6 +53,13 @@ std::shared_ptr<PdxSerializable> Order::createDeserializable() {
   return std::make_shared<Order>();
 }
 
+bool Order::operator==(const Order& rhs) const {
+  return order_id_ == rhs.order_id_ && name_ == rhs.name_ &&
+         quantity_ == rhs.quantity_;
+}
+
+bool Order::operator!=(const Order& rhs) const { return !(rhs == *this); }
+
 const std::string Order::ORDER_ID_KEY_ = "order_id";
 const std::string Order::NAME_KEY_ = "name";
 const std::string Order::QUANTITY_KEY_ = "quantity";

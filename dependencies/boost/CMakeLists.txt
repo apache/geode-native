@@ -13,12 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(boost VERSION 1.75.0 LANGUAGES NONE)
+project(boost VERSION 1.76.0 LANGUAGES NONE)
 
-set(SHA256 aeb26f80e80945e82ee93e5939baebdca47b9dee80a07d3144be1e1a6a66dd6a)
+set(SHA256 7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca)
 
 if (WIN32)
-  set(BOOTSTRAP_COMMAND ./bootstrap.bat)
+  set(BOOTSTRAP_COMMAND bootstrap.bat)
 else()
   set(BOOTSTRAP_COMMAND ./bootstrap.sh)
 endif()
@@ -59,6 +59,10 @@ if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
   list(APPEND BOOTSTRAP_FLAGS --with-toolset=sun)
   list(APPEND B2_FLAGS define=BOOST_OPTIONAL_DETAIL_NO_RVALUE_REFERENCES)
 elseif(MSVC)
+  if(CMAKE_GENERATOR_TOOLSET MATCHES "version=([0-9]+\.[0-9]+\.[0-9]+)")
+    set(BOOTSTRAP_COMMAND ${CMAKE_COMMAND} -E env VCToolsVersion=${CMAKE_MATCH_1} ${BOOTSTRAP_COMMAND})
+    set(B2_COMMAND ${CMAKE_COMMAND} -E env VCToolsVersion=${CMAKE_MATCH_1} ${B2_COMMAND})
+  endif()
   list(APPEND BOOTSTRAP_FLAGS vc${MSVC_TOOLSET_VERSION})
   if (CMAKE_VS_PLATFORM_TOOLSET_VERSION)
 	list(APPEND B2_FLAGS toolset=msvc-${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
@@ -147,6 +151,7 @@ add_boost_library(stacktrace LIBRARIES "" DEPENDENCIES Boost::boost)
 add_boost_library(asio LIBRARIES "" DEPENDENCIES Boost::boost)
 add_boost_library(process LIBRARIES "" DEPENDENCIES Boost::system)
 add_boost_library(program_options DEPENDENCIES Boost::system)
+add_boost_library(regex DEPENDENCIES Boost::boost)
 
 target_compile_definitions(boost_stacktrace INTERFACE
   BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED

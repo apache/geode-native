@@ -51,6 +51,7 @@ target_link_libraries(integration-framework
     Boost::filesystem
     Boost::process
     Boost::asio
+    Boost::regex
   PRIVATE
     _WarningsAsError
     internal

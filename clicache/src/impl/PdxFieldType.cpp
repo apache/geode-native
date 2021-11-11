@@ -166,23 +166,23 @@ namespace Apache
           switch (m_typeId)
           {
           case PdxFieldTypes::BYTE:
-            return PdxTypes::BYTE_SIZE;
+            return PdxTypes::kPdxByteSize;
           case PdxFieldTypes::BOOLEAN:
-            return PdxTypes::BOOLEAN_SIZE;
+            return PdxTypes::kPdxBooleanSize;
           case PdxFieldTypes::SHORT:
-            return PdxTypes::SHORT_SIZE;
+            return PdxTypes::kPdxShortSize;
           case PdxFieldTypes::CHAR:
-            return PdxTypes::CHAR_SIZE;
+            return PdxTypes::kPdxCharSize;
           case PdxFieldTypes::INT:
-            return PdxTypes::INTEGER_SIZE;
+            return PdxTypes::kPdxIntegerSize;
           case PdxFieldTypes::FLOAT:
-            return PdxTypes::FLOAT_SIZE;
+            return PdxTypes::kPdxFloatSize;
           case PdxFieldTypes::LONG:
-            return PdxTypes::LONG_SIZE;
+            return PdxTypes::kPdxLongSize;
           case PdxFieldTypes::DOUBLE:
-            return PdxTypes::DOUBLE_SIZE;
+            return PdxTypes::kPdxDoubleSize;
           case PdxFieldTypes::DATE:
-            return PdxTypes::DATE_SIZE;
+            return PdxTypes::kPdxDateSize;
 
           default:
             return -1;

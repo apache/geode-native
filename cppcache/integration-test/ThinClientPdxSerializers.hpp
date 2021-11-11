@@ -20,7 +20,7 @@
 #ifndef GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 #define GEODE_INTEGRATION_TEST_THINCLIENTPDXSERIALIZERS_H_
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableArrayList;
 using apache::geode::client::CacheableHashMap;
@@ -95,7 +95,7 @@ class TestPdxSerializer : public PdxSerializer {
     auto nonPdxType = std::make_shared<PdxTests::NonPdxType>();
 
     try {
-      int32_t *Lengtharr;
+      int32_t* Lengtharr;
       int32_t arrLen = 0;
       nonPdxType->deleteByteByteArray();
       nonPdxType->m_byteByteArray = pdxReader.readArrayOfByteArrays(

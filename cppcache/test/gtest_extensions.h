@@ -22,8 +22,9 @@
 
 #include <iostream>
 #include <limits>
-#include <regex>
 #include <string>
+
+#include <boost/regex.hpp>
 
 #include <gtest/gtest.h>
 
@@ -65,9 +66,9 @@ inline std::string squash(const std::string& str, size_t maxLength = 60) {
 
 inline ::testing::AssertionResult regexMatch(const char* s1_expression,
                                              const char* /*s2_expression*/,
-                                             const std::regex& regex,
+                                             const boost::regex& regex,
                                              const std::string& source) {
-  if (!std::regex_match(source, regex)) {
+  if (!boost::regex_match(source, regex)) {
     return ::testing::AssertionFailure()
            << squash(source) << " !~ " << s1_expression;
   }
@@ -79,7 +80,7 @@ inline ::testing::AssertionResult regexMatch(const char* /*s1_expression*/,
                                              const char* /*s2_expression*/,
                                              const std::string& regex,
                                              const std::string& source) {
-  if (!std::regex_match(source, std::regex(regex))) {
+  if (!boost::regex_match(source, boost::regex(regex))) {
     return ::testing::AssertionFailure()
            << squash(source) << " !~ /" << regex << "/";
   }

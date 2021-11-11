@@ -17,17 +17,24 @@
 
 #include "Gfsh.h"
 
+#include <iterator>
+#include <sstream>
+
 Gfsh::Start Gfsh::start() { return Start{*this}; }
 
 Gfsh::Stop Gfsh::stop() { return Stop{*this}; }
 
 Gfsh::Create Gfsh::create() { return Create{*this}; }
 
+Gfsh::Destroy Gfsh::destroy() { return Destroy(*this); }
+
 Gfsh::Connect Gfsh::connect() { return Connect{*this}; }
 
 Gfsh::Shutdown Gfsh::shutdown() { return Shutdown{*this}; }
 
 Gfsh::Deploy Gfsh::deploy() { return Deploy(*this); }
+
+Gfsh::Rebalance Gfsh::rebalance() { return Rebalance(*this); }
 
 Gfsh::ExecuteFunction Gfsh::executeFunction() { return ExecuteFunction(*this); }
 
@@ -63,20 +70,15 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withPort(const uint16_t &port) {
 }
 
 Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(
-    const std::vector<uint16_t> &locatorPorts) {
+    const std::vector<std::string> &remoteLocators) {
   // Example: --J='-Dgemfire.remote-locators=localhost[9009],localhost[9010]'
-  if (!locatorPorts.empty()) {
-    command_ += " --J='-Dgemfire.remote-locators=";
-    bool firstLocator = true;
-    for (uint16_t locatorPort : locatorPorts) {
-      if (firstLocator) {
-        command_ += "localhost[" + std::to_string(locatorPort) + "]";
-        firstLocator = false;
-      } else {
-        command_ += ",localhost[" + std::to_string(locatorPort) + "]";
-      }
-    }
-    command_ += "'";
+  if (!remoteLocators.empty()) {
+    std::ostringstream command;
+    command << " --J='-Dgemfire.remote-locators=";
+    std::copy(remoteLocators.begin(), remoteLocators.end(),
+              std::ostream_iterator<std::string>(command, ","));
+    command << "'";
+    command_ += command.str();
   }
   return *this;
 }
@@ -457,6 +459,23 @@ Gfsh::Create::GatewayReceiver Gfsh::Create::gatewayReceiver() {
 Gfsh::Create::GatewayReceiver::GatewayReceiver(Gfsh &gfsh)
     : Command(gfsh, "create gateway-receiver") {}
 
+Gfsh::Destroy::Destroy(Gfsh &gfsh) : Verb{gfsh} {}
+
+Gfsh::Destroy::Region Gfsh::Destroy::region() { return Region{gfsh_}; }
+
+Gfsh::Destroy::Region::Region(Gfsh &gfsh) : Command(gfsh, "destroy region") {}
+
+Gfsh::Destroy::Region &Gfsh::Destroy::Region::withName(
+    const std::string &name) {
+  command_ += " --name=" + name;
+  return *this;
+}
+
+Gfsh::Destroy::Region &Gfsh::Destroy::Region::ifExists() {
+  command_ += " --if-exists";
+  return *this;
+}
+
 Gfsh::Connect::Connect(Gfsh &gfsh) : Command{gfsh, "connect"} {}
 
 Gfsh::Connect &Gfsh::Connect::withJmxManager(const std::string &jmxManager) {
@@ -522,6 +541,8 @@ Gfsh::Deploy &Gfsh::Deploy::jar(const std::string &jarFile) {
 
   return *this;
 }
+
+Gfsh::Rebalance::Rebalance(Gfsh &gfsh) : Command{gfsh, "rebalance"} {}
 
 template <>
 void Gfsh::Command<void>::execute(const std::string &user,

@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
-#include <gtest/gtest.h>
+#include <util/concurrent/binary_semaphore.hpp>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
 #include <geode/CacheListener.hpp>
+#include <geode/EntryEvent.hpp>
 #include <geode/PoolManager.hpp>
+#include <geode/RegionEvent.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
 #include "framework/Cluster.h"
-#include "framework/Framework.h"
 #include "framework/Gfsh.h"
+#include "gmock_actions.hpp"
+#include "mock/CacheListenerMock.hpp"
 
 namespace {
 
+using apache::geode::client::binary_semaphore;
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt16;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheListener;
+using apache::geode::client::CacheListenerMock;
 using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
-static bool isDisconnected = false;
-
-class RegionDisconnectedListener : public CacheListener {
-  void afterRegionDisconnected(Region&) override { isDisconnected = true; }
-};
+using ::testing::_;
+using ::testing::NiceMock;
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -72,22 +74,25 @@ TEST(ServerDisconnect, WithRegionDisconnectedListener) {
   auto pool = poolFactory.create("pool");
   auto regionFactory = cache.createRegionFactory(RegionShortcut::CACHING_PROXY);
 
-  auto regionDisconnectedListener =
-      std::make_shared<RegionDisconnectedListener>();
-  auto region = regionFactory.setPoolName("pool")
-                    .setCacheListener(regionDisconnectedListener)
-                    .create("region");
+  binary_semaphore live_sem{0};
+  binary_semaphore shut_sem{1};
+  auto listener = std::make_shared<NiceMock<CacheListenerMock>>();
+  EXPECT_CALL(*listener, afterRegionLive(_))
+      .WillRepeatedly(AcquireSem(&shut_sem));
+  EXPECT_CALL(*listener, afterRegionDisconnected(_))
+      .WillRepeatedly(ReleaseSem(&shut_sem));
+  auto region =
+      regionFactory.setPoolName("pool").setCacheListener(listener).create(
+          "region");
 
   region->put("one", std::make_shared<CacheableInt16>(1));
 
   auto& servers = cluster.getServers();
   servers[0].stop();
+  shut_sem.acquire();
+  shut_sem.release();
 
-  try {
-    region->put("two", std::make_shared<CacheableInt16>(2));
-  } catch (const NotConnectedException&) {
-  }
-
-  ASSERT_EQ(isDisconnected, true);
+  EXPECT_THROW(region->put("two", std::make_shared<CacheableInt16>(2)),
+               NotConnectedException);
 }
 }  // namespace

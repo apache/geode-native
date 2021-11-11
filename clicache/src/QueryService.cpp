@@ -23,8 +23,9 @@
 #include "CqAttributes.hpp"
 #include "CqQuery.hpp"
 #include "CqServiceStatistics.hpp"
-#include "impl/ManagedString.hpp"
 #include "ExceptionTypes.hpp"
+#include "String.hpp"
+#include "impl/ManagedString.hpp"
 #include "impl/SafeConvert.hpp"
 
 using namespace System;
@@ -42,7 +43,7 @@ namespace Apache
         try
         {
           return Query<TResult>::Create(m_nativeptr->get()->newQuery(
-            marshal_as<std::string>(query)));
+            Apache::Geode::Client::to_utf8(query)));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -60,7 +61,7 @@ namespace Apache
           try
           {
             return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
-              marshal_as<std::string>(query), cqAttr->GetNative(), isDurable));
+              Apache::Geode::Client::to_utf8(query), cqAttr->GetNative(), isDurable));
           }
           catch (const apache::geode::client::Exception& ex)
           {
@@ -79,7 +80,7 @@ namespace Apache
         try
         {
           return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->newCq(
-            marshal_as<std::string>(name), marshal_as<std::string>(query), cqAttr->GetNative(), isDurable));
+            Apache::Geode::Client::to_utf8(name), Apache::Geode::Client::to_utf8(query), cqAttr->GetNative(), isDurable));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -138,7 +139,7 @@ namespace Apache
         try
         {
           return CqQuery<TKey, TResult>::Create(m_nativeptr->get()->getCq(
-            marshal_as<std::string>(name)));
+            Apache::Geode::Client::to_utf8(name)));
         }
         catch (const apache::geode::client::Exception& ex)
         {
@@ -206,7 +207,7 @@ namespace Apache
           auto durableCqsList = gcnew System::Collections::Generic::List<String^>();
           for (const auto& d : *durableCqsArrayListPtr)
           {
-            durableCqsList->Add(marshal_as<String^>(std::dynamic_pointer_cast<apache::geode::client::CacheableString>(d)->value()));
+            durableCqsList->Add(to_String(std::dynamic_pointer_cast<apache::geode::client::CacheableString>(d)->value()));
           }
           return durableCqsList;
         }

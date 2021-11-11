@@ -137,7 +137,8 @@ class CacheHelper {
       const std::chrono::seconds& rttl = std::chrono::seconds::zero(),
       const std::chrono::seconds& rit = std::chrono::seconds::zero(),
       int lel = 0, ExpirationAction action = ExpirationAction::DESTROY,
-      const std::string& endpoints = {}, bool clientNotificationEnabled = false);
+      const std::string& endpoints = {},
+      bool clientNotificationEnabled = false);
 
   std::shared_ptr<Pool> createPool(
       const std::string& poolName, const std::string& locators,
@@ -152,10 +153,8 @@ class CacheHelper {
   std::shared_ptr<Pool> createPool2(
       const std::string& poolName, const std::string& locators,
       const std::string& serverGroup, const std::string& servers = {},
-                                    int redundancy = 0,
-                                    bool clientNotification = false,
-                                    int subscriptionAckInterval = -1,
-                                    int connections = -1);
+      int redundancy = 0, bool clientNotification = false,
+      int subscriptionAckInterval = -1, int connections = -1);
 
   void logPoolAttributes(std::shared_ptr<Pool>& pool);
 
@@ -291,13 +290,13 @@ class CacheHelper {
 
   static int staticJmxManagerPort;
 
-  static std::string  getstaticLocatorHostPort1();
+  static std::string getstaticLocatorHostPort1();
 
-  static std::string  getstaticLocatorHostPort2();
+  static std::string getstaticLocatorHostPort2();
 
-  static std::string  getLocatorHostPort(int locPort);
+  static std::string getLocatorHostPort(int locPort);
 
-  static std::string  getLocatorHostPort(bool& isLocator, bool& isLocalServer,
+  static std::string getLocatorHostPort(bool& isLocator, bool& isLocalServer,
                                         int numberOfLocators = 0);
 
   static const std::string getTcrEndpoints2(bool& isLocalServer,

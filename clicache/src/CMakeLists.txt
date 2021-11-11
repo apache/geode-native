@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.12)
 project(Apache.Geode CXX)
 
 if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
@@ -23,8 +23,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in ${CMAKE_CURR
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
 
-add_library(Apache.Geode SHARED
-  Apache.Geode.rc
+add_library(Apache.Geode-object OBJECT
   AttributesMutator.cpp
   AttributesMutator.hpp
   begin_native.hpp
@@ -194,6 +193,7 @@ add_library(Apache.Geode SHARED
   Struct.hpp
   StructSet.cpp
   StructSet.hpp
+  String.hpp
   SystemProperties.cpp
   SystemProperties.hpp
   TimeUtils.hpp
@@ -210,7 +210,6 @@ add_library(Apache.Geode SHARED
   Utils.hpp
   impl/AppDomainContext.cpp
   impl/AppDomainContext.hpp
-  impl/AssemblyInfo.cpp.in
   impl/AuthenticatedView.cpp
   impl/AuthenticatedView.hpp
   impl/CacheListener.hpp
@@ -298,23 +297,20 @@ add_library(Apache.Geode SHARED
   impl/TransactionListener.hpp
   impl/TransactionWriter.hpp
   impl/WeakhashMap.hpp
-
-  ${CONFIGURE_OUT_FILES}
 )
 
-set_target_properties(Apache.Geode PROPERTIES
-  COMMON_LANGUAGE_RUNTIME "" 
-  OUTPUT_NAME ${PRODUCT_DLL_NAME}
+set_target_properties(Apache.Geode-object PROPERTIES
+  COMMON_LANGUAGE_RUNTIME ""
   VS_GLOBAL_CLRSupport "true"
   VS_GLOBAL_KEYWORD "ManagedCProj"
   VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
-  VS_GLOBAL_ROOTNAMESPACE ${PROJECT_NAME}
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode
   VS_DOTNET_REFERENCES "System;System.Xml;System.Core"
   FOLDER cli
 )
 
-target_compile_options(Apache.Geode
-  PRIVATE
+target_compile_options(Apache.Geode-object
+  PUBLIC
 	/bigobj # C1128 - large number of templates causes too many section.
 	/Zm32   # C3859 - internal heap limit reached
 	#/doc # Documents to xml
@@ -324,19 +320,41 @@ target_compile_options(Apache.Geode
 	/wd4947 /wd4251 /wd4635
 )
 
-target_include_directories(Apache.Geode
+target_include_directories(Apache.Geode-object
   PRIVATE
   	$<TARGET_PROPERTY:apache-geode,SOURCE_DIR>/../src
+)
+
+target_link_libraries(Apache.Geode-object
+  PUBLIC
+    c++cli
+    c++11
+    apache-geode-static
+	_WarningsAsError
+)
+
+add_library(Apache.Geode SHARED
+  Apache.Geode.rc
+  ${CONFIGURE_IN_FILES}
+  ${CONFIGURE_OUT_FILES}
+)
+
+set_target_properties(Apache.Geode PROPERTIES
+  COMMON_LANGUAGE_RUNTIME "" 
+  OUTPUT_NAME ${PRODUCT_DLL_NAME}
+  VS_GLOBAL_CLRSupport "true"
+  VS_GLOBAL_KEYWORD "ManagedCProj"
+  VS_GLOBAL_PROJECT_TYPES "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+  VS_GLOBAL_ROOTNAMESPACE Apache.Geode
+  VS_DOTNET_REFERENCES "System;System.Xml;System.Core"
+  FOLDER cli
 )
 
 target_link_libraries(Apache.Geode
   PUBLIC
     psapi
   PRIVATE
-    c++cli
-    c++11
-    apache-geode-static
-	_WarningsAsError
+	Apache.Geode-object
 )
 
 target_link_options(Apache.Geode
@@ -351,7 +369,7 @@ set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAG
 
 
 include(PrecompiledHeader)
-add_precompiled_header(Apache.Geode geode_includes.hpp FORCEINCLUDE)
+add_precompiled_header(Apache.Geode-object geode_includes.hpp FORCEINCLUDE)
 
 install(TARGETS Apache.Geode
   RUNTIME DESTINATION bin
@@ -359,7 +377,7 @@ install(TARGETS Apache.Geode
 )
 
 install ( 
-  FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> 
+  FILES $<TARGET_PDB_FILE:Apache.Geode> 
   DESTINATION bin 
   CONFIGURATIONS Debug RelWithDebInfo 
 )

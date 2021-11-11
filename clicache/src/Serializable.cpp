@@ -47,6 +47,7 @@
 #include "impl/DotNetTypes.hpp"
 #include "CacheRegionHelper.hpp"
 #include "Cache.hpp"
+#include "String.hpp"
 
 #pragma warning(disable:4091)
 
@@ -83,7 +84,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>(m_nativeptr->get()->toString());
+          return to_String(m_nativeptr->get()->toString());
         }
         finally
         {
@@ -387,17 +388,17 @@ namespace Apache
       {
         if (auto cacheableString = std::dynamic_pointer_cast<native::CacheableString>(nativeptr))
         {
-          return marshal_as<String^>(cacheableString->value());
+          return to_String(cacheableString->value());
         }
 
-        return marshal_as<String^>(nativeptr->toString());
+        return to_String(nativeptr->toString());
       }
 
       std::shared_ptr<native::CacheableString> Serializable::GetCacheableString(String^ value)
       {
         std::shared_ptr<native::CacheableString> cStr;
         if (value) {
-          cStr = native::CacheableString::create(marshal_as<std::string>(value));
+          cStr = native::CacheableString::create(to_utf8(value));
         }
         else {
           cStr = std::dynamic_pointer_cast<native::CacheableString>(native::CacheableString::createDeserializable());

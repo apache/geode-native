@@ -23,6 +23,7 @@
 
 #include "VariousPdxTypes.hpp"
 
+#include <sstream>
 #include <util/Log.hpp>
 
 #include <geode/CacheableEnum.hpp>
@@ -74,10 +75,11 @@ bool PdxTypes1::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes1::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes1:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d]", m_i1,
-          m_i2, m_i3, m_i4);
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes1:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]";
+  return strm.str();
 }
 
 void PdxTypes1::toData(PdxWriter &pw) const {
@@ -131,10 +133,12 @@ bool PdxTypes2::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes2::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes2:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes2:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "][m_s1 = " << m_s1
+       << "]";
+  return strm.str();
 }
 
 void PdxTypes2::toData(PdxWriter &pw) const {
@@ -187,10 +191,12 @@ bool PdxTypes3::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes3::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes3:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes3:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "][m_s1 = " << m_s1
+       << "]";
+  return strm.str();
 }
 
 void PdxTypes3::toData(PdxWriter &pw) const {
@@ -243,10 +249,12 @@ bool PdxTypes4::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes4::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes4:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "][m_s1 = " << m_s1
+       << "]";
+  return strm.str();
 }
 
 void PdxTypes4::toData(PdxWriter &pw) const {
@@ -300,12 +308,12 @@ bool PdxTypes5::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes5::toString() const {
-  char idbuf[4096];
-  sprintf(
-      idbuf,
-      "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes5:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void PdxTypes5::toData(PdxWriter &pw) const {
@@ -381,12 +389,12 @@ bool PdxTypes6::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes6::toString() const {
-  char idbuf[4096];
-  sprintf(
-      idbuf,
-      "PdxTypes4:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes6:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void PdxTypes6::toData(PdxWriter &pw) const {
@@ -457,12 +465,12 @@ bool PdxTypes7::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes7::toString() const {
-  char idbuf[4096];
-  sprintf(
-      idbuf,
-      "PdxTypes7:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes7:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void PdxTypes7::toData(PdxWriter &pw) const {
@@ -521,12 +529,12 @@ bool PdxTypes8::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes8::toString() const {
-  char idbuf[4096];
-  sprintf(
-      idbuf,
-      "PdxTypes8:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes8:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void PdxTypes8::toData(PdxWriter &pw) const {
@@ -584,10 +592,12 @@ bool PdxTypes9::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes9::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
-          m_s1.c_str(), m_s2.c_str(), m_s3.c_str(), m_s4.c_str(), m_s5.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes9:[m_s1 = " << m_s1 << " ][m_s2 = " << m_s2
+       << "][m_s3 = " << m_s3 << "][m_s4 = " << m_s4 << "]"
+       << "[m_s5 = " << m_s5 << "]";
+  return strm.str();
 }
 
 void PdxTypes9::toData(PdxWriter &pw) const {
@@ -641,10 +651,12 @@ bool PdxTypes10::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string PdxTypes10::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf, "PdxTypes9:[m_s1=%s] [m_s2=%s] [m_s3=%s] [m_s4=%s] [m_s5=%s] ",
-          m_s1.c_str(), m_s2.c_str(), m_s3.c_str(), m_s4.c_str(), m_s5.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxTypes10:[m_s1 = " << m_s1 << " ][m_s2 = " << m_s2
+       << "][m_s3 = " << m_s3 << "][m_s4 = " << m_s4 << "]"
+       << "[m_s5 = " << m_s5 << "]";
+  return strm.str();
 }
 
 void PdxTypes10::toData(PdxWriter &pw) const {
@@ -714,12 +726,12 @@ bool NestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string NestedPdx::toString() const {
-  char idbuf[4096];
-  sprintf(
-      idbuf,
-      "NestedPdx:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] [m_s1=%s] [m_s2=%s]",
-      m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "NestedPdx:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void NestedPdx::toData(PdxWriter &pw) const {
@@ -795,12 +807,12 @@ bool MixedVersionNestedPdx::equals(std::shared_ptr<PdxSerializable> obj) {
   return false;
 }
 std::string MixedVersionNestedPdx::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "MixedVersionNestedPdx:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
-          "[m_s1=%s] [m_s2=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "MixedVersionNestedPdx:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void MixedVersionNestedPdx::toData(PdxWriter &pw) const {
@@ -865,12 +877,12 @@ bool PdxInsideIGeodeSerializable::equals(std::shared_ptr<Serializable> obj) {
   return false;
 }
 std::string PdxInsideIGeodeSerializable::toString() const {
-  char idbuf[4096];
-  sprintf(idbuf,
-          "PdxInsideIGeodeSerializable:[m_i1=%d] [m_i2=%d] [m_i3=%d] [m_i4=%d] "
-          "[m_s1=%s] [m_s2=%s]",
-          m_i1, m_i2, m_i3, m_i4, m_s1.c_str(), m_s2.c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "PdxInsideIGeodeSerializable:[m_i1 = " << m_i1 << " ][m_i2 = " << m_i2
+       << "][m_i3 = " << m_i3 << "][m_i4 = " << m_i4 << "]"
+       << "[m_s1 = " << m_s1 << "][m_s2 = " << m_s2 << "]";
+  return strm.str();
 }
 
 void PdxInsideIGeodeSerializable::toData(DataOutput &output) const {

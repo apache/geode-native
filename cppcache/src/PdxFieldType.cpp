@@ -32,28 +32,28 @@ namespace geode {
 namespace client {
 
 static const int32_t kFixedTypeSizes[] = {
-    PdxTypes::BOOLEAN_SIZE,  // BOOLEAN
-    PdxTypes::BOOLEAN_SIZE,  // BYTE
-    PdxTypes::CHAR_SIZE,     // CHAR
-    PdxTypes::CHAR_SIZE,     // SHORT
-    PdxTypes::INTEGER_SIZE,  // INT
-    PdxTypes::LONG_SIZE,     // LONG
-    PdxTypes::INTEGER_SIZE,  // FLOAT
-    PdxTypes::LONG_SIZE,     // DOUBLE
-    PdxTypes::DATE_SIZE,     // DATE
-    -1,                      // STRING
-    -1,                      // OBJECT
-    -1,                      // BOOLEAN_ARRAY
-    -1,                      // CHAR_ARRAY
-    -1,                      // BYTE_ARRAY
-    -1,                      // SHORT_ARRAY
-    -1,                      // INT_ARRAY
-    -1,                      // LONG_ARRAY
-    -1,                      // FLOAT_ARRAY
-    -1,                      // DOUBLE_ARRAY
-    -1,                      // STRING_ARRAY
-    -1,                      // OBJECT_ARRAY
-    -1,                      // ARRAY_OF_BYTE_ARRAYS
+    PdxTypes::kPdxBooleanSize,  // BOOLEAN
+    PdxTypes::kPdxBooleanSize,  // BYTE
+    PdxTypes::kPdxCharSize,     // CHAR
+    PdxTypes::kPdxCharSize,     // SHORT
+    PdxTypes::kPdxIntegerSize,  // INT
+    PdxTypes::kPdxLongSize,     // LONG
+    PdxTypes::kPdxIntegerSize,  // FLOAT
+    PdxTypes::kPdxLongSize,     // DOUBLE
+    PdxTypes::kPdxDateSize,     // DATE
+    -1,                         // STRING
+    -1,                         // OBJECT
+    -1,                         // BOOLEAN_ARRAY
+    -1,                         // CHAR_ARRAY
+    -1,                         // BYTE_ARRAY
+    -1,                         // SHORT_ARRAY
+    -1,                         // INT_ARRAY
+    -1,                         // LONG_ARRAY
+    -1,                         // FLOAT_ARRAY
+    -1,                         // DOUBLE_ARRAY
+    -1,                         // STRING_ARRAY
+    -1,                         // OBJECT_ARRAY
+    -1,                         // ARRAY_OF_BYTE_ARRAYS
 };
 
 PdxFieldType::PdxFieldType()
@@ -140,12 +140,10 @@ int32_t PdxFieldType::getFixedTypeSize() const {
 }
 
 std::string PdxFieldType::toString() const {
-  char stringBuf[1024];
-  std::snprintf(stringBuf, 1024,
-                " PdxFieldName=%s TypeId=%d VarLenFieldIdx=%d sequenceid=%d\n",
-                this->m_fieldName.c_str(), static_cast<int>(this->m_typeId),
-                this->m_varLenFieldIdx, this->m_sequenceId);
-  return std::string(stringBuf);
+  return std::string("PdxFieldName=") + m_fieldName +
+         " TypeId=" + std::to_string(static_cast<int>(m_typeId)) +
+         " VarLenFieldIdx=" + std::to_string(m_varLenFieldIdx) +
+         " sequenceid=" + std::to_string(m_sequenceId);
 }
 
 bool PdxFieldType::operator==(const PdxFieldType& other) const {
