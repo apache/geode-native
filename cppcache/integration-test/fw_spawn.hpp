@@ -23,12 +23,6 @@
 
 // @TODO, this out this include list..
 
-#if defined(_WIN32)
-#if (FD_SETSIZE != 1024)
-+++bad fdsetsize...
-#endif
-#endif
-
 #include <ace/Process.h>
 #include <ace/Log_Msg.h>
 #include <boost/iostreams/device/file_descriptor.hpp>
