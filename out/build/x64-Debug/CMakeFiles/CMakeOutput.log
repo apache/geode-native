@@ -1,0 +1,141 @@
+The system is: Windows - 10.0.19041 - AMD64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30136 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCCompilerId.c
+Microsoft (R) Incremental Linker Version 14.29.30136.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCCompilerId.exe 
+CMakeCCompilerId.obj 
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.exe"
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CMakeCCompilerId.obj"
+
+The C compiler identification is MSVC, found in "C:/geode-native/out/build/x64-Debug/CMakeFiles/3.20.21032501-MSVC_2/CompilerIdC/CMakeCCompilerId.exe"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64/cl.exe 
+Build flags: 
+Id flags:  
+
+The output was:
+0
+Microsoft (R) C/C++ Optimizing Compiler Version 19.29.30136 for x64
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+CMakeCXXCompilerId.cpp
+Microsoft (R) Incremental Linker Version 14.29.30136.0
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+/out:CMakeCXXCompilerId.exe 
+CMakeCXXCompilerId.obj 
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.exe"
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CMakeCXXCompilerId.obj"
+
+The CXX compiler identification is MSVC, found in "C:/geode-native/out/build/x64-Debug/CMakeFiles/3.20.21032501-MSVC_2/CompilerIdCXX/CMakeCXXCompilerId.exe"
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_4924b && [1/2] Building C object CMakeFiles\cmTC_4924b.dir\CMakeCCompilerABI.c.obj
+[2/2] Linking C executable cmTC_4924b.exe
+
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_32486 && [1/2] Building CXX object CMakeFiles\cmTC_32486.dir\CMakeCXXCompilerABI.cpp.obj
+[2/2] Linking CXX executable cmTC_32486.exe
+
+
+
+Performing C++ SOURCE FILE Test has_linker_exclude_libs succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_82e58 && [1/2] Building CXX object CMakeFiles\cmTC_82e58.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_82e58.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test CXX_LINKER_HAS_SANITIZE_UNDEFINED_FLAG succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_621cc && [1/2] Building CXX object CMakeFiles\cmTC_621cc.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_621cc.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test CXX_LINKER_HAS_SANITIZE_ADDRESS_FLAG succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_b03ec && [1/2] Building CXX object CMakeFiles\cmTC_b03ec.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_b03ec.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test CXX_HAS_SANITIZE_ADDRESS_FLAG succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_77313 && [1/2] Building CXX object CMakeFiles\cmTC_77313.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_77313.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test CXX_HAS_NO_OMIT_FRAME_POINTER_FLAG succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_d4ae6 && [1/2] Building CXX object CMakeFiles\cmTC_d4ae6.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_d4ae6.exe
+
+
+Source file was:
+int main() { return 0; }
+Determining if the PRId8 exist passed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_090fd && [1/2] Building CXX object CMakeFiles\cmTC_090fd.dir\CheckSymbolExists.cxx.obj
+[2/2] Linking CXX executable cmTC_090fd.exe
+
+
+File C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp/CheckSymbolExists.cxx:
+/* */
+#include <cinttypes>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef PRId8
+  return ((int*)(&PRId8))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+Performing C++ SOURCE FILE Test COMPILER_HAS_DEPRECATED succeeded with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_b1043 && [1/2] Building CXX object CMakeFiles\cmTC_b1043.dir\src.cxx.obj
+[2/2] Linking CXX executable cmTC_b1043.exe
+
+
+Source file was:
+__declspec(deprecated) int somefunc() { return 0; }
+    int main() { return somefunc();}

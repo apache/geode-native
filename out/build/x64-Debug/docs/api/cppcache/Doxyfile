@@ -1,0 +1,91 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Shared Doxygen configuration
+
+# Look in subdirectories for files to be documented
+RECURSIVE              = YES
+
+# Generate brief descriptions like Javadoc does
+JAVADOC_AUTOBRIEF      = YES
+
+# Always generate a detailed description of functions
+ALWAYS_DETAILED_SEC    = YES
+
+# We're generating documentation for C
+OPTIMIZE_OUTPUT_FOR_C  = YES
+
+# We're not generating documentation for Java
+OPTIMIZE_OUTPUT_JAVA   = NO
+
+# Don't show #include information, it is not interesting
+SHOW_INCLUDE_FILES     = NO
+
+# Document c, cpp, h, and dox files
+FILE_PATTERNS          = *.c *.cpp *.h *.dox
+
+# Don't include the source code in the generated HTML
+SOURCE_BROWSER         = NO
+
+# Generate HTML output
+GENERATE_HTML          = YES
+
+# Don't generate these kinds of output
+GENERATE_LATEX         = NO
+GENERATE_RTF           = NO
+GENERATE_MAN           = NO
+GENERATE_XML           = NO
+
+# Preprocess macros
+ENABLE_PREPROCESSING   = YES
+
+# Don't generate class diagrams
+CLASS_DIAGRAMS         = NO
+
+ALPHABETICAL_INDEX     = YES
+EXCLUDE_PATTERNS       = */internal/*
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = NO
+FILE_PATTERNS          = *.h *.hpp statistics/*.hpp
+GENERATE_TODOLIST      = NO
+GENERATE_TREEVIEW      = YES
+HIDE_UNDOC_CLASSES     = YES
+HIDE_UNDOC_MEMBERS     = YES
+HTML_FOOTER            = C:/geode-native/docs/api/cppcache/footer.html
+IMAGE_PATH             = C:/geode-native/docs/api/cppcache
+INPUT                  = C:/geode-native/docs/api/cppcache/../../../cppcache/include/geode
+JAVADOC_AUTOBRIEF      = YES
+MACRO_EXPANSION        = YES
+OUTPUT_DIRECTORY       = C:/geode-native/out/build/x64-Debug/docs/api/cppcache
+PROJECT_NAME           = "Apache Geode Native C++ Reference"
+PROJECT_NUMBER         = "0.0.42"
+PREDEFINED             = DOXYGEN
+SHOW_USED_FILES        = NO
+SKIP_FUNCTION_MACROS   = NO
+SORT_BRIEF_DOCS        = YES
+SORT_MEMBER_DOCS       = YES
+WARNINGS               = NO
+WARN_IF_DOC_ERROR      = NO
+WARN_IF_UNDOCUMENTED   = NO
+WARN_LOGFILE           = cppDoxygenWarnings.log
+SOURCE_BROWSER         = NO
+SHOW_INCLUDE_FILES     = NO
+SHOW_USED_FILES        = NO
+INTERNAL_DOCS          = NO
+INLINE_INHERITED_MEMB  = YES
+INHERIT_DOCS           = YES
+FULL_PATH_NAMES        = NO
+SHORT_NAMES            = YES

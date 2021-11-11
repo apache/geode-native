@@ -1,0 +1,93 @@
+Performing C SOURCE FILE Test CFLAGS_M64_ALLOWED failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_b4dfa && [1/2] Building C object CMakeFiles\cmTC_b4dfa.dir\src.c.obj
+cl : Command line warning D9002 : ignoring unknown option '-m64'
+[2/2] Linking C executable cmTC_b4dfa.exe
+
+
+Source file was:
+int main(void) { return 0; }
+Performing C++ SOURCE FILE Test CXXFLAGS_M64_ALLOWED failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ff3e4 && [1/2] Building CXX object CMakeFiles\cmTC_ff3e4.dir\src.cxx.obj
+cl : Command line warning D9002 : ignoring unknown option '-m64'
+[2/2] Linking CXX executable cmTC_ff3e4.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C SOURCE FILE Test CFLAGS_mt_ALLOWED failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ea3b8 && [1/2] Building C object CMakeFiles\cmTC_ea3b8.dir\src.c.obj
+cl : Command line warning D9002 : ignoring unknown option '-mt'
+[2/2] Linking C executable cmTC_ea3b8.exe
+
+
+Source file was:
+int main(void) { return 0; }
+Performing C++ SOURCE FILE Test CXX_HAS_SANITIZE_UNDEFINED_FLAG failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_82a25 && [1/2] Building CXX object CMakeFiles\cmTC_82a25.dir\src.cxx.obj
+cl : Command line warning D9002 : ignoring unknown option '-fsanitize=undefined'
+[2/2] Linking CXX executable cmTC_82a25.exe
+
+
+Source file was:
+int main() { return 0; }
+Performing C++ SOURCE FILE Test CXX_HAS_NO_SANITIZE_RECOVER_FLAG failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_dfb31 && [1/2] Building CXX object CMakeFiles\cmTC_dfb31.dir\src.cxx.obj
+cl : Command line warning D9002 : ignoring unknown option '-fno-sanitize-recover'
+[2/2] Linking CXX executable cmTC_dfb31.exe
+
+
+Source file was:
+int main() { return 0; }
+Determining if the include file pthread.h exists failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_ea186 && [1/2] Building C object CMakeFiles\cmTC_ea186.dir\CheckIncludeFile.c.obj
+FAILED: CMakeFiles/cmTC_ea186.dir/CheckIncludeFile.c.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo   /DWIN32 /D_WINDOWS  /Zi /Ob0 /Od /RTC1 -MDd /showIncludes /FoCMakeFiles\cmTC_ea186.dir\CheckIncludeFile.c.obj /FdCMakeFiles\cmTC_ea186.dir\ /FS -c CheckIncludeFile.c
+CheckIncludeFile.c(1): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function uname exists failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_9df41 && [1/2] Building C object CMakeFiles\cmTC_9df41.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_9df41.exe
+FAILED: cmTC_9df41.exe 
+cmd.exe /C "cd . && "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_9df41.dir --rc=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\rc.exe --mt=C:\PROGRA~2\WI3CF2~1\10\bin\100190~1.0\x64\mt.exe --manifests  -- C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_9df41.dir\CheckFunctionExists.c.obj  /out:cmTC_9df41.exe /implib:cmTC_9df41.lib /pdb:cmTC_9df41.pdb /version:0.0 /machine:x64 /ignore:4099  /debug /INCREMENTAL /subsystem:console  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_9df41.dir\CheckFunctionExists.c.obj /out:cmTC_9df41.exe /implib:cmTC_9df41.lib /pdb:cmTC_9df41.pdb /version:0.0 /machine:x64 /ignore:4099 /debug /INCREMENTAL /subsystem:console kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_9df41.dir/intermediate.manifest CMakeFiles\cmTC_9df41.dir/manifest.res" failed (exit code 1120) with the following output:
+CheckFunctionExists.c.obj : error LNK2019: unresolved external symbol uname referenced in function main
+cmTC_9df41.exe : fatal error LNK1120: 1 unresolved externals
+ninja: build stopped: subcommand failed.
+
+
+
+Performing C++ SOURCE FILE Test COMPILER_HAS_DEPRECATED_ATTR failed with the following output:
+Change Dir: C:/geode-native/out/build/x64-Debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_2b3aa && [1/2] Building CXX object CMakeFiles\cmTC_2b3aa.dir\src.cxx.obj
+FAILED: CMakeFiles/cmTC_2b3aa.dir/src.cxx.obj 
+C:\PROGRA~2\MICROS~1\2019\COMMUN~1\VC\Tools\MSVC\1429~1.301\bin\Hostx64\x64\cl.exe  /nologo /TP -DCOMPILER_HAS_DEPRECATED_ATTR  /DWIN32 /D_WINDOWS /GR /EHsc /MP  /Zi /Ob0 /Od /RTC1 -MDd /showIncludes /FoCMakeFiles\cmTC_2b3aa.dir\src.cxx.obj /FdCMakeFiles\cmTC_2b3aa.dir\ /FS -c src.cxx
+src.cxx(1): error C2065: '__deprecated__': undeclared identifier
+src.cxx(1): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+src.cxx(1): error C2062: type 'int' unexpected
+src.cxx(1): error C2143: syntax error: missing ';' before '{'
+src.cxx(1): error C2447: '{': missing function header (old-style formal list?)
+src.cxx(2): error C3861: 'somefunc': identifier not found
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+__attribute__((__deprecated__)) int somefunc() { return 0; }
+    int main() { return somefunc();}
