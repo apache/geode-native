@@ -18,8 +18,8 @@
 #include "ThinClientRegion.hpp"
 
 #include <algorithm>
-#include <regex>
 
+#include <boost/regex.hpp>
 #include <boost/thread/lock_types.hpp>
 
 #include <geode/PoolManager.hpp>
@@ -48,9 +48,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-static const std::regex PREDICATE_IS_FULL_QUERY_REGEX(
-    "^\\s*(?:select|import)\\b", std::regex::icase);
 
 void setThreadLocalExceptionMessage(std::string exMsg);
 
@@ -588,8 +585,11 @@ std::shared_ptr<SelectResults> ThinClientRegion::query(
     throw IllegalArgumentException("Region query predicate string is empty");
   }
 
+  static const boost::regex isFullQueryRegex("^\\s*(?:select|import)\\b",
+                                             boost::regex::icase);
+
   std::string squery;
-  if (std::regex_search(predicate, PREDICATE_IS_FULL_QUERY_REGEX)) {
+  if (boost::regex_search(predicate, isFullQueryRegex)) {
     squery = predicate;
   } else {
     squery = "select distinct * from ";
@@ -3142,7 +3142,6 @@ bool ThinClientRegion::executeFunctionSH(
 
     if (err != GF_NOERR) {
       if (err == GF_FUNCTION_EXCEPTION) {
-        reExecute = true;
         if (auto poolDM =
                 std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
           if (poolDM->getClientMetaDataService()) {
@@ -3150,25 +3149,30 @@ bool ThinClientRegion::executeFunctionSH(
                 this->getFullPath(), 0);
           }
         }
-        worker->getResultCollector()->reset();
-        {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(
-              *resultCollectorLock);
-          rc->clearResults();
-        }
-        std::shared_ptr<CacheableHashSet> failedNodeIds(
-            currentReply->getFailedNode());
-        if (failedNodeIds) {
-          LOGDEBUG(
-              "ThinClientRegion::executeFunctionSH with "
-              "GF_FUNCTION_EXCEPTION "
-              "failedNodeIds size = %zu ",
-              failedNodeIds->size());
-          failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
+
+        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
+          abortError = err;
+        } else if (getResult & 1) {  // isHA = true
+          reExecute = true;
+          worker->getResultCollector()->reset();
+          {
+            std::lock_guard<decltype(*resultCollectorLock)> guard(
+                *resultCollectorLock);
+            rc->clearResults();
+          }
+          std::shared_ptr<CacheableHashSet> failedNodeIds(
+              currentReply->getFailedNode());
+          if (failedNodeIds) {
+            LOGDEBUG(
+                "ThinClientRegion::executeFunctionSH with "
+                "GF_FUNCTION_EXCEPTION "
+                "failedNodeIds size = %zu ",
+                failedNodeIds->size());
+            failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
+          }
         }
       } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
                  (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
-        reExecute = true;
         LOGINFO(
             "ThinClientRegion::executeFunctionSH with GF_NOTCON or "
             "GF_CLIENT_WAIT_TIMEOUT ");
@@ -3179,11 +3183,17 @@ bool ThinClientRegion::executeFunctionSH(
                 this->getFullPath(), 0);
           }
         }
-        worker->getResultCollector()->reset();
-        {
-          std::lock_guard<decltype(*resultCollectorLock)> guard(
-              *resultCollectorLock);
-          rc->clearResults();
+
+        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
+          abortError = err;
+        } else if (getResult & 1) {  // isHA = true
+          reExecute = true;
+          worker->getResultCollector()->reset();
+          {
+            std::lock_guard<decltype(*resultCollectorLock)> guard(
+                *resultCollectorLock);
+            rc->clearResults();
+          }
         }
       } else {
         if (ThinClientBaseDM::isFatalClientError(err)) {
@@ -3202,6 +3212,7 @@ bool ThinClientRegion::executeFunctionSH(
   if (abortError != GF_NOERR) {
     throwExceptionIfError("ExecuteOnRegion:", abortError);
   }
+
   return reExecute;
 }
 
@@ -3870,11 +3881,8 @@ void ChunkedDurableCQListResponse::handleChunk(const uint8_t* chunk,
   input.readInt32();
   if (!input.readBoolean()) {
     // we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(
-        exMsg, 255,
+    throw MessageException(
         "ChunkedDurableCQListResponse::handleChunk: part is not object");
-    throw MessageException(exMsg);
   }
 
   input.advanceCursor(1);  // skip the CacheableArrayList type ID byte

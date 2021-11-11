@@ -24,6 +24,7 @@
 #include "impl/ManagedResultCollector.hpp"
 #include "ExceptionTypes.hpp"
 #include "impl/SafeConvert.hpp"
+#include "String.hpp"
 #include "TimeUtils.hpp"
 
 using namespace System;
@@ -108,7 +109,7 @@ namespace Apache
         _GF_MG_EXCEPTION_TRY2/* due to auto replace */
         try
         {
-          auto rc = m_nativeptr->get()->execute(marshal_as<std::string>(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
+          auto rc = m_nativeptr->get()->execute(to_utf8(func), TimeUtils::TimeSpanToDurationCeil<std::chrono::milliseconds>(timeout));
           if (m_rc == nullptr)
             return gcnew ResultCollector<TResult>(rc);
           else

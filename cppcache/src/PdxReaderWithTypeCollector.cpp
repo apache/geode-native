@@ -58,14 +58,14 @@ void PdxReaderWithTypeCollector::checkType(const std::string& fieldName,
 char16_t PdxReaderWithTypeCollector::readChar(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::CHAR, "char");
   m_newPdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
-                                        PdxTypes::CHAR_SIZE);
+                                        PdxTypes::kPdxCharSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readChar()position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     auto retVal = PdxLocalReader::readChar(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::CHAR_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxCharSize);
     return retVal;
   } else {
     return 0;
@@ -75,14 +75,14 @@ char16_t PdxReaderWithTypeCollector::readChar(const std::string& fieldName) {
 bool PdxReaderWithTypeCollector::readBoolean(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::BOOLEAN, "boolean");
   m_newPdxType->addFixedLengthTypeField(
-      fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::BOOLEAN_SIZE);
+      fieldName, "boolean", PdxFieldTypes::BOOLEAN, PdxTypes::kPdxBooleanSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readBoolean():position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     bool retVal = PdxLocalReader::readBoolean(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::BOOLEAN_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxBooleanSize);
     return retVal;
   } else {
     return 0;
@@ -92,7 +92,7 @@ bool PdxReaderWithTypeCollector::readBoolean(const std::string& fieldName) {
 int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::BYTE, "byte");
   m_newPdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                        PdxTypes::BYTE_SIZE);
+                                        PdxTypes::kPdxByteSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readByte(): position = %d", position);
@@ -100,7 +100,7 @@ int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
     m_dataInput->advanceCursor(position);
     int8_t retVal;
     retVal = PdxLocalReader::readByte(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::BYTE_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxByteSize);
     return retVal;
   } else {
     return 0;
@@ -110,7 +110,7 @@ int8_t PdxReaderWithTypeCollector::readByte(const std::string& fieldName) {
 int16_t PdxReaderWithTypeCollector::readShort(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::SHORT, "short");
   m_newPdxType->addFixedLengthTypeField(
-      fieldName, "short", PdxFieldTypes::SHORT, PdxTypes::SHORT_SIZE);
+      fieldName, "short", PdxFieldTypes::SHORT, PdxTypes::kPdxShortSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readShort(): position = %d", position);
@@ -118,7 +118,7 @@ int16_t PdxReaderWithTypeCollector::readShort(const std::string& fieldName) {
     int16_t value;
     m_dataInput->advanceCursor(position);
     value = PdxLocalReader::readShort(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::SHORT_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxShortSize);
     return value;
   } else {
     return 0;
@@ -128,7 +128,7 @@ int16_t PdxReaderWithTypeCollector::readShort(const std::string& fieldName) {
 int32_t PdxReaderWithTypeCollector::readInt(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::INT, "int");
   m_newPdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
-                                        PdxTypes::INTEGER_SIZE);
+                                        PdxTypes::kPdxIntegerSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readInt():position = %d", position);
@@ -136,7 +136,7 @@ int32_t PdxReaderWithTypeCollector::readInt(const std::string& fieldName) {
     int32_t value;
     m_dataInput->advanceCursor(position);
     value = PdxLocalReader::readInt(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::INTEGER_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxIntegerSize);
     return value;
   } else {
     return 0;
@@ -146,7 +146,7 @@ int32_t PdxReaderWithTypeCollector::readInt(const std::string& fieldName) {
 int64_t PdxReaderWithTypeCollector::readLong(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::LONG, "long");
   m_newPdxType->addFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,
-                                        PdxTypes::LONG_SIZE);
+                                        PdxTypes::kPdxLongSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readLong(): position = %d", position);
@@ -154,7 +154,7 @@ int64_t PdxReaderWithTypeCollector::readLong(const std::string& fieldName) {
     int64_t value;
     m_dataInput->advanceCursor(position);
     value = PdxLocalReader::readLong(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::LONG_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxLongSize);
     return value;
   } else {
     return 0;
@@ -164,7 +164,7 @@ int64_t PdxReaderWithTypeCollector::readLong(const std::string& fieldName) {
 float PdxReaderWithTypeCollector::readFloat(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::FLOAT, "float");
   m_newPdxType->addFixedLengthTypeField(
-      fieldName, "float", PdxFieldTypes::FLOAT, PdxTypes::FLOAT_SIZE);
+      fieldName, "float", PdxFieldTypes::FLOAT, PdxTypes::kPdxFloatSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readFloat():position = %d", position);
@@ -172,7 +172,7 @@ float PdxReaderWithTypeCollector::readFloat(const std::string& fieldName) {
     float value;
     m_dataInput->advanceCursor(position);
     value = PdxLocalReader::readFloat(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::FLOAT_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxFloatSize);
     return value;
   } else {
     return 0.0f;
@@ -182,7 +182,7 @@ float PdxReaderWithTypeCollector::readFloat(const std::string& fieldName) {
 double PdxReaderWithTypeCollector::readDouble(const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::DOUBLE, "double");
   m_newPdxType->addFixedLengthTypeField(
-      fieldName, "double", PdxFieldTypes::DOUBLE, PdxTypes::DOUBLE_SIZE);
+      fieldName, "double", PdxFieldTypes::DOUBLE, PdxTypes::kPdxDoubleSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readDouble():position = %d", position);
@@ -190,7 +190,7 @@ double PdxReaderWithTypeCollector::readDouble(const std::string& fieldName) {
     double value;
     m_dataInput->advanceCursor(position);
     value = PdxLocalReader::readDouble(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::DOUBLE_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxDoubleSize);
     return value;
   } else {
     return 0.0;
@@ -486,14 +486,14 @@ std::shared_ptr<CacheableDate> PdxReaderWithTypeCollector::readDate(
     const std::string& fieldName) {
   checkType(fieldName, PdxFieldTypes::DATE, "Date");
   m_newPdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
-                                        PdxTypes::DATE_SIZE);
+                                        PdxTypes::kPdxDateSize);
   int position = m_pdxType->getFieldPosition(fieldName, m_offsetsBuffer,
                                              m_offsetSize, m_serializedLength);
   LOGDEBUG("PdxReaderWithTypeCollector::readDate() position = %d", position);
   if (position != -1) {
     m_dataInput->advanceCursor(position);
     auto retVal = PdxLocalReader::readDate(fieldName);
-    m_dataInput->rewindCursor(position + PdxTypes::DATE_SIZE);
+    m_dataInput->rewindCursor(position + PdxTypes::kPdxDateSize);
     return retVal;
   } else {
     return nullptr;

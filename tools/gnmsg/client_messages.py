@@ -239,7 +239,20 @@ def read_put_message(properties, message_bytes, offset):
 
     (properties["Value"], offset) = parse_key_or_value(message_bytes, offset)
 
-    (properties["EventId"], offset) = parse_event_id_part(message_bytes, offset)
+    # This is a little weird, so here's the explanation: the geode-native logger has a buffer size limit of 8KB, so we
+    # can't fully parse any message that's longer than that.  At the same time, we would really like to extract as much
+    # information as we can from such a message.  Since the first 5 parts of the PUT message are trivial in size, the
+    # actual value being PUT is the thing that we can't decode.  Even then, we would like to know as much about the
+    # "Value" part of the message as we can, so we will attempt to parse the value, and catch any exceptions above this
+    # level.  In the case of large values that we don't attempt to parse, such as PDX, we will still inform that the
+    # value is of size (n), is or is not an object, and the type is (PDX or whatever).  Great so far, but what about the
+    # EventId part, that sits at the very end of the PUT message?  Well, we shouldn't bother with it if the length of
+    # the message is > the logger size limit, because we're guaranteed it's not in the log.  So that's what we do here,
+    # just skip the EventId.
+    if properties["Length"] < 8192:
+        (properties["EventId"], offset) = parse_event_id_part(message_bytes, offset)
+    else:
+        properties["EventId"] = {"Data": "Unavailable - message is too long"}
 
 
 def read_request_message(properties, message_bytes, offset):

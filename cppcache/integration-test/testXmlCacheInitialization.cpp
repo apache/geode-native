@@ -163,8 +163,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, SetCacheXmlThenGetRegion)
   {
     // Reusing server setup from ValidXmlTestPools for simplicity
     CacheHelper::initLocator(1);
-    char tmp[128];
-    sprintf(tmp, "localhost:%d", CacheHelper::staticLocatorHostPort1);
+    auto tmp = std::string("localhost:") +
+               std::to_string(CacheHelper::staticHostPort1);
     CacheHelper::initServer(1, "cacheserver1_pool.xml", tmp);
     CacheHelper::initServer(2, "cacheserver2_pool.xml", tmp);
 

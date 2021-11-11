@@ -22,12 +22,6 @@
 
 #include "../geode_defs.hpp"
 
-#ifdef _WIN32
-// FIXME: Why is this needed?
-//#define snprintf _snprintf
-#endif
-
-
 using namespace System;
 
 namespace Apache

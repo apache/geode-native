@@ -32,7 +32,7 @@
 #define CLIENT1 s1p1
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheFactory;

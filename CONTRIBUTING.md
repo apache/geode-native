@@ -99,6 +99,24 @@ $ cd build/clicache/acceptance-test
 $ ctest -C <Debug|RelWithDebInfo> -R <test_name> -j1
 ```
 
+## Google Sanitizers
+You can use the [Google Sanitizers](https://github.com/google/sanitizers), where available. These sanitizers can
+be used to diagnose possible issues when running tests. You can enable them using combinations of the options below.
+
+Address Sanitizer:
+```console
+$ cmake … -DUSE_SANITIZE_ADDRESS=YES …
+```
+Undefined Behavior Sanitizer:
+```console
+$ cmake … -DUSE_SANITIZE_UNDEFINED=YES …
+```
+Make sanitizer warnings fatal and exit:
+```console
+$ cmake … -DUSE_SANITIZE_FATAL=YES …
+```
+
+
 ## Style
 
 ### Formatting C++

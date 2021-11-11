@@ -130,6 +130,14 @@ IPv6 support can be enabled by adding `-DWITH_IPV6=ON` to the CMake [Generator](
 $ cmake … -DWITH_IPV6=ON …
 ```
 
+#### Interprocedural, Link-Time, or Whole-Program Optimizations
+These optimizations are enabled by default where available. You can disable them at configure time.
+
+```console
+$ cmake … -DUSE_IPO=NO …
+```
+
+
 ## Installing
 
 By default a system-specific location is used by CMake as the destination of the `install` target, e.g., `/usr/local` on

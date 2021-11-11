@@ -53,10 +53,6 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
  public:
   PdxInstanceFactory() = delete;
   ~PdxInstanceFactory() noexcept = default;
-  PdxInstanceFactory(const PdxInstanceFactory& other) = default;
-  PdxInstanceFactory& operator=(const PdxInstanceFactory& other) = default;
-  PdxInstanceFactory(PdxInstanceFactory&& other) = default;
-  PdxInstanceFactory& operator=(PdxInstanceFactory&& other) = default;
 
  public:
   /**

@@ -85,7 +85,7 @@ ClientMetadata::ClientMetadata()
     : m_partitionNames(nullptr),
       m_previousOne(nullptr),
       m_totalNumBuckets(0),
-      m_colocatedWith(nullptr),
+      m_colocatedWith(),
       m_tcrdm(nullptr) {}
 
 ClientMetadata::~ClientMetadata() {}
@@ -156,8 +156,8 @@ void ClientMetadata::getServerLocation(
     LOGFINER("returning random & m_bucketServerLocationsList size is: %zu",
              m_bucketServerLocationsList.size());
     RandGen randgen;
-    serverLocation = m_bucketServerLocationsList[bucketId].at(randgen(
-        static_cast<int>(m_bucketServerLocationsList[bucketId].size())));
+    serverLocation = m_bucketServerLocationsList[bucketId].at(
+        randgen(m_bucketServerLocationsList[bucketId].size()));
   }
   // return m_bucketServerLocationsList[bucketId].at(0);
 }
@@ -218,11 +218,11 @@ void ClientMetadata::updateBucketServerLocations(
     RandGen randGen;
 
     if (primaries.size() > 0) {
-      std::random_shuffle(primaries.begin(), primaries.end(), randGen);
+      std::shuffle(primaries.begin(), primaries.end(), randGen);
     }
 
     if (secondaries.size() > 0) {
-      std::random_shuffle(secondaries.begin(), secondaries.end(), randGen);
+      std::shuffle(secondaries.begin(), secondaries.end(), randGen);
     }
 
     m_bucketServerLocationsList[bucketId].clear();
@@ -259,11 +259,11 @@ void ClientMetadata::updateBucketServerLocations(
     RandGen randGen;
 
     if (primaries.size() > 0) {
-      std::random_shuffle(primaries.begin(), primaries.end(), randGen);
+      std::shuffle(primaries.begin(), primaries.end(), randGen);
     }
 
     if (secondaries.size() > 0) {
-      std::random_shuffle(secondaries.begin(), secondaries.end(), randGen);
+      std::shuffle(secondaries.begin(), secondaries.end(), randGen);
     }
 
     m_bucketServerLocationsList[bucketId].clear();

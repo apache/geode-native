@@ -117,18 +117,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOneTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 0; item < 1000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
+      entryMap.emplace(key, value);
       LOGDEBUG(
           "CPPTEST:PutAllOneTask Doing PutAll on key using key: = %s: & value: "
           "= "
           "%s",
-          key, value);
+          key->toString().c_str(), value->value().c_str());
     }
     try {
       dataReg->putAll(entryMap);
@@ -150,18 +148,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllTwoTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 1000; item < 2000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
       LOGDEBUG(
           "CPPTEST:PutAllTwoTask Doing PutAll on key using key: = %s: & value: "
           "= "
           "%s",
-          key, value);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
+          key->toString().c_str(), value->value().c_str());
+      entryMap.emplace(key, value);
     }
     try {
       dataReg->putAll(entryMap);
@@ -183,18 +179,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllThreeTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 2000; item < 3000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
       LOGDEBUG(
           "CPPTEST:PutAllThreeTask Doing PutAll on key using key: = %s: & "
           "value: "
           "= %s",
-          key, value);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
+          key->toString().c_str(), value->value().c_str());
+      entryMap.emplace(key, value);
     }
     try {
       dataReg->putAll(entryMap);
@@ -216,18 +210,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllFourTask)
     auto dataReg = getHelper()->getRegion(regionNames[0]);
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 3000; item < 4000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
       LOGDEBUG(
           "CPPTEST:PutAllFourTask Doing PutAll on key using key: = %s: & "
           "value: "
           "= %s",
-          key, value);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
+          key->toString().c_str(), value->value().c_str());
+      entryMap.emplace(key, value);
     }
     try {
       dataReg->putAll(entryMap);
@@ -255,15 +247,14 @@ DUNIT_TASK_DEFINITION(CLIENT2, VerifyAllPutAllTask)
            "Got wrong number of creation events.");
 
     ASSERT(dataReg->size() == 4000, "Expected 4000 entries in region");
-    char key[256];
-    char value[256];
     for (int32_t item = 0; item < 4000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
       LOGDEBUG("CPPTEST:VerifyAllPutAllTask Doing get on key using: = %s: ",
-               key);
-      auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
-          dataReg->get(CacheableKey::create(key)));
+               key->toString().c_str());
+      auto checkPtr =
+          std::dynamic_pointer_cast<CacheableString>(dataReg->get(key));
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
       LOGDEBUG("CPPTEST:VerifyAllPutAllTask value is: = %s: ",
                checkPtr->value().c_str());
@@ -280,18 +271,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllOneTask)
     HashMapOfCacheable entryMap;
     std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 0; item < 1000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
-      keysVector.push_back(CacheableKey::create(key));
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
+      entryMap.emplace(key, value);
+      keysVector.push_back(key);
       LOGDEBUG(
           "CPPTEST:RemoveAllOneTask Doing PutAll on key using key: = %s: & "
           "value: = %s",
-          key, value);
+          key->toString().c_str(), value->value().c_str());
     }
     try {
       dataReg->putAll(entryMap);
@@ -315,18 +304,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllTwoTask)
     HashMapOfCacheable entryMap;
     std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 1000; item < 2000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
-      keysVector.push_back(CacheableKey::create(key));
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
+      entryMap.emplace(key, value);
+      keysVector.push_back(key);
       LOGDEBUG(
           "CPPTEST:RemoveAllTwoTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
-          key, value);
+          key->toString().c_str(), value->value().c_str());
     }
     try {
       dataReg->putAll(entryMap);
@@ -350,19 +337,17 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllThreeTask)
     HashMapOfCacheable entryMap;
     std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 2000; item < 3000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
-      keysVector.push_back(CacheableKey::create(key));
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
+      entryMap.emplace(key, value);
+      keysVector.push_back(key);
       LOGDEBUG(
           "CPPTEST:RemoveAllThreeTask Doing RemoveAll on key using key: = %s: "
           "& "
           "value: = %s",
-          key, value);
+          key->toString().c_str(), value->value().c_str());
     }
     try {
       dataReg->putAll(entryMap);
@@ -387,18 +372,16 @@ DUNIT_TASK_DEFINITION(CLIENT1, RemoveAllFourTask)
     HashMapOfCacheable entryMap;
     std::vector<std::shared_ptr<CacheableKey>> keysVector;
     entryMap.clear();
-    char key[256];
-    char value[256];
     for (int32_t item = 3000; item < 4000; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
-      keysVector.push_back(CacheableKey::create(key));
+      auto key =
+          CacheableKey::create(std::string("key-") + std::to_string(item));
+      auto value = CacheableString::create(std::to_string(item));
+      entryMap.emplace(key, value);
+      keysVector.push_back(key);
       LOGDEBUG(
           "CPPTEST:RemoveAllFourTask Doing RemoveAll on key using key: = %s: & "
           "value: = %s",
-          key, value);
+          key->toString().c_str(), value->value().c_str());
     }
     try {
       dataReg->putAll(entryMap);

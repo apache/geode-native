@@ -29,6 +29,7 @@
 #include "../QueryService.hpp"
 #include "../FunctionService.hpp"
 #include "../Execution.hpp"
+#include "../String.hpp"
 #include "AuthenticatedView.hpp"
 #include "PdxInstanceFactoryImpl.hpp"
 
@@ -77,7 +78,7 @@ namespace Apache
 
           try
           {
-            auto nativeptr = m_nativeptr->get()->getRegion( marshal_as<std::string>(path) );
+            auto nativeptr = m_nativeptr->get()->getRegion(to_utf8(path) );
             return Client::Region<TKey, TValue>::Create( nativeptr );
           }
           finally

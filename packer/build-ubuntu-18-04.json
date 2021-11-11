@@ -101,7 +101,8 @@
       "scripts": [
         "linux/install-cmake.sh",
         "ubuntu/install-clang-format.sh",
-        "ubuntu/install-jdk-11.sh"
+        "ubuntu/install-jdk-11.sh",
+        "linux/install-dotnet.sh"
       ]
     },
     {

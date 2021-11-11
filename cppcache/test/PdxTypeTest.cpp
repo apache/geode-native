@@ -184,9 +184,9 @@ TEST_F(PdxTypeTest,
   m_pdxType2.addVariableLengthTypeField("bar0", "string",
                                         PdxFieldTypes::STRING);
   m_pdxType2.addFixedLengthTypeField("bar1", "bool", PdxFieldTypes::BOOLEAN,
-                                     PdxTypes::BOOLEAN_SIZE);
+                                     PdxTypes::kPdxBooleanSize);
   m_pdxType2.addFixedLengthTypeField("bar2", "int", PdxFieldTypes::INT,
-                                     PdxTypes::INTEGER_SIZE);
+                                     PdxTypes::kPdxIntegerSize);
 
   std::hash<PdxType> type1Hash;
   std::hash<PdxType> type2Hash;
@@ -201,7 +201,7 @@ TEST_F(PdxTypeTest, testSerializeJavaPdxType) {
   pdx_type.addVariableLengthTypeField("foo", "", PdxFieldTypes::STRING);
   pdx_type.addVariableLengthTypeField("alice", "", PdxFieldTypes::STRING);
   pdx_type.addFixedLengthTypeField("bar1", "", PdxFieldTypes::BOOLEAN,
-                                   PdxTypes::BOOLEAN_SIZE);
+                                   PdxTypes::kPdxBooleanSize);
 
   DataOutputInternal out;
   pdx_type.toData(out);
@@ -222,7 +222,7 @@ TEST_F(PdxTypeTest, testSerializeNoJavaPdxType) {
   pdx_type.addVariableLengthTypeField("foo", "", PdxFieldTypes::STRING);
   pdx_type.addVariableLengthTypeField("alice", "", PdxFieldTypes::STRING);
   pdx_type.addFixedLengthTypeField("bar1", "", PdxFieldTypes::BOOLEAN,
-                                   PdxTypes::BOOLEAN_SIZE);
+                                   PdxTypes::kPdxBooleanSize);
 
   DataOutputInternal out;
   pdx_type.toData(out);
@@ -243,7 +243,7 @@ TEST_F(PdxTypeTest, testDeserializeJavaPdxType) {
   pdx_expected.addVariableLengthTypeField("foo", "", PdxFieldTypes::STRING);
   pdx_expected.addVariableLengthTypeField("alice", "", PdxFieldTypes::STRING);
   pdx_expected.addFixedLengthTypeField("bar1", "", PdxFieldTypes::BOOLEAN,
-                                       PdxTypes::BOOLEAN_SIZE);
+                                       PdxTypes::kPdxBooleanSize);
 
   DataOutputInternal out;
   pdx_expected.toData(out);
@@ -263,7 +263,7 @@ TEST_F(PdxTypeTest, testDeserializeNoJavaPdxType) {
   pdx_expected.addVariableLengthTypeField("foo", "", PdxFieldTypes::STRING);
   pdx_expected.addVariableLengthTypeField("alice", "", PdxFieldTypes::STRING);
   pdx_expected.addFixedLengthTypeField("bar1", "", PdxFieldTypes::BOOLEAN,
-                                       PdxTypes::BOOLEAN_SIZE);
+                                       PdxTypes::kPdxBooleanSize);
 
   DataOutputInternal out;
   pdx_expected.toData(out);

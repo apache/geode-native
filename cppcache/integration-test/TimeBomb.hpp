@@ -20,10 +20,12 @@
 #ifndef GEODE_INTEGRATION_TEST_TIMEBOMB_H_
 #define GEODE_INTEGRATION_TEST_TIMEBOMB_H_
 
+#include <iostream>
+#include <thread>
+
 #include <ace/Task.h>
 #include <assert.h>
 
-#include <thread>
 
 #include "Utils.hpp"
 
@@ -38,7 +40,7 @@ class ClientCleanup {
   ClientCleanup() : m_numberOfClient(0) {}
 
   void callClientCleanup() {
-    printf("callClientCleanup ... %d \n", m_numberOfClient);
+    std::cout << "callClientCleanup ... " << m_numberOfClient << "\n";
     for (int i = 0; i < m_numberOfClient; i++) {
       try {
         m_cleanupCallback[i]();
@@ -92,7 +94,7 @@ class TimeBomb : public ACE_Task_Base {
 
   int svc() override {
     if (m_sleep == std::chrono::seconds{}) {
-      printf("###### TIMEBOMB Disabled. ######\n");
+      std::cout << "###### TIMEBOMB Disabled. ######\n";
       fflush(stdout);
       return 0;
     }
@@ -105,7 +107,7 @@ class TimeBomb : public ACE_Task_Base {
       now = std::chrono::steady_clock::now();
     } while ((now - start) < m_sleep);
 
-    printf("####### ERROR: TIMEBOMB WENT OFF, TEST TIMED OUT ########\n");
+    std::cout << "####### ERROR: TIMEBOMB WENT OFF, TEST TIMED OUT ########\n";
     fflush(stdout);
 
     callClientCleanup();

@@ -108,9 +108,9 @@ class TESTOBJECT_EXPORT EqStruct : public TimestampedObject {
   void validate(int index) {
     int encodedIndex = myIndex;
     if (encodedIndex != index) {
-      char logmsg[2048];
-      sprintf(logmsg, "Expected index %d , got %d.\n", index, encodedIndex);
-      throw FwkException(logmsg);
+      throw FwkException(std::string("Expected index ") +
+                         std::to_string(index) + ", got " +
+                         std::to_string(encodedIndex) + ".\n");
     }
   }
   void update() {

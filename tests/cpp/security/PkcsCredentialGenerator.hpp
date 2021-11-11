@@ -69,30 +69,19 @@ class PKCSCredentialGenerator : public CredentialGenerator {
   }
 
   void insertKeyStorePath(std::shared_ptr<Properties>& p,
-                          const char* username) {
-    char keystoreFilePath[1024];
-    char* tempPath = nullptr;
-    tempPath = ACE_OS::getenv("TESTSRC");
-    std::string path = "";
-    if (!tempPath) {
-      tempPath = ACE_OS::getenv("BUILDDIR");
-      path = std::string(tempPath) + "/framework/data";
-    } else {
-      path = std::string(tempPath);
-    }
-
-    sprintf(keystoreFilePath, "%s/keystore/%s.keystore", path.c_str(),
-            username);
-    p->insert(KEYSTORE_FILE_PATH, keystoreFilePath);
+                          const std::string& username) {
+    auto path =
+        ACE_OS::getenv("TESTSRC")
+            ? std::string(ACE_OS::getenv("TESTSRC"))
+            : std::string(ACE_OS::getenv("BUILDDIR")) + "/framework/data";
+    p->insert(KEYSTORE_FILE_PATH, path + "/keystore/" + username + ".keystore");
   }
 
-  void setPKCSProperties(std::shared_ptr<Properties>& p, char* username) {
-    char keyStorePassWord[1024];
-
-    sprintf(keyStorePassWord, "%s", "geode");
+  void setPKCSProperties(std::shared_ptr<Properties>& p,
+                         const std::string& username) {
     p->insert(SECURITY_USERNAME, "geode");
     p->insert(KEYSTORE_ALIAS, username);
-    p->insert(KEYSTORE_PASSWORD, keyStorePassWord);
+    p->insert(KEYSTORE_PASSWORD, "geode");
     insertKeyStorePath(p, username);
   }
 

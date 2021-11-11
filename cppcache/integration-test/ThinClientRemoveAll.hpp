@@ -41,7 +41,7 @@
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
@@ -93,8 +93,9 @@ const bool NO_ACK = false;
 void createRegion(const char* name, bool ackMode, const char*,
                   bool isCacheEnabled, bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, isCacheEnabled,
                                           nullptr, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
@@ -105,21 +106,24 @@ void createRegionLocal(const char* name, bool ackMode, const char*,
                        bool isCacheEnabled,
                        bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(
       name, ackMode, isCacheEnabled, nullptr, clientNotificationEnabled, true);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
 
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -132,8 +136,9 @@ void createPooledRegionConcurrencyCheckDisabled(
     const char* poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
@@ -223,8 +228,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidation)
     }
 
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
-      removeallkeys.push_back(CacheableKey::create(key));
+      removeallkeys.push_back(
+          CacheableKey::create(std::string("key-") + std::to_string(item)));
     }
 
     try {
@@ -275,7 +280,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllValidationLocal)
     }
 
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
+      removeallkeys.push_back(
+          CacheableKey::create(std::string("key-") + std::to_string(item)));
       removeallkeys.push_back(CacheableKey::create(key));
     }
 
@@ -305,11 +311,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOps)
   {
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[2048];
-    char value[2048];
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key = std::string("key-") + std::to_string(item);
+      auto value = std::to_string(item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
     }
@@ -320,8 +324,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOps)
 
     std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
-      removeallkeys.push_back(CacheableKey::create(key));
+      removeallkeys.push_back(
+          CacheableKey::create(std::string("key-") + std::to_string(item)));
     }
 
     regPtr0->removeAll(removeallkeys);
@@ -379,11 +383,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOpsLocal)
   {
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[2048];
-    char value[2048];
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
+      auto key = std::string("key-") + std::to_string(item);
+      auto value = std::to_string(item);
       entryMap.emplace(CacheableKey::create(key),
                        CacheableString::create(value));
     }
@@ -394,8 +396,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, removeAllOpsLocal)
 
     std::vector<std::shared_ptr<CacheableKey>> removeallkeys;
     for (int32_t item = 0; item < 1; item++) {
-      sprintf(key, "key-%d", item);
-      removeallkeys.push_back(CacheableKey::create(key));
+      removeallkeys.push_back(
+          CacheableKey::create(std::string("key-") + std::to_string(item)));
     }
 
     regPtr0->removeAll(removeallkeys);

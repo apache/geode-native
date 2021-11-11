@@ -20,7 +20,7 @@
 #ifndef GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_
 #define GEODE_INTEGRATION_TEST_LOCATOR_GLOBALS_H_
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheHelper;
 

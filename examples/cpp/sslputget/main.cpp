@@ -29,9 +29,9 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::RegionShortcut;
 
 void print_usage() {
-  printf("Usage: cpp-sslputget <<path>>\n");
-  printf("Where <<path>> is the absolute path to the location of your SSL "
-	"client keystore and truststore\n");
+  std::cout << "Usage: cpp-sslputget <<path>>\n";
+  std::cout << "Where <<path>> is the absolute path to the location of your "
+               "SSL client keystore and truststore\n";
 }
 
 int main(int argc, char** argv) {
@@ -42,24 +42,23 @@ int main(int argc, char** argv) {
 
   auto sslKeyPath = std::string(argv[1]);
 
-  auto cache =
-      CacheFactory()
-          .set("log-level", "none")
-          .set("ssl-enabled", "true")
-          .set("ssl-keystore",
+  auto cache = CacheFactory()
+                   .set("log-level", "none")
+                   .set("ssl-enabled", "true")
+                   .set("ssl-keystore",
 #ifdef WIN32
-               (sslKeyPath + "\\client_keystore.pem").c_str())
+                        (sslKeyPath + "\\client_keystore.pem").c_str())
 #else
-               (sslKeyPath + "/client_keystore.pem").c_str())
+                        (sslKeyPath + "/client_keystore.pem").c_str())
 #endif
-          .set("ssl-keystore-password", "apachegeode")
-          .set("ssl-truststore",
+                   .set("ssl-keystore-password", "apachegeode")
+                   .set("ssl-truststore",
 #ifdef WIN32
-               (sslKeyPath + "\\client_truststore.pem").c_str())
+                        (sslKeyPath + "\\client_truststore.pem").c_str())
 #else
-               (sslKeyPath + "/client_truststore.pem").c_str())
+                        (sslKeyPath + "/client_truststore.pem").c_str())
 #endif
-          .create();
+                   .create();
 
   const auto pool = cache.getPoolManager()
                         .createFactory()

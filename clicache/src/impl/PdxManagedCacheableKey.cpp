@@ -26,6 +26,7 @@
 #include "../DataOutput.hpp"
 #include "../CacheableString.hpp"
 #include "../ExceptionTypes.hpp"
+#include "../String.hpp"
 #include "CacheRegionHelper.hpp"
 #include "PdxHelper.hpp"
 #include "SafeConvert.hpp"
@@ -73,7 +74,7 @@ namespace apache
       {
         try
         {
-          return marshal_as<std::string>(m_managedptr->ToString());
+          return Apache::Geode::Client::to_utf8(m_managedptr->ToString());
         }
         catch (Apache::Geode::Client::GeodeException^ ex)
         {

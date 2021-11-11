@@ -79,7 +79,7 @@ std::vector<ServerLocation> ThinClientLocatorHelper::getLocators() const {
   }
 
   RandGen randGen;
-  std::random_shuffle(locators.begin(), locators.end(), randGen);
+  std::shuffle(locators.begin(), locators.end(), randGen);
   return locators;
 }
 

@@ -100,12 +100,9 @@ std::shared_ptr<SelectResults> RemoteQuery::execute(
     sr = std::make_shared<ResultSetImpl>(values);
   } else {
     if (values->size() % fieldNameVec.size() != 0) {
-      char exMsg[1024];
-      std::snprintf(exMsg, 1023,
-                    "%s: Number of values coming from "
-                    "server has to be exactly divisible by field count",
-                    func);
-      throw MessageException(exMsg);
+      throw MessageException(std::string(func) +
+                             ": Number of values coming from server has to be "
+                             "exactly divisible by field count");
     } else {
       LOGFINEST("%s: creating StructSet for query: %s", func,
                 m_queryString.c_str());

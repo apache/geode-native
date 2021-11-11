@@ -115,6 +115,7 @@ END_TASK(validate)
 #endif
 #endif
 
+#include <iostream>
 #include <string>
 
 #include <boost/interprocess/managed_shared_memory.hpp>
@@ -308,14 +309,12 @@ extern boost::interprocess::managed_shared_memory& globals();
 class TestException {
  public:
   TestException(const std::string& msg, int lineno, const std::string& filename)
-      : m_message(msg),
-        m_lineno(lineno),
-        m_filename(filename) {}
+      : m_message(msg), m_lineno(lineno), m_filename(filename) {}
 
   void print() {
-    fprintf(stdout, "#### TestException: %s in %s at line %d\n",
-            m_message.c_str(), m_filename.c_str(), m_lineno);
-    fflush(stdout);
+    std::cout << "#### TestException: " << m_message << " in " << m_filename
+              << " at line " << m_lineno << "\n"
+              << std::flush;
   }
   std::string m_message;
   int m_lineno;

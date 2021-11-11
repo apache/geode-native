@@ -18,6 +18,7 @@
 #include "FastAssetAccount.hpp"
 
 #include <cinttypes>
+#include <sstream>
 
 #include "FastAsset.hpp"
 
@@ -62,12 +63,12 @@ void FastAssetAccount::fromData(apache::geode::client::DataInput& input) {
 }
 
 std::string FastAssetAccount::toString() const {
-  char buf[102500];
-  sprintf(buf,
-          "FastAssetAccount:[acctId = %d customerName = %s netWorth = %f "
-          "timestamp = %" PRIu64 "]",
-          acctId, customerName->toString().c_str(), netWorth, timestamp);
-  return buf;
+  std::stringstream strm;
+
+  strm << "FastAssetAccount:[acctId = " << acctId
+       << " customerName = " << customerName->toString()
+       << " netWorth = " << netWorth << "timestamp = " << timestamp;
+  return strm.str();
 }
 
 }  // namespace testobject
