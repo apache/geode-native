@@ -674,8 +674,6 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto listener = std::make_shared<MyCacheListener>();
   attrMutator->setCacheListener(listener);
 
-  // put key/value pairs in the region using cache2
-
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
@@ -685,11 +683,7 @@ TEST(RegisterKeysTest, DontReceiveValues) {
                  apache::geode::client::CacheableInt32::create(i));
   }
 
-  // register for all keys, but don't get any data
-
   region1->registerAllKeys(false, false, false);
-
-  // verify we didn't get any data
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -701,22 +695,16 @@ TEST(RegisterKeysTest, DontReceiveValues) {
     EXPECT_FALSE(hasValue);
   }
 
-  // load cache1 with data
-
   for (int i = 0; i < NUMKEYS; i++) {
     auto value = region1->get(apache::geode::client::CacheableInt32::create(i));
   }
 
   listener->reset();
 
-  // put new values in the region using cache2
-
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i + 1000));
   }
-
-  // wait for cache1 invalidates due to receiveValues=false, and verify
 
   while (listener->getInvalidates() < NUMKEYS) {
   }
@@ -751,8 +739,6 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto listener = std::make_shared<MyCacheListener>();
   attrMutator->setCacheListener(listener);
 
-  // put key/value pairs in the region using cache2
-
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
@@ -763,11 +749,7 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
                  apache::geode::client::CacheableInt32::create(i));
   }
 
-  // register for all keys and get data now and future updates
-
   region1->registerAllKeys(false, true, true);
-
-  // verify we now have data in cache1
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -779,13 +761,9 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     EXPECT_TRUE(hasValue);
   }
 
-  // invalidate data in cache1
-
   for (int i = 0; i < NUMKEYS; i++) {
     region1->localInvalidate(apache::geode::client::CacheableInt32::create(i));
   }
-
-  // verify cache1 data no longer valid
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -799,14 +777,10 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
 
   listener->reset();
 
-  // put new values in the region using cache2
-
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i + 2000));
   }
-
-  // wait for the new values in cache1 due to receiveValues = true, and verify
 
   while (listener->getUpdates() < NUMKEYS) {
   }
@@ -841,8 +815,6 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto listener = std::make_shared<MyCacheListener>();
   attrMutator->setCacheListener(listener);
 
-  // put key/value pairs in the region using cache2
-
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
@@ -853,11 +825,7 @@ TEST(RegisterKeysTest, ReceiveValues) {
                  apache::geode::client::CacheableInt32::create(i));
   }
 
-  // register for all keys but don't get initial values, but get future updates
-
   region1->registerAllKeys(false, false, true);
-
-  // verify we have no data in cache1
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -871,14 +839,10 @@ TEST(RegisterKeysTest, ReceiveValues) {
 
   listener->reset();
 
-  // put new values in the region using cache2
-
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i + 2000));
   }
-
-  // wait for the new values in cache1 due to receiveValues = true, and verify
 
   while (listener->getUpdates() < NUMKEYS) {
   }
