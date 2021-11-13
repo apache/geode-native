@@ -42,13 +42,17 @@ namespace {
 using apache::geode::client::binary_semaphore;
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheListenerMock;
+using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
+using apache::geode::client::RegionEvent;
 using apache::geode::client::RegionShortcut;
+using apache::geode::client::CacheListener;
 
 using namespace std::literals::chrono_literals;
 
@@ -57,6 +61,48 @@ using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
+const uint32_t NUMKEYS = 100;
+
+class MyCacheListener : public CacheListener {
+  int m_invalidates;
+  int m_updates;
+  int m_creates;
+
+ public:
+  MyCacheListener() : m_invalidates(0), m_updates(0), m_creates(0) {
+  }
+
+  void afterCreate(const EntryEvent& event) override {
+    m_creates++;
+  }
+
+  void afterUpdate(const EntryEvent&) override {
+    m_updates++;
+  }
+
+  void afterInvalidate(const EntryEvent& event) override {
+    m_invalidates++;
+  }
+
+  void reset() {
+    m_creates = 0;
+    m_updates = 0;
+    m_invalidates = 0;
+  }
+
+  int getCreates() {
+    return m_creates;
+  }
+
+  int getUpdates() {
+    return m_updates;
+  
+  }
+
+  int getInvalidates() {
+    return m_invalidates;
+  }
+};
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -625,6 +671,8 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
+  auto listener = std::make_shared<MyCacheListener>();
+  attrMutator->setCacheListener(listener);
 
   // put key/value pairs in the region using cache2
 
@@ -632,7 +680,6 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  const int NUMKEYS = 100;
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i));
@@ -660,6 +707,8 @@ TEST(RegisterKeysTest, DontReceiveValues) {
     auto value = region1->get(apache::geode::client::CacheableInt32::create(i));
   }
 
+  listener->reset();
+
   // put new values in the region using cache2
 
   for (int i = 0; i < NUMKEYS; i++) {
@@ -669,7 +718,8 @@ TEST(RegisterKeysTest, DontReceiveValues) {
 
   // wait for cache1 invalidates due to receiveValues=false, and verify
 
-  std::this_thread::sleep_for(5000ms);
+  while (listener->getInvalidates() < NUMKEYS) {
+  }
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -698,6 +748,8 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
+  auto listener = std::make_shared<MyCacheListener>();
+  attrMutator->setCacheListener(listener);
 
   // put key/value pairs in the region using cache2
 
@@ -745,6 +797,8 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     EXPECT_FALSE(hasValue);
   }
 
+  listener->reset();
+
   // put new values in the region using cache2
 
   for (int i = 0; i < NUMKEYS; i++) {
@@ -754,7 +808,8 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
 
   // wait for the new values in cache1 due to receiveValues = true, and verify
 
-  std::this_thread::sleep_for(5000ms);
+  while (listener->getUpdates() < NUMKEYS) {
+  }
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
@@ -783,6 +838,8 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
+  auto listener = std::make_shared<MyCacheListener>();
+  attrMutator->setCacheListener(listener);
 
   // put key/value pairs in the region using cache2
 
@@ -812,6 +869,8 @@ TEST(RegisterKeysTest, ReceiveValues) {
     EXPECT_FALSE(hasValue);
   }
 
+  listener->reset();
+
   // put new values in the region using cache2
 
   for (int i = 0; i < NUMKEYS; i++) {
@@ -821,7 +880,8 @@ TEST(RegisterKeysTest, ReceiveValues) {
 
   // wait for the new values in cache1 due to receiveValues = true, and verify
 
-  std::this_thread::sleep_for(5000ms);
+  while (listener->getUpdates() < NUMKEYS) {
+  }
 
   for (int i = 0; i < NUMKEYS; i++) {
     auto hasKey =
