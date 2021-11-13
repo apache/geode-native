@@ -54,14 +54,12 @@ using apache::geode::client::RegionEvent;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::CacheListener;
 
-using namespace std::literals::chrono_literals;
-
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-const uint32_t NUMKEYS = 100;
+const int NUMKEYS = 100;
 
 class MyCacheListener : public CacheListener {
   int m_invalidates;
