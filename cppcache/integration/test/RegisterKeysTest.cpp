@@ -64,32 +64,22 @@ const int NUMKEYS = 100;
 class MyCacheListener : public CacheListener {
   int m_invalidates;
   int m_updates;
-  int m_creates;
 
  public:
-  MyCacheListener() : m_invalidates(0), m_updates(0), m_creates(0) {
-  }
-
-  void afterCreate(const EntryEvent& event) override {
-    m_creates++;
+  MyCacheListener() : m_invalidates(0), m_updates(0) {
   }
 
   void afterUpdate(const EntryEvent&) override {
     m_updates++;
   }
 
-  void afterInvalidate(const EntryEvent& event) override {
+  void afterInvalidate(const EntryEvent&) override {
     m_invalidates++;
   }
 
   void reset() {
-    m_creates = 0;
     m_updates = 0;
     m_invalidates = 0;
-  }
-
-  int getCreates() {
-    return m_creates;
   }
 
   int getUpdates() {
@@ -741,7 +731,6 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  const int NUMKEYS = 100;
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i));
@@ -817,7 +806,6 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  const int NUMKEYS = 100;
   for (int i = 0; i < NUMKEYS; i++) {
     region2->put(apache::geode::client::CacheableInt32::create(i),
                  apache::geode::client::CacheableInt32::create(i));
