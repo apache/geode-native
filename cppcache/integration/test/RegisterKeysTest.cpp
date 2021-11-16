@@ -46,50 +46,40 @@ using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListener;
 using apache::geode::client::CacheListenerMock;
 using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionEvent;
 using apache::geode::client::RegionShortcut;
-using apache::geode::client::CacheListener;
 
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-const int NUMKEYS = 100;
+constexpr auto kNumKeys = 100;
 
 class MyCacheListener : public CacheListener {
-  int m_invalidates;
-  int m_updates;
+  std::shared_ptr<boost::latch> m_allKeysUpdatedLatch;
+  std::shared_ptr<boost::latch> m_allKeysInvalidLatch;
 
  public:
-  MyCacheListener() : m_invalidates(0), m_updates(0) {
-  }
+  MyCacheListener(std::shared_ptr<boost::latch> allKeysUpdatedLatch,
+                  std::shared_ptr<boost::latch> allKeysInvalidLatch)
+      : m_allKeysUpdatedLatch(allKeysUpdatedLatch),
+        m_allKeysInvalidLatch(allKeysInvalidLatch) {}
 
   void afterUpdate(const EntryEvent&) override {
-    m_updates++;
+    m_allKeysUpdatedLatch->count_down();
   }
 
   void afterInvalidate(const EntryEvent&) override {
-    m_invalidates++;
+    m_allKeysInvalidLatch->count_down();
   }
 
-  void reset() {
-    m_updates = 0;
-    m_invalidates = 0;
-  }
-
-  int getUpdates() {
-    return m_updates;
-  
-  }
-
-  int getInvalidates() {
-    return m_invalidates;
-  }
+  void reset() {}
 };
 
 Cache createTestCache() {
@@ -617,7 +607,8 @@ TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
 
 apache::geode::client::Cache createCache() {
   return apache::geode::client::CacheFactory()
-      .set("log-level", "none")
+      .set("log-level", "debug")
+      .set("log-file", "c:/temp/RegisterKeysTest.log")
       .set("statistic-sampling-enabled", "false")
       .create();
 }
@@ -659,51 +650,46 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
-  auto listener = std::make_shared<MyCacheListener>();
+
+  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
+                                                    allKeysInvalidLatch);
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, false, false);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasKey);
-
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
-    EXPECT_FALSE(hasValue);
   }
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto value = region1->get(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto value = region1->get(CacheableInt32::create(i));
   }
 
+  allKeysInvalidLatch->reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i + 1000));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 1000));
   }
 
-  while (listener->getInvalidates() < NUMKEYS) {
-  }
+  allKeysInvalidLatch->wait();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasValue);
   }
 }
@@ -724,61 +710,57 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
-  auto listener = std::make_shared<MyCacheListener>();
+
+  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
+                                                    allKeysInvalidLatch);
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, true, true);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasValue);
   }
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region1->localInvalidate(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    region1->localInvalidate(CacheableInt32::create(i));
   }
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasValue);
   }
 
+  allKeysUpdatedLatch->reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i + 2000));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  while (listener->getUpdates() < NUMKEYS) {
-  }
+  allKeysUpdatedLatch->wait();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasValue);
   }
 }
@@ -799,47 +781,45 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto pool1 = createPool(cluster, cache1);
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
-  auto listener = std::make_shared<MyCacheListener>();
+
+  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
+                                                    allKeysInvalidLatch);
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, false, true);
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasValue);
   }
 
+  allKeysUpdatedLatch->reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    region2->put(apache::geode::client::CacheableInt32::create(i),
-                 apache::geode::client::CacheableInt32::create(i + 2000));
+  for (int i = 0; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  while (listener->getUpdates() < NUMKEYS) {
-  }
+  allKeysUpdatedLatch->wait();
 
-  for (int i = 0; i < NUMKEYS; i++) {
-    auto hasKey =
-        region1->containsKey(apache::geode::client::CacheableInt32::create(i));
+  for (int i = 0; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
-    auto hasValue = region1->containsValueForKey(
-        apache::geode::client::CacheableInt32::create(i));
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasValue);
   }
 }
