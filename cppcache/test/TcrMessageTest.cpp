@@ -426,11 +426,10 @@ TEST_F(TcrMessageTest, testConstructorKeySet) {
 TEST_F(TcrMessageTest, testConstructor6WithCreateRegion) {
   using apache::geode::client::TcrMessageCreateRegion;
 
-  TcrMessageCreateRegion message(new DataOutputUnderTest(),
-                                 "parentRegionName",
+  TcrMessageCreateRegion message(new DataOutputUnderTest(), "parentRegionName",
                                  "regionName",
-                                 false,   // isDurable
-                                 false,   // receiveValues
+                                 false,  // isDurable
+                                 false,  // receiveValues
                                  static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::CREATE_REGION, message.getMessageType());
@@ -461,11 +460,9 @@ TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
       message);
 
   TcrMessageRegisterInterestRegex message2(
-      new DataOutputUnderTest(),
-      "regionName",
-      "regexString",
+      new DataOutputUnderTest(), "regionName", "regexString",
       InterestResultPolicy::NONE,
-      true,  // isDurable
+      true,   // isDurable
       false,  // isCacheingEnabled
       false,  // receiveValues
       static_cast<ThinClientBaseDM *>(nullptr));
@@ -473,9 +470,9 @@ TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
   EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message2.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D65000000040"
-      "00000000100000003010125000000000100010000000B007265676578537472696E670000"
-      "0001000100000002000000",
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125000000000100010000000B007265676578537472696E6700"
+      "000001000100000002000000",
       message2);
 
   TcrMessageRegisterInterestRegex message3(
@@ -498,8 +495,8 @@ TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
       new DataOutputUnderTest(), "regionName", "regexString",
       InterestResultPolicy::NONE,
       false,  // isDurable
-      false,   // isCacheingEnabled
-      true,  // receiveValues
+      false,  // isCacheingEnabled
+      true,   // receiveValues
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message4.getMessageType());
@@ -547,10 +544,8 @@ TEST_F(TcrMessageTest, testConstructor6WithUnregisterInterest) {
   using apache::geode::client::TcrMessageUnregisterInterestRegex;
 
   TcrMessageUnregisterInterestRegex message(
-      new DataOutputUnderTest(),
-      "regionName",
-      "regexString",
-      false,   // isDurable
+      new DataOutputUnderTest(), "regionName", "regexString",
+      false,  // isDurable
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::UNREGISTER_INTEREST, message.getMessageType());
