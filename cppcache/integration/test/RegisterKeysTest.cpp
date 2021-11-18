@@ -684,7 +684,8 @@ TEST(RegisterKeysTest, DontReceiveValues) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 1000));
   }
 
-  allKeysInvalidLatch.wait();
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            allKeysInvalidLatch.wait_for(boost::chrono::seconds(60)));
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -755,7 +756,8 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  allKeysUpdatedLatch.wait();
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -814,7 +816,8 @@ TEST(RegisterKeysTest, ReceiveValues) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  allKeysUpdatedLatch.wait();
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
