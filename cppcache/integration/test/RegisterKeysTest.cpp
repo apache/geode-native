@@ -62,21 +62,21 @@ using ::testing::Return;
 constexpr auto kNumKeys = 100;
 
 class MyCacheListener : public CacheListener {
-  std::shared_ptr<boost::latch> m_allKeysUpdatedLatch;
-  std::shared_ptr<boost::latch> m_allKeysInvalidLatch;
+  boost::latch& allKeysUpdatedLatch_;
+  boost::latch& allKeysInvalidLatch_;
 
  public:
-  MyCacheListener(std::shared_ptr<boost::latch> allKeysUpdatedLatch,
-                  std::shared_ptr<boost::latch> allKeysInvalidLatch)
-      : m_allKeysUpdatedLatch(allKeysUpdatedLatch),
-        m_allKeysInvalidLatch(allKeysInvalidLatch) {}
+  MyCacheListener(boost::latch& allKeysUpdatedLatch,
+                  boost::latch& allKeysInvalidLatch)
+      : allKeysUpdatedLatch_(allKeysUpdatedLatch),
+        allKeysInvalidLatch_(allKeysInvalidLatch) {}
 
   void afterUpdate(const EntryEvent&) override {
-    m_allKeysUpdatedLatch->count_down();
+    allKeysUpdatedLatch_.count_down();
   }
 
   void afterInvalidate(const EntryEvent&) override {
-    m_allKeysInvalidLatch->count_down();
+    allKeysInvalidLatch_.count_down();
   }
 
   void reset() {}
@@ -651,10 +651,11 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
-  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  boost::latch allKeysUpdatedLatch{kNumKeys};
+  boost::latch allKeysInvalidLatch{kNumKeys};
   auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
                                                     allKeysInvalidLatch);
+
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
@@ -676,14 +677,14 @@ TEST(RegisterKeysTest, DontReceiveValues) {
     auto value = region1->get(CacheableInt32::create(i));
   }
 
-  allKeysInvalidLatch->reset(kNumKeys);
+  allKeysInvalidLatch.reset(kNumKeys);
   listener->reset();
 
   for (int i = 0; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 1000));
   }
 
-  allKeysInvalidLatch->wait();
+  allKeysInvalidLatch.wait();
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -711,8 +712,8 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
-  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  boost::latch allKeysUpdatedLatch{kNumKeys};
+  boost::latch allKeysInvalidLatch{kNumKeys};
   auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
                                                     allKeysInvalidLatch);
   attrMutator->setCacheListener(listener);
@@ -747,14 +748,14 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     EXPECT_FALSE(hasValue);
   }
 
-  allKeysUpdatedLatch->reset(kNumKeys);
+  allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
   for (int i = 0; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  allKeysUpdatedLatch->wait();
+  allKeysUpdatedLatch.wait();
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -782,8 +783,8 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  auto allKeysUpdatedLatch = std::make_shared<boost::latch>(kNumKeys);
-  auto allKeysInvalidLatch = std::make_shared<boost::latch>(kNumKeys);
+  boost::latch allKeysUpdatedLatch{kNumKeys};
+  boost::latch allKeysInvalidLatch{kNumKeys};
   auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
                                                     allKeysInvalidLatch);
   attrMutator->setCacheListener(listener);
@@ -806,14 +807,14 @@ TEST(RegisterKeysTest, ReceiveValues) {
     EXPECT_FALSE(hasValue);
   }
 
-  allKeysUpdatedLatch->reset(kNumKeys);
+  allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
   for (int i = 0; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
-  allKeysUpdatedLatch->wait();
+  allKeysUpdatedLatch.wait();
 
   for (int i = 0; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
