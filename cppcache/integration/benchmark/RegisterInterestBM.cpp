@@ -138,8 +138,7 @@ BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeys)
     ->Unit(benchmark::kMillisecond)
     ->Repetitions(1)
     ->Iterations(10)
-    ->Arg(1000000)
-    ;
+    ->Arg(1000000);
 
 BENCHMARK_DEFINE_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
 (benchmark::State& state) {
@@ -152,7 +151,6 @@ BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
     ->Unit(benchmark::kMillisecond)
     ->Repetitions(1)
     ->Iterations(10)
-    ->Arg(1000000)
-    ;
+    ->Arg(1000000);
 
 }  // namespace
