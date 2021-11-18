@@ -30,10 +30,6 @@
 #pragma warning(pop)
 #endif
 
-#include <boost/log/core.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/trivial.hpp>
-
 #include <geode/Cache.hpp>
 #include <geode/CacheableString.hpp>
 #include <geode/PoolManager.hpp>

@@ -139,8 +139,6 @@ BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeys)
     ->Repetitions(1)
     ->Iterations(10)
     ->Arg(1000000)
-    // ->Arg(5000000)
-    // ->Arg(10000000)
     ;
 
 BENCHMARK_DEFINE_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
@@ -155,8 +153,6 @@ BENCHMARK_REGISTER_F(RegisterInterestBM, registerInterestAllKeysInitialValues)
     ->Repetitions(1)
     ->Iterations(10)
     ->Arg(1000000)
-    // ->Arg(5000000)
-    // ->Arg(10000000)
     ;
 
 }  // namespace
