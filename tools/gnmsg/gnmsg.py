@@ -148,13 +148,19 @@ def scan_file_sequence(file, handshake, messages, thread_id):
 
         while True:
             if last_chance:
-                filename = dirname + os.sep + root + ext
+                if len(dirname) > 0:
+                    filename = dirname + os.sep + root + ext
+                else:
+                    filename = root + ext
             else:
-                filename = dirname + os.sep + root + "-" + str(roll_index) + ext
+                if len(dirname) > 0:
+                    filename = dirname + os.sep + root + "-" + str(roll_index) + ext
+                else:
+                    filename = root + "-" + str(roll_index) + ext
 
             try:
-                f = open(filename, "rb")
                 print("Scanning " + filename, file=sys.stderr)
+                f = open(filename, "rb")
                 scan_opened_file(
                     f,
                     handshake_decoder,
@@ -172,6 +178,8 @@ def scan_file_sequence(file, handshake, messages, thread_id):
                 if last_chance:
                     break
             except FileNotFoundError:
+                if last_chance:
+                    break
                 last_chance = True
                 continue
 
