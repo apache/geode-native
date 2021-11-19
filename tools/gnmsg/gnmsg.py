@@ -61,7 +61,7 @@ def scan_opened_file(
     if dump_handshake:
         handshake_decoder = HandshakeDecoder(output_queue)
         for line in file:
-            handshake_decoder.process_line(line.decode("utf-8"))
+            handshake_decoder.process_line(line.decode("utf-8").rstrip())
             try:
                 data = output_queue.get_nowait()
                 for key, value in data.items():
@@ -73,7 +73,7 @@ def scan_opened_file(
 
     separator = start_string
     for line in file:
-        linestr = line.decode("utf-8")
+        linestr = line.decode("utf-8").rstrip()
         client_decoder.process_line(linestr)
         server_decoder.process_line(linestr)
         try:
