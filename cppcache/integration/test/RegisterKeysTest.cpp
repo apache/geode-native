@@ -59,7 +59,7 @@ using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 
-constexpr auto kNumKeys = 100;
+constexpr size_t kNumKeys = 100;
 
 class MyCacheListener : public CacheListener {
   boost::latch& allKeysUpdatedLatch_;
