@@ -68,7 +68,7 @@ class CountdownCacheListener : public CacheListener {
   boost::latch allKeysUpdatedLatch_;
 
  public:
-  CountdownCacheListener(size_t expectedCount)
+  explicit CountdownCacheListener(size_t expectedCount)
       : expectedCount_(expectedCount),
         allKeysInvalidateLatch_(expectedCount),
         allKeysUpdatedLatch_(expectedCount) {}
