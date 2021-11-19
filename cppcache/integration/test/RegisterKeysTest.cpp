@@ -662,32 +662,32 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, false, false);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasKey);
   }
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto value = region1->get(CacheableInt32::create(i));
   }
 
   allKeysInvalidLatch.reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 1000));
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
             allKeysInvalidLatch.wait_for(boost::chrono::seconds(60)));
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
@@ -723,13 +723,13 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, true, true);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
@@ -737,11 +737,11 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     EXPECT_TRUE(hasValue);
   }
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region1->localInvalidate(CacheableInt32::create(i));
   }
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
@@ -752,14 +752,14 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
             allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
@@ -795,13 +795,13 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto pool2 = createPool(cluster, cache2);
   auto region2 = setupRegion(cache2, pool2);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
   }
 
   region1->registerAllKeys(false, false, true);
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_FALSE(hasKey);
 
@@ -812,14 +812,14 @@ TEST(RegisterKeysTest, ReceiveValues) {
   allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
             allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
 
-  for (int i = 0; i < kNumKeys; i++) {
+  for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
     EXPECT_TRUE(hasKey);
 
