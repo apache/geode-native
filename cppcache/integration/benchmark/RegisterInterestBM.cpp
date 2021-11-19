@@ -48,7 +48,7 @@ class RegisterInterestBM : public benchmark::Fixture {
  public:
   RegisterInterestBM() {
     boost::log::core::get()->set_filter(boost::log::trivial::severity >=
-                                        boost::log::trivial::debug);
+                                        boost::log::trivial::warning);
 
     BOOST_LOG_TRIVIAL(info) << "constructed";
   }
