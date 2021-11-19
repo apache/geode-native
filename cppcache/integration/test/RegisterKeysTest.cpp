@@ -61,25 +61,42 @@ using ::testing::Return;
 
 constexpr size_t kNumKeys = 100;
 
-class MyCacheListener : public CacheListener {
-  boost::latch& allKeysUpdatedLatch_;
-  boost::latch& allKeysInvalidLatch_;
+class CountdownCacheListener : public CacheListener {
+ private:
+  size_t expectedCount_;
+  boost::latch allKeysUpdatedLatch_;
+  boost::latch allKeysInvalidateLatch_;
 
  public:
-  MyCacheListener(boost::latch& allKeysUpdatedLatch,
-                  boost::latch& allKeysInvalidLatch)
-      : allKeysUpdatedLatch_(allKeysUpdatedLatch),
-        allKeysInvalidLatch_(allKeysInvalidLatch) {}
+  CountdownCacheListener(size_t expectedCount)
+      : expectedCount_(expectedCount),
+        allKeysInvalidateLatch_(expectedCount),
+        allKeysUpdatedLatch_(expectedCount) {}
 
   void afterUpdate(const EntryEvent&) override {
     allKeysUpdatedLatch_.count_down();
   }
 
   void afterInvalidate(const EntryEvent&) override {
-    allKeysInvalidLatch_.count_down();
+    allKeysInvalidateLatch_.count_down();
   }
 
-  void reset() {}
+  void reset() {
+    allKeysInvalidateLatch_.reset(expectedCount_);
+    allKeysUpdatedLatch_.reset(expectedCount_);
+  }
+
+  template <class Rep, class Period>
+  boost::cv_status waitForUpdates(
+      const boost::chrono::duration<Rep, Period>& rel_time) {
+    return allKeysUpdatedLatch_.wait_for(rel_time);
+  }
+
+  template <class Rep, class Period>
+  boost::cv_status waitForInvalidates(
+      const boost::chrono::duration<Rep, Period>& rel_time) {
+    return allKeysInvalidateLatch_.wait_for(rel_time);
+  }
 };
 
 Cache createTestCache() {
@@ -651,10 +668,7 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  boost::latch allKeysUpdatedLatch{kNumKeys};
-  boost::latch allKeysInvalidLatch{kNumKeys};
-  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
-                                                    allKeysInvalidLatch);
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
 
   attrMutator->setCacheListener(listener);
 
@@ -677,7 +691,6 @@ TEST(RegisterKeysTest, DontReceiveValues) {
     auto value = region1->get(CacheableInt32::create(i));
   }
 
-  allKeysInvalidLatch.reset(kNumKeys);
   listener->reset();
 
   for (auto i = 0U; i < kNumKeys; i++) {
@@ -685,7 +698,7 @@ TEST(RegisterKeysTest, DontReceiveValues) {
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
-            allKeysInvalidLatch.wait_for(boost::chrono::seconds(60)));
+            listener->waitForInvalidates(boost::chrono::seconds(60)));
 
   for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -713,10 +726,7 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  boost::latch allKeysUpdatedLatch{kNumKeys};
-  boost::latch allKeysInvalidLatch{kNumKeys};
-  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
-                                                    allKeysInvalidLatch);
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
@@ -749,7 +759,6 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
     EXPECT_FALSE(hasValue);
   }
 
-  allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
   for (auto i = 0U; i < kNumKeys; i++) {
@@ -757,7 +766,7 @@ TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
-            allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
+            listener->waitForUpdates(boost::chrono::minutes(1)));
 
   for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
@@ -785,10 +794,7 @@ TEST(RegisterKeysTest, ReceiveValues) {
   auto region1 = setupRegion(cache1, pool1);
   auto attrMutator = region1->getAttributesMutator();
 
-  boost::latch allKeysUpdatedLatch{kNumKeys};
-  boost::latch allKeysInvalidLatch{kNumKeys};
-  auto listener = std::make_shared<MyCacheListener>(allKeysUpdatedLatch,
-                                                    allKeysInvalidLatch);
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
   attrMutator->setCacheListener(listener);
 
   auto cache2 = createCache();
@@ -809,7 +815,6 @@ TEST(RegisterKeysTest, ReceiveValues) {
     EXPECT_FALSE(hasValue);
   }
 
-  allKeysUpdatedLatch.reset(kNumKeys);
   listener->reset();
 
   for (auto i = 0U; i < kNumKeys; i++) {
@@ -817,7 +822,7 @@ TEST(RegisterKeysTest, ReceiveValues) {
   }
 
   EXPECT_EQ(boost::cv_status::no_timeout,
-            allKeysUpdatedLatch.wait_for(boost::chrono::seconds(60)));
+            listener->waitForUpdates(boost::chrono::seconds(60)));
 
   for (auto i = 0U; i < kNumKeys; i++) {
     auto hasKey = region1->containsKey(CacheableInt32::create(i));
