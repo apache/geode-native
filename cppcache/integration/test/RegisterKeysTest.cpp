@@ -64,8 +64,8 @@ constexpr size_t kNumKeys = 100;
 class CountdownCacheListener : public CacheListener {
  private:
   size_t expectedCount_;
-  boost::latch allKeysUpdatedLatch_;
   boost::latch allKeysInvalidateLatch_;
+  boost::latch allKeysUpdatedLatch_;
 
  public:
   CountdownCacheListener(size_t expectedCount)
