@@ -31,6 +31,7 @@ from read_values import (
 )
 from read_parts import read_object_header, read_int_part
 from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
+from interest_policy import interest_policy
 from interest_type import interest_type
 
 CHARS_IN_MESSAGE_HEADER = 34
@@ -256,7 +257,9 @@ def parse_interest_result_policy_part(message_bytes, offset):
     dscode, offset = call_reader_function(message_bytes, offset, read_byte_value)
     interest_result_policy_part["DSCode2"] = ds_codes[dscode]
 
-    interest_result_policy_part["Ordinal"], offset = call_reader_function(message_bytes, offset, read_byte_value)
+    policy, offset = call_reader_function(message_bytes, offset, read_byte_value)
+    interest_result_policy_part["Policy"] = interest_policy[policy]
+
     return (interest_result_policy_part, offset)
 
 def parse_interest_type_part(message_bytes, offset):
