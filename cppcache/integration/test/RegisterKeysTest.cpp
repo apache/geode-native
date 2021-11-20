@@ -16,6 +16,9 @@
 
 #include <gmock/gmock.h>
 
+#include <chrono>
+#include <thread>
+
 #include <boost/thread/latch.hpp>
 
 #include <gtest/gtest.h>
@@ -39,18 +42,62 @@ namespace {
 using apache::geode::client::binary_semaphore;
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
+using apache::geode::client::CacheListener;
 using apache::geode::client::CacheListenerMock;
+using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::Region;
+using apache::geode::client::RegionEvent;
 using apache::geode::client::RegionShortcut;
 
 using ::testing::_;
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
+
+constexpr size_t kNumKeys = 100;
+
+class CountdownCacheListener : public CacheListener {
+ private:
+  size_t expectedCount_;
+  boost::latch allKeysInvalidateLatch_;
+  boost::latch allKeysUpdatedLatch_;
+
+ public:
+  explicit CountdownCacheListener(size_t expectedCount)
+      : expectedCount_(expectedCount),
+        allKeysInvalidateLatch_(expectedCount),
+        allKeysUpdatedLatch_(expectedCount) {}
+
+  void afterUpdate(const EntryEvent&) override {
+    allKeysUpdatedLatch_.count_down();
+  }
+
+  void afterInvalidate(const EntryEvent&) override {
+    allKeysInvalidateLatch_.count_down();
+  }
+
+  void reset() {
+    allKeysInvalidateLatch_.reset(expectedCount_);
+    allKeysUpdatedLatch_.reset(expectedCount_);
+  }
+
+  template <class Rep, class Period>
+  boost::cv_status waitForUpdates(
+      const boost::chrono::duration<Rep, Period>& rel_time) {
+    return allKeysUpdatedLatch_.wait_for(rel_time);
+  }
+
+  template <class Rep, class Period>
+  boost::cv_status waitForInvalidates(
+      const boost::chrono::duration<Rep, Period>& rel_time) {
+    return allKeysInvalidateLatch_.wait_for(rel_time);
+  }
+};
 
 Cache createTestCache() {
   CacheFactory cacheFactory;
@@ -573,6 +620,217 @@ TEST(RegisterKeysTest, RegisterAnyWithProxyRegion) {
 
   EXPECT_THROW(region->registerKeys(keys, false, true), IllegalStateException);
   cache.close();
+}
+
+apache::geode::client::Cache createCache() {
+  return apache::geode::client::CacheFactory()
+      .set("log-level", "debug")
+      .set("log-file", "c:/temp/RegisterKeysTest.log")
+      .set("statistic-sampling-enabled", "false")
+      .create();
+}
+
+std::shared_ptr<apache::geode::client::Pool> createPool(
+    Cluster& cluster, apache::geode::client::Cache& cache) {
+  auto poolFactory = cache.getPoolManager().createFactory();
+  cluster.applyLocators(poolFactory);
+  poolFactory.setSubscriptionEnabled(true);  // Per the customer.
+  return poolFactory.create("default");
+}
+
+std::shared_ptr<apache::geode::client::Region> setupRegion(
+    apache::geode::client::Cache& cache,
+    const std::shared_ptr<apache::geode::client::Pool>& pool) {
+  auto region =
+      cache
+          .createRegionFactory(apache::geode::client::RegionShortcut::
+                                   CACHING_PROXY)  // Per the customer.
+          .setPoolName(pool->getName())
+          .create("region");
+
+  return region;
+}
+
+TEST(RegisterKeysTest, DontReceiveValues) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache1 = createCache();
+  auto pool1 = createPool(cluster, cache1);
+  auto region1 = setupRegion(cache1, pool1);
+  auto attrMutator = region1->getAttributesMutator();
+
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
+
+  attrMutator->setCacheListener(listener);
+
+  auto cache2 = createCache();
+  auto pool2 = createPool(cluster, cache2);
+  auto region2 = setupRegion(cache2, pool2);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
+  }
+
+  region1->registerAllKeys(false, false, false);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_FALSE(hasKey);
+  }
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto value = region1->get(CacheableInt32::create(i));
+  }
+
+  listener->reset();
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 1000));
+  }
+
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            listener->waitForInvalidates(boost::chrono::seconds(60)));
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+}
+
+TEST(RegisterKeysTest, ReceiveValuesLocalInvalidate) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache1 = createCache();
+  auto pool1 = createPool(cluster, cache1);
+  auto region1 = setupRegion(cache1, pool1);
+  auto attrMutator = region1->getAttributesMutator();
+
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
+  attrMutator->setCacheListener(listener);
+
+  auto cache2 = createCache();
+  auto pool2 = createPool(cluster, cache2);
+  auto region2 = setupRegion(cache2, pool2);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
+  }
+
+  region1->registerAllKeys(false, true, true);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasValue);
+  }
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region1->localInvalidate(CacheableInt32::create(i));
+  }
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+
+  listener->reset();
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
+  }
+
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            listener->waitForUpdates(boost::chrono::minutes(1)));
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasValue);
+  }
+}
+
+TEST(RegisterKeysTest, ReceiveValues) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start();
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache1 = createCache();
+  auto pool1 = createPool(cluster, cache1);
+  auto region1 = setupRegion(cache1, pool1);
+  auto attrMutator = region1->getAttributesMutator();
+
+  auto listener = std::make_shared<CountdownCacheListener>(kNumKeys);
+  attrMutator->setCacheListener(listener);
+
+  auto cache2 = createCache();
+  auto pool2 = createPool(cluster, cache2);
+  auto region2 = setupRegion(cache2, pool2);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i));
+  }
+
+  region1->registerAllKeys(false, false, true);
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_FALSE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_FALSE(hasValue);
+  }
+
+  listener->reset();
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    region2->put(CacheableInt32::create(i), CacheableInt32::create(i + 2000));
+  }
+
+  EXPECT_EQ(boost::cv_status::no_timeout,
+            listener->waitForUpdates(boost::chrono::seconds(60)));
+
+  for (auto i = 0U; i < kNumKeys; i++) {
+    auto hasKey = region1->containsKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasKey);
+
+    auto hasValue = region1->containsValueForKey(CacheableInt32::create(i));
+    EXPECT_TRUE(hasValue);
+  }
 }
 
 }  // namespace
