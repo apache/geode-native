@@ -378,16 +378,17 @@ class ServerMessageDecoder(DecoderBase):
             connection = parts[2]
             if tid in self.chunk_decoders_.keys():
                 self.chunk_decoders_[tid].add_header(parts[2], parts[4])
-                if self.chunk_decoders_[tid].is_complete_message():
-                    receive_trace = self.chunk_decoders_[tid].get_decoded_message(
-                        parts[0]
-                    )
-                    receive_trace["tid"] = str(tid)
-                    self.output_queue_.put({"message": receive_trace})
-                    self.chunk_decoders_[tid].reset()
             else:
                 self.chunk_decoders_[tid] = ChunkedResponseDecoder()
                 self.chunk_decoders_[tid].add_header(parts[2], parts[4])
+
+            if self.chunk_decoders_[tid].is_complete_message():
+                receive_trace = self.chunk_decoders_[tid].get_decoded_message(
+                    parts[0]
+                )
+                receive_trace["tid"] = str(tid)
+                self.output_queue_.put({"message": receive_trace})
+                self.chunk_decoders_[tid].reset()
         elif self.get_chunk_header(line, parts):
             flags = 0xFF
             size = 0
