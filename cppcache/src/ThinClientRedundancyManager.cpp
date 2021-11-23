@@ -917,7 +917,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
 
     if (m_redundantEndpoints.empty()) {
       err = GF_NOTCON;
-    } else if (primaryEndpoint && primaryEndpoint == m_redundantEndpoints[0]) {
+    } else if (primaryEndpoint && primaryEndpoint != m_redundantEndpoints[0]) {
       for (size_t count = 0;
            count < m_redundantEndpoints.size() + m_nonredundantEndpoints.size();
            count++) {
