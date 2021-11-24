@@ -898,12 +898,14 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
       primaryEndpoint = m_redundantEndpoints[0];
     }
 
+    auto maintainRedundancyLevelInvoked = false;
     if ((request.getMessageType() == TcrMessage::REGISTER_INTEREST_LIST ||
          request.getMessageType() == TcrMessage::REGISTER_INTEREST ||
          request.getMessageType() == TcrMessage::UNREGISTER_INTEREST_LIST ||
          request.getMessageType() == TcrMessage::UNREGISTER_INTEREST) &&
         (err != GF_NOERR ||
          static_cast<int>(m_redundantEndpoints.size()) <= m_redundancyLevel)) {
+      maintainRedundancyLevelInvoked = true;
       err = maintainRedundancyLevel(false, &request, &reply, region);
       if (theHADM->isFatalClientError(err)) {
         return err;
@@ -917,7 +919,7 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
 
     if (m_redundantEndpoints.empty()) {
       err = GF_NOTCON;
-    } else if (primaryEndpoint && primaryEndpoint != m_redundantEndpoints[0]) {
+    } else if (primaryEndpoint && maintainRedundancyLevelInvoked) {
       for (size_t count = 0;
            count < m_redundantEndpoints.size() + m_nonredundantEndpoints.size();
            count++) {
