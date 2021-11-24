@@ -18,3 +18,5 @@
 
 /tools/gnmsg/.idea/
 /tools/gnmsg/__pycache__/
+
+netcore/shared/Config.cs
