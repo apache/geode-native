@@ -371,13 +371,13 @@ class SuspendTransactionThread {
 
   void run() {
     LOG(" In SuspendTransactionThread");
-    auto txm = getHelper()->getCache()->getCacheTransactionManager();
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
 
-    txm->begin();
+    txManager->begin();
     createEntry(regionNames[0], keys[4], vals[4]);
     createEntry(regionNames[1], keys[5], vals[5]);
 
-    tx_ = &txm->getTransactionId();
+    tx_ = &txManager->getTransactionId();
 
     if (sleep_) {
       sem_.acquire();
@@ -385,7 +385,7 @@ class SuspendTransactionThread {
       std::this_thread::sleep_for(std::chrono::seconds{5});
     }
 
-    tx_ = &txm->suspend();
+    tx_ = &txManager->suspend();
     LOG(" Out SuspendTransactionThread");
 
     getHelper()
@@ -444,26 +444,26 @@ class ResumeTransactionThread {
                      "In ResumeTransactionThread - Key should not have been "
                      "found in region.");
 
-    auto txm = getHelper()->getCache()->getCacheTransactionManager();
+    auto txManager = getHelper()->getCache()->getCacheTransactionManager();
     if (sleep_) {
-      THREADERRORCHECK(!txm->isSuspended(tx_),
+      THREADERRORCHECK(!txManager->isSuspended(tx_),
                        "In ResumeTransactionThread - the transaction should "
                        "NOT be in suspended state");
     } else {
-      THREADERRORCHECK(txm->isSuspended(tx_),
+      THREADERRORCHECK(txManager->isSuspended(tx_),
                        "In ResumeTransactionThread - the transaction should be "
                        "in suspended state");
     }
 
     THREADERRORCHECK(
-        txm->exists(tx_),
+        txManager->exists(tx_),
         "In ResumeTransactionThread - the transaction should exist");
 
     if (sleep_) {
       sem_.release();
-      txm->tryResume(tx_, std::chrono::seconds(30));
+      txManager->tryResume(tx_, std::chrono::seconds(30));
     } else {
-      txm->resume(tx_);
+      txManager->resume(tx_);
     }
 
     THREADERRORCHECK(
@@ -476,7 +476,7 @@ class ResumeTransactionThread {
     createEntry(regionNames[1], keys[6], vals[6]);
 
     if (commit_) {
-      txm->commit();
+      txManager->commit();
       THREADERRORCHECK(
           regPtr0->containsKeyOnServer(keyPtr4),
           "In ResumeTransactionThread - Key should have been found in region.");
@@ -488,7 +488,7 @@ class ResumeTransactionThread {
           "In ResumeTransactionThread - Key should have been found in region.");
 
     } else {
-      txm->rollback();
+      txManager->rollback();
       THREADERRORCHECK(!regPtr0->containsKeyOnServer(keyPtr4),
                        "In ResumeTransactionThread - Key should not have been "
                        "found in region.");
