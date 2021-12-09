@@ -17,6 +17,7 @@ project(framework LANGUAGES CXX)
 
 add_library(framework STATIC
   GsRandom.cpp
+  GsRandom.hpp
 )
 
 set_target_properties(framework PROPERTIES

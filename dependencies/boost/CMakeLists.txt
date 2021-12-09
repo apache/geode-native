@@ -52,6 +52,8 @@ if ("Darwin" STREQUAL ${CMAKE_SYSTEM_NAME})
   endforeach()
   string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_SYSROOT_FLAG} ${CMAKE_OSX_SYSROOT}")
   string(APPEND CMAKE_CXX_FLAGS " ${CMAKE_CXX_OSX_DEPLOYMENT_TARGET_FLAG}${CMAKE_OSX_DEPLOYMENT_TARGET}")
+elseif(WIN32)
+  list(APPEND B2_FLAGS define=_WIN32_WINNT=${USE_WINAPI_VERSION})
 endif()
 
 if ("SunOS" STREQUAL ${CMAKE_SYSTEM_NAME})
@@ -156,13 +158,12 @@ target_compile_definitions(boost_stacktrace INTERFACE
 )
 
 target_compile_definitions(boost_asio INTERFACE
-    BOOST_ASIO_HAS_MOVE
+  BOOST_ASIO_HAS_MOVE
 )
 
 if(WIN32)
   target_compile_definitions(boost INTERFACE
-    # Required for Boost.WinAPI
-    _WIN32_WINNT=0x06020000
+    _WIN32_WINNT=${USE_WINAPI_VERSION}
   )
 endif()
 
@@ -170,5 +171,5 @@ if(MSVC)
   target_compile_options(boost_process INTERFACE
   	/wd4267
     /wd4244
-	)
+  )
 endif()
