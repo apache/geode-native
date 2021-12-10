@@ -22,7 +22,7 @@ option(USE_RAT "Enable Apache Rat checking." OFF)
 option(WITH_IPV6 "Enable IPv6 support." OFF)
 
 if(WIN32)
-  set(USE_WINAPI_VERSION "0x0602" CACHE STRING "Windows API version for _WIN32_WINNT macro." FORCE)
+  set(USE_WINAPI_VERSION "0x0602" CACHE STRING "Windows API version for _WIN32_WINNT macro.")
 endif()
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
