@@ -70,6 +70,7 @@ elseif(MSVC)
   else()
     list(APPEND B2_FLAGS toolset=msvc-${MSVC_TOOLSET_VERSION})
   endif()
+  list(APPEND B2_FLAGS define=BOOST_LOG_NO_CXX11_CODECVT_FACETS)
   set(CMAKE_STATIC_LIBRARY_PREFIX lib)
 elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
   list(APPEND BOOTSTRAP_FLAGS --with-toolset=clang)
@@ -101,71 +102,79 @@ ExternalProject_Get_Property(${EXTERN} INSTALL_DIR)
 set(INSTALL_DIR "${INSTALL_DIR}/$<CONFIG>")
 
 function(ADD_BOOST_LIBRARY)
-  set(options)
+  set(options HEADER_ONLY)
   set(oneValueArgs)
-  set(multiValueArgs LIBRARIES DEPENDENCIES)
+  set(multiValueArgs LINK_LIBRARIES DEFINITIONS INCLUDE_DIRECTORIES DEPENDENCIES)
   cmake_parse_arguments(PARSE_ARGV 1 args "${options}" "${oneValueArgs}" "${multiValueArgs}")
 
   set(args_NAME ${ARGV0})
+  set(targetName boost_${args_NAME})
 
-  if (NOT DEFINED args_LIBRARIES)
-    set(args_LIBRARIES ${args_NAME})
+  set(linkLibrary)
+  if (NOT args_HEADER_ONLY)
+    set(linkLibrary "${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
   endif()
 
-  set(linkLibraries)
-  foreach(library ${args_LIBRARIES})
-    list(APPEND linkLibraries "${INSTALL_DIR}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}boost_${args_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  endforeach()
+  add_library(${targetName} INTERFACE)
 
-  add_library(boost_${args_NAME} INTERFACE)
-  target_link_libraries(boost_${args_NAME} INTERFACE
-    ${linkLibraries}
-    ${args_DEPENDENCIES}
+  target_compile_definitions(${targetName} INTERFACE ${args_DEFINITIONS})
+
+  target_include_directories(${targetName} SYSTEM INTERFACE ${args_INCLUDE_DIRECTORIES})
+
+  target_link_libraries(${targetName} INTERFACE
+    ${linkLibrary}
+    ${args_LINK_LIBRARIES}
   )
-  add_library(Boost::${args_NAME} ALIAS boost_${args_NAME})
+
+  if(DEFINED args_DEPENDENCIES)
+    add_dependencies(${targetName} ${args_DEPENDENCIES})
+  endif()
+
+  add_library(Boost::${args_NAME} ALIAS ${targetName})
 endfunction()
 
 
-add_library(${PROJECT_NAME} INTERFACE)
-target_include_directories(${PROJECT_NAME} SYSTEM INTERFACE
-  $<BUILD_INTERFACE:${INSTALL_DIR}/include>
-)
-target_compile_definitions(${PROJECT_NAME} INTERFACE
-  BOOST_ALL_NO_LIB
-)
-target_link_libraries(${PROJECT_NAME} INTERFACE
-)
-add_library(Boost::boost ALIAS boost)
-add_dependencies(${PROJECT_NAME} ${EXTERN})
-
 find_package(Threads REQUIRED)
 
-add_boost_library(system DEPENDENCIES Boost::boost)
-add_boost_library(atomic DEPENDENCIES Boost::boost)
-add_boost_library(iostreams DEPENDENCIES Boost::boost)
-add_boost_library(thread DEPENDENCIES Threads::Threads Boost::atomic Boost::boost)
-add_boost_library(filesystem DEPENDENCIES Boost::system Boost::boost)
-add_boost_library(log DEPENDENCIES Boost::thread Boost::filesystem Boost::boost)
-add_boost_library(log_setup DEPENDENCIES Boost::log)
-add_boost_library(chrono DEPENDENCIES Boost::chrono)
-add_boost_library(stacktrace LIBRARIES "" DEPENDENCIES Boost::boost)
-add_boost_library(asio LIBRARIES "" DEPENDENCIES Boost::boost)
-add_boost_library(process LIBRARIES "" DEPENDENCIES Boost::system)
-add_boost_library(regex DEPENDENCIES Boost::boost)
 
-target_compile_definitions(boost_stacktrace INTERFACE
-  BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+add_boost_library(boost HEADER_ONLY
+  INCLUDE_DIRECTORIES
+    $<BUILD_INTERFACE:${INSTALL_DIR}/include>
+  DEFINITIONS
+    BOOST_ALL_NO_LIB
+    $<$<PLATFORM_ID:Windows>:_WIN32_WINNT=${USE_WINAPI_VERSION}>
+  DEPENDENCIES
+    ${EXTERN}
 )
-
-target_compile_definitions(boost_asio INTERFACE
-  BOOST_ASIO_HAS_MOVE
+add_boost_library(system LINK_LIBRARIES Boost::boost)
+add_boost_library(atomic LINK_LIBRARIES Boost::boost)
+add_boost_library(iostreams LINK_LIBRARIES Boost::boost)
+add_boost_library(thread LINK_LIBRARIES Threads::Threads Boost::atomic Boost::boost)
+add_boost_library(filesystem LINK_LIBRARIES Boost::system Boost::boost)
+add_boost_library(log 
+  LINK_LIBRARIES
+    Boost::thread
+    Boost::filesystem
+    Boost::boost
+  DEFINITIONS
+    $<$<CXX_COMPILER_ID:MSVC>:BOOST_LOG_NO_CXX11_CODECVT_FACETS>
 )
-
-if(WIN32)
-  target_compile_definitions(boost INTERFACE
-    _WIN32_WINNT=${USE_WINAPI_VERSION}
-  )
-endif()
+add_boost_library(log_setup LINK_LIBRARIES Boost::log)
+add_boost_library(chrono LINK_LIBRARIES Boost::chrono)
+add_boost_library(stacktrace HEADER_ONLY 
+  LINK_LIBRARIES
+    Boost::boost
+  DEFINITIONS
+    BOOST_STACKTRACE_GNU_SOURCE_NOT_REQUIRED
+)
+add_boost_library(asio HEADER_ONLY
+  LINK_LIBRARIES
+    Boost::boost
+  DEFINITIONS
+    BOOST_ASIO_HAS_MOVE
+)
+add_boost_library(process HEADER_ONLY LINK_LIBRARIES Boost::system)
+add_boost_library(regex LINK_LIBRARIES Boost::boost)
 
 if(MSVC)
   target_compile_options(boost_process INTERFACE
