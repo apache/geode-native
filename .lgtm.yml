@@ -2,7 +2,7 @@ extraction:
   cpp:
     configure:
       command:
-        - GEODE_VERSION=1.14.0
+        - GEODE_VERSION=1.14.1
         - mkdir _lgtm_build_dir
         - cd _lgtm_build_dir
         - wget -O apache-geode.tgz https://downloads.apache.org/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz
