@@ -66,11 +66,11 @@ elseif(MSVC)
   endif()
   list(APPEND BOOTSTRAP_FLAGS vc${MSVC_TOOLSET_VERSION})
   if (CMAKE_VS_PLATFORM_TOOLSET_VERSION)
-	list(APPEND B2_FLAGS toolset=msvc-${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
+    list(APPEND B2_FLAGS toolset=msvc-${CMAKE_VS_PLATFORM_TOOLSET_VERSION})
   else()
     list(APPEND B2_FLAGS toolset=msvc-${MSVC_TOOLSET_VERSION})
   endif()
-  list(APPEND B2_FLAGS define=BOOST_LOG_NO_CXX11_CODECVT_FACETS)
+  list(APPEND B2_FLAGS define=BOOST_NO_CXX11_HDR_CODECVT)
   set(CMAKE_STATIC_LIBRARY_PREFIX lib)
 elseif ("Clang" STREQUAL ${CMAKE_CXX_COMPILER_ID})
   list(APPEND BOOTSTRAP_FLAGS --with-toolset=clang)
@@ -157,7 +157,7 @@ add_boost_library(log
     Boost::filesystem
     Boost::boost
   DEFINITIONS
-    $<$<CXX_COMPILER_ID:MSVC>:BOOST_LOG_NO_CXX11_CODECVT_FACETS>
+    $<$<CXX_COMPILER_ID:MSVC>:BOOST_NO_CXX11_HDR_CODECVT>
 )
 add_boost_library(log_setup LINK_LIBRARIES Boost::log)
 add_boost_library(chrono LINK_LIBRARIES Boost::chrono)
@@ -178,7 +178,7 @@ add_boost_library(regex LINK_LIBRARIES Boost::boost)
 
 if(MSVC)
   target_compile_options(boost_process INTERFACE
-  	/wd4267
+    /wd4267
     /wd4244
   )
 endif()
