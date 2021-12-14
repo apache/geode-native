@@ -146,7 +146,10 @@ void Locator::start() {
 }
 
 void Locator::stop() {
-  cluster_.getGfsh().stop().locator().withDir(name_).execute();
+  try {
+    cluster_.getGfsh().stop().locator().withDir(name_).execute();
+  } catch (...) {
+  }
 
   started_ = false;
 }
@@ -228,7 +231,10 @@ void Server::start() {
 }
 
 void Server::stop() {
-  cluster_.getGfsh().stop().server().withDir(name_).execute();
+  try {
+    cluster_.getGfsh().stop().server().withDir(name_).execute();
+  } catch (...) {
+  }
 
   started_ = false;
 }
@@ -441,9 +447,10 @@ void Cluster::start(std::function<void()> extraGfshCommands) {
   servers_.reserve(initialServers_.size());
   std::string xmlFile;
   for (size_t i = 0; i < initialServers_.size(); i++) {
-    xmlFile = (cacheXMLFiles_.size() == 0) ? ""
-              : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
-                                           : cacheXMLFiles_[i];
+    xmlFile = (cacheXMLFiles_.size() == 0)
+                  ? ""
+                  : cacheXMLFiles_.size() == 1 ? cacheXMLFiles_[0]
+                                               : cacheXMLFiles_[i];
 
     servers_.push_back({*this, locators_,
                         name_ + "/server/" + std::to_string(i), xmlFile,

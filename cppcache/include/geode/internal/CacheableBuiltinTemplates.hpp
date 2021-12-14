@@ -170,7 +170,7 @@ class CacheableArrayPrimitive : public DataSerializablePrimitive {
 };
 
 /** Template class for container Cacheable types. */
-template <typename TBase, DSCode TYPEID, class _Derived>
+template <typename TBase, DSCode TYPEID>
 class CacheableContainerPrimitive : public DataSerializablePrimitive,
                                     public TBase {
  public:
@@ -188,23 +188,22 @@ class CacheableContainerPrimitive : public DataSerializablePrimitive,
 
   DSCode getDsCode() const override { return TYPEID; }
 
-  size_t objectSize() const override {
-    return sizeof(_Derived) + serializer::objectSize(*this);
-  }
+  size_t objectSize() const override { return serializer::objectSize(*this); }
 
   /** Factory function registered with serialization registry. */
   inline static std::shared_ptr<Serializable> createDeserializable() {
-    return std::make_shared<_Derived>();
+    return std::make_shared<CacheableContainerPrimitive>();
   }
 
   /** Factory function to create a default instance. */
-  inline static std::shared_ptr<_Derived> create() {
-    return std::make_shared<_Derived>();
+  inline static std::shared_ptr<CacheableContainerPrimitive> create() {
+    return std::make_shared<CacheableContainerPrimitive>();
   }
 
   /** Factory function to create an instance with the given size. */
-  inline static std::shared_ptr<_Derived> create(const int32_t n) {
-    return std::make_shared<_Derived>(n);
+  inline static std::shared_ptr<CacheableContainerPrimitive> create(
+      const int32_t n) {
+    return std::make_shared<CacheableContainerPrimitive>(n);
   }
 };
 

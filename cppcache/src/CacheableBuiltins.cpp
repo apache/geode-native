@@ -58,6 +58,39 @@ template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
 template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT CacheableArrayPrimitive<
     std::shared_ptr<CacheableString>, DSCode::CacheableStringArray>;
 
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableVector>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashMap>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                DSCode::CacheableHashSet>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableArrayList>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<std::vector<std::shared_ptr<Cacheable>>,
+                                DSCode::CacheableLinkedList>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableStack>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable, DSCode::CacheableHashTable>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashMapOfCacheable,
+                                DSCode::CacheableIdentityHashMap>;
+
+template class APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT
+    CacheableContainerPrimitive<HashSetOfCacheableKey,
+                                DSCode::CacheableLinkedHashSet>;
+
 }  // namespace internal
 }  // namespace client
 }  // namespace geode

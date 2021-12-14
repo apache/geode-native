@@ -50,6 +50,7 @@ using apache::geode::client::CacheListener;
 using apache::geode::client::CacheListenerMock;
 using apache::geode::client::EntryEvent;
 using apache::geode::client::IllegalStateException;
+using apache::geode::client::Nice_MockListener;
 using apache::geode::client::Region;
 using apache::geode::client::RegionEvent;
 using apache::geode::client::RegionShortcut;
@@ -247,7 +248,7 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
     poolFactory.create("default");
   }
 
-  auto listener = std::make_shared<CacheListenerMock>();
+  auto listener = std::make_shared<Nice_MockListener>();
   EXPECT_CALL(*listener, afterRegionLive(_))
       .WillRepeatedly(DoAll(ReleaseSem(&live_sem), AcquireSem(&shut_sem)));
   EXPECT_CALL(*listener, afterRegionDisconnected(_))
@@ -274,7 +275,10 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   create_latch.wait();
 
   producer.join();
-  gfsh.shutdown().execute();
+
+  for (auto& server : cluster.getServers()) {
+    server.stop();
+  }
 
   shut_sem.acquire();
   shut_sem.release();
@@ -347,7 +351,9 @@ TEST(RegisterKeysTest, RegisterRegexAndClusterRestart) {
   producer_non_interest.join();
   producer_interest.join();
 
-  gfsh.shutdown().execute();
+  for (auto& server : cluster.getServers()) {
+    server.stop();
+  }
 
   shut_sem.acquire();
   shut_sem.release();
@@ -429,7 +435,9 @@ TEST(RegisterKeysTest, RegisterKeySetAndClusterRestart) {
   producer_non_interest.join();
   producer_interest.join();
 
-  gfsh.shutdown().execute();
+  for (auto& server : cluster.getServers()) {
+    server.stop();
+  }
 
   shut_sem.acquire();
   shut_sem.release();
@@ -513,7 +521,10 @@ TEST(RegisterKeysTest, RegisterKeySetAndDestroyClusterRestart) {
   producer_interest.join();
 
   region->remove(interest_keys[0]);
-  gfsh.shutdown().execute();
+
+  for (auto& server : cluster.getServers()) {
+    server.stop();
+  }
 
   shut_sem.acquire();
   shut_sem.release();
