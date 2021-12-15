@@ -54,7 +54,7 @@ RUN installer=$(mktemp) \
     && bash ${installer} --skip-license --prefix=/usr/local \
     && rm ${installer}
 
-ARG GEODE_VERSION=1.14.1
+ARG GEODE_VERSION=1.14.2
 ENV GEODE_HOME /apache-geode-${GEODE_VERSION}
 RUN curl -L -s "https://www.apache.org/dyn/closer.lua/geode/${GEODE_VERSION}/apache-geode-${GEODE_VERSION}.tgz?action=download" | tar -zxvf - --exclude javadoc
 
