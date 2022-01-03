@@ -16,6 +16,9 @@
  */
 using System;
 using System.Runtime.InteropServices;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Apache.Geode.Client {
   public class Region : GeodeNativeObject {
@@ -64,90 +67,201 @@ namespace Apache.Geode.Client {
       Marshal.FreeCoTaskMem(regionNamePtr);
     }
 
-    public void PutString(string key, string value) {
-      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      var valuePtr = Marshal.StringToCoTaskMemUTF8(value);
-      apache_geode_Region_PutString(_containedObject, keyPtr, valuePtr);
-      Marshal.FreeCoTaskMem(keyPtr);
-      Marshal.FreeCoTaskMem(valuePtr);
-    }
-
-    public void PutByteArray(string key, byte[] value) {
-      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      var valuePtr = Marshal.AllocCoTaskMem(value.Length);
-      Marshal.Copy(value, 0, valuePtr, value.Length);
-      apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, value.Length);
-      Marshal.FreeCoTaskMem(keyPtr);
-      Marshal.FreeCoTaskMem(valuePtr);
-    }
-
-    public void PutByteArray(Int32 key, byte[] value)
+    public void Put<TValue>(string key, TValue value)
     {
-      //var keyPtr = Marshal.AllocCoTaskMem(4);
-      var valuePtr = Marshal.AllocCoTaskMem(value.Length);
-      Marshal.Copy(value, 0, valuePtr, value.Length);
-      apache_geode_Region_PutByteArrayForInt32Key(_containedObject, key, valuePtr, value.Length);
-      Marshal.FreeCoTaskMem(valuePtr);
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+
+      // Ensure serializable
+      var valueType = value.GetType();
+      if (!valueType.IsSerializable)
+        throw new Exception("Error: value is not Serializable.");
+
+      TypeCode valueTypeCode = Type.GetTypeCode(typeof(TValue));
+      Constants.DSCode dsCode = (Constants.DSCode)Constants.DotNetToDSCode[valueTypeCode];
+
+      Int32 int32 = 0;
+      Int16 int16 = 0;
+      int valueLength;
+      IntPtr valuePtr = (IntPtr)0;
+
+      switch (dsCode)
+      {
+        case Constants.DSCode.CacheableString:
+          var strPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(value));
+          apache_geode_Region_PutString(_containedObject, keyPtr, strPtr);
+          Marshal.FreeCoTaskMem(keyPtr);
+          Marshal.FreeCoTaskMem(strPtr);
+          break;
+        case Constants.DSCode.CacheableInt32:
+          valueLength = 4;
+          valuePtr = Marshal.AllocCoTaskMem(valueLength + 1);
+          Marshal.StructureToPtr<byte>((byte)dsCode, valuePtr, false);
+          int32 = Convert.ToInt32(value);
+          Marshal.StructureToPtr<byte>((byte)(int32 >> 24), valuePtr+1, false);
+          Marshal.StructureToPtr<byte>((byte)(int32 >> 16), valuePtr+2, false);
+          Marshal.StructureToPtr<byte>((byte)(int32 >> 8),  valuePtr+3, false);
+          Marshal.StructureToPtr<byte>((byte)(int32),       valuePtr+4, false);
+          apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
+          Marshal.FreeCoTaskMem(keyPtr);
+          Marshal.FreeCoTaskMem(valuePtr);
+          break;
+        case Constants.DSCode.CacheableInt16:
+          valueLength = 2;
+          valuePtr = Marshal.AllocCoTaskMem(valueLength + 1);
+          Marshal.StructureToPtr<byte>((byte)dsCode, valuePtr, false);
+          int16 = Convert.ToInt16(value);
+          Marshal.StructureToPtr<byte>((byte)(int16 >> 8), valuePtr + 1, false);
+          Marshal.StructureToPtr<byte>((byte)(int16),      valuePtr + 2, false);
+          apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
+          Marshal.FreeCoTaskMem(keyPtr);
+          Marshal.FreeCoTaskMem(valuePtr);
+          break;
+      }
     }
 
-    public void Put<TKey, TValue>(TKey key, TValue value)
+    //public void PutByteArray(Int32 key, byte[] value)
+    //{
+    //  //var keyPtr = Marshal.AllocCoTaskMem(4);
+    //  var valuePtr = Marshal.AllocCoTaskMem(value.Length);
+    //  Marshal.Copy(value, 0, valuePtr, value.Length);
+    //  apache_geode_Region_PutByteArrayForInt32Key(_containedObject, key, valuePtr, value.Length);
+    //  Marshal.FreeCoTaskMem(valuePtr);
+    //}
+
+    //byte[] ObjectToByteArray(object obj)
+    //{
+    //  if (obj == null)
+    //    return null;
+    //  BinaryFormatter bf = new BinaryFormatter();
+    //  using (MemoryStream ms = new MemoryStream())
+    //  {
+    //    bf.Serialize(ms, obj); { }
+    //    return ms.ToArray();
+    //  }
+    //}
+
+    //Span<byte> ConvertToByteArray<T>(ref T value) where T : unmanaged {
+    //  //unsafe {
+    //  //int length = sizeof(T);
+    //  //Span<byte> bytes = value;
+
+    //  //  Buffer.BlockCopy(Array src, int srcOffset, Array dst, int dstOffset, int length);
+    //  //}
+    //  return value;
+    //}
+
+    //private T Deserialize<T>(byte[] param)
+    //{
+    //  using (MemoryStream ms = new MemoryStream(param))
+    //  {
+    //    IFormatter br = new BinaryFormatter();
+    //    return (T)br.Deserialize(ms);
+    //  }
+    //}
+
+    //public void Put<TKey, TValue>(ref TKey key, ref TValue value)
+    //  where TKey : unmanaged
+    //  where TValue : unmanaged
+    //{
+    //  // Ensure serializable
+    //  var keyType = key.GetType();
+    //  if (!keyType.IsSerializable)
+    //    throw new Exception("Error: key is not Serializable.");
+    //  var valueType = value.GetType();
+    //  if (!valueType.IsSerializable)
+    //    throw new Exception("Error: value is not Serializable.");
+
+    //  TypeCode keyTypeCode = Type.GetTypeCode(typeof(TKey));
+    //  TypeCode valueTypeCode = Type.GetTypeCode(typeof(TValue));
+
+    //  Constants.DSCode keyDSCode = Constants.DotNetToDSCode[keyTypeCode];
+    //  Constants.DSCode valueDSCode = Constants.DotNetToDSCode[valueTypeCode];
+
+    //  if (keyDSCode == Constants.DSCode.CacheableString) {
+    //    var keyPtr = Marshal.StringToCoTaskMemUTF8(key as string);
+    //    var valuePtr = Marshal.StringToCoTaskMemUTF8(value);
+    //    apache_geode_Region_PutString(_containedObject, keyPtr, valuePtr);
+    //    Marshal.FreeCoTaskMem(keyPtr);
+    //    Marshal.FreeCoTaskMem(valuePtr);
+    //  }
+
+    //}
+    //fixed (TKey* keyPtr = &key, TValue* valPtr = &value)
+    //  {
+    //    apache_geode_Region_PutByteArray(IntPtr region,
+    //                                     IntPtr keyPtr, sizeof(TKey),
+    //                                     IntPtr valPtr, sizeof(TValue));
+    //  }
+
+    //}
+    //  // Can't use sizeof with generic params (CS0233), so pick scratch size
+    //  // we know will be big enough.
+    //  //Span<byte> stackSpan = stackalloc byte[100];
+    //  //Span<TKey> keySpan = 
+    //  //nativeSpan[0] = (byte)keyTypeCode;
+    //  //nativeSpan.Copy<T>(ReadOnlySpan<T> source, Span<T> destination);
+    //  //unsafe
+    //  //{
+    //  //  Span<TKey> slicedKey = nativeSpan.Slice(start: 1, length: sizeof(TKey));
+
+    //  //  //Buffer.BlockCopy(((byte[])((object)key)), 0, dst: (byte[])((object)nativeSpan), dstOffset: 1, count: sizeof(TKey));
+    //  //  for (int i = 0; i < sizeof(TKey); i++)
+    //  //    nativeSpan[i+1] = &key;
+    //  //}
+
+    //  //for (int ctr = 0; ctr < nativeSpan.Length; ctr++)
+    //  //  nativeSpan[ctr] = data++;
+
+
+    //  //val.TryFormat(valBytes, numBytes);
+    //  //byte[] serializedBytes = val.Ser
+
+    //  if (value.GetType() == typeof(int) || value.GetType() == typeof(uint)) {
+    //    var byteArray = new byte[5];
+    //    byteArray[0] = 57;
+    //    int v = Convert.ToInt32(value);
+    //    byteArray[1] = (byte)((v >> 24));
+    //    byteArray[2] = (byte)((v >> 16));
+    //    byteArray[3] = (byte)((v >> 8));
+    //    byteArray[4] = (byte)((v));
+    //    PutByteArray(key.ToString(), byteArray);
+    //  }
+    //}
+
+    public TValue Get<TKey, TValue>(TKey key)
     {
       // This is a generic, so can't do any marshaling directly.
       if (key.GetType() == typeof(string))
       {
-        var type = value.GetType();
-        if (!type.IsSerializable)
-          throw new Exception("Error: Object is not Serializable.");
+        var byteArray = GetByteArray(key.ToString()); // Needs to be modified to read from data_serializable_raw.cpp
+        Constants.DSCode dsCode = (Constants.DSCode)byteArray[0];
+        switch (dsCode) {
+          case Constants.DSCode.CacheableString:
+            var keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
+            var result =
+                Marshal.PtrToStringUTF8(apache_geode_Region_GetString(_containedObject, keyPtr));
+            Marshal.FreeCoTaskMem(keyPtr);
+            return (TValue)Convert.ChangeType(result, typeof(TValue));
+          case Constants.DSCode.CacheableInt32:
+            Int32 int32 =
+              (byteArray[1] << 24) |
+              (byteArray[2] << 16) |
+              (byteArray[3] << 8) |
+              (byteArray[4]);
+            return (TValue)Convert.ChangeType(int32, typeof(TValue));
+          case Constants.DSCode.CacheableInt16:
+            Int16 int16 =
+              (Int16)((byteArray[1] << 8) |
+              (byteArray[2]));
+            return (TValue)Convert.ChangeType(int16, typeof(TValue));
 
-        if (value.GetType() == typeof(int) || value.GetType() == typeof(uint)) {
-          var byteArray = new byte[5];
-          byteArray[0] = 57;
-          int v = Convert.ToInt32(value);
-          byteArray[1] = (byte)((v >> 24));
-          byteArray[2] = (byte)((v >> 16));
-          byteArray[3] = (byte)((v >> 8));
-          byteArray[4] = (byte)((v));
-          PutByteArray(key.ToString(), byteArray);
+          default:
+            return default(TValue);
         }
-      }
-      else if (key.GetType() == typeof(int) || key.GetType() == typeof(uint))
-      {
-        var type = value.GetType();
-        if (!type.IsSerializable)
-          throw new Exception("Error: Object is not Serializable.");
 
-        if (value.GetType() == typeof(int) || value.GetType() == typeof(uint))
-        {
-          var byteArray = new byte[5];
-          byteArray[0] = 57;
-          int v = Convert.ToInt32(value);
-          byteArray[1] = (byte)((v >> 24));
-          byteArray[2] = (byte)((v >> 16));
-          byteArray[3] = (byte)((v >> 8));
-          byteArray[4] = (byte)((v));
-          PutByteArray(key.ToString(), byteArray);
-        }
-      }
-      else {
-        throw new NotImplementedException();
-      }
-    }
-
-    public int Get<TKey>(TKey key)
-    {
-      // This is a generic, so can't do any marshaling directly.
-      if (key.GetType() == typeof(string))
-      {
-        var value = GetByteArray(key.ToString());
-        return BitConverter.ToInt32(value);
-      }
-      if (key.GetType() == typeof(int))
-      {
-        var value = GetByteArray(Convert.ToInt32(key));
-        return BitConverter.ToInt32(value);
       }
       else
-        throw new NotImplementedException();
+        return default(TValue);
     }
 
     public string GetString(string key) {
