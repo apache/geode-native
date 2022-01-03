@@ -18,6 +18,7 @@
 #include <iterator>
 
 // C++ client public headers
+#include "geode/DataInput.hpp"
 #include "geode/DataOutput.hpp"
 #include "geode/internal/DataSerializablePrimitive.hpp"
 
@@ -26,6 +27,7 @@
 
 // C client private headers
 
+using apache::geode::client::DataInput;
 using apache::geode::client::DataOutput;
 
 namespace apache {
@@ -47,7 +49,9 @@ void DataSerializableRaw::toData(DataOutput& dataOutput) const {
   dataOutput.writeBytesOnly(bytes_.data() + 1, bytes_.size() - 1);
 }
 
-void DataSerializableRaw::fromData(DataInput& dataInput) {}
+void DataSerializableRaw::fromData(DataInput& dataInput) {
+  dataInput.readBytesOnly(bytes_.data() + 1, bytes_.size() - 1);
+}
 
 DSCode DataSerializableRaw::getDsCode() const {
   return static_cast<DSCode>(bytes_[0]);

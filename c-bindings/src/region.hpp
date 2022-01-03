@@ -37,6 +37,9 @@ class RegionWrapper : public ClientKeeper {
 
   void PutByteArray(const std::string& key, const char* value, size_t size);
 
+  template<typename TKey, typename TVal>
+  void Put(TKey key, TVal val);
+
   void PutByteArray(const int32_t key, const char* value, size_t size);
 
   const char* GetString(const std::string& key);
