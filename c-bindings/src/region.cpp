@@ -86,14 +86,24 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 
   if (val.get() == nullptr) return;
 
-  std::shared_ptr<std::vector<int8_t>> bytes = std::make_shared<std::vector<int8_t>>();
+  std::shared_ptr<std::vector<int8_t>> bytes =
+      std::make_shared<std::vector<int8_t>>();
   apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
   bytes->push_back((byte)primitive->getDsCode());
 
   int32_t int32 = 0;
   int16_t int16 = 0;
+  std::string str = "";
 
   switch (dsCode) {
+    case apache::geode::client::internal::DSCode::CacheableASCIIString:
+      str = 
+          std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
+              primitive)
+              ->value();
+      *size = str.length() + 1;
+      std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
+      break;
     case apache::geode::client::internal::DSCode::CacheableInt32:
       int32 =
           std::dynamic_pointer_cast<apache::geode::client::CacheableInt32>
