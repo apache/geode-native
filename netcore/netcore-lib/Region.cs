@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 using System;
+using System.Text;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Runtime.Serialization;
@@ -233,15 +234,12 @@ namespace Apache.Geode.Client {
       // This is a generic, so can't do any marshaling directly.
       if (key.GetType() == typeof(string))
       {
-        var byteArray = GetByteArray(key.ToString()); // Needs to be modified to read from data_serializable_raw.cpp
+        var byteArray = GetByteArray(key.ToString());
         Constants.DSCode dsCode = (Constants.DSCode)byteArray[0];
         switch (dsCode) {
-          case Constants.DSCode.CacheableString:
-            var keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
-            var result =
-                Marshal.PtrToStringUTF8(apache_geode_Region_GetString(_containedObject, keyPtr));
-            Marshal.FreeCoTaskMem(keyPtr);
-            return (TValue)Convert.ChangeType(result, typeof(TValue));
+          case Constants.DSCode.CacheableASCIIString:
+            string str = Encoding.ASCII.GetString(byteArray, 1, byteArray.Length-1);
+            return (TValue)Convert.ChangeType(str, typeof(TValue));
           case Constants.DSCode.CacheableInt32:
             Int32 int32 =
               (byteArray[1] << 24) |
@@ -334,23 +332,23 @@ namespace Apache.Geode.Client {
 
   //}
 
-  public class Region<TVal>
-  {
-    Region region_;
-    internal Region(RegionFactory regionFactory, string regionName)
-    {
-      region_ = regionFactory.CreateRegion(regionName);
-    }
+  //public class Region<TVal>
+  //{
+  //  Region region_;
+  //  internal Region(RegionFactory regionFactory, string regionName)
+  //  {
+  //    region_ = regionFactory.CreateRegion(regionName);
+  //  }
 
-    public TVal Get<TKey>(TKey key)
-    {
-      // This is a generic, so can't do any marshaling directly.
-      //if (key.GetType() == typeof(string))
-      {
-        var value = region_.GetByteArray(key.ToString());
-        return (TVal)Convert.ChangeType(value, typeof(TVal));
-        //return BitConverter.ToInt32(value);
-      }
-    }
-  }
+  //  public TVal Get<TKey>(TKey key)
+  //  {
+  //    // This is a generic, so can't do any marshaling directly.
+  //    //if (key.GetType() == typeof(string))
+  //    {
+  //      var value = region_.GetByteArray(key.ToString());
+  //      return (TVal)Convert.ChangeType(value, typeof(TVal));
+  //      //return BitConverter.ToInt32(value);
+  //    }
+  //  }
+  //}
 }
