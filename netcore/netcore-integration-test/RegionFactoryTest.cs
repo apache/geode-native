@@ -82,8 +82,9 @@ namespace Apache.Geode.Client.IntegrationTests {
       region.Put(Username3, 779);
       region.Put(Username4, (short)780);
 
-      var user1 = region.GetString(Username1);
-      var user2 = region.GetString(Username2);
+      //var user1 = region.GetString(Username1);
+      var user1 = region.Get<string, string>(Username1);
+      var user2 = region.Get<string, string>(Username2);
       var value3 = region.Get<string, int>(Username3);
       var value4 = region.Get<string, short>(Username4);
 
