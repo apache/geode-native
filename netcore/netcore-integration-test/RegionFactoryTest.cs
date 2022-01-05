@@ -54,34 +54,22 @@ namespace Apache.Geode.Client.IntegrationTests {
           poolFactory.CreatePool("myPool");  // lgtm[cs / useless - assignment - to - local]
     }
 
-    private void doPutsAndGetsString(IRegion<string> region)
+    private void doPutsAndGetsObject(IRegion<object> region)
     {
-      var fullname1 = "Robert Timmons";
-      var fullname2 = "Sylvia Charles";
+      var expectedFullName = "Robert Timmons";
+      region.Put(Username1, expectedFullName);
+      var actualFullName = region.Get(Username1);
+      Assert.Equal(expectedFullName, actualFullName);
 
-      region.Put(Username1, fullname1);
-      region.Put(Username2, fullname2);
+      Int32 expectedInt32 = 779;
+      region.Put(Username3, expectedInt32);
+      var actualInt32 = region.Get(Username3);
+      Assert.Equal(expectedInt32, actualInt32);
 
-      var user1 = region.Get(Username1);
-      var user2 = region.Get(Username2);
-
-      Assert.Equal(user1, fullname1);
-      Assert.Equal(user2, fullname2);
-    }
-
-    private void doPutsAndGetsInt32(IRegion<Int32> region)
-    {
-      region.Put(Username3, 779);
-      var value3 = region.Get(Username3);
-
-      Assert.Equal(779, value3);
-    }
-
-    private void doPutsAndGetsInt16(IRegion<Int16> region) {
-      region.Put(Username4, (short)780);
-      var value4 = region.Get(Username4);
-
-      Assert.Equal(780, value4);
+      Int16 expectedInt16 = 780;
+      region.Put(Username4, expectedInt16);
+      var actualInt16 = region.Get(Username4);
+      Assert.Equal(expectedInt16, actualInt16);
     }
 
     private void DoRemoves(IRegion<Int32> region) {
@@ -95,107 +83,14 @@ namespace Apache.Geode.Client.IntegrationTests {
       //Assert.False(hasUser2);
     }
 
-    private void CreateRegionAndDoWorkString(IGeodeCache<string, string> cache, string regionName,
+    private void CreateRegionAndDoWorkObject(IGeodeCache<string, object> cache, string regionName,
                                        RegionShortcut regionType)
     {
       using var regionFactory = cache.CreateRegionFactory(regionType);
       using var region = regionFactory.CreateRegion(regionName);
 
-      doPutsAndGetsString(region);
+      doPutsAndGetsObject(region);
       //DoRemoves(region);
-    }
-
-    private void CreateRegionAndDoWorkInt32(IGeodeCache<string, Int32> cache, string regionName,
-                                       RegionShortcut regionType) {
-      using var regionFactory = cache.CreateRegionFactory(regionType);
-      using var region = regionFactory.CreateRegion(regionName);
-
-      doPutsAndGetsInt32(region);
-      //DoRemoves(region);
-    }
-
-    private void CreateRegionAndDoWorkInt16(IGeodeCache<string, Int16> cache, string regionName,
-                                       RegionShortcut regionType)
-    {
-      using var regionFactory = cache.CreateRegionFactory(regionType);
-      using var region = regionFactory.CreateRegion(regionName);
-
-      doPutsAndGetsInt16(region);
-      //DoRemoves(region);
-    }
-
-    [Fact]
-    public void RegionFactoryCreateProxyRegionStringPutGetString()
-    {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
-        using var cacheFactory = CacheFactory<string, string>.Create()
-                                     .SetProperty("log-level", "debug")
-                                     .SetProperty("log-file", "geode_native.log");
-        using var cache = cacheFactory.CreateCache();
-
-        using var pool = cluster.ApplyLocators(cache.PoolFactory)
-                    .CreatePool("myPool");
-
-        CreateRegionAndDoWorkString(cache, "exampleRegion", RegionShortcut.Proxy);
-      }
-    }
-
-    [Fact]
-    public void RegionFactoryCreateProxyRegionStringPutGetInt32() {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
-        using var cacheFactory = CacheFactory<string, Int32>.Create()
-                                     .SetProperty("log-level", "debug")
-                                     .SetProperty("log-file", "geode_native.log");
-        using var cache = cacheFactory.CreateCache();
-
-        using var pool = cluster.ApplyLocators(cache.PoolFactory)
-                    .CreatePool("myPool");
-
-        CreateRegionAndDoWorkInt32(cache, "exampleRegion", RegionShortcut.Proxy);
-      }
-    }
-
-    [Fact]
-    public void RegionFactoryCreateProxyRegionStringPutInt16()
-    {
-      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
-      {
-        Assert.True(cluster.Start());
-        Assert.Equal(0, cluster.Gfsh
-            .create()
-            .region()
-            .withName("exampleRegion")
-            .withType("PARTITION")
-            .execute());
-
-        using var cacheFactory = CacheFactory<string, Int16>.Create()
-                                     .SetProperty("log-level", "debug")
-                                     .SetProperty("log-file", "geode_native.log");
-        using var cache = cacheFactory.CreateCache();
-
-        using var pool = cluster.ApplyLocators(cache.PoolFactory)
-                    .CreatePool("myPool");
-
-        CreateRegionAndDoWorkInt16(cache, "exampleRegion", RegionShortcut.Proxy);
-      }
     }
 
     [Fact]
@@ -210,7 +105,7 @@ namespace Apache.Geode.Client.IntegrationTests {
             .withType("PARTITION")
             .execute());
 
-        using var cacheFactory = CacheFactory<string, Int32>.Create()
+        using var cacheFactory = CacheFactory<string, object>.Create()
                                    .SetProperty("log-level", "debug")
                                    .SetProperty("log-file", "geode_native_with_auth.log");
       cacheFactory.AuthInitialize = new SimpleAuthInitialize();
@@ -219,7 +114,32 @@ namespace Apache.Geode.Client.IntegrationTests {
       using var pool = cluster.ApplyLocators(cache.PoolFactory)
                     .CreatePool("myPool");
 
-        CreateRegionAndDoWorkInt32(cache, "authExampleRegion", RegionShortcut.CachingProxy);
+        CreateRegionAndDoWorkObject(cache, "authExampleRegion", RegionShortcut.CachingProxy);
+      }
+    }
+
+    [Fact]
+    public void PutGetWhenRegionIsObject()
+    {
+      using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
+      {
+        Assert.True(cluster.Start());
+        Assert.Equal(0, cluster.Gfsh
+            .create()
+            .region()
+            .withName("exampleRegion")
+            .withType("PARTITION")
+            .execute());
+
+        using var cacheFactory = CacheFactory<string, object>.Create()
+                                     .SetProperty("log-level", "debug")
+                                     .SetProperty("log-file", "geode_native.log");
+        using var cache = cacheFactory.CreateCache();
+
+        using var pool = cluster.ApplyLocators(cache.PoolFactory)
+                    .CreatePool("myPool");
+
+        CreateRegionAndDoWorkObject(cache, "exampleRegion", RegionShortcut.Proxy);
       }
     }
   }

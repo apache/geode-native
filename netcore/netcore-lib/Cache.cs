@@ -25,23 +25,21 @@ namespace Apache.Geode.Client {
     private PoolManager _poolManager = null;
     private PoolFactory _poolFactory = null;
     private IAuthInitialize _authInitialize;
-    private GetCredentialsDelegateInternal _getCredentialsDelegate;
-    private CloseDelegateInternal _closeDelegate;
+    private CBindings.GetCredentialsDelegateInternal _getCredentialsDelegate;
+    private CBindings.CloseDelegateInternal _closeDelegate;
 
-    internal delegate void GetCredentialsDelegateInternal(IntPtr cache);
 
-    internal delegate void CloseDelegateInternal();
 
 
 
     internal Cache(IntPtr cacheFactory, IAuthInitialize authInitialize) {
       _authInitialize = authInitialize;
       if (_authInitialize != null) {
-        _getCredentialsDelegate = new GetCredentialsDelegateInternal(AuthGetCredentials);
-        _closeDelegate = new CloseDelegateInternal(AuthClose);
+        _getCredentialsDelegate = new CBindings.GetCredentialsDelegateInternal(AuthGetCredentials);
+        _closeDelegate = new CBindings.CloseDelegateInternal(AuthClose);
 
-        //CBindings.apache_geode_CacheFactory_SetAuthInitialize(cacheFactory, _getCredentialsDelegate,
-        //                                            _closeDelegate);
+        CBindings.apache_geode_CacheFactory_SetAuthInitialize(cacheFactory, _getCredentialsDelegate,
+                                                    _closeDelegate);
       }
       _containedObject = CBindings.apache_geode_CacheFactory_CreateCache(cacheFactory);
     }

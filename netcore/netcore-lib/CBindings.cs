@@ -7,10 +7,13 @@ namespace Apache.Geode.Client
 {
   public class CBindings
   {
-    //[DllImport(Constants.libPath, CallingConvention = CallingConvention.Cdecl)]
-    //public static extern void apache_geode_CacheFactory_SetAuthInitialize(
-    //    IntPtr factory, GetCredentialsDelegateInternal getCredentials,
-    //    CloseDelegateInternal close);
+    public delegate void GetCredentialsDelegateInternal(IntPtr cache);
+    public delegate void CloseDelegateInternal();
+
+    [DllImport(Constants.libPath, CallingConvention = CallingConvention.Cdecl)]
+    public static extern void apache_geode_CacheFactory_SetAuthInitialize(
+        IntPtr factory, GetCredentialsDelegateInternal getCredentials,
+        CloseDelegateInternal close);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern IntPtr apache_geode_CreateCacheFactory();
