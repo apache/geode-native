@@ -28,14 +28,14 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CreateFactoryNotNull() {
-      using (var cacheFactory = CacheFactory.Create()) {
+      using (var cacheFactory = CacheFactory<object, object>.Create()) {
         Assert.NotNull(cacheFactory);
       }
     }
 
     [Fact]
     public void CacheFactoryGetVersion() {
-      using (var cacheFactory = CacheFactory.Create()) {
+      using (var cacheFactory = CacheFactory<object, object>.Create()) {
         var version = cacheFactory.Version;
         Assert.NotEqual(version, String.Empty);
       }
@@ -43,7 +43,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CacheFactoryGetProductDescription() {
-      using (var cacheFactory = CacheFactory.Create()) {
+      using (var cacheFactory = CacheFactory<object, object>.Create()) {
         var description = cacheFactory.ProductDescription;
         Assert.NotEqual(description, String.Empty);
       }
@@ -51,7 +51,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CacheFactorySetPdxIgnoreUnreadFields() {
-      using (var cacheFactory = CacheFactory.Create()) {
+      using (var cacheFactory = CacheFactory<object, object>.Create()) {
         cacheFactory.PdxIgnoreUnreadFields = true;
         cacheFactory.PdxIgnoreUnreadFields = false;
       }
@@ -59,7 +59,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CacheFactorySetPdxReadSerialized() {
-      using (var cacheFactory = CacheFactory.Create()) {
+      using (var cacheFactory = CacheFactory<object, object>.Create()) {
         cacheFactory.PdxReadSerialized = true;
         cacheFactory.PdxReadSerialized = false;
       }
@@ -67,7 +67,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CacheFactoryCreateCacheNotNull() {
-      using var cacheFactory = CacheFactory.Create();
+      using var cacheFactory = CacheFactory<object, object>.Create();
       Assert.NotNull(cacheFactory);
       using var cache = cacheFactory.CreateCache();  // lgtm[cs / useless - assignment - to - local]
       Assert.NotNull(cache);
@@ -75,7 +75,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
     [Fact]
     public void CacheFactorySetProperty() {
-      using var cacheFactory = CacheFactory.Create();
+      using var cacheFactory = CacheFactory<object, object>.Create();
       Assert.NotNull(cacheFactory);
       cacheFactory.SetProperty("log-level", "none").SetProperty("log-file", "geode_native.log");
     }

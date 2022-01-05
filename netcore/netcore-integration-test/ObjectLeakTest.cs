@@ -25,7 +25,7 @@ namespace Apache.Geode.Client.IntegrationTests {
       var client = new Client();
 
       using (var cacheFactory =
-                 CacheFactory.Create())  // lgtm[cs / useless - assignment - to - local]
+                 CacheFactory<object, object>.Create())  // lgtm[cs / useless - assignment - to - local]
       {
         Assert.Throws<InvalidOperationException>(() => client.Dispose());
       }

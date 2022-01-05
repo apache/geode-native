@@ -24,7 +24,7 @@ namespace Apache.Geode.Client.IntegrationTests {
     [Fact]
     public void ClientCacheGetPdxReadSerialized() {
       using var cacheFactory =
-          CacheFactory.Create()
+          CacheFactory<object, object>.Create()
               .SetProperty("log-level", "debug")
               .SetProperty("log-file", "TestClientCacheGetPdxReadSerialized.log");
       try {
@@ -45,7 +45,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheGetPdxIgnoreUnreadFields() {
-      using var cacheFactory = CacheFactory.Create()
+      using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       cacheFactory.PdxIgnoreUnreadFields = true;
@@ -60,7 +60,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheGetPoolManagerObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create()
+      using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
 
@@ -73,7 +73,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheCreateRegionFactoryObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create()
+      using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       Assert.NotNull(cacheFactory);
@@ -87,7 +87,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheGetName() {
-      using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
+      using var cacheFactory = CacheFactory<object, object>.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
       Assert.NotNull(cache);
@@ -98,7 +98,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheClose() {
-      using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
+      using var cacheFactory = CacheFactory<object, object>.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
       Assert.NotNull(cache);
@@ -110,7 +110,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void ClientCacheCloseWithKeepalive() {
-      using var cacheFactory = CacheFactory.Create().SetProperty("log-level", "none");
+      using var cacheFactory = CacheFactory<object, object>.Create().SetProperty("log-level", "none");
       cacheFactory.PdxIgnoreUnreadFields = true;
       using var cache = cacheFactory.CreateCache();
       Assert.NotNull(cache);

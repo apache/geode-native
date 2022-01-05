@@ -17,7 +17,7 @@
 using System;
 
 namespace Apache.Geode.Client {
-  public interface IGeodeCache : IRegionService, IDisposable {
+  public interface IGeodeCache<TKey, TValue> : IRegionService<TKey, TValue>, IDisposable {
     bool GetPdxIgnoreUnreadFields();
     bool GetPdxReadSerialized();
     //                void InitializeDeclarativeCache(String cacheXml);

@@ -126,9 +126,9 @@ namespace Apache.Geode.Client.IntegrationTests
             }
         }
 
-        public IGeodeCache CreateCache(IDictionary<string, string> properties)
+        public IGeodeCache<object, object> CreateCache(IDictionary<string, string> properties)
         {
-            var cacheFactory = new CacheFactory();
+            var cacheFactory = new CacheFactory<object, object>();
 
             cacheFactory
                 .SetProperty("log-level", "none")
@@ -146,7 +146,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return cache;
         }
 
-        public IGeodeCache CreateCache()
+        public IGeodeCache<object, object> CreateCache()
         {
             return CreateCache(new Dictionary<string, string>());
         }

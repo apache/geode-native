@@ -22,7 +22,7 @@ namespace Apache.Geode.Client.IntegrationTests {
   public class PoolFactoryTest {
     [Fact]
     public void PoolFactoryAddLocatorAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create()
+      using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       using var cache = cacheFactory.CreateCache();
@@ -37,7 +37,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void PoolFactoryCreatePoolAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create()
+      using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "none")
                                    .SetProperty("log-file", "geode_native.log");
       using var cache = cacheFactory.CreateCache();
@@ -55,7 +55,7 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     [Fact]
     public void CreatePoolWithoutPoolManagerAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory.Create();
+      using var cacheFactory = CacheFactory<object, object>.Create();
       Assert.NotNull(cacheFactory);
       using var cache = cacheFactory.CreateCache();
       Assert.NotNull(cache);

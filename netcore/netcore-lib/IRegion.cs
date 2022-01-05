@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -14,23 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Net.Cache;
-using Xunit;
+using System;
 
-namespace Apache.Geode.Client.IntegrationTests {
-  [Collection("Geode .Net Core Collection")]
-  public class PoolManagerTest {
-    [Fact]
-    public void PoolManagerCreatePoolFactoryAllObjectsNotNull() {
-      using var cacheFactory = CacheFactory<object, object>.Create();
-      Assert.NotNull(cacheFactory);
-      using var cache = cacheFactory.CreateCache();
-      Assert.NotNull(cache);
-      using var poolManager = cache.PoolManager;
-      Assert.NotNull(poolManager);
-      using var poolFactory =
-          poolManager.CreatePoolFactory();  // lgtm[cs / useless - assignment - to - local]
-      Assert.NotNull(poolFactory);
-    }
+namespace Apache.Geode.Client
+{
+  //public interface IRegion<TKey, TValue> {
+  //      void Put(TKey key, TValue value); 
+  //      TValue Get(TKey key);
+  //}
+  public interface IRegion<TValue> : IDisposable
+  {
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+    void Put(string key, TValue value);
+    TValue Get(string key);
+    bool Remove(string key);
+#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
   }
 }

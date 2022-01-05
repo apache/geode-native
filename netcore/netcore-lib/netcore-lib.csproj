@@ -6,6 +6,7 @@
         <AssemblyName>Apache.Geode.NetCore</AssemblyName>
         <Platforms>x64</Platforms>
         <Configurations>Debug;RelWithDebInfo</Configurations>
+        <LangVersion>9.0</LangVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -13,6 +14,7 @@
       <WarningsAsErrors />
       <DebugType>pdbonly</DebugType>
       <DebugSymbols>true</DebugSymbols>
+      <LangVersion>9.0</LangVersion>
     </PropertyGroup>
 	
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
@@ -21,6 +23,7 @@
       <Optimize>true</Optimize>
       <DebugType>pdbonly</DebugType>
       <DebugSymbols>true</DebugSymbols>
+      <LangVersion>9.0</LangVersion>
     </PropertyGroup>	
 
 </Project>

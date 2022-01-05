@@ -21,54 +21,79 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
+using Apache.Geode.Client;
+
+
+//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+//static extern bool apache_geode_Region_PutString(IntPtr region, IntPtr key,
+//                                                         IntPtr value);
+
+//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+//static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
+//                                                            IntPtr value, int length);
+
+//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+//static extern bool apache_geode_Region_PutByteArrayForInt32Key(IntPtr region,
+//      [param: MarshalAs(UnmanagedType.I4)] Int32 key,
+//      IntPtr value, int length);
+
+//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+//static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
+
+
+
 namespace Apache.Geode.Client {
-  public class Region : GeodeNativeObject {
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_RegionFactory_CreateRegion(IntPtr cache,
-                                                                         IntPtr regionName);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern bool apache_geode_Region_PutString(IntPtr region, IntPtr key,
-                                                             IntPtr value);
+  //public class Region : GeodeNativeObject {
+  public class Region<TValue> : GeodeNativeObject, IRegion<TValue>
+  {
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern IntPtr apache_geode_RegionFactory_CreateRegion(IntPtr cache,
+    //                                                                     IntPtr regionName);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
-                                                                IntPtr value, int length);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern bool apache_geode_Region_PutString(IntPtr region, IntPtr key,
+    //                                                         IntPtr value);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern bool apache_geode_Region_PutByteArrayForInt32Key(IntPtr region,
-          [param: MarshalAs(UnmanagedType.I4)] Int32 key,
-          IntPtr value, int length);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
+    //                                                            IntPtr value, int length);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern bool apache_geode_Region_PutByteArrayForInt32Key(IntPtr region,
+    //      [param: MarshalAs(UnmanagedType.I4)] Int32 key,
+    //      IntPtr value, int length);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_Region_GetByteArray(IntPtr region, IntPtr key,
-                                                                ref IntPtr value, ref int size);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_Region_GetByteArrayForInt32Key(IntPtr region,
-          [param: MarshalAs(UnmanagedType.I4)] Int32 key,
-          ref IntPtr value, ref int size);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern void apache_geode_Region_GetByteArray(IntPtr region, IntPtr key,
+    //                                                            ref IntPtr value, ref int size);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_Region_Remove(IntPtr region, IntPtr key);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern void apache_geode_Region_GetByteArrayForInt32Key(IntPtr region,
+    //      [param: MarshalAs(UnmanagedType.I4)] Int32 key,
+    //      ref IntPtr value, ref int size);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern bool apache_geode_Region_ContainsValueForKey(IntPtr region,
-                                                                       IntPtr key);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern void apache_geode_Region_Remove(IntPtr region, IntPtr key);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_DestroyRegion(IntPtr region);
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern bool apache_geode_Region_ContainsValueForKey(IntPtr region,
+    //                                                                   IntPtr key);
+
+    //[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    //private static extern IntPtr apache_geode_DestroyRegion(IntPtr region);
 
     internal Region(IntPtr regionFactory, string regionName) {
       var regionNamePtr = Marshal.StringToCoTaskMemUTF8(regionName);
-      _containedObject = apache_geode_RegionFactory_CreateRegion(regionFactory, regionNamePtr);
+      _containedObject = CBindings.apache_geode_RegionFactory_CreateRegion(regionFactory, regionNamePtr);
       Marshal.FreeCoTaskMem(regionNamePtr);
     }
-
-    public void Put<TValue>(string key, TValue value)
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
+    public void Put(string key, TValue value)
+#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
     {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
 
@@ -77,8 +102,19 @@ namespace Apache.Geode.Client {
       if (!valueType.IsSerializable)
         throw new Exception("Error: value is not Serializable.");
 
-      TypeCode valueTypeCode = Type.GetTypeCode(typeof(TValue));
-      Constants.DSCode dsCode = (Constants.DSCode)Constants.DotNetToDSCode[valueTypeCode];
+      //TypeCode valueTypeCode = Type.GetTypeCode(typeof(TValue));
+      //Constants.DSCode dsCode = (Constants.DSCode)Constants.DotNetToDSCode[valueTypeCode];
+
+      // TODO: Implement object support. Right now we need to check the derived type.
+      Constants.DSCode dsCode;
+      if (value is string)
+        dsCode = Constants.DSCode.CacheableASCIIString;
+      else if (value is System.Int32)
+        dsCode = Constants.DSCode.CacheableInt32;
+      else if (value is System.Int16)
+        dsCode = Constants.DSCode.CacheableInt16;
+      else
+        throw new NotImplementedException();
 
       Int32 int32 = 0;
       Int16 int16 = 0;
@@ -87,9 +123,9 @@ namespace Apache.Geode.Client {
 
       switch (dsCode)
       {
-        case Constants.DSCode.CacheableString:
+        case Constants.DSCode.CacheableASCIIString:
           var strPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(value));
-          apache_geode_Region_PutString(_containedObject, keyPtr, strPtr);
+          CBindings.apache_geode_Region_PutString(_containedObject, keyPtr, strPtr);
           Marshal.FreeCoTaskMem(keyPtr);
           Marshal.FreeCoTaskMem(strPtr);
           break;
@@ -102,7 +138,7 @@ namespace Apache.Geode.Client {
           Marshal.StructureToPtr<byte>((byte)(int32 >> 16), valuePtr+2, false);
           Marshal.StructureToPtr<byte>((byte)(int32 >> 8),  valuePtr+3, false);
           Marshal.StructureToPtr<byte>((byte)(int32),       valuePtr+4, false);
-          apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
+          CBindings.apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
           Marshal.FreeCoTaskMem(keyPtr);
           Marshal.FreeCoTaskMem(valuePtr);
           break;
@@ -113,7 +149,7 @@ namespace Apache.Geode.Client {
           int16 = Convert.ToInt16(value);
           Marshal.StructureToPtr<byte>((byte)(int16 >> 8), valuePtr + 1, false);
           Marshal.StructureToPtr<byte>((byte)(int16),      valuePtr + 2, false);
-          apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
+          CBindings.apache_geode_Region_PutByteArray(_containedObject, keyPtr, valuePtr, valueLength + 1);
           Marshal.FreeCoTaskMem(keyPtr);
           Marshal.FreeCoTaskMem(valuePtr);
           break;
@@ -229,7 +265,7 @@ namespace Apache.Geode.Client {
     //  }
     //}
 
-    public TValue Get<TKey, TValue>(TKey key)
+    public TValue Get(string key)
     {
       // This is a generic, so can't do any marshaling directly.
       if (key.GetType() == typeof(string))
@@ -262,19 +298,19 @@ namespace Apache.Geode.Client {
         return default(TValue);
     }
 
-    public string GetString(string key) {
-      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      var result =
-          Marshal.PtrToStringUTF8(apache_geode_Region_GetString(_containedObject, keyPtr));
-      Marshal.FreeCoTaskMem(keyPtr);
-      return result;
-    }
+    //public string GetString(string key) {
+    //  var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+    //  var result =
+    //      Marshal.PtrToStringUTF8(CBindings.apache_geode_Region_GetString(_containedObject, keyPtr));
+    //  Marshal.FreeCoTaskMem(keyPtr);
+    //  return result;
+    //}
 
     public byte[] GetByteArray(string key) {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       var valPtr = (IntPtr)0;
       int size = 0;
-      apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
+      CBindings.apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
       if (size > 0) {
         Byte[] byteArray = new Byte[size];
         Marshal.Copy(valPtr, byteArray, 0, size);
@@ -284,37 +320,38 @@ namespace Apache.Geode.Client {
         return null;
     }
 
-    public byte[] GetByteArray(int key)
-    {
-      var valPtr = (IntPtr)0;
-      int size = 0;
-      apache_geode_Region_GetByteArrayForInt32Key(_containedObject, key, ref valPtr, ref size);
-      if (size > 0)
-      {
-        Byte[] byteArray = new Byte[size];
-        Marshal.Copy(valPtr, byteArray, 0, size);
-        Marshal.FreeCoTaskMem(valPtr);
-        return byteArray;
-      }
-      else
-        return null;
-    }
+    //public byte[] GetByteArray(int key)
+    //{
+    //  var valPtr = (IntPtr)0;
+    //  int size = 0;
+    //  apache_geode_Region_GetByteArrayForInt32Key(_containedObject, key, ref valPtr, ref size);
+    //  if (size > 0)
+    //  {
+    //    Byte[] byteArray = new Byte[size];
+    //    Marshal.Copy(valPtr, byteArray, 0, size);
+    //    Marshal.FreeCoTaskMem(valPtr);
+    //    return byteArray;
+    //  }
+    //  else
+    //    return null;
+    //}
 
-    public void Remove(string key) {
+    public bool Remove(string key) {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      apache_geode_Region_Remove(_containedObject, keyPtr);
+      CBindings.apache_geode_Region_Remove(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
+      return true; // TODO: Needs to ensure removal
     }
 
     public bool ContainsValueForKey(string key) {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-      bool result = apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr);
+      bool result = CBindings.apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return result;
     }
 
     protected override void DestroyContainedObject() {
-      apache_geode_DestroyRegion(_containedObject);
+      CBindings.apache_geode_DestroyRegion(_containedObject);
       _containedObject = IntPtr.Zero;
     }
   }

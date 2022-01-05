@@ -18,49 +18,26 @@ using System;
 using System.Runtime.InteropServices;
 
 namespace Apache.Geode.Client {
-  public class CacheFactory : GeodeNativeObject, ICacheFactory {
+  public class CacheFactory<TKey, TValue> : GeodeNativeObject, ICacheFactory<TKey, TValue> {
     private string _version = String.Empty;
     private string _productDescription = String.Empty;
     private IAuthInitialize _authInitialize;
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_CreateCacheFactory();
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_DestroyCacheFactory(IntPtr factory);
 
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_CacheFactory_GetVersion(IntPtr factory);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern IntPtr apache_geode_CacheFactory_GetProductDescription(
-        IntPtr factory);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_CacheFactory_SetPdxIgnoreUnreadFields(
-        IntPtr factory, bool pdxIgnoreUnreadFields);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_CacheFactory_SetPdxReadSerialized(
-        IntPtr factory, bool pdxReadSerialized);
-
-    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    private static extern void apache_geode_CacheFactory_SetProperty(IntPtr factory, IntPtr key,
-                                                                     IntPtr value);
-
-    public static ICacheFactory Create() {
-      return new CacheFactory();
+    public static ICacheFactory<TKey, TValue> Create() {
+      return new CacheFactory<TKey, TValue>();
     }
 
     public CacheFactory() {
-      _containedObject = apache_geode_CreateCacheFactory();
+      _containedObject = CBindings.apache_geode_CreateCacheFactory();
     }
 
     public string Version {
       get {
         if (_version == String.Empty) {
           _version =
-              Marshal.PtrToStringUTF8(apache_geode_CacheFactory_GetVersion(_containedObject));
+              Marshal.PtrToStringUTF8(CBindings.apache_geode_CacheFactory_GetVersion(_containedObject));
         }
 
         return _version;
@@ -71,7 +48,7 @@ namespace Apache.Geode.Client {
       get {
         if (_productDescription == String.Empty) {
           _productDescription = Marshal.PtrToStringUTF8(
-              apache_geode_CacheFactory_GetProductDescription(_containedObject));
+              CBindings.apache_geode_CacheFactory_GetProductDescription(_containedObject));
         }
 
         return _productDescription;
@@ -79,21 +56,21 @@ namespace Apache.Geode.Client {
     }
 
     public bool PdxIgnoreUnreadFields {
-      set => apache_geode_CacheFactory_SetPdxIgnoreUnreadFields(_containedObject, value);
+      set => CBindings.apache_geode_CacheFactory_SetPdxIgnoreUnreadFields(_containedObject, value);
     }
 
     public bool PdxReadSerialized {
-      set => apache_geode_CacheFactory_SetPdxReadSerialized(_containedObject, value);
+      set => CBindings.apache_geode_CacheFactory_SetPdxReadSerialized(_containedObject, value);
     }
 
-    public IGeodeCache CreateCache() {
-      return new Cache(_containedObject, _authInitialize);
+    public IGeodeCache<TKey, TValue> CreateCache() {
+      return new Cache<TKey, TValue>(_containedObject, _authInitialize);
     }
 
-    public ICacheFactory SetProperty(string key, string value) {
+    public ICacheFactory<TKey, TValue> SetProperty(string key, string value) {
       var utf8Key = Marshal.StringToCoTaskMemUTF8(key);
       var utf8Value = Marshal.StringToCoTaskMemUTF8(value);
-      apache_geode_CacheFactory_SetProperty(_containedObject, utf8Key, utf8Value);
+      CBindings.apache_geode_CacheFactory_SetProperty(_containedObject, utf8Key, utf8Value);
       Marshal.FreeCoTaskMem(utf8Key);
       Marshal.FreeCoTaskMem(utf8Value);
       return this;
@@ -102,7 +79,7 @@ namespace Apache.Geode.Client {
     public IAuthInitialize AuthInitialize { set => _authInitialize = value; }
 
     protected override void DestroyContainedObject() {
-      apache_geode_DestroyCacheFactory(_containedObject);
+      CBindings.apache_geode_DestroyCacheFactory(_containedObject);
       _containedObject = IntPtr.Zero;
     }
   }

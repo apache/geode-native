@@ -17,9 +17,9 @@
 using System;
 
 namespace Apache.Geode.Client {
-  public interface ICacheFactory : IDisposable {
-    IGeodeCache CreateCache();
-    ICacheFactory SetProperty(String name, String value);
+  public interface ICacheFactory<TKey, TValue> : IDisposable {
+    IGeodeCache<TKey, TValue> CreateCache();
+    ICacheFactory<TKey, TValue> SetProperty(String name, String value);
     IAuthInitialize AuthInitialize { set; }
     bool PdxIgnoreUnreadFields { set; }
     bool PdxReadSerialized { set; }

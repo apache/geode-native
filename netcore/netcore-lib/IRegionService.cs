@@ -17,7 +17,7 @@
 using System;
 
 namespace Apache.Geode.Client {
-  public interface IRegionService {
-    RegionFactory CreateRegionFactory(RegionShortcut regionType);
+  public interface IRegionService<TKey, TValue> {
+    RegionFactory<TKey, TValue> CreateRegionFactory(RegionShortcut regionType);
   }
 }
