@@ -29,7 +29,7 @@ class DataSerializableRaw : public DataSerializablePrimitive {
   DataSerializableRaw(const int8_t* data, size_t size);
   ~DataSerializableRaw() noexcept override = default;
 
-  static std::shared_ptr<DataSerializableRaw> DataSerializableRaw::create(
+  static std::shared_ptr<DataSerializableRaw> create(
       const int8_t* data, size_t size);
 
 

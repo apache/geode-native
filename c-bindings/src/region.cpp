@@ -89,7 +89,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
   apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
-  bytes->push_back((byte)primitive->getDsCode());
+  bytes->push_back((int8_t)primitive->getDsCode());
 
   int32_t int32 = 0;
   int16_t int16 = 0;
@@ -132,7 +132,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 #if defined(_WIN32)
   int8_t* byteArray = static_cast<int8_t*>(CoTaskMemAlloc(*size));
 #else
-  int8_t* byteArray = static_cast<int8_t*>(malloc(size));
+  int8_t* byteArray = static_cast<int8_t*>(malloc(*size));
 #endif
   if (bytes) {
     memcpy(byteArray, bytes->data(), *size);
