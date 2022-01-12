@@ -33,8 +33,8 @@ namespace Apache.Geode.Client {
       _containedObject = CBindings.apache_geode_Cache_CreateRegionFactory(cache, (int)regionType);
     }
 
-    public IRegion<TValue> CreateRegion(string regionName) {
-      return new Region<TValue>(_containedObject, regionName);
+    public IRegion<TKey, TValue> CreateRegion(string regionName) {
+      return new Region<TKey, TValue>(_containedObject, regionName);
     }
 
     protected override void DestroyContainedObject() {

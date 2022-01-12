@@ -22,12 +22,12 @@ namespace Apache.Geode.Client
   //      void Put(TKey key, TValue value); 
   //      TValue Get(TKey key);
   //}
-  public interface IRegion<TValue> : IDisposable
+  public interface IRegion<TKey, TValue> : IDisposable
   {
 #pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
-    void Put(string key, TValue value);
-    TValue Get(string key);
-    bool Remove(string key);
+    void Put(TKey key, TValue value);
+    TValue Get(TKey key);
+    //bool Remove(TKey key);
 #pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
   }
 }

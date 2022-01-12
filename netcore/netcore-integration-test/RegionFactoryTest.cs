@@ -54,27 +54,53 @@ namespace Apache.Geode.Client.IntegrationTests {
           poolFactory.CreatePool("myPool");  // lgtm[cs / useless - assignment - to - local]
     }
 
-    private void doPutsAndGetsObject(IRegion<object> region)
+    private void doPutsAndGetsObject(IRegion<object, object> region)
     {
+      // Key is a string
+
       var expectedFullName = "Robert Timmons";
       region.Put(Username1, expectedFullName);
       var actualFullName = region.Get(Username1);
       Assert.Equal(expectedFullName, actualFullName);
+
+      Int16 expectedInt16 = 780;
+      region.Put(Username4, expectedInt16);
+      var actualInt16 = region.Get(Username4);
+      Assert.Equal(expectedInt16, actualInt16);
 
       Int32 expectedInt32 = 779;
       region.Put(Username3, expectedInt32);
       var actualInt32 = region.Get(Username3);
       Assert.Equal(expectedInt32, actualInt32);
 
-      Int16 expectedInt16 = 780;
-      region.Put(Username4, expectedInt16);
-      var actualInt16 = region.Get(Username4);
-      Assert.Equal(expectedInt16, actualInt16);
+      // Key is an Int16
+
+      var short5000 = (Int16)5000;
+      region.Put((short)10000, short5000);
+      var actual5000 = region.Get((short)10000);
+      Assert.Equal(short5000, actual5000);
+
+      // Key is a Byte
+
+      var byteIndex= (byte)222;
+      region.Put((byte)200, byteIndex);
+      var actualByteIndex = region.Get((byte)200);
+      Assert.Equal(byteIndex, actualByteIndex);
+
+      //Int16 expectedInt16 = 780;
+      //region.Put(Username4, expectedInt16);
+      //var actualInt16 = region.Get(Username4);
+      //Assert.Equal(expectedInt16, actualInt16);
+
+      //Int32 expectedInt32 = 779;
+      //region.Put(Username3, expectedInt32);
+      //var actualInt32 = region.Get(Username3);
+      //Assert.Equal(expectedInt32, actualInt32);
     }
 
-    private void DoRemoves(IRegion<Int32> region) {
-      region.Remove(Username1);
-      region.Remove(Username2);
+    private void DoRemoves(IRegion<string, Int32> region) {
+      //region.Remove(Username1);
+      //region.Remove(Username2);
 
       //var hasUser1 = region.ContainsValueForKey(Username1);
       //var hasUser2 = region.ContainsValueForKey(Username2);
@@ -83,7 +109,7 @@ namespace Apache.Geode.Client.IntegrationTests {
       //Assert.False(hasUser2);
     }
 
-    private void CreateRegionAndDoWorkObject(IGeodeCache<string, object> cache, string regionName,
+    private void CreateRegionAndDoWorkObject(IGeodeCache<object, object> cache, string regionName,
                                        RegionShortcut regionType)
     {
       using var regionFactory = cache.CreateRegionFactory(regionType);
@@ -105,7 +131,7 @@ namespace Apache.Geode.Client.IntegrationTests {
             .withType("PARTITION")
             .execute());
 
-        using var cacheFactory = CacheFactory<string, object>.Create()
+        using var cacheFactory = CacheFactory<object, object>.Create()
                                    .SetProperty("log-level", "debug")
                                    .SetProperty("log-file", "geode_native_with_auth.log");
       cacheFactory.AuthInitialize = new SimpleAuthInitialize();
@@ -131,7 +157,7 @@ namespace Apache.Geode.Client.IntegrationTests {
             .withType("PARTITION")
             .execute());
 
-        using var cacheFactory = CacheFactory<string, object>.Create()
+        using var cacheFactory = CacheFactory<object, object>.Create()
                                      .SetProperty("log-level", "debug")
                                      .SetProperty("log-file", "geode_native.log");
         using var cache = cacheFactory.CreateCache();

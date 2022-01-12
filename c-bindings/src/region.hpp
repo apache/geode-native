@@ -22,6 +22,7 @@
 
 #include "client.hpp"
 #include "geode/Region.hpp"
+#include "geode/DataOutput.hpp"
 
 class RegionFactoryWrapper;
 
@@ -35,6 +36,12 @@ class RegionWrapper : public ClientKeeper {
 
   void PutString(const std::string& key, const std::string& value);
 
+//  void PutByteArray(const char* key, size_t keySize, const char* value, size_t valueSize);
+
+  void PutByteArray(
+      const char* key, size_t keySize,
+      const char* value, size_t valueSize);
+
   void PutByteArray(const std::string& key, const char* value, size_t size);
 
   template<typename TKey, typename TVal>
@@ -46,9 +53,17 @@ class RegionWrapper : public ClientKeeper {
 
   void GetByteArray(const std::string& key, char** value, size_t* size);
 
+  void GetByteArray(const char* key,
+                    size_t keySize,
+                    char** value, size_t* size);
+
   void GetByteArray(const int32_t key, char** value, size_t* size);
 
   void Remove(const std::string& key);
 
   bool ContainsValueForKey(const std::string& key);
+
+  template<class TKey>
+  static std::shared_ptr<apache::geode::client::CacheableKey>
+  GetUnmanagedValueGeneric(TKey key, apache::geode::client::internal::DSCode dsCode);
 };
