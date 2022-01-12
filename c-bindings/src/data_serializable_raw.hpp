@@ -24,7 +24,7 @@ namespace geode {
 namespace client {
 namespace internal {
 
-class DataSerializableRaw : public DataSerializablePrimitive {
+class DataSerializableRaw : public DataSerializablePrimitive , CacheableKey {
  public:
   DataSerializableRaw(const int8_t* data, size_t size);
   ~DataSerializableRaw() noexcept override = default;
@@ -37,8 +37,14 @@ class DataSerializableRaw : public DataSerializablePrimitive {
   virtual void fromData(DataInput& dataInput);
   virtual DSCode getDsCode() const;
 
+  bool operator==(const CacheableKey& other) const;
+
+  int32_t hashcode() const;
+
   private:
-  std::vector<int8_t> bytes_;
+   std::vector<int8_t> bytes_;
+   static constexpr int dsCodeSize_ = 1;
+   mutable int32_t hashCode_;
 };
 
 }  // namespace internal

@@ -46,15 +46,32 @@ std::shared_ptr<DataSerializableRaw> DataSerializableRaw::create(
 }
 
 void DataSerializableRaw::toData(DataOutput& dataOutput) const {
-  dataOutput.writeBytesOnly(bytes_.data() + 1, bytes_.size() - 1);
+  dataOutput.writeBytesOnly(bytes_.data() + dsCodeSize_,
+                            bytes_.size() - dsCodeSize_);
 }
 
 void DataSerializableRaw::fromData(DataInput& dataInput) {
-  dataInput.readBytesOnly(bytes_.data() + 1, bytes_.size() - 1);
+  dataInput.readBytesOnly(bytes_.data() + dsCodeSize_,
+                          bytes_.size() - dsCodeSize_);
 }
 
 DSCode DataSerializableRaw::getDsCode() const {
   return static_cast<DSCode>(bytes_[0]);
+}
+
+bool DataSerializableRaw::operator==(const CacheableKey& other) const {
+  if (auto otherKey = dynamic_cast<const DataSerializableRaw*>(&other)) {
+    return bytes_ == otherKey->bytes_;
+  }
+
+  return false;
+}
+
+int32_t DataSerializableRaw::hashcode() const {
+  if (hashCode_ == 0) {
+    hashCode_ = internal::geode_hash<std::vector<int8_t>>{}(bytes_);
+  }
+  return 0;
 }
 
 }  // namespace internal
