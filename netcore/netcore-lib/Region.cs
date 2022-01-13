@@ -15,37 +15,11 @@
  * limitations under the License.
  */
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-
-using Apache.Geode.Client;
-
-
-//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-//static extern bool apache_geode_Region_PutString(IntPtr region, IntPtr key,
-//                                                         IntPtr value);
-
-//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-//static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
-//                                                            IntPtr value, int length);
-
-//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-//static extern bool apache_geode_Region_PutByteArrayForInt32Key(IntPtr region,
-//      [param: MarshalAs(UnmanagedType.I4)] Int32 key,
-//      IntPtr value, int length);
-
-//[DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-//static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
-
-
 
 namespace Apache.Geode.Client {
 
-  //public class Region : GeodeNativeObject {
   public class Region<TKey, TValue> : GeodeNativeObject, IRegion<TKey, TValue>
   {
     internal Region(IntPtr regionFactory, string regionName) {
@@ -88,10 +62,6 @@ namespace Apache.Geode.Client {
       int valueLength = 0;
       IntPtr valuePtr = (IntPtr)0;
       IntPtr keyPtr = (IntPtr)0;
-      Constants.DSCode keyCode = Constants.DotNetToDSCode[Type.GetTypeCode(keyType)];
-      Constants.DSCode valueCode = Constants.DotNetToDSCode[Type.GetTypeCode(valueType)];
-
-      // Serialize the key
 
       if (keyType.IsPrimitive) {
         keyLength = CacheablePrimitive<TKey>.SerializeNoSwap(key, ref keyPtr);
@@ -99,8 +69,6 @@ namespace Apache.Geode.Client {
       else if (key is string) {
         keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
       }
-
-      // Serialize the value
 
       if (valueType.IsPrimitive) {
         valueLength = CacheablePrimitive<TValue>.Serialize(value, ref valuePtr);
@@ -166,8 +134,6 @@ namespace Apache.Geode.Client {
       }
 
       public static TValue Deserialize(IntPtr valPtr, int size)
-      //public static TValue Deserialize(byte[] byteArray)
-
       {
         Byte[] byteArray = new Byte[size];
         Marshal.Copy(valPtr, byteArray, 0, size);
@@ -271,116 +237,6 @@ namespace Apache.Geode.Client {
 
     }
 
-
-    //public void PutByteArray(Int32 key, byte[] value)
-    //{
-    //  //var keyPtr = Marshal.AllocCoTaskMem(4);
-    //  var valuePtr = Marshal.AllocCoTaskMem(value.Length);
-    //  Marshal.Copy(value, 0, valuePtr, value.Length);
-    //  apache_geode_Region_PutByteArrayForInt32Key(_containedObject, key, valuePtr, value.Length);
-    //  Marshal.FreeCoTaskMem(valuePtr);
-    //}
-
-    //byte[] ObjectToByteArray(object obj)
-    //{
-    //  if (obj == null)
-    //    return null;
-    //  BinaryFormatter bf = new BinaryFormatter();
-    //  using (MemoryStream ms = new MemoryStream())
-    //  {
-    //    bf.Serialize(ms, obj); { }
-    //    return ms.ToArray();
-    //  }
-    //}
-
-    //Span<byte> ConvertToByteArray<T>(ref T value) where T : unmanaged {
-    //  //unsafe {
-    //  //int length = sizeof(T);
-    //  //Span<byte> bytes = value;
-
-    //  //  Buffer.BlockCopy(Array src, int srcOffset, Array dst, int dstOffset, int length);
-    //  //}
-    //  return value;
-    //}
-
-    //private T Deserialize<T>(byte[] param)
-    //{
-    //  using (MemoryStream ms = new MemoryStream(param))
-    //  {
-    //    IFormatter br = new BinaryFormatter();
-    //    return (T)br.Deserialize(ms);
-    //  }
-    //}
-
-    //public void Put<TKey, TValue>(ref TKey key, ref TValue value)
-    //  where TKey : unmanaged
-    //  where TValue : unmanaged
-    //{
-    //  // Ensure serializable
-    //  var keyType = key.GetType();
-    //  if (!keyType.IsSerializable)
-    //    throw new Exception("Error: key is not Serializable.");
-    //  var valueType = value.GetType();
-    //  if (!valueType.IsSerializable)
-    //    throw new Exception("Error: value is not Serializable.");
-
-    //  TypeCode keyTypeCode = Type.GetTypeCode(typeof(TKey));
-    //  TypeCode valueTypeCode = Type.GetTypeCode(typeof(TValue));
-
-    //  Constants.DSCode keyDSCode = Constants.DotNetToDSCode[keyTypeCode];
-    //  Constants.DSCode valueDSCode = Constants.DotNetToDSCode[valueTypeCode];
-
-    //  if (keyDSCode == Constants.DSCode.CacheableString) {
-    //    var keyPtr = Marshal.StringToCoTaskMemUTF8(key as string);
-    //    var valuePtr = Marshal.StringToCoTaskMemUTF8(value);
-    //    apache_geode_Region_PutString(_containedObject, keyPtr, valuePtr);
-    //    Marshal.FreeCoTaskMem(keyPtr);
-    //    Marshal.FreeCoTaskMem(valuePtr);
-    //  }
-
-    //}
-    //fixed (TKey* keyPtr = &key, TValue* valPtr = &value)
-    //  {
-    //    apache_geode_Region_PutByteArray(IntPtr region,
-    //                                     IntPtr keyPtr, sizeof(TKey),
-    //                                     IntPtr valPtr, sizeof(TValue));
-    //  }
-
-    //}
-    //  // Can't use sizeof with generic params (CS0233), so pick scratch size
-    //  // we know will be big enough.
-    //  //Span<byte> stackSpan = stackalloc byte[100];
-    //  //Span<TKey> keySpan = 
-    //  //nativeSpan[0] = (byte)keyTypeCode;
-    //  //nativeSpan.Copy<T>(ReadOnlySpan<T> source, Span<T> destination);
-    //  //unsafe
-    //  //{
-    //  //  Span<TKey> slicedKey = nativeSpan.Slice(start: 1, length: sizeof(TKey));
-
-    //  //  //Buffer.BlockCopy(((byte[])((object)key)), 0, dst: (byte[])((object)nativeSpan), dstOffset: 1, count: sizeof(TKey));
-    //  //  for (int i = 0; i < sizeof(TKey); i++)
-    //  //    nativeSpan[i+1] = &key;
-    //  //}
-
-    //  //for (int ctr = 0; ctr < nativeSpan.Length; ctr++)
-    //  //  nativeSpan[ctr] = data++;
-
-
-    //  //val.TryFormat(valBytes, numBytes);
-    //  //byte[] serializedBytes = val.Ser
-
-    //  if (value.GetType() == typeof(int) || value.GetType() == typeof(uint)) {
-    //    var byteArray = new byte[5];
-    //    byteArray[0] = 57;
-    //    int v = Convert.ToInt32(value);
-    //    byteArray[1] = (byte)((v >> 24));
-    //    byteArray[2] = (byte)((v >> 16));
-    //    byteArray[3] = (byte)((v >> 8));
-    //    byteArray[4] = (byte)((v));
-    //    PutByteArray(key.ToString(), byteArray);
-    //  }
-    //}
-
     public TValue Get(TKey key)
     {
       var keyType = key.GetType();
@@ -426,44 +282,6 @@ namespace Apache.Geode.Client {
       }
     }
 
-    //public string GetString(string key) {
-    //  var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-    //  var result =
-    //      Marshal.PtrToStringUTF8(CBindings.apache_geode_Region_GetString(_containedObject, keyPtr));
-    //  Marshal.FreeCoTaskMem(keyPtr);
-    //  return result;
-    //}
-
-    //public byte[] GetByteArray(TKey key) {
-    //  var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
-    //  var valPtr = (IntPtr)0;
-    //  int size = 0;
-    //  CBindings.apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
-    //  if (size > 0) {
-    //    Byte[] byteArray = new Byte[size];
-    //    Marshal.Copy(valPtr, byteArray, 0, size);
-    //    Marshal.FreeCoTaskMem(valPtr);
-    //    return byteArray;
-    //  } else
-    //    return null;
-    //}
-
-    //public byte[] GetByteArray(int key)
-    //{
-    //  var valPtr = (IntPtr)0;
-    //  int size = 0;
-    //  apache_geode_Region_GetByteArrayForInt32Key(_containedObject, key, ref valPtr, ref size);
-    //  if (size > 0)
-    //  {
-    //    Byte[] byteArray = new Byte[size];
-    //    Marshal.Copy(valPtr, byteArray, 0, size);
-    //    Marshal.FreeCoTaskMem(valPtr);
-    //    return byteArray;
-    //  }
-    //  else
-    //    return null;
-    //}
-
     public bool Remove(string key) {
       var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
       CBindings.apache_geode_Region_Remove(_containedObject, keyPtr);
@@ -483,37 +301,4 @@ namespace Apache.Geode.Client {
       _containedObject = IntPtr.Zero;
     }
   }
-
-  //  public class GenericRegion<TVal> : Region
-  //  {
-  //    // private Region regionBase_;
-  //    internal GenericRegion<TVal>(IntPtr regionFactory, string regionName) {}
-  //  //{
-  //  //  //regionBase_ = new Region(regionFactory, regionName);
-  //  //  var regionNamePtr = Marshal.StringToCoTaskMemUTF8(regionName);
-  //  //_containedObject = apache_geode_RegionFactory_CreateRegion(regionFactory, regionNamePtr);
-  //  //Marshal.FreeCoTaskMem(regionNamePtr);
-  //  //}
-
-  //}
-
-  //public class Region<TVal>
-  //{
-  //  Region region_;
-  //  internal Region(RegionFactory regionFactory, string regionName)
-  //  {
-  //    region_ = regionFactory.CreateRegion(regionName);
-  //  }
-
-  //  public TVal Get<TKey>(TKey key)
-  //  {
-  //    // This is a generic, so can't do any marshaling directly.
-  //    //if (key.GetType() == typeof(string))
-  //    {
-  //      var value = region_.GetByteArray(key.ToString());
-  //      return (TVal)Convert.ChangeType(value, typeof(TVal));
-  //      //return BitConverter.ToInt32(value);
-  //    }
-  //  }
-  //}
 }

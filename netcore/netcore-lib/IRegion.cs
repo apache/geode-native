@@ -18,16 +18,10 @@ using System;
 
 namespace Apache.Geode.Client
 {
-  //public interface IRegion<TKey, TValue> {
-  //      void Put(TKey key, TValue value); 
-  //      TValue Get(TKey key);
-  //}
   public interface IRegion<TKey, TValue> : IDisposable
   {
-#pragma warning disable CS0693 // Type parameter has the same name as the type parameter from outer type
     void Put(TKey key, TValue value);
     TValue Get(TKey key);
     //bool Remove(TKey key);
-#pragma warning restore CS0693 // Type parameter has the same name as the type parameter from outer type
   }
 }

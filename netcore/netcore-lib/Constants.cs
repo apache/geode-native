@@ -84,17 +84,5 @@ namespace Apache.Geode.Client
       PDX_ENUM = 94,
       InterestResultPolicy = 37,
     };
-
-    public static Dictionary<TypeCode, DSCode> DotNetToDSCode = new Dictionary<TypeCode, DSCode>() {
-      { TypeCode.String, DSCode.CacheableString },
-      { TypeCode.Boolean, DSCode.CacheableBoolean },
-      { TypeCode.Byte, DSCode.CacheableByte },
-      { TypeCode.Int16, DSCode.CacheableInt16 },
-      { TypeCode.Int32, DSCode.CacheableInt32 },
-      { TypeCode.Int64, DSCode.CacheableInt64 },
-      { TypeCode.Single, DSCode.CacheableFloat },
-      { TypeCode.Double, DSCode.CacheableDouble },
-      { TypeCode.DateTime, DSCode.CacheableDate }
-    };
   }
 }
