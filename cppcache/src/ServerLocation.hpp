@@ -88,6 +88,10 @@ class APACHE_GEODE_EXPORT ServerLocation
     return size;
   }
 
+  std::string toString() const override {
+    return m_serverName + ":" + std::to_string(m_port);
+  }
+
   void printInfo() {
     LOGDEBUG(" Got Host %s, and port %d", getServerName().c_str(), m_port);
   }
