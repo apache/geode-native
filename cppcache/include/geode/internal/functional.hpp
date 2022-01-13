@@ -154,6 +154,52 @@ struct geode_hash<std::string> {
   }
 };
 
+template <>
+struct geode_hash<std::vector<int8_t>> {
+  inline int32_t operator()(const std::vector<int8_t>& val) {
+    int32_t hash = 0;
+
+    for (auto&& it = val.cbegin(); it < val.cend(); it++) {
+      auto cp = static_cast<uint32_t>(0xff & *it);
+      if (cp < 0x80) {
+        // 1 byte
+      } else if ((cp >> 5) == 0x6) {
+        // 2 bytes
+        ++it;
+        cp = ((cp << 6) & 0x7ff) + ((*it) & 0x3f);
+      } else if ((cp >> 4) == 0xe) {
+        // 3 bytes
+        ++it;
+        cp = ((cp << 12) & 0xffff) + (((0xff & *it) << 6) & 0xfff);
+        ++it;
+        cp += (*it) & 0x3f;
+      } else if ((cp >> 3) == 0x1e) {
+        // 4 bytes
+        ++it;
+        cp = ((cp << 18) & 0x1fffff) + (((0xff & *it) << 12) & 0x3ffff);
+        ++it;
+        cp += ((0xff & *it) << 6) & 0xfff;
+        ++it;
+        cp += (*it) & 0x3f;
+      } else {
+        // TODO throw exception
+      }
+
+      if (cp > 0xffff) {
+        // surrogate pair
+        hash = 31 * hash +
+               static_cast<uint16_t>((cp >> 10) + (0xD800 - (0x10000 >> 10)));
+        hash = 31 * hash + static_cast<uint16_t>((cp & 0x3ff) + 0xdc00u);
+      } else {
+        // single code unit
+        hash = 31 * hash + cp;
+      }
+    }
+
+    return hash;
+  }
+};
+
 }  // namespace internal
 }  // namespace client
 }  // namespace geode
