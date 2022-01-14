@@ -49,10 +49,7 @@ namespace Apache.Geode.Client {
         throw new NotImplementedException();
       }
 
-      if (value is string ||
-          value is System.Byte ||
-          value is System.Int16 ||
-          value is System.Int32) {
+      if (value is string) {
       }
       else {
         throw new NotImplementedException();
@@ -64,7 +61,7 @@ namespace Apache.Geode.Client {
       IntPtr keyPtr = (IntPtr)0;
 
       if (keyType.IsPrimitive) {
-        keyLength = CacheablePrimitive<TKey>.SerializeNoSwap(key, ref keyPtr);
+        keyLength = CacheablePrimitive<TKey>.Serialize(key, ref keyPtr);
       }
       else if (key is string) {
         keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
@@ -77,14 +74,10 @@ namespace Apache.Geode.Client {
         valuePtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(value));
       }
 
-      if (keyType.IsPrimitive && valueType.IsPrimitive) {
-        CBindings.apache_geode_Region_Put(_containedObject,
+      if (keyType.IsPrimitive) {
+        CBindings.apache_geode_Region_PutByteArray(_containedObject,
             keyPtr, keyLength + sizeof(Constants.DSCode),
-            valuePtr, valueLength + sizeof(Constants.DSCode));
-      }
-      else if (valueType.IsPrimitive) {
-        CBindings.apache_geode_Region_PutByteArray(_containedObject, keyPtr,
-          valuePtr, valueLength + sizeof(Constants.DSCode));
+            valuePtr);
       }
       else {
         CBindings.apache_geode_Region_PutString(_containedObject, keyPtr, valuePtr);
@@ -109,25 +102,6 @@ namespace Apache.Geode.Client {
             break;
           case TypeCode.Int32:
             length = WriteObject(Convert.ToInt32(value), ref valuePtr);
-            break;
-        }
-        return length;
-      }
-
-      public static int SerializeNoSwap(TPrim value, ref IntPtr valuePtr)
-      {
-        int length = 0;
-        Type type = value.GetType();
-        switch (Type.GetTypeCode(value.GetType()))
-        {
-          case TypeCode.Byte:
-            length = WriteObject(Convert.ToByte(value), ref valuePtr);
-            break;
-          case TypeCode.Int16:
-            length = WriteObjectNoSwap(Convert.ToInt16(value), ref valuePtr);
-            break;
-          case TypeCode.Int32:
-            length = WriteObjectNoSwap(Convert.ToInt32(value), ref valuePtr);
             break;
         }
         return length;
@@ -176,7 +150,7 @@ namespace Apache.Geode.Client {
         int valueLength = sizeof(Byte);
         valuePtr = Marshal.AllocCoTaskMem(valueLength + sizeof(Constants.DSCode));
 
-        Marshal.StructureToPtr<Int32>((Int32)Constants.DSCode.CacheableByte, valuePtr, false);
+        Marshal.StructureToPtr<byte>((byte)Constants.DSCode.CacheableByte, valuePtr, false);
 
         Marshal.StructureToPtr<byte>((byte)(value), valuePtr + sizeof(Constants.DSCode), false);
 
@@ -188,7 +162,7 @@ namespace Apache.Geode.Client {
         int valueLength = sizeof(Int16);
         valuePtr = Marshal.AllocCoTaskMem(valueLength + sizeof(Constants.DSCode));
 
-        Marshal.StructureToPtr<Int32>((Int32)Constants.DSCode.CacheableInt16, valuePtr, false);
+        Marshal.StructureToPtr<byte>((byte)Constants.DSCode.CacheableInt16, valuePtr, false);
 
         Marshal.StructureToPtr<byte>((byte)(value >> 8), valuePtr + sizeof(Constants.DSCode), false);
         Marshal.StructureToPtr<byte>((byte)(value), valuePtr + sizeof(Constants.DSCode)+1, false);
@@ -196,24 +170,13 @@ namespace Apache.Geode.Client {
         return valueLength;
       }
 
-      public static int WriteObjectNoSwap(Int16 value, ref IntPtr valuePtr)
-      {
-        int valueLength = sizeof(Int16);
-        valuePtr = Marshal.AllocCoTaskMem(valueLength + sizeof(Constants.DSCode));
-
-        Marshal.StructureToPtr<Int32>((Int32)Constants.DSCode.CacheableInt16, valuePtr, false);
-
-        Marshal.StructureToPtr<Int16>(value, valuePtr + sizeof(Constants.DSCode), false);
-
-        return valueLength;
-      }
 
       public static int WriteObject(Int32 value, ref IntPtr valuePtr)
       {
         int valueLength = sizeof(Int32);
         valuePtr = Marshal.AllocCoTaskMem(valueLength + sizeof(Constants.DSCode));
 
-        Marshal.StructureToPtr<Int32>((Int32)Constants.DSCode.CacheableInt32, valuePtr, false);
+        Marshal.StructureToPtr<byte>((byte)Constants.DSCode.CacheableInt32, valuePtr, false);
 
         Marshal.StructureToPtr<byte>((byte)(value >> 24), valuePtr+sizeof(Constants.DSCode), false);
         Marshal.StructureToPtr<byte>((byte)(value >> 16), valuePtr+sizeof(Constants.DSCode)+1, false);
@@ -222,18 +185,7 @@ namespace Apache.Geode.Client {
 
         return valueLength;
       }
-
-      public static int WriteObjectNoSwap(Int32 value, ref IntPtr valuePtr)
-      {
-        int valueLength = sizeof(Int32);
-        valuePtr = Marshal.AllocCoTaskMem(valueLength + sizeof(Constants.DSCode));
-
-        Marshal.StructureToPtr<Int32>((Int32)Constants.DSCode.CacheableInt32, valuePtr, false);
-
-        Marshal.StructureToPtr<Int32>(value, valuePtr + sizeof(Constants.DSCode), false);
-                                                         
-        return valueLength;                              
-      }                                                  
+                                                
 
     }
 
@@ -272,7 +224,8 @@ namespace Apache.Geode.Client {
       int valueLength = 0;
 
       if (keyType.IsPrimitive) {
-        CBindings.apache_geode_Region_Get(_containedObject, keyPtr, keyLength, ref valPtr, ref valueLength);
+        CBindings.apache_geode_Region_Get(_containedObject, keyPtr,
+          keyLength+sizeof(Constants.DSCode), ref valPtr, ref valueLength);
         return CacheablePrimitive<TValue>.Deserialize(valPtr, valueLength);
       }
       else
