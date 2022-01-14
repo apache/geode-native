@@ -54,6 +54,12 @@ void RegionWrapper::PutString(const std::string& key,
   region_->put(key, value);
 }
 
+void RegionWrapper::PutByteArray(const char* key, size_t keySize,
+                                 const std::string& value) {
+  region_->put(DataSerializableRaw::create((const int8_t*)key, keySize),
+               value);  
+}
+
 void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                                  size_t size) {
   region_->put(key,
@@ -78,16 +84,6 @@ void RegionWrapper::PutByteArray(const char* key, size_t keySize,
   }
 }
 
-template <typename TKey, typename TVal>
-void RegionWrapper::Put(TKey key, TVal val) {
-  region_->put(key, val);
-}
-
-void RegionWrapper::PutByteArray(const int32_t key, const char* value,
-                                 size_t size) {
-  std::vector<int8_t> val(value, value + size);
-  region_->put(key, apache::geode::client::CacheableBytes::create(val));
-}
 
 const char* RegionWrapper::GetString(const std::string& key) {
   auto value = region_->get(key);
@@ -156,9 +152,10 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 
 void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
                                  char** value, size_t* valueLength) {
-  auto keyCode = *(DSCode*)(key);
+  auto keyCode = (DSCode)(*key);
 
-  auto val = region_->get(key);
+  auto val = region_->get(DataSerializableRaw::create((const int8_t*)key,
+                                                           keyLength));
   auto primitive = std::dynamic_pointer_cast<
       apache::geode::client::internal::DataSerializablePrimitive>(val);
 
@@ -173,10 +170,10 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
   int16_t int16 = 0;
   std::string str = "";
 
-  switch (keyCode) {
+  switch (dsCode) {
     case apache::geode::client::internal::DSCode::CacheableASCIIString:
       str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
-                primitive)
+                val)
                 ->value();
       *valueLength = str.length() + 1;
       std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
@@ -230,10 +227,16 @@ void apache_geode_Region_PutString(apache_geode_region_t* region,
 }
 
 void apache_geode_Region_PutByteArray(apache_geode_region_t* region,
-                                      const char* key, const char* value,
-                                      size_t size) {
+                                      const char* key, size_t keySize,
+                                      const char* value) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
-  regionWrapper->PutByteArray(key, value, size);
+  regionWrapper->PutByteArray(key, keySize, value);
+}
+
+void apache_geode_Region_Put(apache_geode_region_t* region, const char* key,
+                             size_t keyLength, const char* val) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  regionWrapper->PutByteArray(key, keyLength, val);
 }
 
 void apache_geode_Region_Put(apache_geode_region_t* region, const char* key,

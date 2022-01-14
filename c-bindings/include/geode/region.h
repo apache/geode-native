@@ -40,15 +40,13 @@ APACHE_GEODE_C_EXPORT void apache_geode_Region_PutString(
     apache_geode_region_t* region, const char* key, const char* value);
 
 APACHE_GEODE_C_EXPORT void apache_geode_Region_PutByteArray(
-    apache_geode_region_t* region, const char* key, const char* value, size_t size);
+    apache_geode_region_t* region, const char* key, size_t keyLength,
+    const char* value);
 
 APACHE_GEODE_C_EXPORT void apache_geode_Region_Put(
     apache_geode_region_t* region, const char* key, size_t keyLength,
     const char* val, size_t valLength);
 
-APACHE_GEODE_C_EXPORT void apache_geode_Region_PutByteArrayForInt32Key(
-    apache_geode_region_t* region, int32_t key, const char* value,
-    size_t size);
 
 APACHE_GEODE_C_EXPORT const char* apache_geode_Region_GetString(
     apache_geode_region_t* region, const char* key);
