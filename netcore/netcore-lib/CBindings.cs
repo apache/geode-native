@@ -71,6 +71,10 @@ namespace Apache.Geode.Client
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
+      int keyLength, IntPtr value);
+
+    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    public static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
                                                                IntPtr value, int length);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
