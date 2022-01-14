@@ -16,9 +16,6 @@
 cmake_minimum_required(VERSION 3.12)
 project(Apache.Geode CXX)
 
-if(NOT "${STRONG_NAME_PUBLIC_KEY}" STREQUAL "")
-  set(STRONG_NAME_PUBLIC_KEY_ATTRIBUTE ", PublicKey=${STRONG_NAME_PUBLIC_KEY}")
-endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
 list(APPEND CONFIGURE_IN_FILES ${CMAKE_CURRENT_SOURCE_DIR}/impl/AssemblyInfo.cpp.in)
 list(APPEND CONFIGURE_OUT_FILES ${CMAKE_CURRENT_BINARY_DIR}/impl/AssemblyInfo.cpp)
@@ -364,9 +361,6 @@ target_link_options(Apache.Geode
 )
 
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
-
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${SHARED_LINKER_FLAGS_STRONG_KEY}")
-
 
 include(PrecompiledHeader)
 add_precompiled_header(Apache.Geode-object geode_includes.hpp FORCEINCLUDE)

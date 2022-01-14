@@ -85,13 +85,6 @@ set_target_properties(Apache.Geode.IntegrationTests2 PROPERTIES
   FOLDER cli/test/integration
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties( Apache.Geode.IntegrationTests2 PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()
-
 add_dependencies(Apache.Geode.IntegrationTests2 nuget-restore)
 
 enable_testing()
