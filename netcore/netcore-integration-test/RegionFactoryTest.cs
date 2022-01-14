@@ -56,36 +56,22 @@ namespace Apache.Geode.Client.IntegrationTests {
 
     private void doPutsAndGetsObject(IRegion<object, object> region)
     {
-      // Key is a string
+      // Key is string
+      region.Put(Username1, "Robert Timmons");
+      var actualValue = region.Get(Username1);
+      Assert.Equal("Robert Timmons", actualValue);
 
-      var expectedFullName = "Robert Timmons";
-      region.Put(Username1, expectedFullName);
-      var actualFullName = region.Get(Username1);
-      Assert.Equal(expectedFullName, actualFullName);
+      // Key is short
+      short int16 = (short)780;
+      region.Put(int16, "Robert Timmons");
+      actualValue = region.Get(int16);
+      Assert.Equal("Robert Timmons", actualValue);
 
-      Int16 expectedInt16 = 780;
-      region.Put(Username4, expectedInt16);
-      var actualInt16 = region.Get(Username4);
-      Assert.Equal(expectedInt16, actualInt16);
-
-      Int32 expectedInt32 = 779;
-      region.Put(Username3, expectedInt32);
-      var actualInt32 = region.Get(Username3);
-      Assert.Equal(expectedInt32, actualInt32);
-
-      // Key is an Int16
-
-      var short5000 = (Int16)5000;
-      region.Put((short)10000, short5000);
-      var actual5000 = region.Get((short)10000);
-      Assert.Equal(short5000, actual5000);
-
-      // Key is a Byte
-
-      var byteIndex= (byte)222;
-      region.Put((byte)200, byteIndex);
-      var actualByteIndex = region.Get((byte)200);
-      Assert.Equal(byteIndex, actualByteIndex);
+      // Key is int
+      int int32 = 790;
+      region.Put(int32, "Robert Timmons");
+      actualValue = region.Get(int32);
+      Assert.Equal("Robert Timmons", actualValue);
     }
 
     //private void DoRemoves(IRegion<string, Int32> region) {
