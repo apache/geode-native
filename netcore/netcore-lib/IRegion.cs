@@ -22,6 +22,7 @@ namespace Apache.Geode.Client
   {
     void Put(TKey key, TValue value);
     TValue Get(TKey key);
-    //bool Remove(TKey key);
+    bool Remove(TKey key);
+    bool ContainsValueForKey(TKey key);
   }
 }

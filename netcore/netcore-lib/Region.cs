@@ -235,15 +235,35 @@ namespace Apache.Geode.Client {
       }
     }
 
-    public bool Remove(string key) {
-      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+    public bool Remove(TKey key) {
+      var keyType = key.GetType();
+      IntPtr keyPtr = (IntPtr)0;
+      int keyLength = 0;
+      if (keyType.IsPrimitive)
+      {
+        keyLength = CacheablePrimitive<TKey>.Serialize(key, ref keyPtr);
+      }
+      else if (key is string)
+      {
+        keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
+      }
       CBindings.apache_geode_Region_Remove(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return true; // TODO: Needs to ensure removal
     }
 
-    public bool ContainsValueForKey(string key) {
-      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+    public bool ContainsValueForKey(TKey key) {
+      var keyType = key.GetType();
+      IntPtr keyPtr = (IntPtr)0;
+      int keyLength = 0;
+      if (keyType.IsPrimitive)
+      {
+        keyLength = CacheablePrimitive<TKey>.Serialize(key, ref keyPtr);
+      }
+      else if (key is string)
+      {
+        keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
+      }
       bool result = CBindings.apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return result;

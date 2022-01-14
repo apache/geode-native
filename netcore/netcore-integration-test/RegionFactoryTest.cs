@@ -62,28 +62,29 @@ namespace Apache.Geode.Client.IntegrationTests {
       Assert.Equal("Robert Timmons", actualValue);
 
       // Key is short
-      short int16 = (short)780;
+      short int16 = (short)(780);
       region.Put(int16, "Robert Timmons");
       actualValue = region.Get(int16);
       Assert.Equal("Robert Timmons", actualValue);
 
       // Key is int
-      int int32 = 790;
+      int int32 = 100000;
       region.Put(int32, "Robert Timmons");
       actualValue = region.Get(int32);
       Assert.Equal("Robert Timmons", actualValue);
     }
 
-    //private void DoRemoves(IRegion<string, Int32> region) {
-    //  region.Remove(Username1);
-    //  region.Remove(Username2);
+    private void DoRemoves(IRegion<object, object> region)
+    {
+      region.Remove(Username1);
+      region.Remove(Username2);
 
-    //  var hasUser1 = region.ContainsValueForKey(Username1);
-    //  var hasUser2 = region.ContainsValueForKey(Username2);
+      var hasUser1 = region.ContainsValueForKey(Username1);
+      var hasUser2 = region.ContainsValueForKey(Username2);
 
-    //  Assert.False(hasUser1);
-    //  Assert.False(hasUser2);
-    //}
+      Assert.False(hasUser1);
+      Assert.False(hasUser2);
+    }
 
     private void CreateRegionAndDoWorkObject(IGeodeCache<object, object> cache, string regionName,
                                        RegionShortcut regionType)
