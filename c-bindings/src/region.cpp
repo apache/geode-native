@@ -67,6 +67,12 @@ void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                    (const int8_t*)value, size));
 }
 
+void RegionWrapper::PutByteArrayForString(const std::string& key, const char* value,
+                                 size_t size) {
+  std::vector<int8_t> val(value, value + size);
+  region_->put(key, apache::geode::client::CacheableBytes::create(val));
+}
+
 void RegionWrapper::PutByteArray(const char* key, size_t keySize,
                                  const char* value, size_t valueSize) {
   auto keyCode = *(DSCode*)(key);
@@ -109,6 +115,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 
   int32_t int32 = 0;
   int16_t int16 = 0;
+  
   std::string str = "";
 
   switch (dsCode) {
@@ -136,6 +143,12 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
       bytes->push_back((int8_t)(int16 >> 8));
       bytes->push_back((int8_t)(int16));
       *size = 2 + 1;
+      break;
+    case apache::geode::client::internal::DSCode::CacheableBytes:
+      auto ba = std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(
+                  primitive)->value();
+      for (unsigned int i = 0; i < ba.size(); i++) bytes->push_back(ba[i]);
+      *size = primitive->objectSize() + 1;
       break;
   }
 
@@ -231,6 +244,13 @@ void apache_geode_Region_PutByteArray(apache_geode_region_t* region,
                                       const char* value) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
   regionWrapper->PutByteArray(key, keySize, value);
+}
+
+void apache_geode_Region_PutByteArrayForString(apache_geode_region_t* region,
+                                      const char* key,
+                                      const char* value, size_t valueSize) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  regionWrapper->PutByteArrayForString(key, value, valueSize);
 }
 
 void apache_geode_Region_Put(apache_geode_region_t* region, const char* key,

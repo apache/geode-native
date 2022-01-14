@@ -78,6 +78,10 @@ namespace Apache.Geode.Client
                                                                IntPtr value, int length);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    public static extern bool apache_geode_Region_PutByteArrayForString(IntPtr region, IntPtr key,
+                                                               IntPtr value, int length);
+
+    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_Put(IntPtr region, IntPtr key, int keyLength,
                                                       IntPtr value, int valueLength);
 

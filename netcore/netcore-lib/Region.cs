@@ -28,6 +28,33 @@ namespace Apache.Geode.Client {
       Marshal.FreeCoTaskMem(regionNamePtr);
     }
 
+    public void PutByteArray(string key, byte[] value)
+    {
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var valuePtr = Marshal.AllocCoTaskMem(value.Length);
+      Marshal.Copy(value, 0, valuePtr, value.Length);
+      CBindings.apache_geode_Region_PutByteArrayForString(_containedObject, keyPtr, valuePtr, value.Length);
+      Marshal.FreeCoTaskMem(keyPtr);
+      Marshal.FreeCoTaskMem(valuePtr);
+    }
+
+    public byte[] GetByteArray(string key)
+    {
+      var keyPtr = Marshal.StringToCoTaskMemUTF8(key);
+      var valPtr = (IntPtr)0;
+      int size = 0;
+      CBindings.apache_geode_Region_GetByteArray(_containedObject, keyPtr, ref valPtr, ref size);
+      if (size > 0)
+      {
+        Byte[] byteArray = new Byte[size];
+        Marshal.Copy(valPtr, byteArray, 0, size);
+        Marshal.FreeCoTaskMem(valPtr);
+        return byteArray;
+      }
+      else
+        return null;
+    }
+
     public void Put(TKey key, TValue value)
     {
       var keyType = key.GetType();

@@ -21,7 +21,9 @@ namespace Apache.Geode.Client
   public interface IRegion<TKey, TValue> : IDisposable
   {
     void Put(TKey key, TValue value);
+    void PutByteArray(string key, byte[] value);
     TValue Get(TKey key);
+    byte[] GetByteArray(string key);
     bool Remove(TKey key);
     bool ContainsValueForKey(TKey key);
   }

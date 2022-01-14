@@ -73,8 +73,8 @@ namespace Apache.Geode.Session {
   }
 
   public class GeodeSessionStateCache : GeodeNativeObject, IDistributedCache {
-    private readonly IGeodeCache _cache;
-    private static Region _region;
+    private readonly IGeodeCache<string, object> _cache;
+    private static IRegion<string, object> _region;
     private string _logLevel;
     private string _logFile;
     private string _regionName;
@@ -87,7 +87,7 @@ namespace Apache.Geode.Session {
       _logLevel = optionsAccessor.Value.LogLevel;
       _logFile = optionsAccessor.Value.LogFile;
 
-      _cache = CacheFactory.Create()
+      _cache = CacheFactory<string, object>.Create()
                    .SetProperty("log-level", _logLevel)
                    .SetProperty("log-file", _logFile)
                    .CreateCache();
