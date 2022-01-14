@@ -24,7 +24,7 @@ namespace geode {
 namespace client {
 namespace internal {
 
-class DataSerializableRaw : public DataSerializablePrimitive , CacheableKey {
+class DataSerializableRaw : public DataSerializablePrimitive , public CacheableKey {
  public:
   DataSerializableRaw(const int8_t* data, size_t size);
   ~DataSerializableRaw() noexcept override = default;
