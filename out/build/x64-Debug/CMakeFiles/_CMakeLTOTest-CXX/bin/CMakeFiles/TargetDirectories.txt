@@ -1,0 +1,4 @@
+C:/temp/geode-native/out/build/x64-Debug/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+C:/temp/geode-native/out/build/x64-Debug/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+C:/temp/geode-native/out/build/x64-Debug/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+C:/temp/geode-native/out/build/x64-Debug/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir
