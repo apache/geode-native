@@ -104,10 +104,17 @@ namespace Apache.Geode.Client
                                                                ref IntPtr value, ref int size);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    public static extern void apache_geode_Region_Remove(IntPtr region, IntPtr key);
+    public static extern void apache_geode_Region_Remove(IntPtr region, IntPtr key, int keyLength);
+
+    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    public static extern void apache_geode_Region_RemoveString(IntPtr region, IntPtr key);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_ContainsValueForKey(IntPtr region,
+                                                                      IntPtr key, int keyLength);
+
+    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    public static extern bool apache_geode_Region_ContainsValueForStringKey(IntPtr region,
                                                                       IntPtr key);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]

@@ -57,7 +57,9 @@ void PutByteArray(const std::string& key, const char* value,
 
   void GetByteArray(const int32_t key, char** value, size_t* size);
 
-  void Remove(const std::string& key);
+  void Remove(const char* key, size_t keySize);
+  void RemoveStringKey(const std::string& key);
 
-  bool ContainsValueForKey(const std::string& key);
+  bool ContainsValueForKey(const char* key, size_t keySize);
+  bool ContainsValueForStringKey(const std::string& key);
 };

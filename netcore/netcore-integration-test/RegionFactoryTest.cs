@@ -77,13 +77,16 @@ namespace Apache.Geode.Client.IntegrationTests {
     private void DoRemoves(IRegion<object, object> region)
     {
       region.Remove(Username1);
-      region.Remove(Username2);
+      region.Remove((short)780);
+      region.Remove(100000);
 
       var hasUser1 = region.ContainsValueForKey(Username1);
-      var hasUser2 = region.ContainsValueForKey(Username2);
+      var has780 = region.ContainsValueForKey((short)780);
+      var has100000 = region.ContainsValueForKey(100000);
 
       Assert.False(hasUser1);
-      Assert.False(hasUser2);
+      Assert.False(has780);
+      Assert.False(has100000);
     }
 
     private void CreateRegionAndDoWorkObject(IGeodeCache<object, object> cache, string regionName,
@@ -93,7 +96,7 @@ namespace Apache.Geode.Client.IntegrationTests {
       using var region = regionFactory.CreateRegion(regionName);
 
       doPutsAndGetsObject(region);
-      //DoRemoves(region);
+      DoRemoves(region);
     }
 
     [Fact]

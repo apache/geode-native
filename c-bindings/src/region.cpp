@@ -56,8 +56,7 @@ void RegionWrapper::PutString(const std::string& key,
 
 void RegionWrapper::PutByteArray(const char* key, size_t keySize,
                                  const std::string& value) {
-  region_->put(DataSerializableRaw::create((const int8_t*)key, keySize),
-               value);  
+  region_->put(DataSerializableRaw::create((const int8_t*)key, keySize), value);
 }
 
 void RegionWrapper::PutByteArray(const std::string& key, const char* value,
@@ -67,8 +66,8 @@ void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                    (const int8_t*)value, size));
 }
 
-void RegionWrapper::PutByteArrayForString(const std::string& key, const char* value,
-                                 size_t size) {
+void RegionWrapper::PutByteArrayForString(const std::string& key,
+                                          const char* value, size_t size) {
   std::vector<int8_t> val(value, value + size);
   region_->put(key, apache::geode::client::CacheableBytes::create(val));
 }
@@ -89,7 +88,6 @@ void RegionWrapper::PutByteArray(const char* key, size_t keySize,
     } break;
   }
 }
-
 
 const char* RegionWrapper::GetString(const std::string& key) {
   auto value = region_->get(key);
@@ -115,7 +113,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
 
   int32_t int32 = 0;
   int16_t int16 = 0;
-  
+
   std::string str = "";
 
   switch (dsCode) {
@@ -145,8 +143,10 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
       *size = 2 + 1;
       break;
     case apache::geode::client::internal::DSCode::CacheableBytes:
-      auto ba = std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(
-                  primitive)->value();
+      auto ba =
+          std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(
+              primitive)
+              ->value();
       for (unsigned int i = 0; i < ba.size(); i++) bytes->push_back(ba[i]);
       *size = primitive->objectSize() + 1;
       break;
@@ -167,8 +167,8 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
                                  char** value, size_t* valueLength) {
   auto keyCode = (DSCode)(*key);
 
-  auto val = region_->get(DataSerializableRaw::create((const int8_t*)key,
-                                                           keyLength));
+  auto val =
+      region_->get(DataSerializableRaw::create((const int8_t*)key, keyLength));
   auto primitive = std::dynamic_pointer_cast<
       apache::geode::client::internal::DataSerializablePrimitive>(val);
 
@@ -185,9 +185,9 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
 
   switch (dsCode) {
     case apache::geode::client::internal::DSCode::CacheableASCIIString:
-      str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
-                val)
-                ->value();
+      str =
+          std::dynamic_pointer_cast<apache::geode::client::CacheableString>(val)
+              ->value();
       *valueLength = str.length() + 1;
       std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
       break;
@@ -222,9 +222,20 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
   }
 }
 
-void RegionWrapper::Remove(const std::string& key) { region_->remove(key); }
+void RegionWrapper::Remove(const char* key, size_t keySize) {
+  region_->remove(DataSerializableRaw::create((const int8_t*)key, keySize));
+}
 
-bool RegionWrapper::ContainsValueForKey(const std::string& key) {
+void RegionWrapper::RemoveStringKey(const std::string& key) {
+  region_->remove(key);
+}
+
+bool RegionWrapper::ContainsValueForKey(const char* key, size_t keySize) {
+  return region_->containsValueForKey(
+      DataSerializableRaw::create((const int8_t*)key, keySize));
+}
+
+bool RegionWrapper::ContainsValueForStringKey(const std::string& key) {
   return region_->containsValueForKey(key);
 }
 
@@ -247,8 +258,9 @@ void apache_geode_Region_PutByteArray(apache_geode_region_t* region,
 }
 
 void apache_geode_Region_PutByteArrayForString(apache_geode_region_t* region,
-                                      const char* key,
-                                      const char* value, size_t valueSize) {
+                                               const char* key,
+                                               const char* value,
+                                               size_t valueSize) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
   regionWrapper->PutByteArrayForString(key, value, valueSize);
 }
@@ -286,16 +298,29 @@ void apache_geode_Region_Get(apache_geode_region_t* region, const char* key,
   return regionWrapper->GetByteArray(key, keyLength, value, valueLength);
 }
 
-void apache_geode_Region_Remove(apache_geode_region_t* region,
-                                const char* key) {
+void apache_geode_Region_Remove(apache_geode_region_t* region, const char* key,
+                                size_t keyLength) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
-  return regionWrapper->Remove(key);
+  return regionWrapper->Remove(key, keyLength);
+}
+
+void apache_geode_Region_RemoveString(apache_geode_region_t* region,
+                                      const char* key) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  return regionWrapper->RemoveStringKey(key);
 }
 
 bool apache_geode_Region_ContainsValueForKey(apache_geode_region_t* region,
-                                             const char* key) {
+                                             const char* key,
+                                             size_t keyLength) {
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
-  return regionWrapper->ContainsValueForKey(key);
+  return regionWrapper->ContainsValueForKey(key, keyLength);
+}
+
+bool apache_geode_Region_ContainsValueForStringKey(
+    apache_geode_region_t* region, const char* key) {
+  RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
+  return regionWrapper->ContainsValueForStringKey(key);
 }
 
 template <class TKey>

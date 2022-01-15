@@ -66,9 +66,15 @@ APACHE_GEODE_C_EXPORT void apache_geode_Region_GetByteArrayForInt32Key(
     apache_geode_region_t* region, const int32_t key, char** value, size_t* size);
 
 APACHE_GEODE_C_EXPORT void apache_geode_Region_Remove(
+    apache_geode_region_t* region, const char* key, size_t keyLength);
+
+APACHE_GEODE_C_EXPORT void apache_geode_Region_RemoveString(
     apache_geode_region_t* region, const char* key);
 
 APACHE_GEODE_C_EXPORT bool apache_geode_Region_ContainsValueForKey(
+    apache_geode_region_t* region, const char* key, size_t keyLength);
+
+APACHE_GEODE_C_EXPORT bool apache_geode_Region_ContainsValueForStringKey(
     apache_geode_region_t* region, const char* key);
     
 #ifdef __cplusplus

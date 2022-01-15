@@ -269,12 +269,14 @@ namespace Apache.Geode.Client {
       if (keyType.IsPrimitive)
       {
         keyLength = CacheablePrimitive<TKey>.Serialize(key, ref keyPtr);
+        CBindings.apache_geode_Region_Remove(_containedObject, keyPtr,
+          keyLength + sizeof(Constants.DSCode));
       }
       else if (key is string)
       {
         keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
+        CBindings.apache_geode_Region_RemoveString(_containedObject, keyPtr);
       }
-      CBindings.apache_geode_Region_Remove(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return true; // TODO: Needs to ensure removal
     }
@@ -283,15 +285,18 @@ namespace Apache.Geode.Client {
       var keyType = key.GetType();
       IntPtr keyPtr = (IntPtr)0;
       int keyLength = 0;
+      bool result = false;
       if (keyType.IsPrimitive)
       {
         keyLength = CacheablePrimitive<TKey>.Serialize(key, ref keyPtr);
+        result = CBindings.apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr,
+          keyLength + sizeof(Constants.DSCode));
       }
       else if (key is string)
       {
         keyPtr = Marshal.StringToCoTaskMemUTF8(Convert.ToString(key));
+        result = CBindings.apache_geode_Region_ContainsValueForStringKey(_containedObject, keyPtr);
       }
-      bool result = CBindings.apache_geode_Region_ContainsValueForKey(_containedObject, keyPtr);
       Marshal.FreeCoTaskMem(keyPtr);
       return result;
     }
