@@ -33,13 +33,13 @@ class DataSerializableRaw : public DataSerializablePrimitive , public CacheableK
       const int8_t* data, size_t size);
 
 
-  virtual void toData(DataOutput& dataOutput) const;
-  virtual void fromData(DataInput& dataInput);
-  virtual DSCode getDsCode() const;
+  virtual void toData(DataOutput& dataOutput) const override;
+  virtual void fromData(DataInput& dataInput) override;
+  virtual DSCode getDsCode() const override;
 
-  bool operator==(const CacheableKey& other) const;
+  bool operator==(const CacheableKey& other) const override;
 
-  int32_t hashcode() const;
+  int32_t hashcode() const override;
 
   private:
    std::vector<int8_t> bytes_;

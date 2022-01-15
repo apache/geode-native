@@ -38,8 +38,13 @@
 #include "region.hpp"
 #include "region/factory.hpp"
 
-using namespace apache::geode::client;
-using namespace apache::geode::client::internal;
+using apache::geode::client::DSCode;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableString;
+using apache::geode::client::internal::DataSerializablePrimitive;
+using apache::geode::client::internal::DataSerializableRaw;
 
 RegionWrapper::RegionWrapper(
     std::shared_ptr<apache::geode::client::Region> region)
@@ -56,20 +61,22 @@ void RegionWrapper::PutString(const std::string& key,
 
 void RegionWrapper::PutByteArray(const char* key, size_t keySize,
                                  const std::string& value) {
-  region_->put(DataSerializableRaw::create((const int8_t*)key, keySize), value);
+  region_->put(
+      DataSerializableRaw::create(reinterpret_cast<const int8_t*>(key), keySize),
+      value);
 }
 
 void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                                  size_t size) {
   region_->put(key,
-               apache::geode::client::internal::DataSerializableRaw::create(
+               DataSerializableRaw::create(
                    (const int8_t*)value, size));
 }
 
 void RegionWrapper::PutByteArrayForString(const std::string& key,
                                           const char* value, size_t size) {
   std::vector<int8_t> val(value, value + size);
-  region_->put(key, apache::geode::client::CacheableBytes::create(val));
+  region_->put(key, CacheableBytes::create(val));
 }
 
 void RegionWrapper::PutByteArray(const char* key, size_t keySize,
@@ -77,13 +84,13 @@ void RegionWrapper::PutByteArray(const char* key, size_t keySize,
   auto keyCode = *(DSCode*)(key);
   switch (keyCode) {
     case DSCode::CacheableInt16: {
-      int16_t keyValue16 = (int16_t)(*((int16_t*)(key + 1)));
-      region_->put(keyValue16, DataSerializableRaw::create((const int8_t*)value,
+      int16_t keyValue16 = *((int16_t*)(key + 1));
+      region_->put(keyValue16, DataSerializableRaw::create(reinterpret_cast<const int8_t*>(value),
                                                            valueSize));
     } break;
     case DSCode::CacheableInt32: {
-      int32_t keyValue32 = (int32_t)(*((int32_t*)(key + 1)));
-      region_->put(keyValue32, DataSerializableRaw::create((const int8_t*)value,
+      int32_t keyValue32 = *((int32_t*)(key + 1));
+      region_->put(keyValue32, DataSerializableRaw::create(reinterpret_cast<const int8_t*>(value),
                                                            valueSize));
     } break;
   }
@@ -92,23 +99,23 @@ void RegionWrapper::PutByteArray(const char* key, size_t keySize,
 const char* RegionWrapper::GetString(const std::string& key) {
   auto value = region_->get(key);
   lastValue_ =
-      std::dynamic_pointer_cast<apache::geode::client::CacheableString>(value)
+      std::dynamic_pointer_cast<CacheableString>(value)
           ->value();
 
   return lastValue_.c_str();
 }
 
- void RegionWrapper::GetByteArray(const std::string& key, char** value,
+void RegionWrapper::GetByteArray(const std::string& key, char** value,
                                  size_t* size) {
   auto val = region_->get(key);
   auto primitive = std::dynamic_pointer_cast<
-      apache::geode::client::internal::DataSerializablePrimitive>(val);
+      DataSerializablePrimitive>(val);
 
   if (val.get() == nullptr) return;
 
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
-  apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
+  DSCode dsCode = primitive->getDsCode();
 
   int32_t int32 = 0;
   int16_t int16 = 0;
@@ -116,36 +123,34 @@ const char* RegionWrapper::GetString(const std::string& key) {
   std::string str = "";
 
   switch (dsCode) {
-    case apache::geode::client::internal::DSCode::CacheableASCIIString:
-      str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
+    case DSCode::CacheableASCIIString:
+      str = std::dynamic_pointer_cast<CacheableString>(
                 primitive)
                 ->value();
       *size = str.length();
       std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
       break;
-    case apache::geode::client::internal::DSCode::CacheableInt32:
-      int32 =
-      std::dynamic_pointer_cast<apache::geode::client::CacheableInt32>(
+    case DSCode::CacheableInt32:
+      int32 = std::dynamic_pointer_cast<CacheableInt32>(
                   primitive)
                   ->value();
-      bytes->push_back((int8_t)(int32 >> 24));
-      bytes->push_back((int8_t)(int32 >> 16));
-      bytes->push_back((int8_t)(int32 >> 8));
-      bytes->push_back((int8_t)(int32));
+      bytes->push_back(static_cast<int8_t>(int32 >> 24));
+      bytes->push_back(static_cast<int8_t>(int32 >> 16));
+      bytes->push_back(static_cast<int8_t>(int32 >> 8));
+      bytes->push_back(static_cast<int8_t>(int32));
       *size = 4;
       break;
-    case apache::geode::client::internal::DSCode::CacheableInt16:
-      int16 =
-      std::dynamic_pointer_cast<apache::geode::client::CacheableInt16>(
+    case DSCode::CacheableInt16:
+      int16 = std::dynamic_pointer_cast<CacheableInt16>(
                   primitive)
                   ->value();
-      bytes->push_back((int8_t)(int16 >> 8));
-      bytes->push_back((int8_t)(int16));
+      bytes->push_back(static_cast<int8_t>(int16 >> 8));
+      bytes->push_back(static_cast<int8_t>(int16));
       *size = 2;
       break;
-    case apache::geode::client::internal::DSCode::CacheableBytes:
+    case DSCode::CacheableBytes:
       auto ba =
-          std::dynamic_pointer_cast<apache::geode::client::CacheableBytes>(
+          std::dynamic_pointer_cast<CacheableBytes>(
               primitive)
               ->value();
       for (unsigned int i = 0; i < ba.size(); i++) bytes->push_back(ba[i]);
@@ -166,18 +171,16 @@ const char* RegionWrapper::GetString(const std::string& key) {
 
 void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
                                  char** value, size_t* valueLength) {
-  auto keyCode = (DSCode)(*key);
-
   auto val =
-      region_->get(DataSerializableRaw::create((const int8_t*)key, keyLength));
+      region_->get(DataSerializableRaw::create(reinterpret_cast<const int8_t*>(key), keyLength));
   auto primitive = std::dynamic_pointer_cast<
-      apache::geode::client::internal::DataSerializablePrimitive>(val);
+      DataSerializablePrimitive>(val);
 
   if (val.get() == nullptr) return;
 
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
-  apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
+  DSCode dsCode = primitive->getDsCode();
   bytes->push_back((int8_t)dsCode);
 
   int32_t int32 = 0;
@@ -185,29 +188,29 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
   std::string str = "";
 
   switch (dsCode) {
-    case apache::geode::client::internal::DSCode::CacheableASCIIString:
+    case DSCode::CacheableASCIIString:
       str =
-          std::dynamic_pointer_cast<apache::geode::client::CacheableString>(val)
+          std::dynamic_pointer_cast<CacheableString>(val)
               ->value();
       *valueLength = str.length() + 1;
       std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
       break;
-    case apache::geode::client::internal::DSCode::CacheableInt32:
-      int32 = std::dynamic_pointer_cast<apache::geode::client::CacheableInt32>(
+    case DSCode::CacheableInt32:
+      int32 = std::dynamic_pointer_cast<CacheableInt32>(
                   primitive)
                   ->value();
-      bytes->push_back((int8_t)(int32 >> 24));
-      bytes->push_back((int8_t)(int32 >> 16));
-      bytes->push_back((int8_t)(int32 >> 8));
-      bytes->push_back((int8_t)(int32));
+      bytes->push_back(static_cast<int8_t>(int32 >> 24));
+      bytes->push_back(static_cast<int8_t>(int32 >> 16));
+      bytes->push_back(static_cast<int8_t>(int32 >> 8));
+      bytes->push_back(static_cast<int8_t>(int32));
       *valueLength = 4 + 1;
       break;
-    case apache::geode::client::internal::DSCode::CacheableInt16:
-      int16 = std::dynamic_pointer_cast<apache::geode::client::CacheableInt16>(
+    case DSCode::CacheableInt16:
+      int16 = std::dynamic_pointer_cast<CacheableInt16>(
                   primitive)
                   ->value();
-      bytes->push_back((int8_t)(int16 >> 8));
-      bytes->push_back((int8_t)(int16));
+      bytes->push_back(static_cast<int8_t>(int16 >> 8));
+      bytes->push_back(static_cast<int8_t>(int16));
       *valueLength = 2 + 1;
       break;
   }
@@ -224,7 +227,8 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
 }
 
 void RegionWrapper::Remove(const char* key, size_t keySize) {
-  region_->remove(DataSerializableRaw::create((const int8_t*)key, keySize));
+  region_->remove(DataSerializableRaw::create(
+      reinterpret_cast<const int8_t*>(key), keySize));
 }
 
 void RegionWrapper::RemoveStringKey(const std::string& key) {
@@ -232,8 +236,8 @@ void RegionWrapper::RemoveStringKey(const std::string& key) {
 }
 
 bool RegionWrapper::ContainsValueForKey(const char* key, size_t keySize) {
-  return region_->containsValueForKey(
-      DataSerializableRaw::create((const int8_t*)key, keySize));
+  return region_->containsValueForKey(DataSerializableRaw::create(
+      reinterpret_cast<const int8_t*>(key), keySize));
 }
 
 bool RegionWrapper::ContainsValueForStringKey(const std::string& key) {
