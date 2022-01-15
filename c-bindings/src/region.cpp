@@ -109,7 +109,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
   apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
-  bytes->push_back((int8_t)((byte)dsCode));
+  bytes->push_back((int8_t)dsCode);
 
   int32_t int32 = 0;
   int16_t int16 = 0;
@@ -177,7 +177,7 @@ void RegionWrapper::GetByteArray(const char* key, size_t keyLength,
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
   apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
-  bytes->push_back((int8_t)((byte)dsCode));
+  bytes->push_back((int8_t)dsCode);
 
   int32_t int32 = 0;
   int16_t int16 = 0;
@@ -322,23 +322,3 @@ bool apache_geode_Region_ContainsValueForStringKey(
   RegionWrapper* regionWrapper = reinterpret_cast<RegionWrapper*>(region);
   return regionWrapper->ContainsValueForStringKey(key);
 }
-
-template <class TKey>
-std::shared_ptr<apache::geode::client::CacheableKey> GetUnmanagedValueGeneric(
-    TKey key, DSCode dsCode) {
-  switch (dsCode) {
-    case DSCode::CacheableInt16: {
-      return GetNativeCacheableKeyWrapperForManagedISerializable(
-          Apache::Geode::Client::CacheableInt16Array::Create((array<Int16> ^)
-                                                                 key));
-    }
-    case DSCode::CacheableInt32: {
-      return (int32_t)key;
-    }
-    default: {
-      std::shared_ptr<native::Cacheable> kPtr(
-          GetNativeWrapperForManagedObject(key));
-      return std::dynamic_pointer_cast<native::CacheableKey>(kPtr);
-    }
-  }
-}  //
