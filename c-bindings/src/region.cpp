@@ -98,7 +98,7 @@ const char* RegionWrapper::GetString(const std::string& key) {
   return lastValue_.c_str();
 }
 
-void RegionWrapper::GetByteArray(const std::string& key, char** value,
+ void RegionWrapper::GetByteArray(const std::string& key, char** value,
                                  size_t* size) {
   auto val = region_->get(key);
   auto primitive = std::dynamic_pointer_cast<
@@ -109,7 +109,6 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
   std::shared_ptr<std::vector<int8_t>> bytes =
       std::make_shared<std::vector<int8_t>>();
   apache::geode::client::internal::DSCode dsCode = primitive->getDsCode();
-  bytes->push_back((int8_t)dsCode);
 
   int32_t int32 = 0;
   int16_t int16 = 0;
@@ -121,26 +120,28 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
       str = std::dynamic_pointer_cast<apache::geode::client::CacheableString>(
                 primitive)
                 ->value();
-      *size = str.length() + 1;
+      *size = str.length();
       std::copy(str.begin(), str.end(), std::back_inserter(*bytes));
       break;
     case apache::geode::client::internal::DSCode::CacheableInt32:
-      int32 = std::dynamic_pointer_cast<apache::geode::client::CacheableInt32>(
+      int32 =
+      std::dynamic_pointer_cast<apache::geode::client::CacheableInt32>(
                   primitive)
                   ->value();
       bytes->push_back((int8_t)(int32 >> 24));
       bytes->push_back((int8_t)(int32 >> 16));
       bytes->push_back((int8_t)(int32 >> 8));
       bytes->push_back((int8_t)(int32));
-      *size = 4 + 1;
+      *size = 4;
       break;
     case apache::geode::client::internal::DSCode::CacheableInt16:
-      int16 = std::dynamic_pointer_cast<apache::geode::client::CacheableInt16>(
+      int16 =
+      std::dynamic_pointer_cast<apache::geode::client::CacheableInt16>(
                   primitive)
                   ->value();
       bytes->push_back((int8_t)(int16 >> 8));
       bytes->push_back((int8_t)(int16));
-      *size = 2 + 1;
+      *size = 2;
       break;
     case apache::geode::client::internal::DSCode::CacheableBytes:
       auto ba =
@@ -148,7 +149,7 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
               primitive)
               ->value();
       for (unsigned int i = 0; i < ba.size(); i++) bytes->push_back(ba[i]);
-      *size = primitive->objectSize() + 1;
+      *size = primitive->objectSize();
       break;
   }
 
