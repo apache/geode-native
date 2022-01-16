@@ -139,11 +139,11 @@ void RegionWrapper::GetByteArray(const std::string& key, char** value,
       bytes->push_back(static_cast<int8_t>(int16));
       *size = 2;
       break;
-    case DSCode::CacheableBytes:
+    case DSCode::CacheableBytes: {
       auto ba = std::dynamic_pointer_cast<CacheableBytes>(primitive)->value();
       for (unsigned int i = 0; i < ba.size(); i++) bytes->push_back(ba[i]);
       *size = primitive->objectSize();
-      break;
+    } break;
     default:
       break;
   }
