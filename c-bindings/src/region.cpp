@@ -68,7 +68,8 @@ void RegionWrapper::PutByteArray(const char* key, size_t keySize,
 
 void RegionWrapper::PutByteArray(const std::string& key, const char* value,
                                  size_t size) {
-  region_->put(key, DataSerializableRaw::create((const int8_t*)value, size));
+  region_->put(key, DataSerializableRaw::create(
+                        reinterpret_cast<const int8_t*>(value), size));
 }
 
 void RegionWrapper::PutByteArrayForString(const std::string& key,
@@ -79,20 +80,22 @@ void RegionWrapper::PutByteArrayForString(const std::string& key,
 
 void RegionWrapper::PutByteArray(const char* key, size_t keySize,
                                  const char* value, size_t valueSize) {
-  auto keyCode = *(DSCode*)(key);
+  auto keyCode = *(reinterpret_cast<const DSCode*>(key));
   switch (keyCode) {
     case DSCode::CacheableInt16: {
-      int16_t keyValue16 = *((int16_t*)(key + 1));
+      int16_t keyValue16 = *(reinterpret_cast<const int16_t*>(key + 1));
       region_->put(keyValue16,
                    DataSerializableRaw::create(
                        reinterpret_cast<const int8_t*>(value), valueSize));
     } break;
     case DSCode::CacheableInt32: {
-      int32_t keyValue32 = *((int32_t*)(key + 1));
+      int32_t keyValue32 = *(reinterpret_cast<const int32_t*>(key + 1));
       region_->put(keyValue32,
                    DataSerializableRaw::create(
                        reinterpret_cast<const int8_t*>(value), valueSize));
     } break;
+    default:
+      break;
   }
 }
 
