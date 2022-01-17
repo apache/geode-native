@@ -329,6 +329,172 @@ class TESTOBJECT_EXPORT Address : public PdxSerializable {
     return str;
   }*/
 };
+
+class TESTOBJECT_EXPORT DynamicFieldsType : public PdxSerializable {
+ public:
+  DynamicFieldsType() = default;
+
+  DynamicFieldsType(int32_t aptN, const std::string& street,
+                 const std::string& city)
+      : _aptNumber{aptN}, _street{street}, _city{city} {}
+
+  bool operator==(const DynamicFieldsType& other) const;
+
+  std::string toString() const override;
+
+  const std::string& getClassName() const override;
+
+  void toData(PdxWriter& pw) const override;
+
+  void fromData(PdxReader& pr) override;
+
+  static std::shared_ptr<PdxSerializable> createDeserializable() {
+    return std::make_shared<DynamicFieldsType>();
+  }
+
+  int32_t getAptNum() const { return _aptNumber; }
+
+  const std::string& getStreet() const { return _street; }
+
+  const std::string& getCity() const { return _city; }
+
+  void setChar(char val)
+  {
+    _char.reset(new char16_t);
+    *_char = val;
+  }
+
+  void setBoolean(bool val)
+  {
+    _bool.reset(new bool);
+    *_bool = val;
+  }
+
+  void setByte(int8_t val)
+  {
+    _byte.reset(new int8_t);
+    *_byte = val;
+  }
+
+  void setShort(int16_t val)
+  {
+    _short.reset(new int16_t);
+    *_short = val;
+  }
+
+  void setInt(int32_t val)
+  {
+    _int.reset(new int32_t);
+    *_int = val;
+  }
+
+  void setLong(int64_t val)
+  {
+    _long.reset(new int64_t);
+    *_long = val;
+  }
+
+  void setFloat(float val)
+  {
+    _float.reset(new float);
+    *_float = val;
+  }
+
+  void setDouble(double val)
+  {
+    _double.reset(new double);
+    *_double = val;
+  }
+
+  void setString(const std::string& val)
+  {
+    _str = val;
+  }
+
+  void setDate(std::shared_ptr<CacheableDate> val)
+  {
+    _date = val;
+  }
+
+  void setObject(std::shared_ptr<Serializable> val)
+  {
+    _object = val;
+  }
+
+  void setCharArray(const std::vector<char16_t>& val)
+  {
+    _charArray = val;
+  }
+
+  void setBooleanArray(const std::vector<bool>& val)
+  {
+    _boolArray = val;
+  }
+
+  void setByteArray(const std::vector<int8_t>& val)
+  {
+    _byteArray = val;
+  }
+
+  void setShortArray(const std::vector<int16_t>& val)
+  {
+    _shortArray = val;
+  }
+
+  void setIntArray(const std::vector<int32_t>& val)
+  {
+    _intArray = val;
+  }
+
+  void setLongArray(const std::vector<int64_t>& val)
+  {
+    _longArray = val;
+  }
+
+  void setFloatArray(const std::vector<float>& val)
+  {
+    _floatArray = val;
+  }
+
+  void setDoubleArray(const std::vector<double>& val)
+  {
+    _doubleArray = val;
+  }
+
+  void setStringArray(const std::vector<std::string>& val)
+  {
+    _strArray = val;
+  }
+
+ private:
+  int32_t _aptNumber;
+  std::string _street;
+  std::string _city;
+  std::unique_ptr<char16_t> _char;
+  std::unique_ptr<bool> _bool;
+  std::unique_ptr<int8_t> _byte;
+  std::unique_ptr<int16_t> _short;
+  std::unique_ptr<int32_t> _int;
+  std::unique_ptr<int64_t> _long;
+  std::unique_ptr<float> _float;
+  std::unique_ptr<double> _double;
+  std::string _str;
+  std::shared_ptr<CacheableDate> _date;
+  std::shared_ptr<Serializable> _object;
+
+  std::vector<char16_t> _charArray;
+  std::vector<bool> _boolArray;
+  std::vector<int8_t> _byteArray;
+  std::vector<int16_t> _shortArray;
+  std::vector<int32_t> _intArray;
+  std::vector<int64_t> _longArray;
+  std::vector<float> _floatArray;
+  std::vector<double> _doubleArray;
+  std::vector<std::string> _strArray;
+};
+
+std::ostream& operator<<(std::ostream& os, const DynamicFieldsType& address);
+
 enum pdxEnumTest { pdx1, pdx2, pdx3 };
 class TESTOBJECT_EXPORT PdxType : public PdxSerializable {
  private:

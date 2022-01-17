@@ -356,4 +356,311 @@ bool PdxTests::PdxType::equals(PdxTests::PdxType& other,
   return true;
 }
 
+bool DynamicFieldsType::operator==(const DynamicFieldsType& other) const {
+  return _aptNumber == other._aptNumber && _street == other._street &&
+         _city == other._city && !_char == !other._char &&
+         (!_char || *_char == *other._char) && !_bool == !other._bool &&
+         (!_bool || *_bool == *other._bool) && !_byte == !other._byte &&
+         (!_byte || *_byte == *other._byte) && !_short == !other._short &&
+         (!_short || *_short == *other._short) && !_int == !other._int &&
+         (!_int || *_int == *other._int) && !_long == !other._long &&
+         (!_long || *_long == *other._long) && !_float == !other._float &&
+         (!_float || *_float == *other._float) && !_double == !other._double &&
+         (!_double || *_double == *other._double) && _str == other._str &&
+         !_object == !other._object &&
+         (!_object || typeid(_object.get()) == typeid(other._object.get())) &&
+         !_date == !other._date && (!_date || *_date == *other._date) &&
+         _charArray.size() == other._charArray.size() &&
+         _boolArray.size() == other._boolArray.size() &&
+         _byteArray.size() == other._byteArray.size() &&
+         _shortArray.size() == other._shortArray.size() &&
+         _intArray.size() == other._intArray.size() &&
+         _longArray.size() == other._longArray.size() &&
+         _floatArray.size() == other._floatArray.size() &&
+         _doubleArray.size() == other._doubleArray.size() &&
+         _strArray.size() == other._strArray.size();
+}
+
+std::string DynamicFieldsType::toString() const {
+  std::string result = "Apt#: " + std::to_string(_aptNumber) + " | " +
+                       "Street: " + _street + " | " + "City: " + _street +
+                       " | ";
+
+  if (_char) {
+    result += "Char: " + std::to_string(*_char) + " | ";
+  }
+
+  if (_bool) {
+    result += "Boolean: " + std::string{*_bool ? "true" : "false"} + " | ";
+  }
+
+  if (_byte) {
+    result += "Byte: " + std::to_string(static_cast<int32_t>(*_byte)) + " | ";
+  }
+
+  if (_short) {
+    result += "Short: " + std::to_string(static_cast<int32_t>(*_short)) + " | ";
+  }
+
+  if (_int) {
+    result += "Integer: " + std::to_string(*_int) + " | ";
+  }
+
+  if (_long) {
+    result += "Long: " + std::to_string(*_long) + " | ";
+  }
+
+  if (_float) {
+    result += "Float: " + std::to_string(*_float) + " | ";
+  }
+
+  if (_double) {
+    result += "Double: " + std::to_string(*_double) + " | ";
+  }
+
+  if (!_str.empty()) {
+    result += "String: " + _str + " | ";
+  }
+
+  if (_date) {
+    result += "Date: " + _date->toString() + " | ";
+  }
+
+  if (_object) {
+    result += "Object: " + _object->toString() + " | ";
+  }
+
+  if (!_charArray.empty()) {
+    result += "CharArray[" + std::to_string(_charArray.size()) + "] | ";
+  }
+
+  if (!_boolArray.empty()) {
+    result += "BoolArray[" + std::to_string(_boolArray.size()) + "] | ";
+  }
+
+  if (!_byteArray.empty()) {
+    result += "ByteArray[" + std::to_string(_byteArray.size()) + "] | ";
+  }
+
+  if (!_shortArray.empty()) {
+    result += "ShortArray[" + std::to_string(_shortArray.size()) + "] | ";
+  }
+
+  if (!_intArray.empty()) {
+    result += "IntArray[" + std::to_string(_intArray.size()) + "] | ";
+  }
+
+  if (!_longArray.empty()) {
+    result += "LongArray[" + std::to_string(_longArray.size()) + "] | ";
+  }
+
+  if (!_floatArray.empty()) {
+    result += "FloatArray[" + std::to_string(_floatArray.size()) + "] | ";
+  }
+
+  if (!_doubleArray.empty()) {
+    result += "DoubleArray[" + std::to_string(_doubleArray.size()) + "] | ";
+  }
+
+  if (!_strArray.empty()) {
+    result += "StringArray[" + std::to_string(_strArray.size()) + "] | ";
+  }
+
+  return result;
+}
+
+const std::string& DynamicFieldsType::getClassName() const {
+  static std::string className = "PdxTests.DynamicAddress";
+  return className;
+}
+
+void DynamicFieldsType::toData(PdxWriter& pw) const {
+  pw.writeInt("_aptNumber", _aptNumber);  // 4
+  pw.writeString("_street", _street);
+  pw.writeString("_city", _city);
+
+  if (_char) {
+    pw.writeChar("_char", *_char);
+  }
+
+  if (_bool) {
+    pw.writeBoolean("_bool", *_bool);
+  }
+
+  if (_byte) {
+    pw.writeByte("_byte", *_byte);
+  }
+
+  if (_short) {
+    pw.writeShort("_short", *_short);
+  }
+
+  if (_int) {
+    pw.writeInt("_int", *_int);
+  }
+
+  if (_long) {
+    pw.writeLong("_long", *_long);
+  }
+
+  if (_float) {
+    pw.writeFloat("_float", *_float);
+  }
+
+  if (_double) {
+    pw.writeDouble("_double", *_double);
+  }
+
+  if (!_str.empty()) {
+    pw.writeString("_str", _str);
+  }
+
+  if (!_str.empty()) {
+    pw.writeString("_str", _str);
+  }
+
+  if (_date) {
+    pw.writeDate("_date", _date);
+  }
+
+  if (_object) {
+    pw.writeObject("_object", _object);
+  }
+
+  if (!_charArray.empty()) {
+    pw.writeCharArray("_object", _charArray);
+  }
+
+  if (!_boolArray.empty()) {
+    pw.writeBooleanArray("_boolArray", _boolArray);
+  }
+
+  if (!_byteArray.empty()) {
+    pw.writeByteArray("_byteArray", _byteArray);
+  }
+
+  if (!_shortArray.empty()) {
+    pw.writeShortArray("_shortArray", _shortArray);
+  }
+
+  if (!_intArray.empty()) {
+    pw.writeIntArray("_intArray", _intArray);
+  }
+
+  if (!_longArray.empty()) {
+    pw.writeLongArray("_longArray", _longArray);
+  }
+
+  if (!_floatArray.empty()) {
+    pw.writeFloatArray("_floatArray", _floatArray);
+  }
+
+  if (!_doubleArray.empty()) {
+    pw.writeDoubleArray("_doubleArray", _doubleArray);
+  }
+
+  if (!_strArray.empty()) {
+    pw.writeStringArray("_strArray", _strArray);
+  }
+}
+
+void DynamicFieldsType::fromData(PdxReader& pr) {
+  _aptNumber = pr.readInt("_aptNumber");
+  _street = pr.readString("_street");
+  _city = pr.readString("_city");
+
+  if (pr.hasField("_char")) {
+    _char = std::unique_ptr<char16_t>(new char16_t);
+    *_char = pr.readChar("_char");
+  }
+
+  if (pr.hasField("_bool")) {
+    _bool = std::unique_ptr<bool>(new bool);
+    *_bool = pr.readBoolean("_bool");
+  }
+
+  if (pr.hasField("_byte")) {
+    _byte = std::unique_ptr<int8_t>(new int8_t);
+    *_byte = pr.readByte("_byte");
+  }
+
+  if (pr.hasField("_short")) {
+    _short = std::unique_ptr<int16_t>(new int16_t);
+    *_short = pr.readShort("_short");
+  }
+
+  if (pr.hasField("_int")) {
+    _int = std::unique_ptr<int32_t>(new int32_t);
+    *_int = pr.readInt("_int");
+  }
+
+  if (pr.hasField("_long")) {
+    _long = std::unique_ptr<int64_t>(new int64_t);
+    *_long = pr.readLong("_long");
+  }
+
+  if (pr.hasField("_float")) {
+    _float = std::unique_ptr<float>(new float);
+    *_float = pr.readFloat("_float");
+  }
+
+  if (pr.hasField("_double")) {
+    _double = std::unique_ptr<double>(new double);
+    *_double = pr.readFloat("_double");
+  }
+
+  if (pr.hasField("_str")) {
+    _str = pr.readString("_str");
+  }
+
+  if (pr.hasField("_date")) {
+    _date = pr.readDate("_date");
+  }
+
+  if (pr.hasField("_object")) {
+    _object = pr.readObject("_object");
+  }
+
+  if (pr.hasField("_charArray")) {
+    _charArray = pr.readCharArray("_charArray");
+  }
+
+  if (pr.hasField("_boolArray")) {
+    _boolArray = pr.readBooleanArray("_boolArray");
+  }
+
+  if (pr.hasField("_byteArray")) {
+    _byteArray = pr.readByteArray("_byteArray");
+  }
+
+  if (pr.hasField("_shortArray")) {
+    _shortArray = pr.readShortArray("_shortArray");
+  }
+
+  if (pr.hasField("_intArray")) {
+    _intArray = pr.readIntArray("_intArray");
+  }
+
+  if (pr.hasField("_longArray")) {
+    _longArray = pr.readLongArray("_longArray");
+  }
+
+  if (pr.hasField("_floatArray")) {
+    _floatArray = pr.readFloatArray("_floatArray");
+  }
+
+  if (pr.hasField("_doubleArray")) {
+    _doubleArray = pr.readDoubleArray("_doubleArray");
+  }
+
+  if (pr.hasField("_strArray")) {
+    _strArray = pr.readStringArray("_strArray");
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, const DynamicFieldsType& address) {
+  os << address.toString();
+  return os;
+}
+
 }  // namespace PdxTests
