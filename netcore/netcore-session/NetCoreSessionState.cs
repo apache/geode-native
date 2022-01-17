@@ -74,7 +74,7 @@ namespace Apache.Geode.Session {
 
   public class GeodeSessionStateCache : GeodeNativeObject, IDistributedCache {
     private readonly IGeodeCache<string, object> _cache;
-    private static IRegion<string, object> _region;
+    private static IRegion<string> _region;
     private string _logLevel;
     private string _logFile;
     private string _regionName;

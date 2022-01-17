@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 
-namespace Apache.Geode.Client
-{
-  public class CBindings
-  {
+namespace Apache.Geode.Client {
+  public class CBindings {
     public delegate void GetCredentialsDelegateInternal(IntPtr cache);
     public delegate void CloseDelegateInternal();
 
     [DllImport(Constants.libPath, CallingConvention = CallingConvention.Cdecl)]
     public static extern void apache_geode_CacheFactory_SetAuthInitialize(
-        IntPtr factory, GetCredentialsDelegateInternal getCredentials,
-        CloseDelegateInternal close);
+        IntPtr factory, GetCredentialsDelegateInternal getCredentials, CloseDelegateInternal close);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern IntPtr apache_geode_CreateCacheFactory();
@@ -25,8 +22,7 @@ namespace Apache.Geode.Client
     public static extern IntPtr apache_geode_CacheFactory_GetVersion(IntPtr factory);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    public static extern IntPtr apache_geode_CacheFactory_GetProductDescription(
-        IntPtr factory);
+    public static extern IntPtr apache_geode_CacheFactory_GetProductDescription(IntPtr factory);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern void apache_geode_CacheFactory_SetPdxIgnoreUnreadFields(
@@ -37,8 +33,8 @@ namespace Apache.Geode.Client
         IntPtr factory, bool pdxReadSerialized);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    public static extern void apache_geode_CacheFactory_SetProperty(
-        IntPtr factory, IntPtr key, IntPtr value);
+    public static extern void apache_geode_CacheFactory_SetProperty(IntPtr factory, IntPtr key,
+                                                                    IntPtr value);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern IntPtr apache_geode_CacheFactory_CreateCache(IntPtr factory);
@@ -59,19 +55,19 @@ namespace Apache.Geode.Client
     public static extern bool apache_geode_Cache_IsClosed(IntPtr cache);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    public static extern bool apache_geode_AuthInitialize_AddProperty(
-      IntPtr properties, IntPtr key, IntPtr value);
+    public static extern bool apache_geode_AuthInitialize_AddProperty(IntPtr properties, IntPtr key,
+                                                                      IntPtr value);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern void apache_geode_DestroyCache(IntPtr cache);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_PutString(IntPtr region, IntPtr key,
-      IntPtr value);
+                                                            IntPtr value);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
-      int keyLength, IntPtr value);
+                                                               int keyLength, IntPtr value);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_PutByteArray(IntPtr region, IntPtr key,
@@ -79,7 +75,7 @@ namespace Apache.Geode.Client
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_PutByteArrayForString(IntPtr region, IntPtr key,
-                                                               IntPtr value, int length);
+                                                                        IntPtr value, int length);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_Put(IntPtr region, IntPtr key, int keyLength,
@@ -100,6 +96,9 @@ namespace Apache.Geode.Client
                                                       ref IntPtr value, ref int valueLength);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
+    public static extern IntPtr apache_geode_Region_GetString(IntPtr region, IntPtr key);
+
+    [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern void apache_geode_Region_GetByteArray(IntPtr region, IntPtr key,
                                                                ref IntPtr value, ref int size);
 
@@ -110,12 +109,12 @@ namespace Apache.Geode.Client
     public static extern void apache_geode_Region_RemoveString(IntPtr region, IntPtr key);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
-    public static extern bool apache_geode_Region_ContainsValueForKey(IntPtr region,
-                                                                      IntPtr key, int keyLength);
+    public static extern bool apache_geode_Region_ContainsValueForKey(IntPtr region, IntPtr key,
+                                                                      int keyLength);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern bool apache_geode_Region_ContainsValueForStringKey(IntPtr region,
-                                                                      IntPtr key);
+                                                                            IntPtr key);
 
     [DllImport(Constants.libPath, CharSet = CharSet.Auto)]
     public static extern IntPtr apache_geode_DestroyRegion(IntPtr region);

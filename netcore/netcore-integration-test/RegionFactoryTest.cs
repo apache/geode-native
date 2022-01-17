@@ -54,27 +54,27 @@ namespace Apache.Geode.Client.IntegrationTests {
           poolFactory.CreatePool("myPool");  // lgtm[cs / useless - assignment - to - local]
     }
 
-    private void doPutsAndGetsObject(IRegion<object, object> region)
+    private void doPutsAndGetsObject(IRegion<object> region)
     {
       // Key is string
       region.Put(Username1, "Robert Timmons");
-      var actualValue = region.Get(Username1);
+      var actualValue = region.GetString(Username1);
       Assert.Equal("Robert Timmons", actualValue);
 
       // Key is short
       short int16 = (short)(780);
       region.Put(int16, "Robert Timmons");
-      actualValue = region.Get(int16);
+      actualValue = region.GetInt16(int16);
       Assert.Equal("Robert Timmons", actualValue);
 
       // Key is int
       int int32 = 100000;
       region.Put(int32, "Robert Timmons");
-      actualValue = region.Get(int32);
+      actualValue = region.GetInt32(int32);
       Assert.Equal("Robert Timmons", actualValue);
     }
 
-    private void DoRemoves(IRegion<object, object> region)
+    private void DoRemoves(IRegion<object> region)
     {
       region.Remove(Username1);
       region.Remove((short)780);

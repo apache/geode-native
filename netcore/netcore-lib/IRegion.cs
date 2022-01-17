@@ -16,13 +16,13 @@
  */
 using System;
 
-namespace Apache.Geode.Client
-{
-  public interface IRegion<TKey, TValue> : IDisposable
-  {
-    void Put(TKey key, TValue value);
+namespace Apache.Geode.Client {
+  public interface IRegion<TKey> : IDisposable {
+    void Put(TKey key, string value);
     void PutByteArray(string key, byte[] value);
-    TValue Get(TKey key);
+    string GetString(string key);
+    string GetInt16(Int16 key);
+    string GetInt32(Int32 key);
     byte[] GetByteArray(string key);
     bool Remove(TKey key);
     bool ContainsValueForKey(TKey key);
