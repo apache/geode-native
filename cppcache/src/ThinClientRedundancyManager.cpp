@@ -887,7 +887,11 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     TcrEndpoint* primaryEndpoint = nullptr;
 
     if (!m_redundantEndpoints.empty()) {
-      for (auto&& redundantEndpoint : m_redundantEndpoints) {
+      primaryEndpoint = m_redundantEndpoints[0];
+      for (auto& redundantEndpoint : m_redundantEndpoints) {
+        if (redundantEndpoint == primaryEndpoint) {
+          continue;
+        }
         redundantEndpoint->setDM(request.getDM());
         opErr = theHADM->sendSyncRequestRegisterInterestEP(
             request, reply, false, redundantEndpoint);
@@ -895,7 +899,6 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
           err = opErr;
         }
       }
-      primaryEndpoint = m_redundantEndpoints[0];
     }
 
     if ((request.getMessageType() == TcrMessage::REGISTER_INTEREST_LIST ||
