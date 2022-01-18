@@ -1,1 +1,0 @@
-cmd='C:/Program Files/Microsoft Visual Studio/2022/Community/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/bin/cmake.exe;-DCMAKE_BUILD_TYPE=$<CONFIG>;-DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>;-GNinja;-C<TMP_DIR>/sqlite-extern-cache-$<CONFIG>.cmake;<SOURCE_DIR><SOURCE_SUBDIR>'

@@ -1,5 +1,0 @@
-if(EXISTS "C:/temp/geode-native/out/build/x64-Debug/cppcache/acceptance-test/cpp-acceptance-test[1]_tests.cmake")
-  include("C:/temp/geode-native/out/build/x64-Debug/cppcache/acceptance-test/cpp-acceptance-test[1]_tests.cmake")
-else()
-  add_test(cpp-acceptance-test_NOT_BUILT cpp-acceptance-test_NOT_BUILT)
-endif()
