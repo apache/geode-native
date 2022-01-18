@@ -42,5 +42,3 @@ using namespace System::Security::Permissions;
 
 [assembly:SecurityPermission(SecurityAction::RequestMinimum, UnmanagedCode = true)];
 
-[assembly:InternalsVisibleToAttribute("Apache.Geode.Client.UnitTests@STRONG_NAME_PUBLIC_KEY_ATTRIBUTE@")];
-[assembly:InternalsVisibleToAttribute("cli-unit-tests@STRONG_NAME_PUBLIC_KEY_ATTRIBUTE@")];
