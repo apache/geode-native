@@ -50,6 +50,7 @@ using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
+using apache::geode::client::TimeoutException;
 const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
 const int PARTITION_REGION_ENTRIES_SIZE = 113;
 
@@ -61,10 +62,34 @@ std::shared_ptr<Region> setupRegion(Cache &cache) {
   return region;
 }
 
-class TestResultCollector : public ResultCollector {
- private:
-  std::shared_ptr<CacheableVector> resultList;
+std::shared_ptr<CacheableVector> populateRegionReturnFilter(
+    const std::shared_ptr<Region> &region, const int numberOfPuts) {
+  auto routingObj = CacheableVector::create();
+  for (int i = 0; i < numberOfPuts; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+    routingObj->push_back(CacheableKey::create("KEY--" + std::to_string(i)));
+  }
+  return routingObj;
+}
 
+const std::vector<std::string> serverResultsToStrings(
+    std::shared_ptr<CacheableVector> serverResults) {
+  std::vector<std::string> resultList;
+  for (auto result : *serverResults) {
+    auto resultArray = std::dynamic_pointer_cast<CacheableArrayList>(result);
+    for (decltype(resultArray->size()) i = 0; i < resultArray->size(); i++) {
+      auto value =
+          std::dynamic_pointer_cast<CacheableString>(resultArray->at(i));
+      if (value != nullptr) {
+        resultList.push_back(value->toString());
+      }
+    }
+  }
+
+  return resultList;
+}
+
+class TestResultCollector : public ResultCollector {
  public:
   TestResultCollector() : resultList(CacheableVector::create()) {}
 
@@ -74,6 +99,9 @@ class TestResultCollector : public ResultCollector {
   }
 
   virtual void addResult(const std::shared_ptr<Cacheable> &result) override {
+    LOGINFO("Before mutex lock!");
+    std::lock_guard<decltype(mutex_)> lock{mutex_};
+    LOGINFO("Adding a new result!");
     resultList->push_back(result);
   }
 
@@ -84,6 +112,14 @@ class TestResultCollector : public ResultCollector {
     throw Exception(
         "Clear should not be triggered when Function.isHa is set to false");
   }
+
+  void lock() { mutex_.lock(); }
+
+  void unlock() { mutex_.unlock(); }
+
+ protected:
+  std::mutex mutex_;
+  std::shared_ptr<CacheableVector> resultList;
 };
 
 TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
@@ -203,6 +239,12 @@ void populateRegion(const std::shared_ptr<Region> &region) {
   }
 }
 
+void populateRegionAllBuckets(const std::shared_ptr<Region> &region) {
+  for (int i = 0; i < 2000; i++) {
+    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
+  }
+}
+
 void waitUntilPRMetadataIsRefreshed(CacheImpl *cacheImpl) {
   auto end = std::chrono::system_clock::now() + std::chrono::minutes(2);
   while (!cacheImpl->getAndResetPrMetadataUpdatedFlag()) {
@@ -276,31 +318,164 @@ TEST(FunctionExecutionTest, FunctionExecutionWithIncompleteBucketLocations) {
   cache.close();
 }
 
-std::shared_ptr<CacheableVector> populateRegionReturnFilter(
-    const std::shared_ptr<Region> &region, const int numberOfPuts) {
-  auto routingObj = CacheableVector::create();
-  for (int i = 0; i < numberOfPuts; i++) {
-    region->put("KEY--" + std::to_string(i), "VALUE--" + std::to_string(i));
-    routingObj->push_back(CacheableKey::create("KEY--" + std::to_string(i)));
-  }
-  return routingObj;
+TEST(FunctionExecutionTest, shNonHAFunctionExecServerTimeout) {
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .withRedundantCopies("1")
+      .execute();
+
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool =
+      poolFactory.setPRSingleHopEnabled(true).setRetryAttempts(2).create(
+          "pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  // Populate region in a way that not all buckets are created.
+  // Servers in this case will create 88 of possible 113 buckets.
+  populateRegionAllBuckets(region);
+
+  // Check that PR metadata is updated. This is done to be sure
+  // that client will execute function in a non single hop manner
+  // because metadata doesn't contain all bucket locations.
+  // After metadata is refreshed, it will contain at least one
+  // bucket location.
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  auto functionService = FunctionService::onRegion(region);
+  auto resultCollector = std::make_shared<TestResultCollector>();
+
+  resultCollector->lock();
+
+  auto runner =
+      std::async(std::launch::async, [&functionService, resultCollector]() {
+        functionService.withCollector(resultCollector)
+            .execute("MultiGetAllFunctionTimeoutNonHA");
+      });
+
+  std::this_thread::sleep_for(std::chrono::seconds{25});
+  resultCollector->unlock();
+
+  EXPECT_THROW(runner.get(), NotConnectedException);
+
+  cache.close();
 }
 
-const std::vector<std::string> serverResultsToStrings(
-    std::shared_ptr<CacheableVector> serverResults) {
-  std::vector<std::string> resultList;
-  for (auto result : *serverResults) {
-    auto resultArray = std::dynamic_pointer_cast<CacheableArrayList>(result);
-    for (decltype(resultArray->size()) i = 0; i < resultArray->size(); i++) {
-      auto value =
-          std::dynamic_pointer_cast<CacheableString>(resultArray->at(i));
-      if (value != nullptr) {
-        resultList.push_back(value->toString());
-      }
-    }
-  }
+TEST(FunctionExecutionTest, shNonHAFunctionExecClientTimeout) {
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
 
-  return resultList;
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .withRedundantCopies("1")
+      .execute();
+
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool =
+      poolFactory.setPRSingleHopEnabled(true).setRetryAttempts(2).create(
+          "pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  // Populate region in a way that not all buckets are created.
+  // Servers in this case will create 88 of possible 113 buckets.
+  populateRegionAllBuckets(region);
+
+  // Check that PR metadata is updated. This is done to be sure
+  // that client will execute function in a non single hop manner
+  // because metadata doesn't contain all bucket locations.
+  // After metadata is refreshed, it will contain at least one
+  // bucket location.
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  auto functionService = FunctionService::onRegion(region);
+  auto resultCollector = std::make_shared<TestResultCollector>();
+
+  EXPECT_THROW(
+      functionService.withCollector(resultCollector)
+          .execute("MultiGetAllFunctionTimeoutNonHA", std::chrono::seconds{5}),
+      TimeoutException);
+
+  cache.close();
+}
+
+TEST(FunctionExecutionTest, nonHAFunctionExecClientTimeout) {
+  Cluster cluster{LocatorCount{1}, ServerCount{3}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .withRedundantCopies("1")
+      .execute();
+
+  auto cache = CacheFactory().set("log-level", "none").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  cluster.applyLocators(poolFactory);
+
+  auto pool =
+      poolFactory.setPRSingleHopEnabled(false).setRetryAttempts(2).create(
+          "pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  auto functionService = FunctionService::onRegion(region);
+  auto resultCollector = std::make_shared<TestResultCollector>();
+
+  populateRegionReturnFilter(region, 1000);
+
+  EXPECT_THROW(
+      functionService.withCollector(resultCollector)
+          .execute("MultiGetAllFunctionTimeoutNonHA", std::chrono::seconds{5}),
+      TimeoutException);
+
+  cache.close();
 }
 
 TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
