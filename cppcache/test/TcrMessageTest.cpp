@@ -24,6 +24,7 @@
 #include <geode/CqState.hpp>
 
 #include "ByteArrayFixture.hpp"
+#include "FunctionAttributes.hpp"
 #include "SerializationRegistry.hpp"
 
 namespace {
@@ -35,6 +36,7 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CqState;
 using apache::geode::client::DataOutput;
+using apache::geode::client::FunctionAttributes;
 using apache::geode::client::InterestResultPolicy;
 using apache::geode::client::Region;
 using apache::geode::client::Serializable;
@@ -730,9 +732,10 @@ TEST_F(TcrMessageTest, testConstructorExecuteRegionFunctionSingleHop) {
 
   std::shared_ptr<Cacheable> myPtr(CacheableString::createDeserializable());
 
+  FunctionAttributes funcAttrs{false, true, false};
   TcrMessageExecuteRegionFunctionSingleHop message(
-      new DataOutputUnderTest(), "myFuncName", region, myPtr, myHashCachePtr, 2,
-      myHashCachePtr,
+      new DataOutputUnderTest(), "myFuncName", region, myPtr, myHashCachePtr,
+      funcAttrs, myHashCachePtr,
       false,  // allBuckets
       std::chrono::milliseconds{1}, static_cast<ThinClientBaseDM *>(nullptr));
 
@@ -759,9 +762,10 @@ TEST_F(TcrMessageTest, testConstructorExecuteRegionFunction) {
       CacheableString::createDeserializable());
   auto myVectPtr = CacheableVector::create();
 
+  FunctionAttributes funcAttrs{false, true, false};
   TcrMessageExecuteRegionFunction testMessage(
       new DataOutputUnderTest(), "ExecuteRegion", region, myCacheablePtr,
-      myVectPtr, 2, myHashCachePtr, std::chrono::milliseconds{10},
+      myVectPtr, funcAttrs, myHashCachePtr, std::chrono::milliseconds{10},
       static_cast<ThinClientBaseDM *>(nullptr), 10);
 
   EXPECT_EQ(TcrMessage::EXECUTE_REGION_FUNCTION, testMessage.getMessageType());
@@ -784,8 +788,9 @@ TEST_F(TcrMessageTest, DISABLED_testConstructorExecuteFunction) {
   std::shared_ptr<Cacheable> myCacheablePtr(
       CacheableString::createDeserializable());
 
+  FunctionAttributes funcAttrs{true, false, false};
   TcrMessageExecuteFunction testMessage(
-      new DataOutputUnderTest(), "ExecuteFunction", myCacheablePtr, 1,
+      new DataOutputUnderTest(), "ExecuteFunction", myCacheablePtr, funcAttrs,
       static_cast<ThinClientBaseDM *>(nullptr), std::chrono::milliseconds{10});
 
   EXPECT_EQ(TcrMessage::EXECUTE_FUNCTION, testMessage.getMessageType());

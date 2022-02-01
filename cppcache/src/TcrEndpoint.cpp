@@ -754,9 +754,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
   // TcrMessage * req = const_cast<TcrMessage *>(&request);
   LOGDEBUG("TcrEndpoint::sendRequestConn  = %p", m_baseDM);
   if (m_baseDM != nullptr) m_baseDM->beforeSendingRequest(request, conn);
-  if (((type == TcrMessage::EXECUTE_FUNCTION ||
-        type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
-       (request.hasResult() & 2))) {
+  if ((type == TcrMessage::EXECUTE_FUNCTION ||
+       type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
+      request.hasResult()) {
     conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
                                         request.getTimeout(),
                                         reply.getTimeout());
@@ -771,7 +771,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
              type == TcrMessage::REMOVE_ALL ||
              ((type == TcrMessage::EXECUTE_FUNCTION ||
                type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
-              (request.hasResult() & 2)) ||
+              request.hasResult()) ||
              type ==
                  TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||  // This is
                                                                     // kept

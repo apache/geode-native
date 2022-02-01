@@ -23,6 +23,8 @@
 #include <map>
 #include <mutex>
 
+#include <boost/thread/shared_mutex.hpp>
+
 #include <geode/AuthenticatedView.hpp>
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/Execution.hpp>
@@ -30,13 +32,11 @@
 #include <geode/ResultCollector.hpp>
 
 #include "ErrType.hpp"
+#include "FunctionAttributes.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
-typedef std::map<std::string, std::shared_ptr<std::vector<int8_t>>>
-    FunctionToFunctionAttributes;
 
 class ExecutionImpl {
  public:
@@ -78,6 +78,20 @@ class ExecutionImpl {
   static void addResults(std::shared_ptr<ResultCollector>& collector,
                          const std::shared_ptr<CacheableVector>& results);
 
+ protected:
+  std::shared_ptr<CacheableVector> executeOnPool(
+      const std::string& func, FunctionAttributes funcAttrs, int32_t retryAttempts,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  void executeOnAllServers(
+      const std::string& func, FunctionAttributes funcAttrs,
+      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
+
+  FunctionAttributes getFunctionAttributes(
+      const std::string& func);
+  FunctionAttributes updateFunctionAttributes(const std::string &funcName);
+  GfErrType getFuncAttributes(const std::string& func, FunctionAttributes& attr);
+
  private:
   ExecutionImpl(const ExecutionImpl& rhs)
       : m_routingObj(rhs.m_routingObj),
@@ -100,6 +114,8 @@ class ExecutionImpl {
         m_allServer(allServer),
         m_pool(pool),
         m_authenticatedView(authenticatedView) {}
+ protected:
+
   std::shared_ptr<CacheableVector> m_routingObj;
   std::shared_ptr<Cacheable> m_args;
   std::shared_ptr<ResultCollector> m_rc;
@@ -107,22 +123,9 @@ class ExecutionImpl {
   bool m_allServer;
   std::shared_ptr<Pool> m_pool;
   AuthenticatedView* m_authenticatedView;
-  static std::recursive_mutex m_func_attrs_lock;
-  static FunctionToFunctionAttributes m_func_attrs;
-  //  std::vector<int8_t> m_attributes;
 
-  std::shared_ptr<CacheableVector> executeOnPool(
-      const std::string& func, uint8_t getResult, int32_t retryAttempts,
-      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-
-  void executeOnAllServers(
-      const std::string& func, uint8_t getResult,
-      std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
-
-  std::shared_ptr<std::vector<int8_t>> getFunctionAttributes(
-      const std::string& func);
-  GfErrType getFuncAttributes(const std::string& func,
-                              std::shared_ptr<std::vector<int8_t>>* attr);
+  std::map<std::string, FunctionAttributes> funcAttrs_;
+  boost::shared_mutex funcAttrsMutex_;
 };
 }  // namespace client
 }  // namespace geode

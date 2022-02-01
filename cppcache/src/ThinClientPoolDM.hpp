@@ -95,9 +95,10 @@ class ThinClientPoolDM
   virtual std::shared_ptr<QueryService> getQueryServiceWithoutCheck();
   bool isEndpointAttached(TcrEndpoint* ep) override;
   GfErrType sendRequestToAllServers(
-      const char* func, uint8_t getResult, std::chrono::milliseconds timeout,
-      std::shared_ptr<Cacheable> args, std::shared_ptr<ResultCollector>& rs,
-      std::shared_ptr<CacheableString>& exceptionPtr);
+      const std::string& funcName, FunctionAttributes funcAttrs, std::chrono::milliseconds timeout,
+      std::shared_ptr<Cacheable> args,
+                                    std::shared_ptr<ResultCollector> rc,
+                                    std::string& exceptionMsg);
 
   GfErrType sendRequestToEP(const TcrMessage& request, TcrMessageReply& reply,
                             TcrEndpoint* currentEndpoint) override;
@@ -321,115 +322,6 @@ class ThinClientPoolDM
   int m_primaryServerQueueSize;
   void removeEPFromMetadataIfError(const GfErrType& error,
                                    const TcrEndpoint* ep);
-};
-
-class FunctionExecution : public PooledWork<GfErrType> {
-  ThinClientPoolDM* m_poolDM;
-  TcrEndpoint* m_ep;
-  const char* m_func;
-  uint8_t m_getResult;
-  std::chrono::milliseconds m_timeout;
-  std::shared_ptr<Cacheable> m_args;
-  GfErrType m_error;
-  std::shared_ptr<ResultCollector>* m_rc;
-  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
-  std::shared_ptr<CacheableString> exceptionPtr;
-  std::shared_ptr<UserAttributes> m_userAttr;
-
- public:
-  FunctionExecution() {
-    m_poolDM = nullptr;
-    m_ep = nullptr;
-    m_func = nullptr;
-    m_getResult = 0;
-    m_error = GF_NOERR;
-    m_rc = nullptr;
-    m_resultCollectorLock = nullptr;
-    m_userAttr = nullptr;
-  }
-
-  ~FunctionExecution() noexcept override = default;
-
-  std::shared_ptr<CacheableString> getException() { return exceptionPtr; }
-
-  void setParameters(const char* func, uint8_t getResult,
-                     std::chrono::milliseconds timeout,
-                     std::shared_ptr<Cacheable> args, TcrEndpoint* ep,
-                     ThinClientPoolDM* poolDM,
-                     const std::shared_ptr<std::recursive_mutex>& rCL,
-                     std::shared_ptr<ResultCollector>* rs,
-                     std::shared_ptr<UserAttributes> userAttr) {
-    exceptionPtr = nullptr;
-    m_resultCollectorLock = rCL;
-    m_rc = rs;
-    m_error = GF_NOTCON;
-    m_func = func;
-    m_getResult = getResult;
-    m_timeout = timeout;
-    m_args = args;
-    m_ep = ep;
-    m_poolDM = poolDM;
-    m_userAttr = userAttr;
-  }
-
-  GfErrType execute(void) override;
-};
-
-class OnRegionFunctionExecution : public PooledWork<GfErrType> {
-  std::shared_ptr<BucketServerLocation> m_serverLocation;
-  TcrMessage* m_request;
-  TcrMessageReply* m_reply;
-  bool m_isBGThread;
-  ThinClientPoolDM* m_poolDM;
-  std::string m_func;
-  uint8_t m_getResult;
-  std::chrono::milliseconds m_timeout;
-  std::shared_ptr<Cacheable> m_args;
-  std::shared_ptr<CacheableHashSet> m_routingObj;
-  std::shared_ptr<ResultCollector> m_rc;
-  TcrChunkedResult* m_resultCollector;
-  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
-  std::shared_ptr<UserAttributes> m_userAttr;
-  const Region* m_region;
-  bool m_allBuckets;
-
- public:
-  OnRegionFunctionExecution(
-      std::string func, const Region* region, std::shared_ptr<Cacheable> args,
-      std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
-      std::chrono::milliseconds timeout, ThinClientPoolDM* poolDM,
-      const std::shared_ptr<std::recursive_mutex>& rCL,
-      std::shared_ptr<ResultCollector> rs,
-      std::shared_ptr<UserAttributes> userAttr, bool isBGThread,
-      const std::shared_ptr<BucketServerLocation>& serverLocation,
-      bool allBuckets);
-
-  ~OnRegionFunctionExecution() noexcept override {
-    delete m_request;
-    delete m_reply;
-    delete m_resultCollector;
-  }
-
-  TcrMessage* getReply() { return m_reply; }
-
-  std::shared_ptr<CacheableHashSet> getFailedNode() {
-    return m_reply->getFailedNode();
-  }
-
-  ChunkedFunctionExecutionResponse* getResultCollector() {
-    return static_cast<ChunkedFunctionExecutionResponse*>(m_resultCollector);
-  }
-
-  GfErrType execute(void) override {
-    GuardUserAttributes gua;
-
-    if (m_userAttr) {
-      gua.setAuthenticatedView(m_userAttr->getAuthenticatedView());
-    }
-
-    return m_poolDM->sendSyncRequest(*m_request, *m_reply, !(m_getResult & 1),
-                                     m_isBGThread, m_serverLocation);
-  }
 };
 
 }  // namespace client

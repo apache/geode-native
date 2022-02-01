@@ -38,6 +38,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
+class FunctionAttributes;
 class ThinClientBaseDM;
 class TcrEndpoint;
 
@@ -147,14 +148,14 @@ class ThinClientRegion : public LocalRegion {
 
   std::shared_ptr<CacheableVector> reExecuteFunction(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::shared_ptr<CacheableHashSet>& failedNodes,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   bool executeFunctionSH(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
-      uint8_t getResult, std::shared_ptr<ResultCollector> rc,
+      FunctionAttributes funcAttrs, std::shared_ptr<ResultCollector> rc,
       const std::shared_ptr<ClientMetadataService::ServerToKeysMap>&
           locationMap,
       std::shared_ptr<CacheableHashSet>& failedNodes,
@@ -163,12 +164,11 @@ class ThinClientRegion : public LocalRegion {
 
   void executeFunction(
       const std::string&, const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
-  GfErrType getFuncAttributes(const std::string& func,
-                              std::shared_ptr<std::vector<int8_t>>* attr);
+  GfErrType getFuncAttributes(const std::string& func, FunctionAttributes& attr);
 
   boost::shared_mutex& getMetadataMutex();
 
@@ -450,25 +450,26 @@ class ChunkedQueryResponse : public TcrChunkedResult {
  */
 class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
  private:
-  TcrMessage& m_msg;
+  TcrMessage& msg_;
   // std::shared_ptr<CacheableVector>  m_functionExecutionResults;
-  bool m_getResult;
-  std::shared_ptr<ResultCollector> m_rc;
-  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
+  bool hasResult_;
+  std::shared_ptr<ResultCollector> resultCollector_;
+  std::shared_ptr<std::recursive_mutex> resultCollectorMutex_;
 
  public:
-  inline ChunkedFunctionExecutionResponse(TcrMessage& msg, bool getResult,
+  inline ChunkedFunctionExecutionResponse(TcrMessage& msg, bool hasResult,
                                           std::shared_ptr<ResultCollector> rc)
-      : TcrChunkedResult(), m_msg(msg), m_getResult(getResult), m_rc(rc) {}
+      : TcrChunkedResult(), msg_(msg), hasResult_(hasResult),
+        resultCollector_(rc) {}
 
   inline ChunkedFunctionExecutionResponse(
-      TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
-      const std::shared_ptr<std::recursive_mutex>& resultCollectorLock)
+      TcrMessage& msg, bool hasResult, std::shared_ptr<ResultCollector> rc,
+      const std::shared_ptr<std::recursive_mutex>& resultCollectorMutex)
       : TcrChunkedResult(),
-        m_msg(msg),
-        m_getResult(getResult),
-        m_rc(rc),
-        m_resultCollectorLock(resultCollectorLock) {}
+        msg_{msg},
+        hasResult_{hasResult},
+        resultCollector_{rc},
+        resultCollectorMutex_{resultCollectorMutex} {}
 
   ChunkedFunctionExecutionResponse(const ChunkedFunctionExecutionResponse&) =
       delete;
@@ -477,7 +478,7 @@ class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
 
   ~ChunkedFunctionExecutionResponse() noexcept override = default;
 
-  inline bool getResult() const { return m_getResult; }
+  inline bool getResult() const { return hasResult_; }
 
   void handleChunk(const uint8_t* chunk, int32_t chunkLen,
                    uint8_t isLastChunkWithSecurity,
