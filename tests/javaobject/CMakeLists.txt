@@ -22,6 +22,11 @@ include(UseJava)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
+# Older versions of GEODE don't support AuthenticationExpiredException
+if ((${Geode_VERSION} VERSION_LESS 1.15.0-build.546) OR (${Geode_VERSION} VERSION_LESS 9.15.0-build.547))
+	list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/SimulatedExpirationSecurityManager.java)
+endif()
+
 add_jar(javaobject ${SOURCES}
   INCLUDE_JARS ${Geode_CLASSPATH}
 )
