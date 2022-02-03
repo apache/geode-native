@@ -38,6 +38,7 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/util/LogLevel.hpp>
 
+#include "DistributedSystemImpl.hpp"
 #include "geodeBanner.hpp"
 #include "util/chrono/time_point.hpp"
 
@@ -381,8 +382,10 @@ std::string Log::formatLogLine(LogLevel level) {
   msg << "[" << Log::levelToChars(level) << " "
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << std::this_thread::get_id()
+      << std::put_time(&tm_val, "%z  ") << g_hostName
+      << ":"
+      << boost::this_process::get_id() << " "
+      << DistributedSystemImpl::getThreadName(std::this_thread::get_id())
       << "] ";
 
   return msg.str();

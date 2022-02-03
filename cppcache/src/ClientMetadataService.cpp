@@ -66,7 +66,7 @@ void ClientMetadataService::stop() {
 }
 
 void ClientMetadataService::svc() {
-  DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
+  DistributedSystemImpl::setThreadName(NC_CMDSvcThread, m_thread.get_id());
 
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
 

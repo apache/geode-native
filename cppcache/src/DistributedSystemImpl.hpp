@@ -47,7 +47,8 @@ using CliCallbackMethod = std::function<void(Cache&)>;
  */
 class DistributedSystemImpl {
  public:
-  static void setThreadName(const std::string& threadName);
+  static void setThreadName(const std::string& threadName, std::thread::id tid);
+  static std::string getThreadName(std::thread::id id);
 
   /**
    * @brief destructor

@@ -65,7 +65,7 @@ void EvictionController::stop() {
 
 void EvictionController::svc() {
   std::mutex mutex;
-  DistributedSystemImpl::setThreadName(NC_EC_Thread);
+  DistributedSystemImpl::setThreadName(NC_EC_Thread, thread_.get_id());
 
   while (running_) {
     {

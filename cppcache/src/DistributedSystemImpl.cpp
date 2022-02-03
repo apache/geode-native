@@ -38,6 +38,10 @@
 #include "util/Log.hpp"
 #include "version.h"
 
+namespace {
+std::map<std::thread::id, std::string> m_threadNames;
+}
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -143,10 +147,23 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   }
 }
 
-void DistributedSystemImpl::setThreadName(const std::string& threadName) {
+std::string DistributedSystemImpl::getThreadName(std::thread::id id) {
+  std::string threadName = m_threadNames[id];
+  if (threadName == "") {
+    std::stringstream ss;
+    ss << id;
+    threadName = ss.str();
+  }
+  return threadName;
+}
+
+void DistributedSystemImpl::setThreadName(const std::string& threadName,
+                                          std::thread::id tid) {
   if (threadName.empty()) {
     throw IllegalArgumentException("Thread name is empty.");
   }
+
+  m_threadNames[tid] = threadName;
 
 #if defined(HAVE_pthread_setname_np)
 

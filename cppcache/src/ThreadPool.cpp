@@ -16,6 +16,8 @@
  */
 #include "ThreadPool.hpp"
 
+#include <sstream>
+
 #include "DistributedSystemImpl.hpp"
 
 namespace apache {
@@ -29,7 +31,8 @@ ThreadPool::ThreadPool(size_t threadPoolSize)
   workers_.reserve(threadPoolSize);
 
   std::function<void()> executeWork = [this] {
-    DistributedSystemImpl::setThreadName(NC_Pool_Thread);
+    DistributedSystemImpl::setThreadName(NC_Pool_Thread,
+                                         std::this_thread::get_id());
     while (true) {
       std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
       queueCondition_.wait(lock,
