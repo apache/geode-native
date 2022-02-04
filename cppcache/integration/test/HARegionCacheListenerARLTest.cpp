@@ -106,8 +106,10 @@ class HARegionCacheListenerARLTest : public ::testing::Test {
      * processed this event. But there is an exception: the state is reset if
      * the endpoint disconnects.
      */
-    cluster_->getServers()[0].stop();
-    cluster_->getServers()[0].start();
+    auto &targetServer = cluster_->getServers()[0];
+    targetServer.stop();
+    targetServer.wait();
+    targetServer.start();
   }
 
   void create_the_test_region() {

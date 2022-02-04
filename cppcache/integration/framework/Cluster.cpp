@@ -224,6 +224,7 @@ void Server::start() {
 
   server.execute();
 
+  pid_ = getPidFromFile();
   started_ = true;
 }
 
@@ -231,6 +232,40 @@ void Server::stop() {
   cluster_.getGfsh().stop().server().withDir(name_).execute();
 
   started_ = false;
+}
+
+void Server::wait() {
+#if defined(BOOST_POSIX_API)
+  while (kill(pid_, 0) == 0) {
+    std::this_thread::sleep_for(std::chrono::milliseconds{100});
+  }
+#else
+  try {
+    boost::process::child process{pid_};
+    process.wait();
+  } catch (boost::process::process_error &) {
+    // Ignore this exception as it indicates that the process no longer exists
+  }
+#endif
+
+  started_ = false;
+}
+
+std::string Server::getPidFilePath() const {
+  boost::filesystem::path filePath{name_};
+  filePath /= "vf.gf.server.pid";
+  return filePath.string();
+}
+
+boost::process::pid_t Server::getPidFromFile() const {
+  std::ifstream pidFile;
+  pidFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+  pidFile.open(getPidFilePath());
+
+  boost::process::pid_t pid;
+  pidFile >> pid;
+
+  return pid;
 }
 
 Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,

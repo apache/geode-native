@@ -100,7 +100,17 @@ class Server {
 
   void stop();
 
+  void wait();
+
   const ServerAddress &getAddress() const;
+
+  boost::process::pid_t getPid() const {
+    return pid_;
+  }
+
+ protected:
+  std::string getPidFilePath() const;
+  boost::process::pid_t getPidFromFile() const;
 
  private:
   Cluster &cluster_;
@@ -108,7 +118,8 @@ class Server {
 
   ServerAddress serverAddress_;
 
-  bool started_ = false;
+  bool started_{false};
+  boost::process::pid_t pid_;
 
   std::string name_;
   std::string xmlFile_;

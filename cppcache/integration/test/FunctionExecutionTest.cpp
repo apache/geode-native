@@ -324,7 +324,9 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
       .withType("PARTITION")
       .execute();
 
-  cluster.getServers()[2].stop();
+  auto &targetServer = cluster.getServers()[2];
+  targetServer.stop();
+  targetServer.wait();
 
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
@@ -340,7 +342,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
 
   populateRegionReturnFilter(region, 1000);
   //  Start the the server
-  cluster.getServers()[2].start();
+  targetServer.start();
 
   // Do the rebalance, so that primary buckets
   // are transferred to the newly added server
@@ -382,7 +384,9 @@ TEST(FunctionExecutionTest,
       .withType("PARTITION")
       .execute();
 
-  cluster.getServers()[2].stop();
+  auto &targetServer = cluster.getServers()[2];
+  targetServer.stop();
+  targetServer.wait();
 
   auto cache = CacheFactory().create();
   auto poolFactory = cache.getPoolManager().createFactory();
@@ -399,7 +403,7 @@ TEST(FunctionExecutionTest,
   auto filter = populateRegionReturnFilter(region, 1000);
 
   //  Start the the server
-  cluster.getServers()[2].start();
+  targetServer.start();
 
   // Do the rebalance, so that primary buckets
   // are transferred to the newly added server

@@ -187,11 +187,13 @@ int putget(bool useSingleHop) {
   auto numOpsRequiringHop = putEntries(cache, region, ENTRIES);
   numOpsRequiringHop += getEntries(cache, region, ENTRIES);
 
-  cluster.getServers()[1].stop();
+  auto& targetServer = cluster.getServers()[1];
+  targetServer.stop();
+  targetServer.wait();
 
   numOpsRequiringHop += getEntries(cache, region, ENTRIES);
 
-  cluster.getServers()[1].start();
+  targetServer.start();
 
   numOpsRequiringHop += getEntries(cache, region, ENTRIES);
   return numOpsRequiringHop;
@@ -218,11 +220,13 @@ int putAllgetAll(bool useSingleHop) {
   auto numOpsRequiringHop = putAllEntries(cache, region, ENTRIES);
   numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
 
-  cluster.getServers()[1].stop();
+  auto& targetServer = cluster.getServers()[1];
+  targetServer.stop();
+  targetServer.wait();
 
   numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
 
-  cluster.getServers()[1].start();
+  targetServer.start();
 
   numOpsRequiringHop += getAllEntries(cache, region, ENTRIES);
   return numOpsRequiringHop;

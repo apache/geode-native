@@ -131,8 +131,11 @@ TEST(PdxTypeRegistryTest, cleanupOnClusterRestart) {
 
   // Shutdown and wait for some time
   gfsh.shutdown().execute();
+  for (auto& server : cluster.getServers()) {
+    server.wait();
+  }
+
   listener->waitDisconnected();
-  std::this_thread::sleep_for(std::chrono::seconds{15});
 
   for (auto& server : cluster.getServers()) {
     server.start();

@@ -37,6 +37,8 @@
 #include "mock/CacheListenerMock.hpp"
 #include "util/concurrent/binary_semaphore.hpp"
 
+namespace bp = boost::process;
+
 namespace {
 
 using apache::geode::client::binary_semaphore;
@@ -280,6 +282,7 @@ TEST(RegisterKeysTest, RegisterAnyAndClusterRestart) {
   shut_sem.release();
 
   for (auto& server : cluster.getServers()) {
+    server.wait();
     server.start();
   }
 
@@ -353,6 +356,7 @@ TEST(RegisterKeysTest, RegisterRegexAndClusterRestart) {
   shut_sem.release();
 
   for (auto& server : cluster.getServers()) {
+    server.wait();
     server.start();
   }
 
@@ -435,6 +439,7 @@ TEST(RegisterKeysTest, RegisterKeySetAndClusterRestart) {
   shut_sem.release();
 
   for (auto& server : cluster.getServers()) {
+    server.wait();
     server.start();
   }
 
@@ -519,6 +524,7 @@ TEST(RegisterKeysTest, RegisterKeySetAndDestroyClusterRestart) {
   shut_sem.release();
 
   for (auto& server : cluster.getServers()) {
+    server.wait();
     server.start();
   }
 

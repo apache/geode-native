@@ -97,7 +97,9 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
   region->put("one", "one");
   cache.getCacheTransactionManager()->commit();
 
-  cluster.getServers()[0].stop();
+  auto& targetServer = cluster.getServers()[0];
+  targetServer.stop();
+  targetServer.wait();
   shut_sem.acquire();
   shut_sem.release();
 
@@ -106,7 +108,7 @@ TEST(TransactionCleaningTest, txWithStoppedServer) {
 
   cache.getCacheTransactionManager()->rollback();
 
-  cluster.getServers()[0].start();
+  targetServer.start();
   live_sem.acquire();
   live_sem.release();
 

@@ -395,9 +395,8 @@ TEST(PdxInstanceTest, testInstancePutAfterRestart) {
     cv_status.wait(lock, [&status] { return !status; });
   }
 
-  std::this_thread::sleep_for(std::chrono::seconds{30});
-
   for (auto& server : cluster.getServers()) {
+    server.wait();
     server.start();
   }
 
