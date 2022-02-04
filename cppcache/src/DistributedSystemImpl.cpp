@@ -61,6 +61,7 @@ DistributedSystemImpl::DistributedSystemImpl(
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
+  m_threadNames.clear();
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
