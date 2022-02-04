@@ -382,8 +382,7 @@ std::string Log::formatLogLine(LogLevel level) {
   msg << "[" << Log::levelToChars(level) << " "
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%z  ") << g_hostName
-      << ":"
+      << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
       << boost::this_process::get_id() << " "
       << DistributedSystemImpl::getThreadName(std::this_thread::get_id())
       << "] ";
