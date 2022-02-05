@@ -68,7 +68,7 @@ class Task {
   }
 
   inline void svc(void) {
-    DistributedSystemImpl::setThreadName(threadName_, thread_.get_id());
+    DistributedSystemImpl::setThreadName(threadName_);
 
     if (appDomainContext_) {
       appDomainContext_->run(

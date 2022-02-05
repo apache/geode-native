@@ -148,7 +148,8 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   }
 }
 
-std::string DistributedSystemImpl::getThreadName(std::thread::id id) {
+std::string DistributedSystemImpl::getThreadName() {
+  std::thread::id id = std::this_thread::get_id();
   std::string threadName = m_threadNames[id];
   if (threadName == "") {
     std::stringstream ss;
@@ -158,13 +159,12 @@ std::string DistributedSystemImpl::getThreadName(std::thread::id id) {
   return threadName;
 }
 
-void DistributedSystemImpl::setThreadName(const std::string& threadName,
-                                          std::thread::id tid) {
+void DistributedSystemImpl::setThreadName(const std::string& threadName) {
   if (threadName.empty()) {
     throw IllegalArgumentException("Thread name is empty.");
   }
 
-  m_threadNames[tid] = threadName;
+  m_threadNames[std::this_thread::get_id()] = threadName;
 
 #if defined(HAVE_pthread_setname_np)
 

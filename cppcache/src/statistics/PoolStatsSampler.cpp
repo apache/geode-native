@@ -47,8 +47,7 @@ PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
           cache->getStatisticsManager().getStatisticsFactory()) {}
 
 void PoolStatsSampler::svc() {
-  client::DistributedSystemImpl::setThreadName(NC_PSS_Thread,
-                                               m_thread.get_id());
+  client::DistributedSystemImpl::setThreadName(NC_PSS_Thread);
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();

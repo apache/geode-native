@@ -427,8 +427,7 @@ void HostStatSampler::checkDiskLimit() {
 }
 
 void HostStatSampler::svc(void) {
-  client::DistributedSystemImpl::setThreadName("NC HSS Thread",
-                                               m_thread.get_id());
+  client::DistributedSystemImpl::setThreadName("NC HSS Thread");
   try {
     // createArchiveFileName instead of getArchiveFileName here because
     // for the first time the sampler needs to add the pid to the filename
