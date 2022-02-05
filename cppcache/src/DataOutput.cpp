@@ -94,7 +94,6 @@ class TSSDataOutput {
 
 TSSDataOutput::TSSDataOutput() : m_buffers() {
   m_buffers.reserve(10);
-  LOGDEBUG("DATAOUTPUT poolsize is %zu", m_buffers.size());
 }
 
 TSSDataOutput::~TSSDataOutput() {
