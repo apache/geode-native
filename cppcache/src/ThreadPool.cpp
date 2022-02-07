@@ -16,8 +16,6 @@
  */
 #include "ThreadPool.hpp"
 
-#include <sstream>
-
 #include "DistributedSystemImpl.hpp"
 
 namespace apache {
