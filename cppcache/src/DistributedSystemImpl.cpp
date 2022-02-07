@@ -143,7 +143,6 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   }
 }
 
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

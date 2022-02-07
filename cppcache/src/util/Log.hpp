@@ -195,12 +195,12 @@ class APACHE_GEODE_EXPORT Log {
 
   static void setThreadName(const std::string& threadName);
 
+  static const std::string& getThreadName();
+
  private:
   static LogLevel s_logLevel;
 
   static void writeBanner();
-
-  static std::string getThreadName();
 
   static void validateSizeLimits(int64_t fileSizeLimit, int64_t diskSpaceLimit);
 

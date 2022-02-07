@@ -410,18 +410,7 @@ void Log::setThreadName(const std::string& threadName) {
 
 #endif
 }
-std::string Log::getThreadName() {
-  std::thread::id id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << id;
-  std::string threadName;
-  if (g_threadName != "") {
-    threadName = ss.str() + " (" + g_threadName + ")";
-  } else {
-    threadName = ss.str();
-  }
-  return threadName;
-}
+const std::string& Log::getThreadName() { return g_threadName; }
 
 std::string Log::formatLogLine(LogLevel level) {
   std::stringstream msg;
@@ -432,11 +421,21 @@ std::string Log::formatLogLine(LogLevel level) {
       now - std::chrono::system_clock::from_time_t(secs));
   auto tm_val = apache::geode::util::chrono::localtime(secs);
 
+  std::thread::id id = std::this_thread::get_id();
+  std::stringstream ss;
+  ss << id;
+  std::string threadIdWithName;
+  if (getThreadName() != "") {
+    threadIdWithName = ss.str() + " (" + getThreadName() + ")";
+  } else {
+    threadIdWithName = ss.str();
+  }
+
   msg << "[" << Log::levelToChars(level) << " "
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
       << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << Log::getThreadName() << "] ";
+      << boost::this_process::get_id() << " " << threadIdWithName << "] ";
 
   return msg.str();
 }

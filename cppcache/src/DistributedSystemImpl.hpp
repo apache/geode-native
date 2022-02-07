@@ -48,7 +48,6 @@ using CliCallbackMethod = std::function<void(Cache&)>;
  */
 class DistributedSystemImpl {
  public:
-
   /**
    * @brief destructor
    */
