@@ -39,7 +39,7 @@
 #include "version.h"
 
 namespace {
-std::map<std::thread::id, std::string> m_threadNames;
+std::map<std::thread::id, std::string> g_threadNames;
 }
 
 namespace apache {
@@ -61,7 +61,7 @@ DistributedSystemImpl::DistributedSystemImpl(
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
-  m_threadNames.clear();
+  g_threadNames.clear();
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
@@ -150,10 +150,12 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
 
 std::string DistributedSystemImpl::getThreadName() {
   std::thread::id id = std::this_thread::get_id();
-  std::string threadName = m_threadNames[id];
-  if (threadName == "") {
-    std::stringstream ss;
-    ss << id;
+  std::stringstream ss;
+  ss << id;
+  std::string threadName;
+  if (g_threadNames[id] != "") {
+    threadName = ss.str() + " (" + g_threadNames[id] + ")";
+  } else {
     threadName = ss.str();
   }
   return threadName;
@@ -164,7 +166,7 @@ void DistributedSystemImpl::setThreadName(const std::string& threadName) {
     throw IllegalArgumentException("Thread name is empty.");
   }
 
-  m_threadNames[std::this_thread::get_id()] = threadName;
+  g_threadNames[std::this_thread::get_id()] = threadName;
 
 #if defined(HAVE_pthread_setname_np)
 
