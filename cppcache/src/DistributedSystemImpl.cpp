@@ -38,10 +38,6 @@
 #include "util/Log.hpp"
 #include "version.h"
 
-namespace {
-std::map<std::thread::id, std::string> g_threadNames;
-}
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -61,7 +57,6 @@ DistributedSystemImpl::DistributedSystemImpl(
 }
 
 DistributedSystemImpl::~DistributedSystemImpl() {
-  g_threadNames.clear();
   LOGFINE("Destroyed DistributedSystemImpl");
 }
 
@@ -148,57 +143,6 @@ void DistributedSystemImpl::unregisterCliCallback(int appdomainId) {
   }
 }
 
-std::string DistributedSystemImpl::getThreadName() {
-  std::thread::id id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << id;
-  std::string threadName;
-  if (g_threadNames[id] != "") {
-    threadName = ss.str() + " (" + g_threadNames[id] + ")";
-  } else {
-    threadName = ss.str();
-  }
-  return threadName;
-}
-
-void DistributedSystemImpl::setThreadName(const std::string& threadName) {
-  if (threadName.empty()) {
-    throw IllegalArgumentException("Thread name is empty.");
-  }
-
-  g_threadNames[std::this_thread::get_id()] = threadName;
-
-#if defined(HAVE_pthread_setname_np)
-
-  pthread_setname_np(threadName.c_str());
-
-#elif defined(_WIN32)
-
-  const DWORD MS_VC_EXCEPTION = 0x406D1388;
-
-#pragma pack(push, 8)
-  typedef struct tagTHREADNAME_INFO {
-    DWORD dwType;      // Must be 0x1000.
-    LPCSTR szName;     // Pointer to name (in user addr space).
-    DWORD dwThreadID;  // Thread ID (-1=caller thread).
-    DWORD dwFlags;     // Reserved for future use, must be zero.
-  } THREADNAME_INFO;
-#pragma pack(pop)
-
-  THREADNAME_INFO info;
-  info.dwType = 0x1000;
-  info.szName = threadName.c_str();
-  info.dwThreadID = -1;
-  info.dwFlags = 0;
-
-  __try {
-    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR),
-                   (ULONG_PTR*)&info);
-  } __except (EXCEPTION_EXECUTE_HANDLER) {
-  }
-
-#endif
-}
 
 }  // namespace client
 }  // namespace geode

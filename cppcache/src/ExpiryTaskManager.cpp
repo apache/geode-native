@@ -51,7 +51,7 @@ void ExpiryTaskManager::start() {
   auto start_future = start_promise.get_future();
   runner_ = std::thread{[this, &start_promise] {
     start_promise.set_value(true);
-    DistributedSystemImpl::setThreadName(NC_ETM_Thread);
+    Log::setThreadName(NC_ETM_Thread);
 
     LOGFINE("ExpiryTaskManager thread is running.");
     io_context_.run();
