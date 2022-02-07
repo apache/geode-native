@@ -20,12 +20,7 @@
 #ifndef GEODE_TESTOBJECT_DELTATESTIMPL_H_
 #define GEODE_TESTOBJECT_DELTATESTIMPL_H_
 
-#include <mutex>
-
-#include <ace/ACE.h>
-#include <ace/Condition_T.h>
-#include <ace/OS.h>
-#include <ace/Task.h>
+#include <atomic>
 
 #include <geode/DataSerializable.hpp>
 #include <geode/Delta.hpp>
@@ -60,9 +55,8 @@ class TESTOBJECT_EXPORT DeltaTestImpl : public DataSerializable, public Delta {
 
   bool m_hasDelta;
   uint8_t deltaBits;
-  mutable int64_t toDeltaCounter;
-  int64_t fromDeltaCounter;
-  mutable std::recursive_mutex mutex_;
+  mutable std::atomic<int64_t> toDeltaCounter;
+  std::atomic<int64_t> fromDeltaCounter;
 
  public:
   DeltaTestImpl();

@@ -74,7 +74,7 @@ class ExpiryTask : public std::enable_shared_from_this<ExpiryTask> {
   /**
    * Returns an ID which represents an invalid task
    */
-  static constexpr id_t invalid() { return std::numeric_limits<id_t>::max(); }
+  static constexpr id_t invalid() { return (std::numeric_limits<id_t>::max)(); }
 
  protected:
   using timer_t = boost::asio::steady_timer;

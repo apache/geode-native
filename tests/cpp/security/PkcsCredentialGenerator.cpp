@@ -31,6 +31,8 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Utils.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -38,25 +40,18 @@ namespace testframework {
 namespace security {
 std::string PKCSCredentialGenerator::getInitArgs(std::string workingDir, bool) {
   BOOST_LOG_TRIVIAL(info) << "Inside PKCS credentials";
-  std::string additionalArgs;
-  char* buildDir = ACE_OS::getenv("BUILDDIR");
+  auto buildDir = Utils::getEnv("BUILDDIR");
 
-  if (buildDir && workingDir.length() == 0) {
-    workingDir = std::string(buildDir);
-    workingDir += std::string("/framework/xml/Security/");
+  if (!buildDir.empty() && workingDir.empty()) {
+    workingDir = buildDir + "/framework/xml/Security/";
   }
 
-  if (buildDir && workingDir.length() == 0) {
-    workingDir = std::string(buildDir);
-    workingDir += std::string("/framework/xml/Security/");
+  auto xmlUri = Utils::getEnv("AUTHZ_XML_URI");
+  if (xmlUri.empty()) {
+    xmlUri = "authz-pkcs.xml";
   }
 
-  char* authzXmlUri = ACE_OS::getenv("AUTHZ_XML_URI");
-  additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                   std::string(workingDir) +
-                   std::string(authzXmlUri ? authzXmlUri : "authz-pkcs.xml");
-
-  return additionalArgs;
+  return " --J=-Dgemfire.security-authz-xml-uri=" + workingDir + xmlUri;
 }
 
 void PKCSCredentialGenerator::getValidCredentials(
@@ -71,6 +66,27 @@ void PKCSCredentialGenerator::getInvalidCredentials(
   setPKCSProperties(p, std::to_string(randomValue(1, 11)) + "geode");
   BOOST_LOG_TRIVIAL(info) << "inserted invalid security-username "
                           << p->find("security-username")->value();
+}
+
+void PKCSCredentialGenerator::insertKeyStorePath(std::shared_ptr<Properties>& p,
+                                                 const std::string& username) {
+  auto path = Utils::getEnv("TESTSRC");
+  if (path.empty()) {
+    path = Utils::getEnv("BUILDDIR") + "/framework/data";
+  }
+
+  path += "/keystore/";
+  path += username;
+  path += ".keystore";
+  p->insert(KEYSTORE_FILE_PATH, path);
+}
+
+void PKCSCredentialGenerator::setPKCSProperties(std::shared_ptr<Properties>& p,
+                                                const std::string& username) {
+  p->insert(SECURITY_USERNAME, "geode");
+  p->insert(KEYSTORE_ALIAS, username);
+  p->insert(KEYSTORE_PASSWORD, "geode");
+  insertKeyStorePath(p, username);
 }
 
 }  // namespace security
