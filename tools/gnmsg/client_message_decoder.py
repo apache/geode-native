@@ -79,7 +79,7 @@ class ClientMessageDecoder(DecoderBase):
         ]
 
         self.security_trace_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
         )
 
         self.send_trace_expression_v911_ = re.compile(
@@ -87,7 +87,10 @@ class ClientMessageDecoder(DecoderBase):
         )
 
         self.send_trace_expression_base_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
+        )
+        self.send_trace_expression_with_thread_name_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+) \(([\w|\s]+).*\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
         )
 
     def get_send_trace_parts_v911(self, line, parts):
@@ -105,13 +108,23 @@ class ClientMessageDecoder(DecoderBase):
 
     def get_send_trace_parts_base(self, line, parts):
         result = False
-        match = self.send_trace_expression_base_.search(line)
+        match = self.send_trace_expression_with_thread_name_.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
-            parts.append(match.group(4))
+            parts.append(match.group(4)) 
+            parts.append(match.group(5)) 
             result = True
+        else:
+          match = self.send_trace_expression_base_.search(line)
+          if match:
+              parts.append(parser.parse(match.group(1)))
+              parts.append(match.group(2))
+              parts.append("")
+              parts.append(match.group(3))
+              parts.append(match.group(4))
+              result = True
 
         return result
 
@@ -214,9 +227,12 @@ class ClientMessageDecoder(DecoderBase):
             (
                 send_trace["Timestamp"],
                 send_trace["tid"],
+                send_trace["ThreadName"],
                 send_trace["Connection"],
                 message_bytes,
             ) = parts
+            if send_trace["ThreadName"] == "":
+              del(send_trace["ThreadName"])
             is_send_trace = True
         elif self.get_add_security_trace_parts(line, parts):
             timestamp, tid, connection, security_footer_length, message_bytes = parts

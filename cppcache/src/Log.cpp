@@ -60,6 +60,8 @@ static FILE* g_log = nullptr;
 
 static std::string g_hostName;
 
+static thread_local std::string g_threadName;
+
 const int __1K__ = 1024;
 const int __1M__ = (__1K__ * __1K__);
 
@@ -369,21 +371,60 @@ LogLevel Log::charsToLevel(const std::string& chars) {
   }
 }
 
+void Log::setThreadName(const std::string& threadName) {
+  if (threadName.empty()) {
+    throw IllegalArgumentException("Thread name is empty.");
+  }
+
+  g_threadName = threadName;
+
+#if defined(HAVE_pthread_setname_np)
+
+  pthread_setname_np(threadName.c_str());
+
+#elif defined(_WIN32)
+
+  const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+#pragma pack(push, 8)
+  typedef struct tagTHREADNAME_INFO {
+    DWORD dwType;      // Must be 0x1000.
+    LPCSTR szName;     // Pointer to name (in user addr space).
+    DWORD dwThreadID;  // Thread ID (-1=caller thread).
+    DWORD dwFlags;     // Reserved for future use, must be zero.
+  } THREADNAME_INFO;
+#pragma pack(pop)
+
+  THREADNAME_INFO info;
+  info.dwType = 0x1000;
+  info.szName = threadName.c_str();
+  info.dwThreadID = -1;
+  info.dwFlags = 0;
+
+  __try {
+    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR),
+                   (ULONG_PTR*)&info);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+  }
+
+#endif
+}
+
 std::string Log::formatLogLine(LogLevel level) {
   std::stringstream msg;
-  const size_t MINBUFSIZE = 128;
-  auto now = std::chrono::system_clock::now();
-  auto secs = std::chrono::system_clock::to_time_t(now);
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-      now - std::chrono::system_clock::from_time_t(secs));
-  auto tm_val = apache::geode::util::chrono::localtime(secs);
+  const auto now = std::chrono::system_clock::now();
+  const auto secs = std::chrono::system_clock::to_time_t(now);
+  const auto microseconds =
+      std::chrono::duration_cast<std::chrono::microseconds>(
+          now - std::chrono::system_clock::from_time_t(secs));
+  const auto tm_val = apache::geode::util::chrono::localtime(secs);
 
-  msg << "[" << Log::levelToChars(level) << " "
+  msg << '[' << Log::levelToChars(level) << ' '
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << std::this_thread::get_id()
-      << "] ";
+      << std::put_time(&tm_val, "%z  ") << g_hostName << ':'
+      << boost::this_process::get_id() << ' ' << std::this_thread::get_id()
+      << " (" << g_threadName << ")] ";
 
   return msg.str();
 }

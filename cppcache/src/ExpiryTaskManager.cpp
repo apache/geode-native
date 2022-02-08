@@ -22,10 +22,6 @@
 #include "DistributedSystemImpl.hpp"
 #include "util/Log.hpp"
 
-namespace {
-const char *NC_ETM_Thread = "NC ETM Thread";
-}
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -51,7 +47,7 @@ void ExpiryTaskManager::start() {
   auto start_future = start_promise.get_future();
   runner_ = std::thread{[this, &start_promise] {
     start_promise.set_value(true);
-    DistributedSystemImpl::setThreadName(NC_ETM_Thread);
+    Log::setThreadName("NC ETM Thread");
 
     LOGFINE("ExpiryTaskManager thread is running.");
     io_context_.run();
