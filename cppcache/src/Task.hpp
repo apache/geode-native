@@ -26,6 +26,7 @@
 
 #include "AppDomainContext.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "./util/Log.hpp"
 
 namespace apache {
 namespace geode {
