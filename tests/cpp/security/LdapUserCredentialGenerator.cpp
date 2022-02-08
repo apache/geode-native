@@ -31,11 +31,41 @@
 
 #include <boost/log/trivial.hpp>
 
+#include "Utils.hpp"
+
 namespace apache {
 namespace geode {
 namespace client {
 namespace testframework {
 namespace security {
+
+std::string LdapUserCredentialGenerator::getInitArgs(std::string workingDir,
+                                                     bool) {
+  auto buildDir = Utils::getEnv("BUILDDIR");
+  if (!buildDir.empty() && workingDir.empty()) {
+    workingDir = buildDir + "/framework/xml/Security/";
+  }
+
+  std::string result =
+      " --J=-Dgemfire.security-authz-xml-uri=" + workingDir + "authz-ldap.xml";
+
+  auto ldapSrv = Utils::getEnv("LDAP_SERVER");
+  result += " --J=-Dgemfire.security-ldap-server=" +
+            (ldapSrv.empty() ? "ldap" : ldapSrv);
+
+  auto ldapRoot = Utils::getEnv("LDAP_BASEDN");
+  result += " --J=\\\"-Dgemfire.security-ldap-basedn=";
+  result +=
+      ldapRoot.empty() ? "ou=ldapTesting,dc=ldap,dc=apache,dc=org" : ldapRoot;
+  result += "\\\"";
+
+  auto ldapSSL = Utils::getEnv("LDAP_USESSL");
+  result += " --J=-Dgemfire.security-ldap-usessl=";
+  result += (ldapSSL.empty() ? "false" : ldapSSL);
+
+  return result;
+}
+
 void LdapUserCredentialGenerator::getValidCredentials(
     std::shared_ptr<Properties>& p) {
   p->insert("security-username", "geode1");

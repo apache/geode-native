@@ -383,9 +383,7 @@ TEST_F(TcrMessageTest, testConstructor5WithUnregisterInteresetList) {
 
   TcrMessageUnregisterInterestList message(
       new DataOutputUnderTest(), static_cast<const Region *>(nullptr), keys,
-      false,  // isDurable
-      false,  // receiveValues
-      InterestResultPolicy::NONE, static_cast<ThinClientBaseDM *>(nullptr));
+      false, static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::UNREGISTER_INTEREST_LIST, message.getMessageType());
 
@@ -428,27 +426,25 @@ TEST_F(TcrMessageTest, testConstructorKeySet) {
 TEST_F(TcrMessageTest, testConstructor6WithCreateRegion) {
   using apache::geode::client::TcrMessageCreateRegion;
 
-  TcrMessageCreateRegion message(new DataOutputUnderTest(),
-                                 "str1",  // TODO: what does this parameter do?!
-                                 "str2",  // TODO: what does this parameter do?!
-                                 false,   // isDurable
-                                 false,   // receiveValues
+  TcrMessageCreateRegion message(new DataOutputUnderTest(), "parentRegionName",
+                                 "regionName",
+                                 false,  // isDurable
+                                 false,  // receiveValues
                                  static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::CREATE_REGION, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "0000001D0000001200000002FFFFFFFF00000000040073747231000000040073747232",
+      "0000001D0000002400000002FFFFFFFF000000001000706172656E74526567696F6E4E61"
+      "6D650000000A00726567696F6E4E616D65",
       message);
 }
 
 TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
-  using apache::geode::client::TcrMessageRegisterInterest;
+  using apache::geode::client::TcrMessageRegisterInterestRegex;
 
-  TcrMessageRegisterInterest message(
-      new DataOutputUnderTest(),
-      "str1",  // TODO: what does this parameter do?!
-      "str2",  // TODO: what does this parameter do?!
+  TcrMessageRegisterInterestRegex message(
+      new DataOutputUnderTest(), "regionName", "regexString",
       InterestResultPolicy::NONE,
       false,  // isDurable
       false,  // isCacheingEnabled
@@ -458,28 +454,105 @@ TEST_F(TcrMessageTest, testConstructor6WithRegisterInterest) {
   EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "000000140000003600000007FFFFFFFF0000000004007374723100000004000000000100"
-      "0000030101250000000001000000000004007374723200000001000100000002000000",
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125000000000100000000000B007265676578537472696E6700"
+      "000001000100000002000000",
       message);
+
+  TcrMessageRegisterInterestRegex message2(
+      new DataOutputUnderTest(), "regionName", "regexString",
+      InterestResultPolicy::NONE,
+      true,   // isDurable
+      false,  // isCacheingEnabled
+      false,  // receiveValues
+      static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message2.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125000000000100010000000B007265676578537472696E6700"
+      "000001000100000002000000",
+      message2);
+
+  TcrMessageRegisterInterestRegex message3(
+      new DataOutputUnderTest(), "regionName", "regexString",
+      InterestResultPolicy::NONE,
+      false,  // isDurable
+      true,   // isCacheingEnabled
+      false,  // receiveValues
+      static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message3.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125000000000100000000000B007265676578537472696E6700"
+      "000001000100000002000100",
+      message3);
+
+  TcrMessageRegisterInterestRegex message4(
+      new DataOutputUnderTest(), "regionName", "regexString",
+      InterestResultPolicy::NONE,
+      false,  // isDurable
+      false,  // isCacheingEnabled
+      true,   // receiveValues
+      static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message4.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125000000000100000000000B007265676578537472696E6700"
+      "000001000000000002000000",
+      message4);
+
+  TcrMessageRegisterInterestRegex message5(
+      new DataOutputUnderTest(), "regionName", "regexString",
+      InterestResultPolicy::KEYS,
+      true,  // isDurable
+      true,  // isCacheingEnabled
+      true,  // receiveValues
+      static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message5.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125010000000100010000000B007265676578537472696E6700"
+      "000001000000000002000100",
+      message5);
+
+  TcrMessageRegisterInterestRegex message6(
+      new DataOutputUnderTest(), "regionName", "regexString",
+      InterestResultPolicy::KEYS_VALUES,
+      true,  // isDurable
+      true,  // isCacheingEnabled
+      true,  // receiveValues
+      static_cast<ThinClientBaseDM *>(nullptr));
+
+  EXPECT_EQ(TcrMessage::REGISTER_INTEREST, message6.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000140000004300000007FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "000000000100000003010125020000000100010000000B007265676578537472696E6700"
+      "000001000000000002000100",
+      message6);
 }
 
 TEST_F(TcrMessageTest, testConstructor6WithUnregisterInterest) {
-  using apache::geode::client::TcrMessageUnregisterInterest;
+  using apache::geode::client::TcrMessageUnregisterInterestRegex;
 
-  TcrMessageUnregisterInterest message(
-      new DataOutputUnderTest(),
-      "str1",  // TODO: what does this parameter do?!
-      "str2",  // TODO: what does this parameter do?!
-      InterestResultPolicy::NONE,
+  TcrMessageUnregisterInterestRegex message(
+      new DataOutputUnderTest(), "regionName", "regexString",
       false,  // isDurable
-      false,  // receiveValues
       static_cast<ThinClientBaseDM *>(nullptr));
 
   EXPECT_EQ(TcrMessage::UNREGISTER_INTEREST, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "000000160000002700000005FFFFFFFF0000000004007374723100000004000000000100"
-      "0000040073747232000000010000000000010000",
+      "000000160000003400000005FFFFFFFF000000000A00726567696F6E4E616D6500000004"
+      "00000000010000000B007265676578537472696E67000000010000000000010000",
       message);
 }
 

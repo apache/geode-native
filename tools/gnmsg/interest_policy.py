@@ -1,4 +1,5 @@
-# Licensed to the Apache Software Foundation (ASF) under one or more
+#!/usr/local/bin/python3
+
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
@@ -12,21 +13,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-add_executable(cpp-integration-benchmark
-  main.cpp
-  RegionBM.cpp
-  PdxTypeBM.cpp
-  RegisterInterestBM.cpp
-)
-
-target_link_libraries(cpp-integration-benchmark
-  PUBLIC
-    apache-geode
-    benchmark::benchmark
-    integration-framework
-  PRIVATE
-    _WarningsAsError
-  )
-
-add_clangformat(cpp-integration-benchmark)
+interest_policy = {
+    0: "NONE",
+    1: "KEYS",
+    2: "KEYS/VALUES",
+}
