@@ -30,9 +30,6 @@ const char KEYSTORE_FILE_PATH[] = "security-keystorepath";
 const char KEYSTORE_ALIAS[] = "security-alias";
 const char KEYSTORE_PASSWORD[] = "security-keystorepass";
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -69,21 +66,10 @@ class PKCSCredentialGenerator : public CredentialGenerator {
   }
 
   void insertKeyStorePath(std::shared_ptr<Properties>& p,
-                          const std::string& username) {
-    auto path =
-        ACE_OS::getenv("TESTSRC")
-            ? std::string(ACE_OS::getenv("TESTSRC"))
-            : std::string(ACE_OS::getenv("BUILDDIR")) + "/framework/data";
-    p->insert(KEYSTORE_FILE_PATH, path + "/keystore/" + username + ".keystore");
-  }
+                          const std::string& username);
 
   void setPKCSProperties(std::shared_ptr<Properties>& p,
-                         const std::string& username) {
-    p->insert(SECURITY_USERNAME, "geode");
-    p->insert(KEYSTORE_ALIAS, username);
-    p->insert(KEYSTORE_PASSWORD, "geode");
-    insertKeyStorePath(p, username);
-  }
+                         const std::string& username);
 
   void getValidCredentials(std::shared_ptr<Properties>& p) override;
 

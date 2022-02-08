@@ -64,7 +64,7 @@
       "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
       "inline": [
         "yum update -y",
-        "yum remove -y df-automatic"
+        "yum remove -y dnf-automatic"
       ]
     },
     {

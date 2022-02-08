@@ -3269,10 +3269,9 @@ void LocalRegion::clearKeysOfInterestRegex(
     return;
   }
 
-  static const std::string ALL_KEYS_REGEX = ".*";
   for (const auto& kv : interest_list) {
     const auto& regex = kv.first;
-    if (regex == ALL_KEYS_REGEX) {
+    if (regex == kAllKeysRegex) {
       localClear();
       break;
     } else {

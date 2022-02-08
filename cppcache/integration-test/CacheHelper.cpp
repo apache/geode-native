@@ -1126,7 +1126,7 @@ void CacheHelper::initServer(int instance, const std::string &xml,
               std::to_string(testServerGC ? userTombstone_timeout
                                           : defaultTombstone_timeout))
           .withSystemProperty(
-              "gemfire.tombstone-gc-hreshold",
+              "gemfire.tombstone-gc-threshold",
               std::to_string(testServerGC ? userTombstone_gc_threshold
                                           : defaultTombstone_gc_threshold))
           .withSystemProperty("gemfire.security-log-level", gfSecLogLevel);

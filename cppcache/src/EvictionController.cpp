@@ -28,7 +28,6 @@
 #include "util/Log.hpp"
 
 namespace {
-const char* const NC_EC_Thread = "NC EC Thread";
 const std::chrono::seconds EVICTION_TIMEOUT{1};
 }  // namespace
 
@@ -65,7 +64,7 @@ void EvictionController::stop() {
 
 void EvictionController::svc() {
   std::mutex mutex;
-  DistributedSystemImpl::setThreadName(NC_EC_Thread);
+  Log::setThreadName("NC EC Thread");
 
   while (running_) {
     {

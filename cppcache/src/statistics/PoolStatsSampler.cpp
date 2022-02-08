@@ -34,8 +34,6 @@ using std::chrono::high_resolution_clock;
 using std::chrono::milliseconds;
 using std::chrono::nanoseconds;
 
-const char* PoolStatsSampler::NC_PSS_Thread = "NC PSS Thread";
-
 PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
                                    ThinClientPoolDM* distMan)
     : m_running(false),
@@ -47,7 +45,7 @@ PoolStatsSampler::PoolStatsSampler(milliseconds sampleRate, CacheImpl* cache,
           cache->getStatisticsManager().getStatisticsFactory()) {}
 
 void PoolStatsSampler::svc() {
-  client::DistributedSystemImpl::setThreadName(NC_PSS_Thread);
+  client::Log::setThreadName("NC PSS Thread");
   while (!m_stopRequested) {
     auto sampleStart = high_resolution_clock::now();
     putStatsInAdminRegion();

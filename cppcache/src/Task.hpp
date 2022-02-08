@@ -26,6 +26,7 @@
 
 #include "AppDomainContext.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "./util/Log.hpp"
 
 namespace apache {
 namespace geode {
@@ -68,7 +69,7 @@ class Task {
   }
 
   inline void svc(void) {
-    DistributedSystemImpl::setThreadName(threadName_);
+    Log::setThreadName(threadName_);
 
     if (appDomainContext_) {
       appDomainContext_->run(
