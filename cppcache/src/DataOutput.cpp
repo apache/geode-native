@@ -92,9 +92,7 @@ class TSSDataOutput {
   static thread_local TSSDataOutput threadLocalBufferPool;
 };
 
-TSSDataOutput::TSSDataOutput() : m_buffers() {
-  m_buffers.reserve(10);
-}
+TSSDataOutput::TSSDataOutput() : m_buffers() { m_buffers.reserve(10); }
 
 TSSDataOutput::~TSSDataOutput() {
   while (!m_buffers.empty()) {
