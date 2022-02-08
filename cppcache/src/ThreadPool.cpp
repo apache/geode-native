@@ -16,8 +16,8 @@
  */
 #include "ThreadPool.hpp"
 
-#include "util/Log.hpp"
 #include "DistributedSystemImpl.hpp"
+#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
