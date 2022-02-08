@@ -23,14 +23,12 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const char* ThreadPool::NC_Pool_Thread = "NC Pool Thread";
-
 ThreadPool::ThreadPool(size_t threadPoolSize)
     : shutdown_(false), appDomainContext_(createAppDomainContext()) {
   workers_.reserve(threadPoolSize);
 
   std::function<void()> executeWork = [this] {
-    Log::setThreadName(NC_Pool_Thread);
+    Log::setThreadName("NC Pool Thread");
     while (true) {
       std::unique_lock<decltype(queueMutex_)> lock(queueMutex_);
       queueCondition_.wait(lock,

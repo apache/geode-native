@@ -24,7 +24,6 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <thread>
 
 #include <geode/internal/geode_globals.hpp>
 

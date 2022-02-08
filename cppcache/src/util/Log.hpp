@@ -195,8 +195,6 @@ class APACHE_GEODE_EXPORT Log {
 
   static void setThreadName(const std::string& threadName);
 
-  static const std::string& getThreadName();
-
  private:
   static LogLevel s_logLevel;
 

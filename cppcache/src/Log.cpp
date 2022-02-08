@@ -38,7 +38,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/util/LogLevel.hpp>
 
-#include "DistributedSystemImpl.hpp"
 #include "geodeBanner.hpp"
 #include "util/chrono/time_point.hpp"
 
@@ -410,32 +409,22 @@ void Log::setThreadName(const std::string& threadName) {
 
 #endif
 }
-const std::string& Log::getThreadName() { return g_threadName; }
 
 std::string Log::formatLogLine(LogLevel level) {
   std::stringstream msg;
-  const size_t MINBUFSIZE = 128;
-  auto now = std::chrono::system_clock::now();
-  auto secs = std::chrono::system_clock::to_time_t(now);
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-      now - std::chrono::system_clock::from_time_t(secs));
-  auto tm_val = apache::geode::util::chrono::localtime(secs);
+  const auto now = std::chrono::system_clock::now();
+  const auto secs = std::chrono::system_clock::to_time_t(now);
+  const auto microseconds =
+      std::chrono::duration_cast<std::chrono::microseconds>(
+          now - std::chrono::system_clock::from_time_t(secs));
+  const auto tm_val = apache::geode::util::chrono::localtime(secs);
 
-  std::thread::id id = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << id;
-  std::string threadIdWithName;
-  if (getThreadName() != "") {
-    threadIdWithName = ss.str() + " (" + getThreadName() + ")";
-  } else {
-    threadIdWithName = ss.str();
-  }
-
-  msg << "[" << Log::levelToChars(level) << " "
+  msg << '[' << Log::levelToChars(level) << ' '
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << threadIdWithName << "] ";
+      << std::put_time(&tm_val, "%z  ") << g_hostName << ':'
+      << boost::this_process::get_id() << ' ' << std::this_thread::get_id()
+      << " (" << g_threadName << ")] ";
 
   return msg.str();
 }
