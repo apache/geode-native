@@ -16,7 +16,7 @@
  */
 #include "ThreadPool.hpp"
 
-#include "./util/Log.hpp"
+#include "util/Log.hpp"
 #include "DistributedSystemImpl.hpp"
 
 namespace apache {
