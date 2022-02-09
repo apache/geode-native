@@ -23,7 +23,7 @@ include(UseJava)
 file(GLOB_RECURSE SOURCES "*.java")
 
 # Check for versions of GEODE that don't support AuthenticationExpiredException
-if (${Geode_VERSION} VERSION_LESS ${GEODE_AUTHEXPIREDEXCEPTION_VERSION}))
+if (${Geode_VERSION} VERSION_LESS ${GEODE_AUTHEXPIREDEXCEPTION_VERSION})
   list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/SimulatedExpirationSecurityManager.java)
 endif()
 
