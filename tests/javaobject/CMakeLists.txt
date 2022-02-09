@@ -22,11 +22,9 @@ include(UseJava)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
-# Check for versions of GEODE don't support AuthenticationExpiredException
-if (${PRODUCT_NAME} STREQUAL "Tanzu GemFire Native")
-  if (${Geode_VERSION} VERSION_LESS 9.15.0-build.547)
-	  list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/SimulatedExpirationSecurityManager.java)
-  endif()
+# Check for versions of GEODE that don't support AuthenticationExpiredException
+if (${Geode_VERSION} VERSION_LESS ${GEODE_AUTHEXPIREDEXCEPTION_VERSION}))
+  list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/SimulatedExpirationSecurityManager.java)
 endif()
 
 add_jar(javaobject ${SOURCES}
