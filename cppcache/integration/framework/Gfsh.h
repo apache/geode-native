@@ -49,6 +49,9 @@ class Gfsh {
   class Deploy;
   Deploy deploy();
 
+  class Rebalance;
+  Rebalance rebalance();
+
   class ExecuteFunction;
   ExecuteFunction executeFunction();
 
@@ -105,7 +108,8 @@ class Gfsh {
 
       Locator &withPort(const uint16_t &port);
 
-      Locator &withRemoteLocators(const std::vector<uint16_t> &locatorPorts);
+      Locator &withRemoteLocators(
+          const std::vector<std::string> &remoteLocators);
 
       Locator &withDistributedSystemId(const uint16_t &dsId);
 
@@ -330,6 +334,11 @@ class Gfsh {
     explicit Deploy(Gfsh &gfsh);
 
     Deploy &jar(const std::string &jarFile);
+  };
+
+  class Rebalance : public Command<void> {
+   public:
+    explicit Rebalance(Gfsh &gfsh);
   };
 
   class ExecuteFunction : public Command<void> {

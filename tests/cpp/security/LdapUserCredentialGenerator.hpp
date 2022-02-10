@@ -20,8 +20,6 @@
  * limitations under the License.
  */
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
 
 #include "CredentialGenerator.hpp"
 #include "XmlAuthzCredentialGenerator.hpp"
@@ -36,34 +34,7 @@ class LdapUserCredentialGenerator : public CredentialGenerator {
  public:
   LdapUserCredentialGenerator() : CredentialGenerator(ID_LDAP, "LDAP") {}
 
-  std::string getInitArgs(std::string workingDir, bool) override {
-    std::string additionalArgs;
-    char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir != nullptr && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-
-    additionalArgs = std::string(" --J=-Dgemfire.security-authz-xml-uri=") +
-                     std::string(workingDir) + std::string("authz-ldap.xml");
-
-    char* ldapSrv = ACE_OS::getenv("LDAP_SERVER");
-    additionalArgs += std::string(" --J=-Dgemfire.security-ldap-server=") +
-                      (ldapSrv != nullptr ? ldapSrv : "ldap");
-
-    char* ldapRoot = ACE_OS::getenv("LDAP_BASEDN");
-    additionalArgs +=
-        std::string(" --J=\\\"-Dgemfire.security-ldap-basedn=") +
-        (ldapRoot != nullptr ? ldapRoot
-                             : "ou=ldapTesting,dc=ldap,dc=apache,dc=org") +
-        "\\\"";
-
-    char* ldapSSL = ACE_OS::getenv("LDAP_USESSL");
-    additionalArgs += std::string(" --J=-Dgemfire.security-ldap-usessl=") +
-                      (ldapSSL != nullptr ? ldapSSL : "false");
-
-    return additionalArgs;
-  }
+  std::string getInitArgs(std::string workingDir, bool) override;
 
   std::string getClientAuthInitLoaderFactory() override {
     return "createUserPasswordAuthInitInstance";

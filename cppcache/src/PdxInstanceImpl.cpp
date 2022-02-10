@@ -777,10 +777,9 @@ int32_t PdxInstanceImpl::hashcode() const {
         break;
       }
       case PdxFieldTypes::UNKNOWN: {
-        char excpStr[256] = {0};
-        std::snprintf(excpStr, 256, "PdxInstance not found typeid %d ",
-                      static_cast<int>(field->getTypeId()));
-        throw IllegalStateException(excpStr);
+        throw IllegalStateException(
+            "PdxInstance not found typeid " +
+            std::to_string(static_cast<int>(field->getTypeId())));
       }
     }
   }
@@ -1317,10 +1316,9 @@ bool PdxInstanceImpl::operator==(const CacheableKey& o) const {
         break;
       }
       case PdxFieldTypes::UNKNOWN: {
-        char excpStr[256] = {0};
-        std::snprintf(excpStr, 256, "PdxInstance not found typeid  %d ",
-                      static_cast<int>(myPFT->getTypeId()));
-        throw IllegalStateException(excpStr);
+        throw IllegalStateException(
+            std::string("PdxInstance not found typeid ") +
+            std::to_string(static_cast<int>(myPFT->getTypeId())));
       }
     }
   }

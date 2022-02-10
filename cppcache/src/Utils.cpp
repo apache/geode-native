@@ -91,7 +91,7 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
   std::string endpoint;
   std::string::size_type length = endpointsStr.size();
   std::string::size_type pos = 0;
-  ACE_TCHAR hostName[256], fullName[512];
+  ACE_TCHAR hostName[256];
   pos = endpointsStr.find(':', 0);
   if (pos != std::string::npos) {
     endpoint = endpointsStr.substr(0, pos);
@@ -114,8 +114,7 @@ std::string Utils::convertHostToCanonicalForm(const char* endpoints) {
     if (pos != std::string::npos) {
       ACE_INET_Addr addr(endpoints);
       addr.get_host_name(hostName, 256);
-      std::snprintf(fullName, sizeof(fullName), "%s:%d", hostName, port);
-      return fullName;
+      return std::string(hostName) + ":" + std::to_string(port);
     }
   }
   return endpoints;

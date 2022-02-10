@@ -37,7 +37,7 @@
  * + callback Argument
  */
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::testing::TallyListener;
 using apache::geode::client::testing::TallyWriter;

@@ -40,21 +40,17 @@ BEGIN_TEST(TestRegionLRULastTen)
   // put more than 10 items... verify limit is held.
   uint32_t i;
   for (i = 0; i < 10; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
     auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 10; i < 20; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
     auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -84,11 +80,9 @@ BEGIN_TEST(TestRegionNoLRU)
   // put more than 10 items... verify limit is held.
   uint32_t i;
   for (i = 0; i < 20; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
     auto&& vecKeys = regionPtr->keys();
     cacheHelper.showKeys(vecKeys);
@@ -109,11 +103,9 @@ BEGIN_TEST(TestRegionLRULocal)
   /** @TODO make this local scope and re-increase the iterations... would also
    * like to time it. */
   for (i = 0; i < 1000; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
     auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i < 10 ? i + 1 : 10), "expected more entries");
@@ -129,19 +121,16 @@ BEGIN_TEST(TestEmptiedMap)
   // put more than 10 items... verify limit is held.
   uint32_t i;
   for (i = 0; i < 10; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
     auto&& vecKeys = regionPtr->keys();
     ASSERT(vecKeys.size() == (i + 1), "expected more entries");
   }
   for (i = 0; i < 10; i++) {
     char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
+    auto key = CacheableKey::create(std::to_string(i));
     regionPtr->destroy(key);
     std::cout
         << "removed key "
@@ -151,11 +140,9 @@ BEGIN_TEST(TestEmptiedMap)
   auto&& vecKeys = regionPtr->keys();
   ASSERT(vecKeys.size() == 0, "expected more entries");
   for (i = 20; i < 40; i++) {
-    char buf[100];
-    sprintf(buf, "%d", i);
-    auto key = CacheableKey::create(buf);
-    sprintf(buf, "value of %d", i);
-    auto valuePtr = cacheHelper.createCacheable(buf);
+    auto key = CacheableKey::create(std::to_string(i));
+    auto val = std::string("value of ") + std::to_string(i);
+    auto valuePtr = cacheHelper.createCacheable(val.c_str());
     regionPtr->put(key, valuePtr);
   }
   vecKeys = regionPtr->keys();

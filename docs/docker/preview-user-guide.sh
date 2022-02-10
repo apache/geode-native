@@ -17,13 +17,10 @@
 # limitations under the License.
 
 function cleanup {
-  rm Gemfile Gemfile.lock
-  rm -r geode-native-book-* geode-native-docs-*
+  rm -f Gemfile Gemfile.lock
 }
 
 trap cleanup EXIT
-
-set -x -e
 
 if [ "$#" -ne 1 ]; then
   echo "ERROR: Illegal number of parameters"
@@ -43,13 +40,43 @@ fi
 BOOK_DIR_NAME=geode-native-book-${LANG}
 DOCS_DIR_NAME=geode-native-docs-${LANG}
 
-mkdir -p ${BOOK_DIR_NAME}
-mkdir -p ${DOCS_DIR_NAME}
+BOOK_PATH="$(pwd)/../${BOOK_DIR_NAME}"
+DOCS_PATH="$(pwd)/../${DOCS_DIR_NAME}"
 
+# Gemfile & Gemfile.lock are copied to avoid including the whole
+# geode-book folder to the image context
 cp ../${BOOK_DIR_NAME}/Gemfile* .
-cp -r ../${BOOK_DIR_NAME} ${BOOK_DIR_NAME}
-cp -r ../${DOCS_DIR_NAME} ${DOCS_DIR_NAME}
 
-docker build --build-arg lang=${LANG} -t geodenativedocs/temp:1.0 .
+docker build -t geodenativedocs/temp:1.0 .
 
-docker run -it -p 9292:9292 geodenativedocs/temp:1.0 /bin/bash -c "cd ${BOOK_DIR_NAME} && bundle exec bookbinder bind local && cd final_app && bundle exec rackup --host=0.0.0.0"
+
+# "${BOOK_DIR_NAME}/final_app" and "${BOOK_DIR_NAME}/output" are created
+# inside the container, so it is necessary to use the current user to
+# avoid these folders are owned by root user.
+MY_UID=$(id -u)
+MY_GID=$(id -g)
+docker run -it -p 9292:9292 --user $MY_UID:$MY_GID \
+    --workdir="/home/$USER" \
+    --volume="/etc/group:/etc/group:ro" \
+    --volume="/etc/passwd:/etc/passwd:ro" \
+    --volume="/etc/shadow:/etc/shadow:ro" \
+    --volume="${BOOK_PATH}:/${BOOK_DIR_NAME}:rw" \
+    --volume="${DOCS_PATH}:/${DOCS_DIR_NAME}:rw" \
+    geodenativedocs/temp:1.0 /bin/bash -c "cd /${BOOK_DIR_NAME} && bundle exec bookbinder bind local && cd final_app && bundle exec rackup --host=0.0.0.0"
+
+
+# Bookbinder creates the following links
+# <your geode native repo>/docs/geode-native-book-[cpp|dotnet]/output/master_middleman/source/docs/guide/<version> -> /geode-book/output/preprocessing/sections/docs/geode-native/[cpp|dotnet]/<version>
+# <your geode native repo>/docs/geode-native-book-[cpp|dotnet]/output/preprocessing/sections/docs/guide/<version> -> /geode-docs
+#
+# Following lines fix these wrong symbolic links:
+#
+ug_version=`ls ${BOOK_PATH}/final_app/public/docs/geode-native/${LANG}/`
+master_middleman_folder="${BOOK_PATH}/output/master_middleman/source/docs/geode-native/${LANG}/${ug_version}"
+preprocessing_folder="${BOOK_PATH}/output/preprocessing/sections/docs/geode-native/${LANG}/${ug_version}"
+rm ${master_middleman_folder}
+rm ${preprocessing_folder}
+
+ln -s ${DOCS_PATH} ${preprocessing_folder}
+ln -s ${preprocessing_folder} ${master_middleman_folder}
+

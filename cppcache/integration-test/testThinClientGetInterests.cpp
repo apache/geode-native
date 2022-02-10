@@ -69,11 +69,9 @@ DUNIT_TASK(CLIENT1, SetupClient1)
     auto vkey = regPtr0->getInterestList();
     auto vreg = regPtr0->getInterestListRegex();
     for (size_t i = 0; i < vkey.size(); i++) {
-      char buf[1024];
       const char *key =
           std::dynamic_pointer_cast<CacheableString>(vkey[i])->value().c_str();
-      sprintf(buf, "key[%zd]=%s", i, key);
-      LOG(buf);
+      LOG(std::string("key[") + std::to_string(i) + "] = " + key);
       bool found = false;
       for (const auto &k : vkey) {
         if (!strcmp(key, k->toString().c_str())) {
@@ -81,15 +79,17 @@ DUNIT_TASK(CLIENT1, SetupClient1)
           break;
         }
       }
-      sprintf(buf, "key[%zd]=%s not found!", i, key);
-      ASSERT(found, buf);
+      std::string msg;
+      if (!found) {
+        msg = std::string("key[") + std::to_string(i) + "]=" + key +
+              " not found!";
+      }
+      ASSERT(found, msg);
     }
     for (size_t i = 0; i < vreg.size(); i++) {
-      char buf[1024];
       auto ptr = vreg[i];
       const char *reg = ptr->value().c_str();
-      sprintf(buf, "regex[%zd]=%s", i, reg);
-      LOG(buf);
+      LOG(std::string("regex[") + std::to_string(i) + "]=" + reg);
       bool found = false;
       for (size_t j = 0; j < vreg.size(); j++) {
         if (!strcmp(reg, testregex[j])) {
@@ -97,16 +97,19 @@ DUNIT_TASK(CLIENT1, SetupClient1)
           break;
         }
       }
-      sprintf(buf, "regex[%zd]=%s not found!", i, reg);
-      ASSERT(found, buf);
+
+      std::string msg;
+      if (!found) {
+        msg = std::string("regex[") + std::to_string(i) + "]=" + reg +
+              " not found!";
+      }
+      ASSERT(found, msg);
     }
     regPtr0->registerAllKeys(true);
     auto vreg1 = regPtr0->getInterestListRegex();
     for (size_t i = 0; i < vreg1.size(); i++) {
-      char buf[1024];
       auto ptr = vreg1[i];
-      sprintf(buf, "regex[%zd]=%s", i, ptr->value().c_str());
-      LOG(buf);
+      LOG(std::string("regex[") + std::to_string(i) + "]=" + ptr->value());
     }
   }
 END_TASK(SetupClient1)

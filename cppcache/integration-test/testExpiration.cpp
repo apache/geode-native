@@ -54,33 +54,26 @@ void startDSandCreateCache(std::shared_ptr<Cache> &cache) {
 
 void doNPuts(std::shared_ptr<Region> &rptr, int n) {
   std::shared_ptr<CacheableString> value;
-  char buf[16];
-  memset(buf, 'A', 15);
-  buf[15] = '\0';
-  memcpy(buf, "Value - ", 8);
-  value = CacheableString::create(buf);
+  value = CacheableString::create("Value - AAAAAAA");
   ASSERT(value != nullptr, "Failed to create value.");
 
   for (int i = 0; i < n; i++) {
-    sprintf(buf, "KeyA - %d", i + 1);
-    auto key = CacheableKey::create(buf);
-    LOGINFO("Putting key %s value %s in region %s", buf,
+    auto keyStr = std::string("KeyA - ") + std::to_string(i + 1);
+    auto key = CacheableKey::create(keyStr);
+    LOGINFO("Putting key %s value %s in region %s", keyStr.c_str(),
             value->toString().c_str(), rptr->getFullPath().c_str());
     rptr->put(key, value);
   }
 }
+
 std::shared_ptr<CacheableKey> do1Put(std::shared_ptr<Region> &rptr) {
   std::shared_ptr<CacheableString> value;
-  char buf[16];
-  memset(buf, 'A', 15);
-  buf[15] = '\0';
-  memcpy(buf, "Value - ", 8);
-  value = CacheableString::create(buf);
+  value = CacheableString::create("Value - AAAAAAA");
   ASSERT(value != nullptr, "Failed to create value.");
 
-  sprintf(buf, "KeyA - %d", 0 + 1);
-  auto key = CacheableKey::create(buf);
-  LOGINFO("Putting key %s value %s in region %s", buf,
+  std::string keyStr("KeyA - 1");
+  auto key = CacheableKey::create(keyStr);
+  LOGINFO("Putting key %s value %s in region %s", keyStr.c_str(),
           value->toString().c_str(), rptr->getFullPath().c_str());
   rptr->put(key, value);
   return key;
@@ -205,7 +198,7 @@ BEGIN_TEST(TEST_EXPIRATION)
 
     n = getNumOfEntries(R5);
 
-    printf("n ==  %zd\n", n);
+    std::cout << "n ==  " << n << "\n";
     ASSERT(n == 1, "Expected 1 entry");
 
     // std::this_thread::sleep_for(std::chrono::seconds(3));

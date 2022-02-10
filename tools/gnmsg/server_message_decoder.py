@@ -47,19 +47,19 @@ class ServerMessageDecoder(DecoderBase):
             self.parse_response_fields_base,
             self.parse_response_fields_v911,
         ]
-        self.chunk_decoder = ChunkedResponseDecoder()
+        self.chunk_decoders_ = {}
         self.threads_connections_ = {}
 
         self.connection_to_tid_expression_ = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_with_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_without_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_v911_expression_ = re.compile(
@@ -67,19 +67,19 @@ class ServerMessageDecoder(DecoderBase):
         )
 
         self.receive_trace_body_expression_ = re.compile(
-            ":\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage: received message body from endpoint.*bytes:\s*([\d|a-f|A-F]+)"
+            ":\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage: received message body from endpoint.*bytes:\s*(.+)"
         )
 
         self.security_trace_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*(.+)"
         )
 
         self.response_header_with_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader\(([0-9|a-f|A-F|x]+)\):\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*(.+)"
         )
 
         self.response_header_without_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readResponseHeader:\s*received header from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*(.+)"
         )
 
         self.chunk_header_with_pointer_expression_ = re.compile(
@@ -87,14 +87,14 @@ class ServerMessageDecoder(DecoderBase):
         )
 
         self.chunk_header_without_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=([0-9|a-f|A-F|x]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkHeader:\s*.*, chunkLen=(\d+), lastChunkAndSecurityFlags=(.+)"
         )
 
         self.chunk_bytes_with_pointer_expression_ = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody\(([0-9|a-f|A-F|x]+)\): \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody\(([0-9|a-f|A-F|x]+)\): \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*(.+)"
         )
         self.chunk_bytes_without_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*([\d|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readChunkBody: \s*received chunk body from endpoint\s*([\w|:|\d|\.|-]+);\s*bytes:\s*(.+)"
         )
 
     def associate_connection_to_tid(self, line):
@@ -360,13 +360,12 @@ class ServerMessageDecoder(DecoderBase):
             last_header = {"Timestamp": parts[0], "tid": tid, "Connection": parts[2]}
             message_bytes = parts[3]
             self.headers_[tid] = last_header
-            connection = parts[2]
             if (
-                connection in self.connection_states_.keys()
-                and self.connection_states_[connection] != self.STATE_NEUTRAL_
+                tid in self.connection_states_.keys()
+                and self.connection_states_[tid] != self.STATE_NEUTRAL_
             ):
                 print("WARNING: Multiple headers rec'd without a message body.")
-            self.connection_states_[connection] = self.STATE_NEUTRAL_
+            self.connection_states_[tid] = self.STATE_NEUTRAL_
         elif self.get_receive_trace_body_parts(line, parts):
             tid = parts[0]
             connection = parts[1]
@@ -377,28 +376,40 @@ class ServerMessageDecoder(DecoderBase):
         elif self.get_response_header(line, parts):
             tid = parts[1]
             connection = parts[2]
-            self.chunk_decoder.add_header(parts[2], parts[4])
+            if tid in self.chunk_decoders_.keys():
+                self.chunk_decoders_[tid].add_header(parts[2], parts[4])
+            else:
+                self.chunk_decoders_[tid] = ChunkedResponseDecoder()
+                self.chunk_decoders_[tid].add_header(parts[2], parts[4])
+
+            if self.chunk_decoders_[tid].is_complete_message():
+                receive_trace = self.chunk_decoders_[tid].get_decoded_message(
+                    parts[0]
+                )
+                receive_trace["tid"] = str(tid)
+                self.output_queue_.put({"message": receive_trace})
+                self.chunk_decoders_[tid].reset()
         elif self.get_chunk_header(line, parts):
             flags = 0xFF
             size = 0
             tid = parts[1]
             (flags, size) = read_number_from_hex_string(parts[4], 2, len(parts[4]) - 2)
-            self.chunk_decoder.add_chunk_header(parts[3], flags)
-        elif self.get_chunk_bytes(line, parts):
-            tid = parts[1]
-            self.chunk_decoder.add_chunk(parts[3])
-            if self.chunk_decoder.is_complete_message():
-                self.output_queue_.put(
-                    {"message": self.chunk_decoder.get_decoded_message(parts[0])}
-                )
-                self.chunk_decoder.reset()
+            if tid in self.chunk_decoders_.keys():
+                self.chunk_decoders_[tid].add_chunk_header(int(parts[3]), flags)
+                if self.chunk_decoders_[tid].is_complete_message():
+                    receive_trace = self.chunk_decoders_[tid].get_decoded_message(
+                        parts[0]
+                    )
+                    receive_trace["tid"] = str(tid)
+                    self.output_queue_.put({"message": receive_trace})
+                    self.chunk_decoders_[tid].reset()
         else:
             return
 
-        if connection not in self.connection_states_:
-            self.connection_states_[connection] = self.STATE_NEUTRAL_
+        if tid not in self.connection_states_:
+            self.connection_states_[tid] = self.STATE_NEUTRAL_
 
-        if self.connection_states_[connection] == self.STATE_NEUTRAL_:
+        if self.connection_states_[tid] == self.STATE_NEUTRAL_:
             if message_bytes:
 
                 last_header = self.headers_[tid]
@@ -412,15 +423,11 @@ class ServerMessageDecoder(DecoderBase):
                 ) = self.parse_response_fields(message_bytes)
                 self.headers_[tid] = last_header
 
-                self.connection_states_[
-                    connection
-                ] = self.STATE_WAITING_FOR_MESSAGE_BODY_
-        elif (
-            self.connection_states_[connection] == self.STATE_WAITING_FOR_MESSAGE_BODY_
-        ):
+                self.connection_states_[tid] = self.STATE_WAITING_FOR_MESSAGE_BODY_
+        elif self.connection_states_[tid] == self.STATE_WAITING_FOR_MESSAGE_BODY_:
             if message_body:
                 receive_trace = self.headers_[tid]
                 self.headers_[tid] = None
                 parse_server_message(receive_trace, message_body)
-                self.connection_states_[connection] = self.STATE_NEUTRAL_
+                self.connection_states_[tid] = self.STATE_NEUTRAL_
                 self.output_queue_.put({"message": receive_trace})

@@ -83,7 +83,8 @@ std::list<ServerLocation> ThinClientRedundancyManager::selectServers(
     if (howMany == -1) howMany = m_servers->length();
     for (int attempts = 0; attempts < m_servers->length() && howMany > 0;
          attempts++) {
-      if (m_server >= m_servers->length()) {
+      if (m_servers->length() < 0 ||
+          m_server >= static_cast<std::size_t>(m_servers->length())) {
         m_server = 0;
       }
       ServerLocation location(Utils::convertHostToCanonicalForm(
@@ -886,7 +887,11 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
     TcrEndpoint* primaryEndpoint = nullptr;
 
     if (!m_redundantEndpoints.empty()) {
-      for (auto&& redundantEndpoint : m_redundantEndpoints) {
+      primaryEndpoint = m_redundantEndpoints[0];
+      for (auto& redundantEndpoint : m_redundantEndpoints) {
+        if (redundantEndpoint == primaryEndpoint) {
+          continue;
+        }
         redundantEndpoint->setDM(request.getDM());
         opErr = theHADM->sendSyncRequestRegisterInterestEP(
             request, reply, false, redundantEndpoint);
@@ -894,7 +899,6 @@ GfErrType ThinClientRedundancyManager::sendSyncRequestRegisterInterest(
           err = opErr;
         }
       }
-      primaryEndpoint = m_redundantEndpoints[0];
     }
 
     if ((request.getMessageType() == TcrMessage::REGISTER_INTEREST_LIST ||
@@ -1041,7 +1045,7 @@ void ThinClientRedundancyManager::getAllEndpoints(
     }
   } else {
     RandGen randgen;
-    std::random_shuffle(endpoints.begin(), endpoints.end(), randgen);
+    std::shuffle(endpoints.begin(), endpoints.end(), randgen);
   }
 }
 

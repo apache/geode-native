@@ -26,6 +26,7 @@
 #include "PoolFactory.hpp"
 #include "Region.hpp"
 #include "RegionAttributes.hpp"
+#include "String.hpp"
 #include "QueryService.hpp"
 #include "CacheFactory.hpp"
 #include "impl/AuthenticatedView.hpp"
@@ -168,7 +169,7 @@ namespace Apache
 
           try
           {
-            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(marshal_as<std::string>(path)));
+            return Client::Region<TKey, TValue>::Create(m_nativeptr->get()->getRegion(to_utf8(path)));
           }
           finally
           {
@@ -322,7 +323,7 @@ namespace Apache
       {
         try
         {
-          m_nativeptr->get()->initializeDeclarativeCache( marshal_as<std::string>(cacheXml));
+          m_nativeptr->get()->initializeDeclarativeCache(to_utf8(cacheXml));
         }
         finally
         {

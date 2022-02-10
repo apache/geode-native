@@ -17,6 +17,8 @@
 
 #include "EqStruct.hpp"
 
+#include <sstream>
+
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 
@@ -197,10 +199,11 @@ void EqStruct::fromData(apache::geode::client::DataInput& in) {
   discretionOffset = in.readDouble();
 }
 std::string EqStruct::toString() const {
-  char buf[102500];
-  sprintf(buf, "EqStruct:[timestamp = %" PRIu64 " myIndex = %d cxlQty = %d ]",
-          timestamp, myIndex, cxlQty);
-  return buf;
+  std::stringstream strm;
+
+  strm << "EqStruct:[timestamp = " << timestamp << " myIndex = " << myIndex
+       << " cxlQty = " << cxlQty << "]";
+  return strm.str();
 }
 
 }  // namespace testobject

@@ -28,3 +28,4 @@ configs:
   #@overlay/append
   - name: release
     config: RelWithDebInfo
+

@@ -39,7 +39,7 @@
 #define CREATE_TWICE_KEY "__create_twice_key"
 #define CREATE_TWICE_VALUE "__create_twice_value"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -91,20 +91,18 @@ void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey) {
   // Verify key and value exist in this region, in this process.
   const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
+  std::string msg;
   if (noKey) {
-    sprintf(buf, "Verify key %s does not exist in region %s", key, name);
+    msg =
+        std::string("Verify key ") + key + " does not exist in region " + name;
   } else if (!val) {
-    sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-            name);
+    msg = std::string("Verify value for key ") + key +
+          " does not exist in region " + name;
   } else {
-    sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-            name);
+    msg = std::string("Verify value for key ") + key + " is: " + value +
+          " in region " + name;
   }
-  LOG(buf);
-  free(buf);
+  LOG(msg);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -149,7 +147,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
           std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
       ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-      LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+      LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+          key);
       if (strcmp(checkPtr->value().c_str(), value) != 0) {
         testValueCnt++;
       } else {
@@ -165,9 +164,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyInvalid() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -176,20 +174,23 @@ void createRegion(const char* name, bool ackMode, const char* endpoints,
                   bool clientNotificationEnabled = false,
                   bool cachingEnable = true) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, cachingEnable, nullptr,
                                           endpoints, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -203,8 +204,9 @@ void createPooledRegionSticky(const std::string& name, bool ackMode,
                               bool clientNotificationEnabled = false,
                               bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionSticky(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled);
@@ -214,9 +216,9 @@ void createPooledRegionSticky(const std::string& name, bool ackMode,
 
 void createEntry(const char* name, const char* key, const char* value) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -345,10 +347,8 @@ void createAndVerifyEntry(const char* name) {
 
 void createEntryTwice(const char* name, const char* key, const char* value) {
   LOG("createEntryTwice() entered.");
-  char message[500];
-  sprintf(message, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  LOG(message);
+  LOG(std::string("Creating entry -- key: ") + key + " value : " + value +
+      " in region \n" + name);
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
   auto regPtr = getHelper()->getRegion(name);
@@ -368,9 +368,9 @@ void createEntryTwice(const char* name, const char* key, const char* value) {
 
 void updateEntry(const char* name, const char* key, const char* value) {
   LOG("updateEntry() entered.");
-  fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Updating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Update entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -391,16 +391,14 @@ void updateEntry(const char* name, const char* key, const char* value) {
 
 void doGetAgain(const char* name, const char* key, const char* value) {
   LOG("doGetAgain() entered.");
-  fprintf(stdout,
-          "get for entry -- key: %s  expecting value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "get for entry -- key: " << key << " expecting value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "get  region name%s\n", regPtr->getName().c_str());
-  fflush(stdout);
+  std::cout << "get  region name " << regPtr->getName() << "\n" << std::flush;
   ASSERT(regPtr != nullptr, "Region not found.");
 
   auto checkPtr = std::dynamic_pointer_cast<CacheableString>(
@@ -408,10 +406,8 @@ void doGetAgain(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In doGetAgain, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In doGetAgain, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }
@@ -421,18 +417,15 @@ void doGetAgain(const char* name, const char* key, const char* value) {
 
 void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("doNetsearch() entered.");
-  fprintf(
-      stdout,
-      "Netsearching for entry -- key: %s  expecting value: %s in region %s\n",
-      key, value, name);
-  fflush(stdout);
+  std::cout << "Netsearching for entry -- key: " << key
+            << " expecting value: " << value << " in region " << name << "\n"
+            << std::flush;
   static int count = 0;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
-  fflush(stdout);
+  std::cout << "netsearch region " << regPtr->getName() << "\n" << std::flush;
   ASSERT(regPtr != nullptr, "Region not found.");
 
   if (count == 0) {
@@ -447,10 +440,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }
@@ -479,10 +470,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateNonexistentServerRegion_Pooled_Locator)
       FAIL(
           "Expected exception when doing operations on a non-existent region.");
     } catch (const CacheServerException& ex) {
-      printf(
-          "Got expected CacheServerException when performing operation "
-          "on a non-existent region: %s\n",
-          ex.what());
+      std::cout << "Got expected CacheServerException when performing operation on a non-existent region: " << ex.what() << "\n";
     }
   }
 END_TASK_DEFINITION
@@ -497,10 +485,7 @@ DUNIT_TASK_DEFINITION(CLIENT1,
       FAIL(
           "Expected exception when doing operations on a non-existent region.");
     } catch (const CacheServerException& ex) {
-      printf(
-          "Got expected CacheServerException when performing operation "
-          "on a non-existent region: %s\n",
-          ex.what());
+      std::cout << "Got expected CacheServerException when performing operation on a non-existent region: " << ex.what() << "\n";
     }
   }
 END_TASK_DEFINITION
@@ -704,14 +689,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool)
     try {
       reg->create(keyPtr, valPtr);
       char message[200];
-      sprintf(message, "First create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("First create on Key ") + CREATE_TWICE_KEY);
       reg->create(keyPtr, valPtr);
-      sprintf(message, "Second create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("Second create on Key ") + CREATE_TWICE_KEY);
       reg->create(keyPtr, valPtr);
-      sprintf(message, "Third create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("Third create on Key ") + CREATE_TWICE_KEY);
     } catch (const EntryExistsException& geodeExcp) {
       LOG(geodeExcp.what());
       ASSERT(false,
@@ -744,15 +726,11 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight_Pool_Sticky)
     pool->releaseThreadLocalConnection();
     try {
       reg->create(keyPtr, valPtr);
-      char message[200];
-      sprintf(message, "First create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("First create on Key ") + CREATE_TWICE_KEY);
       reg->create(keyPtr, valPtr);
-      sprintf(message, "Second create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("Second create on Key ") + CREATE_TWICE_KEY);
       reg->create(keyPtr, valPtr);
-      sprintf(message, "Third create on Key %s ", CREATE_TWICE_KEY);
-      LOG(message);
+      LOG(std::string("Third create on Key ") + CREATE_TWICE_KEY);
     } catch (const EntryExistsException& geodeExcp) {
       LOG(geodeExcp.what());
       ASSERT(false,

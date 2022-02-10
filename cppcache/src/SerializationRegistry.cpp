@@ -17,8 +17,7 @@
 
 #include "SerializationRegistry.hpp"
 
-#include <functional>
-#include <mutex>
+#include <limits>
 
 #include <geode/CacheableBuiltins.hpp>
 #include <geode/CacheableDate.hpp>
@@ -139,6 +138,148 @@ void TheTypeMap::setup() {
   bindDataSerializableFixedId(EnumInfo::createDeserializable);
   bindDataSerializableFixedId(DiskStoreId::createDeserializable);
   bindDataSerializableFixedId(GatewaySenderEventCallbackArgument::create);
+}
+
+void SerializationRegistry::serialize(const std::shared_ptr<Serializable>& obj,
+                                      DataOutput& output, bool isDelta) const {
+  if (obj == nullptr) {
+    output.write(static_cast<int8_t>(DSCode::NullObj));
+  } else if (auto&& pdxSerializable =
+                 std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+    serialize(pdxSerializable, output);
+  } else if (const auto&& dataSerializableFixedId =
+                 std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    serialize(dataSerializableFixedId, output);
+  } else if (const auto&& dataSerializablePrimitive =
+                 std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    serialize(dataSerializablePrimitive, output);
+  } else if (const auto&& dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    dataSerializableHandler_->serialize(dataSerializable, output, isDelta);
+  } else if (const auto&& dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    serialize(dataSerializableInternal, output);
+  } else {
+    throw UnsupportedOperationException(
+        "SerializationRegistry::serialize: Serialization type not "
+        "implemented.");
+  }
+}
+
+void SerializationRegistry::setPdxTypeHandler(PdxTypeHandler* handler) {
+  pdxTypeHandler_ = std::unique_ptr<PdxTypeHandler>(handler);
+}
+void SerializationRegistry::setDataSerializableHandler(
+    DataSerializableHandler* handler) {
+  dataSerializableHandler_ = std::unique_ptr<DataSerializableHandler>(handler);
+}
+
+TypeFactoryMethod SerializationRegistry::getDataSerializableCreationMethod(
+    int32_t objectId) {
+  TypeFactoryMethod createType;
+  theTypeMap_.findDataSerializable(objectId, createType);
+  return createType;
+}
+
+int32_t SerializationRegistry::getIdForDataSerializableType(
+    std::type_index objectType) const {
+  auto&& typeIterator = theTypeMap_.typeToClassId_.find(objectType);
+  return typeIterator->second;
+}
+
+DSCode SerializationRegistry::getSerializableDataDsCode(int32_t classId) {
+  if (classId <= std::numeric_limits<int8_t>::max() &&
+      classId >= std::numeric_limits<int8_t>::min()) {
+    return DSCode::CacheableUserData;
+  } else if (classId <= std::numeric_limits<int16_t>::max() &&
+             classId >= std::numeric_limits<int16_t>::min()) {
+    return DSCode::CacheableUserData2;
+  } else {
+    return DSCode::CacheableUserData4;
+  }
+}
+
+void SerializationRegistry::serializeWithoutHeader(
+    const std::shared_ptr<Serializable>& obj, DataOutput& output) const {
+  if (const auto&& pdxSerializable =
+          std::dynamic_pointer_cast<PdxSerializable>(obj)) {
+    serializeWithoutHeader(pdxSerializable, output);
+  } else if (const auto&& dataSerializableFixedId =
+                 std::dynamic_pointer_cast<DataSerializableFixedId>(obj)) {
+    serializeWithoutHeader(dataSerializableFixedId, output);
+  } else if (const auto&& dataSerializablePrimitive =
+                 std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    serializeWithoutHeader(dataSerializablePrimitive, output);
+  } else if (const auto&& dataSerializable =
+                 std::dynamic_pointer_cast<DataSerializable>(obj)) {
+    serializeWithoutHeader(dataSerializable, output);
+  } else if (const auto&& dataSerializableInternal =
+                 std::dynamic_pointer_cast<DataSerializableInternal>(obj)) {
+    serializeWithoutHeader(dataSerializableInternal, output);
+  } else {
+    throw UnsupportedOperationException(
+        "SerializationRegistry::serializeWithoutHeader: Serialization type "
+        "not implemented.");
+  }
+}
+
+void SerializationRegistry::serialize(
+    const std::shared_ptr<DataSerializableFixedId>& obj,
+    DataOutput& output) const {
+  auto id = static_cast<int32_t>(obj->getDSFID());
+  if (id <= std::numeric_limits<int8_t>::max() &&
+      id >= std::numeric_limits<int8_t>::min()) {
+    output.write(static_cast<int8_t>(DSCode::FixedIDByte));
+    output.write(static_cast<int8_t>(id));
+  } else if (id <= std::numeric_limits<int16_t>::max() &&
+             id >= std::numeric_limits<int16_t>::min()) {
+    output.write(static_cast<int8_t>(DSCode::FixedIDShort));
+    output.writeInt(static_cast<int16_t>(id));
+  } else {
+    output.write(static_cast<int8_t>(DSCode::FixedIDInt));
+    output.writeInt(static_cast<int32_t>(id));
+  }
+
+  serializeWithoutHeader(obj, output);
+}
+
+void SerializationRegistry::serializeWithoutHeader(
+    const std::shared_ptr<DataSerializableFixedId>& obj,
+    DataOutput& output) const {
+  obj->toData(output);
+}
+
+void SerializationRegistry::serialize(
+    const std::shared_ptr<DataSerializablePrimitive>& obj,
+    DataOutput& output) const {
+  auto id = obj->getDsCode();
+  output.write(static_cast<int8_t>(id));
+
+  serializeWithoutHeader(obj, output);
+}
+
+void SerializationRegistry::serializeWithoutHeader(
+    const std::shared_ptr<DataSerializablePrimitive>& obj,
+    DataOutput& output) const {
+  obj->toData(output);
+}
+
+void SerializationRegistry::serialize(
+    const std::shared_ptr<PdxSerializable>& obj, DataOutput& output) const {
+  output.write(static_cast<int8_t>(DSCode::PDX));
+  serializeWithoutHeader(obj, output);
+}
+
+void SerializationRegistry::serialize(
+    const std::shared_ptr<DataSerializableInternal>& obj,
+    DataOutput& output) const {
+  serializeWithoutHeader(obj, output);
+}
+
+void SerializationRegistry::serializeWithoutHeader(
+    const std::shared_ptr<DataSerializableInternal>& obj,
+    DataOutput& output) const {
+  obj->toData(output);
 }
 
 /** This starts at reading the typeid.. assumes the length has been read. */
@@ -434,6 +575,7 @@ int32_t SerializationRegistry::GetEnumValue(
 
   return static_cast<ThinClientPoolDM*>(pool.get())->GetEnumValue(enumInfo);
 }
+
 std::shared_ptr<Serializable> SerializationRegistry::GetEnum(
     std::shared_ptr<Pool> pool, int32_t val) const {
   if (pool == nullptr) {

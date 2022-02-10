@@ -22,9 +22,9 @@
 #include <chrono>
 #include <cstdio>
 #include <ctime>
+#include <iostream>
 #include <map>
 #include <mutex>
-#include <regex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -33,6 +33,7 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/process/environment.hpp>
+#include <boost/regex.hpp>
 
 #include <geode/ExceptionTypes.hpp>
 #include <geode/util/LogLevel.hpp>
@@ -58,6 +59,8 @@ static std::map<int32_t, boost::filesystem::path> g_rollFiles;
 static FILE* g_log = nullptr;
 
 static std::string g_hostName;
+
+static thread_local std::string g_threadName;
 
 const int __1K__ = 1024;
 const int __1M__ = (__1K__ * __1K__);
@@ -154,7 +157,7 @@ void Log::calculateUsedDiskSpace() {
 
 void Log::buildRollFileMapping() {
   const auto filterstring = g_fullpath.stem().string() + "-(\\d+)\\.log$";
-  const std::regex my_filter(filterstring);
+  const boost::regex my_filter(filterstring);
 
   g_rollFiles.clear();
 
@@ -164,10 +167,10 @@ void Log::buildRollFileMapping() {
        i != end_itr; ++i) {
     if (boost::filesystem::is_regular_file(i->status())) {
       std::string filename = i->path().filename().string();
-      std::regex testPattern(filterstring);
-      std::match_results<std::string::const_iterator> testMatches;
-      if (std::regex_search(std::string::const_iterator(filename.begin()),
-                            filename.cend(), testMatches, testPattern)) {
+      boost::regex testPattern(filterstring);
+      boost::match_results<std::string::const_iterator> testMatches;
+      if (boost::regex_search(std::string::const_iterator(filename.begin()),
+                              filename.cend(), testMatches, testPattern)) {
         auto index = std::atoi(
             std::string(testMatches[1].first, testMatches[1].second).c_str());
         g_rollFiles[index] = i->path();
@@ -277,15 +280,15 @@ void Log::writeBanner() {
 
     // fullpath empty --> we're logging to stdout
     if (g_fullpath.string().empty()) {
-      fprintf(stdout, "%s", bannertext.c_str());
-      fflush(stdout);
+      std::cout << bannertext << std::flush;
     } else {
       if (boost::filesystem::exists(
               g_fullpath.parent_path().string().c_str()) ||
           boost::filesystem::create_directories(g_fullpath.parent_path())) {
         g_log = fopen(g_fullpath.string().c_str(), "a");
         if (g_log) {
-          if (fprintf(g_log, "%s", bannertext.c_str())) {
+          if (fwrite(bannertext.c_str(), sizeof(char), bannertext.length(),
+                     g_log) == bannertext.length()) {
             g_bytesWritten += static_cast<int32_t>(bannertext.length());
             fflush(g_log);
           }
@@ -368,21 +371,60 @@ LogLevel Log::charsToLevel(const std::string& chars) {
   }
 }
 
+void Log::setThreadName(const std::string& threadName) {
+  if (threadName.empty()) {
+    throw IllegalArgumentException("Thread name is empty.");
+  }
+
+  g_threadName = threadName;
+
+#if defined(HAVE_pthread_setname_np)
+
+  pthread_setname_np(threadName.c_str());
+
+#elif defined(_WIN32)
+
+  const DWORD MS_VC_EXCEPTION = 0x406D1388;
+
+#pragma pack(push, 8)
+  typedef struct tagTHREADNAME_INFO {
+    DWORD dwType;      // Must be 0x1000.
+    LPCSTR szName;     // Pointer to name (in user addr space).
+    DWORD dwThreadID;  // Thread ID (-1=caller thread).
+    DWORD dwFlags;     // Reserved for future use, must be zero.
+  } THREADNAME_INFO;
+#pragma pack(pop)
+
+  THREADNAME_INFO info;
+  info.dwType = 0x1000;
+  info.szName = threadName.c_str();
+  info.dwThreadID = -1;
+  info.dwFlags = 0;
+
+  __try {
+    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR),
+                   (ULONG_PTR*)&info);
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+  }
+
+#endif
+}
+
 std::string Log::formatLogLine(LogLevel level) {
   std::stringstream msg;
-  const size_t MINBUFSIZE = 128;
-  auto now = std::chrono::system_clock::now();
-  auto secs = std::chrono::system_clock::to_time_t(now);
-  auto microseconds = std::chrono::duration_cast<std::chrono::microseconds>(
-      now - std::chrono::system_clock::from_time_t(secs));
-  auto tm_val = apache::geode::util::chrono::localtime(secs);
+  const auto now = std::chrono::system_clock::now();
+  const auto secs = std::chrono::system_clock::to_time_t(now);
+  const auto microseconds =
+      std::chrono::duration_cast<std::chrono::microseconds>(
+          now - std::chrono::system_clock::from_time_t(secs));
+  const auto tm_val = apache::geode::util::chrono::localtime(secs);
 
-  msg << "[" << Log::levelToChars(level) << " "
+  msg << '[' << Log::levelToChars(level) << ' '
       << std::put_time(&tm_val, "%Y/%m/%d %H:%M:%S") << '.' << std::setfill('0')
       << std::setw(6) << microseconds.count() << ' '
-      << std::put_time(&tm_val, "%Z  ") << g_hostName << ":"
-      << boost::this_process::get_id() << " " << std::this_thread::get_id()
-      << "] ";
+      << std::put_time(&tm_val, "%z  ") << g_hostName << ':'
+      << boost::this_process::get_id() << ' ' << std::this_thread::get_id()
+      << " (" << g_threadName << ")] ";
 
   return msg.str();
 }
@@ -398,8 +440,7 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
   char fullpath[512] = {0};
 
   if (g_fullpath.string().empty()) {
-    fprintf(stdout, "%s%s\n", formatLogLine(level).c_str(), msg.c_str());
-    fflush(stdout);
+    std::cout << formatLogLine(level) << msg << "\n" << std::flush;
   } else {
     if (!g_log) {
       g_log = fopen(g_fullpath.string().c_str(), "a");
@@ -424,7 +465,9 @@ void Log::logInternal(LogLevel level, const std::string& msg) {
         removeOldestRolledLogFile();
       }
 
-      if (fprintf(g_log, "%s%s\n", buf.c_str(), msg.c_str()) == 0 ||
+      auto logLine = buf + msg + "\n";
+      if (fwrite(logLine.c_str(), sizeof(char), logLine.length(), g_log) !=
+              logLine.length() ||
           ferror(g_log)) {
         // Let's continue without throwing the exception.  It should not cause
         // process to terminate

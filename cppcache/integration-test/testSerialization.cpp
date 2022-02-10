@@ -101,26 +101,28 @@ class OtherType : public DataSerializable {
     ot->m_struct.d = ((2.0) * static_cast<double>(i));
     ot->m_struct.e = (static_cast<uint64_t>(i) << 32) + i;
 
-    printf("Created OtherType: %d, %s, %c, %e\n", ot->m_struct.a,
-           ot->m_struct.b ? "true" : "false", ot->m_struct.c, ot->m_struct.d);
+    std::cout << "Created OtherType: " << ot->m_struct.a << ", "
+              << (ot->m_struct.b ? "true" : "false") << ", " << ot->m_struct.c
+              << ", " << ot->m_struct.d << "\n";
 
-    printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
+    std::cout << "double hex 0x" << std::setw(16) << std::setfill('0')
+              << ot->m_struct.e << "\n";
 
     return std::move(ot);
   }
 
   static void validateCT(int32_t i, const std::shared_ptr<Cacheable> otPtr) {
-    char logmsg[1000];
-    sprintf(logmsg, "validateCT for %d", i);
-    LOG(logmsg);
+    LOG(std::string("validateCT for ") + std::to_string(i));
     XASSERT(otPtr != nullptr);
     auto ot = std::dynamic_pointer_cast<OtherType>(otPtr);
     XASSERT(ot != nullptr);
 
-    printf("Validating OtherType: %d, %s, %c, %e\n", ot->m_struct.a,
-           ot->m_struct.b ? "true" : "false", ot->m_struct.c, ot->m_struct.d);
+    std::cout << "Validating OtherType: " << ot->m_struct.a << ", "
+              << (ot->m_struct.b ? "true" : "false") << ", " << ot->m_struct.c
+              << ", " << ot->m_struct.d << "\n";
 
-    printf("double hex 0x%016" PRIX64 "\n", ot->m_struct.e);
+    std::cout << "double hex 0x" << std::setw(16) << std::setfill('0')
+              << ot->m_struct.e << "\n";
 
     XASSERT(ot->m_struct.a == static_cast<int>(i));
     XASSERT(ot->m_struct.b == ((i % 2 == 0) ? true : false));

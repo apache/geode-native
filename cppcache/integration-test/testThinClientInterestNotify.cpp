@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include <sstream>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"
@@ -47,24 +48,23 @@ class EventListener : public CacheListener {
   std::string m_name;
 
   void check(const EntryEvent &event, const char *eventType) {
-    char buf[256] = {'\0'};
-
     try {
       auto keyPtr = std::dynamic_pointer_cast<CacheableString>(event.getKey());
       auto valuePtr =
           std::dynamic_pointer_cast<CacheableInt32>(event.getNewValue());
-
-      sprintf(buf, "%s: %s: Key = %s, NewValue = %s", m_name.c_str(), eventType,
-              keyPtr->value().c_str(),
-              (valuePtr == nullptr ? "nullptr" : valuePtr->toString().c_str()));
-      LOG(buf);
+      std::stringstream strm;
+      strm << m_name << ": " << eventType << ": Key = " << keyPtr->value()
+           << (valuePtr ? valuePtr->toString() : "nullptr");
+      LOG(strm.str());
     } catch (const Exception &excp) {
-      sprintf(buf, "%s: %s: %s: %s", m_name.c_str(), eventType,
-              excp.getName().c_str(), excp.what());
-      LOG(buf);
+      std::stringstream strm;
+      strm << m_name << ": " << eventType << ": " << excp.getName() << ": "
+           << excp.what();
+      LOG(strm.str());
     } catch (...) {
-      sprintf(buf, "%s: %s: unknown exception", m_name.c_str(), eventType);
-      LOG(buf);
+      std::stringstream strm;
+      strm << m_name << ": " << eventType << ": unknown exception";
+      LOG(strm.str());
     }
   }
 
@@ -107,23 +107,24 @@ class EventListener : public CacheListener {
 
   // validate expected event counts
   void validate(int creates, int updates, int invalidates, int destroys) {
-    char logmsg[256] = {'\0'};
-    sprintf(logmsg, "VALIDATE CALLED for %s", m_name.c_str());
-    LOG(logmsg);
-    sprintf(logmsg, "creates: expected = %d, actual = %d", creates, m_creates);
-    LOG(logmsg);
-    ASSERT(m_creates == creates, logmsg);
-    sprintf(logmsg, "updates: expected = %d, actual = %d", updates, m_updates);
-    LOG(logmsg);
-    ASSERT(m_updates == updates, logmsg);
-    sprintf(logmsg, "invalidates: expected = %d, actual = %d", invalidates,
-            m_invalidates);
-    LOG(logmsg);
-    ASSERT(m_invalidates == invalidates, logmsg);
-    sprintf(logmsg, "destroys: expected = %d, actual = %d", destroys,
-            m_destroys);
-    LOG(logmsg);
-    ASSERT(m_destroys == destroys, logmsg);
+    LOG(std::string("VALIDATE CALLED for ") + m_name);
+    auto msg = std::string("creates: expected = ") + std::to_string(creates) +
+               ", actual = " + std::to_string(m_creates);
+    LOG(msg);
+    ASSERT(m_creates == creates, msg);
+    msg = std::string("updates: expected = ") + std::to_string(updates) +
+          ", actual = " + std::to_string(m_updates);
+    LOG(msg);
+    ASSERT(m_updates == updates, msg);
+    msg = std::string("invalidates: expected = ") +
+          std::to_string(invalidates) +
+          ", actual = " + std::to_string(m_invalidates);
+    LOG(msg);
+    ASSERT(m_invalidates == invalidates, msg);
+    msg = std::string("destroys: expected = ") + std::to_string(destroys) +
+          ", actual = " + std::to_string(m_destroys);
+    LOG(msg);
+    ASSERT(m_destroys == destroys, msg);
   }
 };
 

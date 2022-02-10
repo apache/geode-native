@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_INTERESTRESULTPOLICY_H_
-#define GEODE_INTERESTRESULTPOLICY_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,34 +15,28 @@
  * limitations under the License.
  */
 
-/**
- * @file
- */
-#include <geode/internal/geode_globals.hpp>
+#pragma once
+
+#ifndef GEODE_INTERESTRESULTPOLICY_H_
+#define GEODE_INTERESTRESULTPOLICY_H_
+
+#include <cstdint>
 
 namespace apache {
 namespace geode {
 namespace client {
+
 /**
- * @class InterestResultPolicy InterestResultPolicy.hpp
  * Policy class for interest result.
+ *
+ * Note: Special DataSeralizableFixedId(37) type.
  */
-class InterestResultPolicy {
-  // public static methods
- public:
-  static char nextOrdinal;
-
-  static InterestResultPolicy NONE;
-  static InterestResultPolicy KEYS;
-  static InterestResultPolicy KEYS_VALUES;
-
-  char ordinal;
-
-  char getOrdinal() { return ordinal; }
-
- private:
-  InterestResultPolicy() { ordinal = nextOrdinal++; }
+enum class InterestResultPolicy : int8_t {
+  NONE = 0,
+  KEYS = 1,
+  KEYS_VALUES = 2
 };
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

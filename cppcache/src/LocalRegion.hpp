@@ -40,6 +40,7 @@
 
 #include "EntriesMap.hpp"
 #include "EventType.hpp"
+#include "InterestResultPolicy.hpp"
 #include "RegionInternal.hpp"
 #include "RegionStats.hpp"
 #include "TSSTXStateWrapper.hpp"
@@ -75,7 +76,6 @@ namespace client {
 class CreateActions;
 class DestroyActions;
 class InvalidateActions;
-class InterestResultPolicy;
 class PutActions;
 class PutActionsTx;
 class RemoveActions;
@@ -84,6 +84,8 @@ class VersionedCacheableObjectPartList;
 typedef std::unordered_map<std::shared_ptr<CacheableKey>,
                            std::pair<std::shared_ptr<Cacheable>, int>>
     MapOfOldValue;
+
+static const std::string kAllKeysRegex = ".*";
 
 /**
  * @class LocalRegion LocalRegion.hpp

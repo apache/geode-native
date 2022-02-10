@@ -34,7 +34,7 @@
 #define CLIENT2 s1p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
@@ -70,22 +70,18 @@ void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
-  if (!isCreated) {
-    if (noKey) {
-      sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (!val) {
-      sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-              name);
-    } else {
-      sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-              name);
-    }
-    LOG(buf);
+  std::string msg;
+  if (noKey) {
+    msg =
+        std::string("Verify key ") + key + " does not exist in region " + name;
+  } else if (!val) {
+    msg = std::string("Verify value for key ") + key +
+          " does not exist in region " + name;
+  } else {
+    msg = std::string("Verify value for key ") + key + " is: " + value +
+          " in region " + name;
   }
-  free(buf);
+  LOG(msg);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -141,7 +137,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+            key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -157,9 +154,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 #define verifyDestroyed(x, y) _verifyDestroyed(x, y, __LINE__)
 
 void _verifyDestroyed(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyDestroyed() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyDestroyed() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, true);
   LOG("Entry destroyed.");
 }
@@ -168,9 +164,7 @@ void _verifyDestroyed(const char* name, const char* key, int line) {
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -178,19 +172,20 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 #define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyCreated() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
 
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& poolname,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locatorsG, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -200,9 +195,9 @@ void createPooledRegion(const std::string& name, bool ackMode, const std::string
 void createEntry(const char* name, const char* key,
                  const char* value = nullptr) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   if (value == nullptr) {
@@ -228,9 +223,9 @@ void createEntry(const char* name, const char* key,
 
 void updateEntry(const char* name, const char* key, const char* value) {
   LOG("updateEntry() entered.");
-  fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Updating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Update entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -251,16 +246,14 @@ void updateEntry(const char* name, const char* key, const char* value) {
 
 void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("doNetsearch() entered.");
-  fprintf(
-      stdout,
-      "Netsearching for entry -- key: %s  expecting value: %s in region %s\n",
-      key, value, name);
-  fflush(stdout);
+  std::cout << "Netsearching for entry -- key: " << key
+            << " expecting value: " << value << " in region " << name << "\n"
+            << std::flush;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
+  std::cout << "netsearch region " << regPtr->getName() << "\n" << std::flush;
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -274,10 +267,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }

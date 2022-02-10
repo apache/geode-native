@@ -25,7 +25,6 @@
 
 #include <ace/Semaphore.h>
 
-#include "AppDomainContext.hpp"
 #include "Utils.hpp"
 #include "util/concurrent/binary_semaphore.hpp"
 

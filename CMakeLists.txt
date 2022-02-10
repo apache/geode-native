@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.19.7)
 project(nativeclient LANGUAGES C CXX)
 
 option(USE_PCH "Use precompiled headers (PCH)." OFF)
@@ -173,15 +173,10 @@ add_library(c++11 INTERFACE)
 add_library(_WarningsAsError INTERFACE)
 add_library(_CppCodeCoverage INTERFACE)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT ipo_supported)
-if(ipo_supported)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
-endif()
-
 include(CheckLinkerFlag)
 check_linker_flag(CXX -Wl,--exclude-libs,ALL has_linker_exclude_libs)
+
+include(CXXFlags)
 
 include(CheckCXXSymbolExists)
 check_cxx_symbol_exists("PRId8" "cinttypes" HAVE_STDC_FORMAT_MACROS)
@@ -288,16 +283,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   # Enables multiprocess compiles
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
 
-  # Enables strong name signing
-  set(STRONG_NAME_KEY "" CACHE FILEPATH "Strong Name Key File")
-  if(EXISTS "${STRONG_NAME_KEY}")
-    set(SHARED_LINKER_FLAGS_STRONG_KEY "/keyfile:${STRONG_NAME_KEY}")
-    execute_process(COMMAND sn -p ${STRONG_NAME_KEY} ${CMAKE_CURRENT_BINARY_DIR}/public.snk)
-    execute_process(COMMAND sn -tp ${CMAKE_CURRENT_BINARY_DIR}/public.snk OUTPUT_VARIABLE STRONG_NAME_PUBLIC_KEY)
-    string(REPLACE "\n" "" STRONG_NAME_PUBLIC_KEY ${STRONG_NAME_PUBLIC_KEY})
-    string(REGEX REPLACE ".*sha1\\):([a-f0-9]+).*" "\\1" STRONG_NAME_PUBLIC_KEY ${STRONG_NAME_PUBLIC_KEY})
-  endif()
-
   find_program(NUGET nuget)
   add_custom_target(nuget-restore 
     COMMAND ${NUGET} restore ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.sln
@@ -380,7 +365,8 @@ if (${BUILD_CLI})
   add_subdirectory(templates/security/csharp)
 endif()
 add_subdirectory(tests)
-add_subdirectory(c_bindings)
+add_subdirectory(c-bindings)
+add_subdirectory(netcore)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/xsds/ DESTINATION xsds)
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/defaultSystem/ DESTINATION defaultSystem)

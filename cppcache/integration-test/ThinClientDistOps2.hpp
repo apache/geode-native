@@ -36,7 +36,7 @@
 #define SERVER1 s2p1
 #define SERVER2 s2p2
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableInt32;
 using apache::geode::client::CacheableInt64;
@@ -62,9 +62,7 @@ const std::string locatorsG =
 
 void _verifyEntry(const std::string& name, const char* key, const char* val,
                   bool checkLocal, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + ".");
   _verifyEntry(name, key, val, false, checkLocal);
   LOG("Entry verified.");
 }
@@ -105,8 +103,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, CreateClient1Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");
@@ -115,8 +112,7 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, CreateClient2Regions_Pooled_Locator)
   {
-    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0,
-                       true);
+    initClientWithPool(true, "__TEST_POOL1__", locatorsG, {}, nullptr, 0, true);
     createPooledRegion(_regionNames[0], USE_ACK, locatorsG, poolName);
     createPooledRegion(_regionNames[1], NO_ACK, locatorsG, poolName);
     LOG("CreateClient1Regions complete.");

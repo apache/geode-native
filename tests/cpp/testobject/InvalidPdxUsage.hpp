@@ -26,6 +26,7 @@
  *      Author: npatel
  */
 
+#include <sstream>
 #include <util/Log.hpp>
 
 #include <geode/CacheableEnum.hpp>
@@ -75,9 +76,10 @@ class TESTOBJECT_EXPORT CharTypesWithInvalidUsage : public PdxSerializable {
   CharTypesWithInvalidUsage() { init(); }
 
   std::string toString() const override {
-    char idbuf[1024];
-    sprintf(idbuf, "%c %c %c", m_ch, m_chArray[0], m_chArray[1]);
-    return idbuf;
+    std::stringstream strm;
+
+    strm << m_ch << " " << m_chArray[0] << " " << m_chArray[1];
+    return strm.str();
   }
 
   bool equals(CharTypesWithInvalidUsage& other) const {

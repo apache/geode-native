@@ -24,6 +24,8 @@
 #include <cstdlib>
 #include <wchar.h>
 #include <random>
+#include <sstream>
+#include <iomanip>
 
 #include <ace/Date_Time.h>
 
@@ -31,6 +33,7 @@
 #include "CacheRegionHelper.hpp"
 #include "CacheableWrapper.hpp"
 #include "CacheImpl.hpp"
+#include "testUtils.hpp"
 
 #include <geode/CacheableFileName.hpp>
 #include <geode/CacheableUndefined.hpp>
@@ -76,6 +79,8 @@ using apache::geode::client::internal::DSCode;
 
 using apache::geode::client::testing::CacheableWrapper;
 using apache::geode::client::testing::CacheableWrapperFactory;
+
+using unitTests::TestUtils;
 
 const uint32_t m_crc32Table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419, 0x706af48f,
@@ -371,9 +376,8 @@ class CacheableFileNameWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
+
 // make first caharacter as a '/' so java does not change the path
 // taking it to be a relative path
 #ifdef WIN32
@@ -540,9 +544,7 @@ class CacheableStringWrapper : public CacheableWrapper {
       maxSize = 11;
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 
@@ -582,9 +584,7 @@ class CacheableHugeStringWrapper : public CacheableWrapper {
       maxSize += (0xFFFF + 1);
     }
     std::string baseStr(maxSize - 10, 'A');
-    char indexStr[15];
-    sprintf(indexStr, "%10d", keyIndex);
-    baseStr.append(indexStr);
+    baseStr.append(TestUtils::zeroPaddedStringFromInt(keyIndex, 10));
     m_cacheableObject = CacheableString::create(baseStr);
   }
 
@@ -618,15 +618,15 @@ class CacheableHugeUnicodeStringWrapper : public CacheableWrapper {
   int32_t maxKeys() const override { return INT_MAX; }
 
   void initKey(int32_t keyIndex, int32_t maxSize) override {
+    std::wostringstream strm;
+
     if (maxSize <= 0xFFFF)  // ensure its larger than 64k
     {
       maxSize += (0xFFFF + 1);
     }
     std::wstring baseStr(maxSize - 10, L'\x0905');
-    wchar_t indexStr[15];
-    swprintf(indexStr, 14, L"%10d", keyIndex);
-    baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(baseStr);
+    strm << baseStr << std::setw(10) << std::setfill(L'0') << keyIndex;
+    m_cacheableObject = CacheableString::create(strm.str());
   }
 
   void initRandomValue(int32_t maxSize) override {
@@ -663,15 +663,16 @@ class CacheableUnicodeStringWrapper : public CacheableWrapper {
   int32_t maxKeys() const override { return INT_MAX; }
 
   void initKey(int32_t keyIndex, int32_t maxSize) override {
+    std::wostringstream strm;
+
     maxSize %= 21800;  // so that encoded length is within 64k
     if (maxSize < 11) {
       maxSize = 11;
     }
     std::wstring baseStr(maxSize - 10, L'\x0905');
     wchar_t indexStr[15];
-    swprintf(indexStr, 14, L"%10d", keyIndex);
-    baseStr.append(indexStr);
-    m_cacheableObject = CacheableString::create(baseStr);
+    strm << baseStr << std::setw(10) << std::setfill(L'0') << keyIndex;
+    m_cacheableObject = CacheableString::create(strm.str());
   }
 
   void initRandomValue(int32_t maxSize) override {

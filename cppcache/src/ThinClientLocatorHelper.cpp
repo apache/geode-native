@@ -79,7 +79,7 @@ std::vector<ServerLocation> ThinClientLocatorHelper::getLocators() const {
   }
 
   RandGen randGen;
-  std::random_shuffle(locators.begin(), locators.end(), randGen);
+  std::shuffle(locators.begin(), locators.end(), randGen);
   return locators;
 }
 
@@ -145,7 +145,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
         reinterpret_cast<uint8_t*>(buff), receivedLength);
 
     if (di.read() == REPLY_SSL_ENABLED && !sys_prop.sslEnabled()) {
-      LOGERROR("SSL is enabled on locator, enable SSL in client as well");
+      LOGERROR("SSL is enabled on locator %s, enable SSL in client as well",
+               location.toString().c_str());
       throw AuthenticationRequiredException(
           "SSL is enabled on locator, enable SSL in client as well");
     }

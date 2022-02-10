@@ -62,8 +62,9 @@
     {
       "type": "shell",
       "execute_command": "{{.Vars}} /bin/sudo -E -S bash '{{.Path}}'",
-      "scripts": [
-        "rhel/update.sh"
+      "inline": [
+        "yum update -y",
+        "yum remove -y yum-cron"
       ]
     },
     {
@@ -121,7 +122,8 @@
         "rhel/disable-selinux.sh",
         "rhel/7/install-devtoolset.sh",
         "rhel/install-jdk-11.sh",
-        "linux/install-cmake.sh"
+        "linux/install-cmake.sh",
+        "linux/install-dotnet.sh"
       ]
     },
     {

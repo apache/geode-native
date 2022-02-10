@@ -166,7 +166,7 @@ TcrMessage::TcrMessage()
       m_isSecurityHeaderAdded(false),
       m_isMetaRegion(false),
       m_decodeAll(false),
-      m_interestPolicy(0),
+      m_interestPolicy(InterestResultPolicy::NONE),
       m_isDurable(false),
       m_receiveValues(false),
       m_hasCqsPart(false),
@@ -185,13 +185,7 @@ const std::vector<std::shared_ptr<CacheableKey>>* TcrMessage::getKeys() const {
 const std::string& TcrMessage::getRegex() const { return m_regex; }
 
 InterestResultPolicy TcrMessage::getInterestResultPolicy() const {
-  if (m_interestPolicy == 2) {
-    return InterestResultPolicy::KEYS_VALUES;
-  } else if (m_interestPolicy == 1) {
-    return InterestResultPolicy::KEYS;
-  } else {
-    return InterestResultPolicy::NONE;
-  }
+  return m_interestPolicy;
 }
 
 bool TcrMessage::forPrimary() const {
@@ -327,7 +321,7 @@ void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
   m_request->write(static_cast<int8_t>(1));      // isObject
   m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
-  m_request->write(static_cast<int8_t>(policy.getOrdinal()));
+  m_request->write(static_cast<int8_t>(policy));
 }
 
 void TcrMessage::writeIntPart(int32_t intValue) {
@@ -2083,9 +2077,15 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
+  m_interestPolicy = interestPolicy;
+
+  if (!(interestPolicy == InterestResultPolicy::NONE ||
+        interestPolicy == InterestResultPolicy::KEYS_VALUES)) {
+    throw IllegalArgumentException(
+        "interestPolicy must be NONE or KEYS_VALUES.");
+  }
 
   writeHeader(m_msgType, 6);
 
@@ -2100,8 +2100,8 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
 
   // Part 4
   auto cal = CacheableArrayList::create();
-  for (auto&& key : keys) {
-    if (key == nullptr) {
+  for (const auto& key : keys) {
+    if (!key) {
       throw IllegalArgumentException(
           "keys in the interest list cannot be nullptr");
     }
@@ -2123,13 +2123,12 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
   writeObjectPart(byteArr);
 
   writeMessageLength();
-  m_interestPolicy = interestPolicy.ordinal;
 }
 
 TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
     DataOutput* dataOutput, const Region* region,
     const std::vector<std::shared_ptr<CacheableKey>>& keys, bool isDurable,
-    bool receiveValues, InterestResultPolicy interestPolicy,
+
     ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
   m_msgType = TcrMessage::UNREGISTER_INTEREST_LIST;
@@ -2138,24 +2137,29 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_timeout = DEFAULT_TIMEOUT;
   m_isDurable = isDurable;
-  m_receiveValues = receiveValues;
 
-  auto numInItrestList = keys.size();
-  assert(numInItrestList != 0);
-  uint32_t numOfParts = 2 + static_cast<uint32_t>(numInItrestList);
+  auto numberOfKeys = static_cast<uint32_t>(keys.size());
+  assert(numberOfKeys != 0);
+  auto numOfParts = 4 + numberOfKeys;
 
-  numOfParts += 2;
   writeHeader(m_msgType, numOfParts);
+
+  // part 0
   writeRegionPart(m_regionName);
-  writeBytePart(0);                  // isClosing
+
+  // part 1
+  writeBytePart(0);  // isClosing
+
+  // part 2
   writeBytePart(isDurable ? 1 : 0);  // keepalive
 
-  writeIntPart(static_cast<int32_t>(numInItrestList));
+  // part 3
+  writeIntPart(static_cast<int32_t>(numberOfKeys));
 
-  for (uint32_t i = 0; i < numInItrestList; i++) {
-    if (keys[i] == nullptr) {
+  // part N
+  for (decltype(numberOfKeys) i = 0; i < numberOfKeys; i++) {
+    if (!keys[i]) {
       throw IllegalArgumentException(
           "keys in the interest list cannot be nullptr");
     }
@@ -2163,7 +2167,6 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   }
 
   writeMessageLength();
-  m_interestPolicy = interestPolicy.ordinal;
 }
 
 TcrMessageCreateRegion::TcrMessageCreateRegion(
@@ -2183,64 +2186,82 @@ TcrMessageCreateRegion::TcrMessageCreateRegion(
   m_regionName = str2;
 }
 
-TcrMessageRegisterInterest::TcrMessageRegisterInterest(
-    DataOutput* dataOutput, const std::string& str1, const std::string& str2,
-    InterestResultPolicy interestPolicy, bool isDurable, bool isCachingEnabled,
-    bool receiveValues, ThinClientBaseDM* connectionDM) {
+TcrMessageRegisterInterestRegex::TcrMessageRegisterInterestRegex(
+    DataOutput* dataOutput, const std::string& regionName,
+    const std::string& regex, InterestResultPolicy interestPolicy,
+    bool isDurable, bool isCachingEnabled, bool receiveValues,
+    ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
   m_msgType = TcrMessage::REGISTER_INTEREST;
   m_tcdm = connectionDM;
   m_isDurable = isDurable;
   m_receiveValues = receiveValues;
+  m_regionName = regionName;
+  m_regex = regex;
+  m_interestPolicy = interestPolicy;
 
-  uint32_t numOfParts = 7;
+  writeHeader(m_msgType, 7);
 
-  writeHeader(m_msgType, numOfParts);
+  // part 0
+  writeRegionPart(regionName);
 
-  writeRegionPart(str1);                          // region name
-  writeIntPart(kREGULAR_EXPRESSION);              // InterestType
-  writeInterestResultPolicyPart(interestPolicy);  // InterestResultPolicy
+  // part 1
+  writeIntPart(kREGULAR_EXPRESSION);  // InterestType
+
+  // part 2
+  writeInterestResultPolicyPart(interestPolicy);
+
+  // part 3
   writeBytePart(isDurable ? 1 : 0);
-  writeRegionPart(str2);  // regexp string
+
+  // part 4
+  writeRegionPart(regex);  // regexp string
 
   int8_t bytes[2];
+
+  // part 5
   std::shared_ptr<CacheableBytes> byteArr = nullptr;
   bytes[0] = receiveValues ? 0 : 1;
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 1));
   writeObjectPart(byteArr);
+
+  // part 6
   bytes[0] = isCachingEnabled ? 1 : 0;  // region data policy
   bytes[1] = 0;                         // serializevalues
   byteArr = CacheableBytes::create(std::vector<int8_t>(bytes, bytes + 2));
   writeObjectPart(byteArr);
 
   writeMessageLength();
-  m_regionName = str1;
-  m_regex = str2;
-  m_interestPolicy = interestPolicy.ordinal;
 }
 
-TcrMessageUnregisterInterest::TcrMessageUnregisterInterest(
-    DataOutput* dataOutput, const std::string& str1, const std::string& str2,
-    InterestResultPolicy interestPolicy, bool isDurable, bool receiveValues,
-    ThinClientBaseDM* connectionDM) {
+TcrMessageUnregisterInterestRegex::TcrMessageUnregisterInterestRegex(
+    DataOutput* dataOutput, const std::string& regionName,
+    const std::string& regex, bool isDurable, ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
   m_msgType = TcrMessage::UNREGISTER_INTEREST;
   m_tcdm = connectionDM;
   m_isDurable = isDurable;
-  m_receiveValues = receiveValues;
+  m_regionName = regionName;
+  m_regex = regex;
 
-  uint32_t numOfParts = 3;
-  numOfParts += 2;
-  writeHeader(m_msgType, numOfParts);
-  writeRegionPart(str1);              // region name
-  writeIntPart(kREGULAR_EXPRESSION);  // InterestType
-  writeRegionPart(str2);              // regexp string
-  writeBytePart(0);                   // isClosing
-  writeBytePart(isDurable ? 1 : 0);   // keepalive
+  writeHeader(m_msgType, 5);
+
+  // part 0
+  writeRegionPart(regionName);
+
+  // part 1
+  writeIntPart(kREGULAR_EXPRESSION);
+
+  // part 2
+  writeRegionPart(regex);
+
+  // part 3
+  writeBytePart(0);  // isClosing
+
+  // part 4
+  writeBytePart(isDurable ? 1 : 0);  // keepalive
+
   writeMessageLength();
-  m_regionName = str1;
-  m_regex = str2;
-  m_interestPolicy = interestPolicy.ordinal;
 }
 
 TcrMessageTxSynchronization::TcrMessageTxSynchronization(DataOutput* dataOutput,
@@ -3179,12 +3200,8 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     return ChunkObjectType::NULL_OBJECT;
   } else if (!isObj) {
     // otherwise we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(exMsg, sizeof(exMsg),
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: part is not object",
-                  methodName);
-    LOGDEBUG("%s ", exMsg);
+    LOGDEBUG(std::string("TcrMessageHelper::readChunkPartHeader: ") +
+             methodName + ": part is not object");
     return ChunkObjectType::EXCEPTION;
   }
 
@@ -3200,26 +3217,21 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
       return ChunkObjectType::EXCEPTION;
     } else {
       char exMsg[256];
-      std::snprintf(exMsg, sizeof(exMsg),
-                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-                    "java serializable object from server",
-                    methodName);
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": cannot handle java serializable object from server");
     }
   } else if (partType == DSCode::NullObj) {
     // special null object is case for scalar query result
     return ChunkObjectType::NULL_OBJECT;
   }
 
-  // TODO enum - wtf?
   if (expectedFirstType > DSCode::FixedIDDefault) {
     if (partType != expectedFirstType) {
-      char exMsg[256];
-      std::snprintf(exMsg, sizeof(exMsg),
-                    "TcrMessageHelper::readChunkPartHeader: "
-                    "%s: got unhandled object class = %" PRId8,
-                    methodName, static_cast<int8_t>(partType));
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": got unhandled object class = " +
+          std::to_string(static_cast<int8_t>(partType)));
     }
     // This is for GETALL
     if (expectedFirstType == DSCode::FixedIDShort) {
@@ -3230,12 +3242,11 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     }
   }
   if (compId != expectedPartType) {
-    char exMsg[256];
-    std::snprintf(exMsg, sizeof(exMsg),
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: got unhandled object type = %d, expected = %d, raw = %d",
-                  methodName, compId, expectedPartType, rawByte);
-    throw MessageException(exMsg);
+    throw MessageException(
+        std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+        ": got unhandled object type = " + std::to_string(compId) +
+        ", expected = " + std::to_string(expectedPartType) +
+        ", raw = " + std::to_string(static_cast<int>(rawByte)));
   }
   return ChunkObjectType::OBJECT;
 }
@@ -3251,12 +3262,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
     return ChunkObjectType::NULL_OBJECT;
   } else if (!isObj) {
     // otherwise we're currently always expecting an object
-    char exMsg[256];
-    std::snprintf(exMsg, 255,
-                  "TcrMessageHelper::readChunkPartHeader: "
-                  "%s: part is not object",
-                  methodName);
-    throw MessageException(exMsg);
+    throw MessageException(
+        std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+        ": part is not object");
   }
 
   const auto partType = static_cast<const DSCode>(input.read());
@@ -3267,12 +3275,9 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
       msg.setMessageType(TcrMessage::EXCEPTION);
       return ChunkObjectType::EXCEPTION;
     } else {
-      char exMsg[256];
-      std::snprintf(exMsg, 255,
-                    "TcrMessageHelper::readChunkPartHeader: %s: cannot handle "
-                    "java serializable object from server",
-                    methodName);
-      throw MessageException(exMsg);
+      throw MessageException(
+          std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
+          ": cannot handle java serializable object from server");
     }
   } else if (partType == DSCode::NullObj) {
     // special null object is case for scalar query result

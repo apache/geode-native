@@ -30,8 +30,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Apache.Geode.Client.FwkLauncher</RootNamespace>
     <AssemblyName>FwkLauncher</AssemblyName>
-    <SignAssembly>${STRONG_NAME_KEY_ENABLED}</SignAssembly>
-    <AssemblyOriginatorKeyFile>${STRONG_NAME_KEY}</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>${DOTNET_TARGET_FRAMEWORK_VERSION}</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>

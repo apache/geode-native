@@ -32,7 +32,7 @@
 #define PROCESS3 s2p1
 #define PROCESS4 s2p2
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheHelper;
 

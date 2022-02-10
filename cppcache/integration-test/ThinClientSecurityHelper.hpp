@@ -132,29 +132,32 @@ void initClientAuth(char UserType) {
     case 'W':
       credentialGeneratorHandler->getAllowedCredentialsForOps(wr, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     case 'R':
       credentialGeneratorHandler->getAllowedCredentialsForOps(rt, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     case 'A':
       credentialGeneratorHandler->getAllowedCredentialsForOps(ad, config,
                                                               nullptr);
-      printf("User is %s Pass is %s ",
-             config->find("security-username")->value().c_str(),
-             (config->find("security-password") != nullptr
-                  ? config->find("security-password")->value().c_str()
-                  : " not set"));
+      std::cout << "User is " << config->find("security-username")->value()
+                << " Pass is "
+                << (config->find("security-password") != nullptr
+                        ? config->find("security-password")->value()
+                        : " not set")
+                << "\n";
       break;
     default:
       break;
@@ -259,9 +262,9 @@ class putThread : public ACE_Task_Base {
             m_reg->destroy(key);
           }
         } catch (Exception& ex) {
-          auto tid = boost::lexical_cast<std::string>(std::this_thread::get_id());
-          printf("%d: %s exception got and exception message = %s\n",
-                 pid, tid.c_str(), ex.what());
+          auto tid =
+              boost::lexical_cast<std::string>(std::this_thread::get_id());
+          std::cout << pid << ": " << tid << " exception got and exception message = " << ex.what() << "\n";
         }
       }
     }

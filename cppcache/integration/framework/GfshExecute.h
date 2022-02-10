@@ -22,7 +22,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <regex>
 #include <string>
 
 #include <geode/Exception.hpp>

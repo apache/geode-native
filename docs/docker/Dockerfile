@@ -42,7 +42,6 @@ RUN gem install bundler:1.17.3 \
 # Install Bookbinder
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
+
 RUN bundle install
 
-COPY geode-native-book-* .
-COPY geode-native-docs-* .
