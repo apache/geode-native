@@ -429,7 +429,7 @@ class APACHE_GEODE_EXPORT PoolFactory {
   /**
    * Set proxy info for SNI connection.  Used for connecting via SNI proxy.
    */
-  PoolFactory& setSniProxy(const std::string& hostname, const int port);
+  PoolFactory& setSniProxy(std::string hostname, uint16_t port);
 
   /**
    * If set to <code>true</code> then the created pool will have

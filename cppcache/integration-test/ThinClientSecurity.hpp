@@ -26,7 +26,7 @@
 #include "CacheImplHelper.hpp"
 #include "testUtils.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::AuthenticatedView;
 
@@ -62,7 +62,7 @@ void createRegionForSecurity(
     poolName += "_" + std::to_string(index++);
   }
 
-  printf("createRegionForSecurity poolname = %s \n", poolName.c_str());
+  std::cout << "createRegionForSecurity poolname = " << poolName << "\n";
 
   getHelper()->createPoolWithLocators(
       poolName, locatorsG, clientNotificationEnabled, subscriptionRedundancy,

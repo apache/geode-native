@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM alpine:latest
+FROM alpine:3.13
 LABEL maintainer="Apache Geode <dev@geode.apache.org>"
 LABEL description="Minimal image for executing CI tasks."
 RUN apk add --no-cache bash git openssh-client

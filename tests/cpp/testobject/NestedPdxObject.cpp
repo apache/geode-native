@@ -21,6 +21,8 @@
 
 #include "NestedPdxObject.hpp"
 
+#include <sstream>
+
 namespace testobject {
 
 void ChildPdx::toData(PdxWriter& pw) const {
@@ -107,11 +109,12 @@ void ParentPdx::fromData(PdxReader& pr) {
 }
 
 std::string ParentPdx::toString() const {
-  char idbuf[1024];
-  sprintf(idbuf,
-          "ParentPdx: [m_parentId=%d] [ m_parentName=%s ] [m_childPdx = %s ] ",
-          m_parentId, m_parentName.c_str(), m_childPdx->toString().c_str());
-  return idbuf;
+  std::stringstream strm;
+
+  strm << "ParentPdx: [m_parentId=" << m_parentId
+       << "][m_parentName = " << m_parentName << "][m_childPdx = " << m_childPdx
+       << "] ";
+  return strm.str();
 }
 
 bool ParentPdx::equals(const ParentPdx& other, bool isPdxReadSerialized) const {

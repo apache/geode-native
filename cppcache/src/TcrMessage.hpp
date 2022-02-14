@@ -434,7 +434,7 @@ class TcrMessage {
   bool m_isMetaRegion;
   /** used only when decoding reply message, if false, decode header only */
   bool m_decodeAll;
-  char m_interestPolicy;
+  InterestResultPolicy m_interestPolicy;
   bool m_isDurable;
   bool m_receiveValues;
   bool m_hasCqsPart;
@@ -577,9 +577,7 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
   TcrMessageUnregisterInterestList(
       DataOutput* dataOutput, const Region* region,
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
-      bool isDurable = false, bool receiveValues = true,
-      InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      ThinClientBaseDM* connectionDM = nullptr);
+      bool isDurable = false, ThinClientBaseDM* connectionDM = nullptr);
 
   ~TcrMessageUnregisterInterestList() override = default;
 };
@@ -607,26 +605,27 @@ class TcrMessageCreateRegion : public TcrMessage {
   ~TcrMessageCreateRegion() override = default;
 };
 
-class TcrMessageRegisterInterest : public TcrMessage {
+class TcrMessageRegisterInterestRegex : public TcrMessage {
  public:
-  TcrMessageRegisterInterest(
-      DataOutput* dataOutput, const std::string& str1, const std::string& str2,
+  TcrMessageRegisterInterestRegex(
+      DataOutput* dataOutput, const std::string& regionName,
+      const std::string& regex,
       InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
       bool isDurable = false, bool isCachingEnabled = false,
       bool receiveValues = true, ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageRegisterInterest() override = default;
+  ~TcrMessageRegisterInterestRegex() override = default;
 };
 
-class TcrMessageUnregisterInterest : public TcrMessage {
+class TcrMessageUnregisterInterestRegex : public TcrMessage {
  public:
-  TcrMessageUnregisterInterest(
-      DataOutput* dataOutput, const std::string& str1, const std::string& str2,
-      InterestResultPolicy interestPolicy = InterestResultPolicy::NONE,
-      bool isDurable = false, bool receiveValues = true,
-      ThinClientBaseDM* connectionDM = nullptr);
+  TcrMessageUnregisterInterestRegex(DataOutput* dataOutput,
+                                    const std::string& regionName,
+                                    const std::string& regex,
+                                    bool isDurable = false,
+                                    ThinClientBaseDM* connectionDM = nullptr);
 
-  ~TcrMessageUnregisterInterest() override = default;
+  ~TcrMessageUnregisterInterestRegex() override = default;
 };
 
 class TcrMessageTxSynchronization : public TcrMessage {

@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-#include <regex>
 #include <vector>
 
 #include <boost/endian/conversion.hpp>
+#include <boost/regex.hpp>
 
 #include <gtest/gtest.h>
 
@@ -49,8 +49,8 @@ TEST(ClientProxyMembershipIDTest, testCreate) {
       cpmID.hashcode(),
       apache::geode::client::internal::geode_hash<std::string>{}(":0:0:0:1") +
           static_cast<int32_t>(cpmID.getHostPort()));
-  EXPECT_TRUE(std::regex_search(
+  EXPECT_TRUE(boost::regex_search(
       cpmID.getDSMemberIdForThinClientUse(),
-      std::regex(
+      boost::regex(
           std::string("localhost(.*):2:").append(uniqueTag).append(":myDs"))));
 }

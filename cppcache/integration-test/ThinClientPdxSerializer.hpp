@@ -39,7 +39,7 @@
 #define LOCATOR s2p2
 #define SERVER1 s2p1
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::CacheableBoolean;
 using apache::geode::client::UserObjectSizer;
@@ -328,7 +328,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, getAtVersion2_PS)
     auto key = CacheableKey::create(1);
 
     // New object
-    auto testDiffTpePdxSV2 = std::unique_ptr<PdxTests::TestDiffTypePdxSV2>(new PdxTests::TestDiffTypePdxSV2(true));
+    auto testDiffTpePdxSV2 = std::unique_ptr<PdxTests::TestDiffTypePdxSV2>(
+        new PdxTests::TestDiffTypePdxSV2(true));
 
     // GET
     auto pdxWrapper2 = std::dynamic_pointer_cast<PdxWrapper>(region0->get(key));

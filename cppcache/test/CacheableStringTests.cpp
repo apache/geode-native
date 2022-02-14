@@ -15,21 +15,17 @@
  * limitations under the License.
  */
 
-#include <stdint.h>
-
+#include <cstdint>
 #include <limits>
-#include <regex>
 
 #include <gtest/gtest.h>
 
-#include <geode/CacheFactory.hpp>
 #include <geode/DataOutput.hpp>
 
 #include "ByteArrayFixture.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
-#include "gtest_extensions.h"
 
 namespace {
 

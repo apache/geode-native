@@ -16,6 +16,7 @@
 import sys
 import json
 
+from ds_codes import ds_codes
 from read_values import (
     call_reader_function,
     parse_key_or_value,
@@ -30,6 +31,8 @@ from read_values import (
 )
 from read_parts import read_object_header, read_int_part
 from numeric_conversion import decimal_string_to_hex_string, int_to_hex_string
+from interest_policy import interest_policy
+from interest_type import interest_type
 
 CHARS_IN_MESSAGE_HEADER = 34
 
@@ -47,6 +50,19 @@ def parse_region_part(message_bytes, offset):
     )
     return (region_part, offset)
 
+
+def parse_regex_part(message_bytes, offset):
+    regex_part = {}
+    (regex_part["Size"], offset) = call_reader_function(
+        message_bytes, offset, read_int_value
+    )
+    (regex_part["IsObject"], offset) = call_reader_function(
+        message_bytes, offset, read_byte_value
+    )
+    (regex_part["Expression"], offset) = read_string_value(
+        message_bytes, regex_part["Size"], offset
+    )
+    return (regex_part, offset)
 
 def parse_object_part(message_bytes, offset):
     object_part = {}
@@ -227,6 +243,31 @@ def parse_byte_and_timeout_part(message_bytes, offset):
     return (byte_and_timeout_part, offset)
 
 
+def parse_interest_result_policy_part(message_bytes, offset):
+    interest_result_policy_part = {}
+    (interest_result_policy_part["Size"], offset) = call_reader_function(
+        message_bytes, offset, read_int_value
+    )
+    (interest_result_policy_part["IsObject"], offset) = call_reader_function(
+        message_bytes, offset, read_byte_value
+    )
+    dscode, offset = call_reader_function(message_bytes, offset, read_byte_value)
+    interest_result_policy_part["DSCode1"] = ds_codes[dscode]
+
+    dscode, offset = call_reader_function(message_bytes, offset, read_byte_value)
+    interest_result_policy_part["DSCode2"] = ds_codes[dscode]
+
+    policy, offset = call_reader_function(message_bytes, offset, read_byte_value)
+    interest_result_policy_part["Policy"] = interest_policy[policy]
+
+    return (interest_result_policy_part, offset)
+
+def parse_interest_type_part(message_bytes, offset):
+    value, offset = parse_raw_int_part(message_bytes, offset)
+    value["InterestType"] = interest_type[value["Value"]]
+    del value["Value"]
+    return value, offset
+
 def read_put_message(properties, message_bytes, offset):
     (properties["Region"], offset) = parse_region_part(message_bytes, offset)
     (properties["Operation"], offset) = parse_operation_part(message_bytes, offset)
@@ -239,7 +280,20 @@ def read_put_message(properties, message_bytes, offset):
 
     (properties["Value"], offset) = parse_key_or_value(message_bytes, offset)
 
-    (properties["EventId"], offset) = parse_event_id_part(message_bytes, offset)
+    # This is a little weird, so here's the explanation: the geode-native logger has a buffer size limit of 8KB, so we
+    # can't fully parse any message that's longer than that.  At the same time, we would really like to extract as much
+    # information as we can from such a message.  Since the first 5 parts of the PUT message are trivial in size, the
+    # actual value being PUT is the thing that we can't decode.  Even then, we would like to know as much about the
+    # "Value" part of the message as we can, so we will attempt to parse the value, and catch any exceptions above this
+    # level.  In the case of large values that we don't attempt to parse, such as PDX, we will still inform that the
+    # value is of size (n), is or is not an object, and the type is (PDX or whatever).  Great so far, but what about the
+    # EventId part, that sits at the very end of the PUT message?  Well, we shouldn't bother with it if the length of
+    # the message is > the logger size limit, because we're guaranteed it's not in the log.  So that's what we do here,
+    # just skip the EventId.
+    if properties["Length"] < 8192:
+        (properties["EventId"], offset) = parse_event_id_part(message_bytes, offset)
+    else:
+        properties["EventId"] = {"Data": "Unavailable - message is too long"}
 
 
 def read_request_message(properties, message_bytes, offset):
@@ -421,6 +475,24 @@ def read_add_pdx_type_message(properties, message_bytes, offset):
     properties["PdxType"], offset = read_object_as_raw_bytes(message_bytes, offset)
     properties["TypeId"], offset = read_int_part(message_bytes, offset)
 
+def read_register_interest_message(properties, message_bytes, offset):
+    properties["Region"], offset = parse_region_part(message_bytes, offset)
+    properties["InterestType"], offset = parse_interest_type_part(message_bytes, offset)
+    properties["InterestResultPolicy"], offset = parse_interest_result_policy_part(message_bytes, offset)
+    properties["IsDurable"], offset = parse_raw_byte_part(message_bytes, offset)
+    properties["Regex"], offset = parse_regex_part(message_bytes, offset)
+
+    properties["Param1"], offset = read_object_as_raw_bytes(message_bytes, offset)
+    byte_values = properties["Param1"]["Bytes"]
+    del properties["Param1"]["Bytes"]
+    properties["Param1"]["ReceiveValues"] = int(byte_values)
+
+    properties["Param2"], offset = read_object_as_raw_bytes(message_bytes, offset)
+    byte_values = properties["Param2"]["Bytes"]
+    del properties["Param2"]["Bytes"]
+    caching_enabled, serialize_values = byte_values.split(" ")
+    properties["Param2"]["CachingEnabled"] = int(caching_enabled)
+    properties["Param2"]["SerializeValues"] = int(serialize_values)
 
 client_message_parsers = {
     "ADD_PDX_TYPE": read_add_pdx_type_message,
@@ -439,6 +511,7 @@ client_message_parsers = {
     "KEY_SET": read_key_set,
     "PUT": read_put_message,
     "QUERY": read_query_message,
+    "REGISTER_INTEREST": read_register_interest_message,
     "REQUEST": read_request_message,
     "STOPCQ_MSG_TYPE": read_stopcq_or_closecq_msg_type_message,
     "USER_CREDENTIAL_MESSAGE": read_user_credential_message,

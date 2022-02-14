@@ -20,6 +20,8 @@
  * limitations under the License.
  */
 
+#include <sstream>
+
 #include "DeltaTestImpl.hpp"
 #include "testobject_export.h"
 
@@ -65,12 +67,12 @@ class TESTOBJECT_EXPORT DeltaTestObj : public DeltaTestImpl {
   void setFromDeltaCounter(int counter) { fromDeltaCounter = counter; }
   void setToDeltaCounter(int counter) { toDeltaCounter = counter; }
   std::string toString() const {
-    char buf[102500];
-    sprintf(buf,
-            "DeltaTestObj: toDeltaCounter = %lld fromDeltaCounter = %lld\n",
-            toDeltaCounter, fromDeltaCounter);
-    // DeltaTestImpl::toString();
-    return buf;
+    std::stringstream strm;
+
+    strm << "DeltaTestObj: toDeltaCounter = " << toDeltaCounter
+         << ", fromDeltaCounter = " << fromDeltaCounter << "\n";
+
+    return strm.str();
   }
   static Serializable* create() { return new DeltaTestObj(); }
   int32_t classId() const override { return 32; }

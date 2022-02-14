@@ -296,10 +296,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThree3)
     auto myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
     kst = new KillServerThread(myListener);
-    char buf[1024];
-    sprintf(buf, "before kill server 1, before=%d, after=%d",
-            myListener->getCountBefore(), myListener->getCountAfter());
-    LOG(buf);
+    LOG(std::string("before kill server 1, before=") +
+        std::to_string(myListener->getCountBefore()) +
+        ", after=" + std::to_string(myListener->getCountAfter()));
     ASSERT(myListener->getCountAfter() == 0,
            "cq after failover should be zero");
     ASSERT(myListener->getCountBefore() == 6109,
@@ -382,10 +381,9 @@ DUNIT_TASK_DEFINITION(CLIENT1, CloseCache1)
     ASSERT(cqLstner != nullptr, "listener is nullptr");
     auto myListener = dynamic_cast<MyCqListener *>(cqLstner.get());
     ASSERT(myListener != nullptr, "my listener is nullptr<cast failed>");
-    char buf[1024];
-    sprintf(buf, "after failed over: before=%d, after=%d",
-            myListener->getCountBefore(), myListener->getCountAfter());
-    LOG(buf);
+    LOG(std::string("after failed over: before=") +
+        std::to_string(myListener->getCountBefore()) +
+        ", after=" + std::to_string(myListener->getCountAfter()));
     ASSERT(myListener->getCountBefore() == 6109,
            "check cq event count before failover");
     ASSERT(myListener->getCountAfter() == 509,

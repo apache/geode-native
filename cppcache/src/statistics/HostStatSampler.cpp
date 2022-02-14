@@ -20,7 +20,6 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
-#include <regex>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -372,9 +371,9 @@ void HostStatSampler::doSample(const boost::filesystem::path& archiveFilename) {
 
 template <typename _Function>
 void HostStatSampler::forEachIndexStatFile(_Function function) const {
-  const std::regex statsFilter(m_archiveFileName.stem().string() +
-                               R"(-([\d]+))" +
-                               m_archiveFileName.extension().string());
+  const boost::regex statsFilter(m_archiveFileName.stem().string() +
+                                 R"(-([\d]+))" +
+                                 m_archiveFileName.extension().string());
 
   auto dir = m_archiveFileName.parent_path();
   if (dir.empty()) {
@@ -387,11 +386,11 @@ void HostStatSampler::forEachIndexStatFile(_Function function) const {
            boost::adaptors::filtered(
                static_cast<bool (*)(const boost::filesystem::path&)>(
                    &boost::filesystem::is_regular_file))) {
-    std::smatch match;
+    boost::smatch match;
     const auto& file = entry.path();
     const auto filename = file.filename();
     const auto& filenameStr = filename.string();
-    if (std::regex_match(filenameStr, match, statsFilter)) {
+    if (boost::regex_match(filenameStr, match, statsFilter)) {
       const auto index = std::stoi(match[1].str());
       function(index, file);
     }
@@ -428,7 +427,7 @@ void HostStatSampler::checkDiskLimit() {
 }
 
 void HostStatSampler::svc(void) {
-  client::DistributedSystemImpl::setThreadName("NC HSS Thread");
+  client::Log::setThreadName("NC HSS Thread");
   try {
     // createArchiveFileName instead of getArchiveFileName here because
     // for the first time the sampler needs to add the pid to the filename

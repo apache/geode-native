@@ -21,6 +21,7 @@
 #include <geode/CqServiceStatistics.hpp>
 #include <ace/OS.h>
 #include <string>
+#include <sstream>
 
 #define ROOT_NAME "TestThinClientCq"
 #define ROOT_SCOPE DISTRIBUTED_ACK
@@ -504,6 +505,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
   {
     QueryHelper::getHelper();
+    std::stringstream strm;
 
     auto pool =
         getHelper()->getCache()->getPoolManager().find(regionNamesCq[0]);
@@ -514,8 +516,6 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     } else {
       qs = getHelper()->cachePtr->getQueryService();
     }
-
-    char buf[1024];
 
     uint8_t i = 0;
     int j = 0;
@@ -532,16 +532,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
 
     CqAttributesFactory cqFac;
     for (i = 0; i < MAX_LISTNER; i++) {
-      sprintf(buf, "get info for cq[%s]:", cqNames[i]);
-      LOG(buf);
+      strm.str("");
+      strm << "get info for cq[" << cqNames[i] << "]:";
+      LOG(strm.str());
+
       auto cqy = qs->getCq(cqNames[i]);
       auto cqStats = cqy->getStatistics();
-      sprintf(buf,
-              "Cq[%s]From CqStatistics: numInserts[%d], numDeletes[%d], "
-              "numUpdates[%d], numEvents[%d]",
-              cqNames[i], cqStats->numInserts(), cqStats->numDeletes(),
-              cqStats->numUpdates(), cqStats->numEvents());
-      LOG(buf);
+      strm.str("");
+      strm << "Cq[" << cqNames[i] << "] From CqStatistics : numInserts["
+           << cqStats->numInserts() << "], numDeletes[" << cqStats->numDeletes()
+           << "], numUpdates[" << cqStats->numUpdates() << "], numEvents["
+           << cqStats->numEvents() << "]";
+      LOG(strm.str());
       for (j = 0; j <= i; j++) {
         inserts[j] += cqStats->numInserts();
         updates[j] += cqStats->numUpdates();
@@ -550,9 +552,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       }
       auto cqAttr = cqy->getCqAttributes();
       auto vl = cqAttr->getCqListeners();
-      sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
-              vl.size());
-      LOG(buf);
+      strm.str("");
+      strm << "number of listeners for cq[" << cqNames[i] << "] is "
+           << vl.size();
+      LOG(strm.str());
       ASSERT(vl.size() == static_cast<size_t>(i + 1),
              "incorrect number of listeners");
       if (i == (MAX_LISTNER - 1)) {
@@ -563,17 +566,18 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         }
         for (j = 0; j < MAX_LISTNER; j++) {
           MyCqListener *ml = myLl[j];
-          sprintf(buf,
-                  "MyCount for Listener[%d]: numInserts[%d], numDeletes[%d], "
-                  "numUpdates[%d], numEvents[%d]",
-                  j, ml->getNumInserts(), ml->getNumDeletes(),
-                  ml->getNumUpdates(), ml->getNumEvents());
-          LOG(buf);
-          sprintf(buf,
-                  "sum of stats for Listener[%d]: numInserts[%d], "
-                  "numDeletes[%d], numUpdates[%d], numEvents[%d]",
-                  j, inserts[j], deletes[j], updates[j], events[j]);
-          LOG(buf);
+          strm.str("");
+          strm << "MyCount for Listener[" << j << "]: numInserts["
+               << ml->getNumInserts() << "], numDeletes[" << ml->getNumDeletes()
+               << "], numUpdates[" << ml->getNumUpdates() << "], numEvents["
+               << ml->getNumEvents() << "]";
+          LOG(strm.str());
+          strm.str("");
+          strm << "sum of stats for Listener[" << j << "]: numInserts["
+               << inserts[j] << "], numDeletes[" << deletes[j]
+               << "], numUpdates[" << updates[j] << "], numEvents[" << events[j]
+               << "]";
+          LOG(strm.str());
           ASSERT(ml->getNumInserts() == inserts[j],
                  "accumulative insert count incorrect");
           ASSERT(ml->getNumUpdates() == updates[j],
@@ -588,20 +592,23 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         auto ptr = vl[0];
         cqAttrMtor.removeCqListener(ptr);
         vl = cqAttr->getCqListeners();
-        sprintf(buf, "number of listeners for cq[%s] is %zd", cqNames[i],
-                vl.size());
-        LOG(buf);
+        strm.str("");
+        strm << "number of listeners for cq[" << cqNames[i] << "] is "
+             << vl.size();
+        LOG(strm.str());
         ASSERT(vl.size() == i, "incorrect number of listeners");
       }
     }
+
     try {
       auto cqy = qs->getCq(cqNames[1]);
       cqy->stop();
 
       cqy = qs->getCq(cqNames[6]);
 
-      sprintf(buf, "cq[%s] should have been running!", cqNames[6]);
-      ASSERT(cqy->isRunning() == true, buf);
+      strm.str("");
+      strm << "cq[" << cqNames[6] << "] should have been running!";
+      ASSERT(cqy->isRunning() == true, strm.str());
       bool got_exception = false;
       try {
         cqy->execute();
@@ -613,23 +620,27 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
         LOG(failmsg.c_str());
         got_exception = true;
       }
-      sprintf(buf, "cq[%s] should gotten exception!", cqNames[6]);
-      ASSERT(got_exception == true, buf);
+      strm.str("");
+      strm << "cq[" << cqNames[6] << "] should have gotten exception!";
+      ASSERT(got_exception == true, strm.str());
 
       cqy->stop();
 
-      sprintf(buf, "cq[%s] should have been stopped!", cqNames[6]);
-      ASSERT(cqy->isStopped() == true, buf);
+      strm.str("");
+      strm << "cq[" << cqNames[6] << "] should have been stopped!";
+      ASSERT(cqy->isStopped() == true, strm.str());
 
       cqy = qs->getCq(cqNames[2]);
       cqy->close();
 
-      sprintf(buf, "cq[%s] should have been closed!", cqNames[2]);
-      ASSERT(cqy->isClosed() == true, buf);
+      strm.str("");
+      strm << "cq[" << cqNames[2] << "] should have been closed!";
+      ASSERT(cqy->isClosed() == true, strm.str());
 
       cqy = qs->getCq(cqNames[2]);
-      sprintf(buf, "cq[%s] should have been removed after close!", cqNames[2]);
-      ASSERT(cqy == nullptr, buf);
+      strm.str("");
+      strm << "cq[" << cqNames[2] << "] should have been removed after close!";
+      ASSERT(cqy == nullptr, strm.str());
     } catch (Exception &excp) {
       std::string failmsg = "";
       failmsg += excp.getName();
@@ -641,24 +652,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
     }
     auto serviceStats = qs->getCqServiceStatistics();
     ASSERT(serviceStats != nullptr, "serviceStats is nullptr");
-    sprintf(buf,
-            "numCqsActive=%d, numCqsCreated=%d, "
-            "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
-            serviceStats->numCqsActive(), serviceStats->numCqsCreated(),
-            serviceStats->numCqsClosed(), serviceStats->numCqsStopped(),
-            serviceStats->numCqsOnClient());
-    LOG(buf);
-    /*
-    for(i=0; i < MAX_LISTNER; i++)
-    {
-    auto cqy = qs->getCq(cqNames[i]);
-     CqState state = cqy->getState();
-     CqState cqState;
-     cqState.setState(state);
-     sprintf(buf, "cq[%s] is in state[%s]", cqNames[i], cqState.toString());
-     LOG(buf);
-    }
-    */
+    strm.str("");
+    strm << "numCqsActive=" << serviceStats->numCqsActive()
+         << ", numCqsCreated = " << serviceStats->numCqsCreated()
+         << ", numCqsClosed= " << serviceStats->numCqsClosed()
+         << ", numCqsStopped=" << serviceStats->numCqsStopped()
+         << ", numCqsOnClient=" << serviceStats->numCqsOnClient();
+    LOG(strm.str());
 
     ASSERT(serviceStats->numCqsActive() == 6, "active count incorrect!");
     ASSERT(serviceStats->numCqsCreated() == 9, "created count incorrect!");
@@ -677,13 +677,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       FAIL(failmsg.c_str());
       LOG(excp.getStackTrace());
     }
-    sprintf(buf,
-            "numCqsActive=%d, numCqsCreated=%d, "
-            "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
-            serviceStats->numCqsActive(), serviceStats->numCqsCreated(),
-            serviceStats->numCqsClosed(), serviceStats->numCqsStopped(),
-            serviceStats->numCqsOnClient());
-    LOG(buf);
+    strm.str("");
+    strm << "numCqsActive=" << serviceStats->numCqsActive()
+         << ", numCqsCreated = " << serviceStats->numCqsCreated()
+         << ", numCqsClosed= " << serviceStats->numCqsClosed()
+         << ", numCqsStopped=" << serviceStats->numCqsStopped()
+         << ", numCqsOnClient=" << serviceStats->numCqsOnClient();
+    LOG(strm.str());
     ASSERT(serviceStats->numCqsActive() == 0, "active count incorrect!");
     ASSERT(serviceStats->numCqsCreated() == 9, "created count incorrect!");
     ASSERT(serviceStats->numCqsClosed() == 1, "closed count incorrect!");
@@ -700,13 +700,13 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepFour)
       FAIL(failmsg.c_str());
       LOG(excp.getStackTrace());
     }
-    sprintf(buf,
-            "numCqsActive=%d, numCqsCreated=%d, "
-            "numCqsClosed=%d,numCqsStopped=%d, numCqsOnClient=%d",
-            serviceStats->numCqsActive(), serviceStats->numCqsCreated(),
-            serviceStats->numCqsClosed(), serviceStats->numCqsStopped(),
-            serviceStats->numCqsOnClient());
-    LOG(buf);
+    strm.str("");
+    strm << "numCqsActive=" << serviceStats->numCqsActive()
+         << ", numCqsCreated = " << serviceStats->numCqsCreated()
+         << ", numCqsClosed= " << serviceStats->numCqsClosed()
+         << ", numCqsStopped=" << serviceStats->numCqsStopped()
+         << ", numCqsOnClient=" << serviceStats->numCqsOnClient();
+    LOG(strm.str());
     ASSERT(serviceStats->numCqsActive() == 0, "active count incorrect!");
     ASSERT(serviceStats->numCqsCreated() == 9, "created count incorrect!");
     ASSERT(serviceStats->numCqsClosed() == 9, "closed count incorrect!");

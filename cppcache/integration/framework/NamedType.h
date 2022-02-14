@@ -26,6 +26,7 @@
 template <typename T, typename Parameter>
 class NamedType {
  public:
+  NamedType() = default;
   explicit NamedType(T const &value) : value_(value) {}
   explicit NamedType(T &&value) : value_(std::move(value)) {}
   T &get() { return value_; }

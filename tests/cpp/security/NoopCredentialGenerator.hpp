@@ -32,16 +32,8 @@ class NoopCredentialGenerator : public CredentialGenerator {
  public:
   NoopCredentialGenerator() : CredentialGenerator(ID_NOOP, "NOOP") {}
 
-  std::string getInitArgs(std::string workingDir, bool) override {
-    std::string additionalArgs;
-    char* buildDir = ACE_OS::getenv("BUILDDIR");
-    if (buildDir && workingDir.length() == 0) {
-      workingDir = std::string(buildDir);
-      workingDir += std::string("/framework/xml/Security/");
-    }
-    additionalArgs = " ";
-
-    return additionalArgs;
+  std::string getInitArgs(std::string, bool) override {
+    return " ";
   }
 
   std::string getClientAuthInitLoaderFactory() override {

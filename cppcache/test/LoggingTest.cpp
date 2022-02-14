@@ -16,11 +16,11 @@
  */
 
 #include <map>
-#include <regex>
 #include <string>
 #include <util/Log.hpp>
 
 #include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
 
 #include <gtest/gtest.h>
 
@@ -174,7 +174,7 @@ class LoggingTest : public testing::Test {
         boost::filesystem::absolute(boost::filesystem::path(logFilePath)) /
         filename;
     const auto filterstring = basePath.stem().string() + "-(\\d+)\\.log$";
-    const std::regex my_filter(filterstring);
+    const boost::regex my_filter(filterstring);
 
     rolledFiles.clear();
 
@@ -184,10 +184,11 @@ class LoggingTest : public testing::Test {
          i != end_itr; ++i) {
       if (boost::filesystem::is_regular_file(i->status())) {
         std::string rootFilename = i->path().filename().string();
-        std::regex testPattern(filterstring);
-        std::match_results<std::string::const_iterator> testMatches;
-        if (std::regex_search(std::string::const_iterator(rootFilename.begin()),
-                              rootFilename.cend(), testMatches, testPattern)) {
+        boost::regex testPattern(filterstring);
+        boost::match_results<std::string::const_iterator> testMatches;
+        if (boost::regex_search(
+                std::string::const_iterator(rootFilename.begin()),
+                rootFilename.cend(), testMatches, testPattern)) {
           auto index = std::atoi(
               std::string(testMatches[1].first, testMatches[1].second).c_str());
           rolledFiles[index] = i->path();

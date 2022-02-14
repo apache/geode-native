@@ -46,22 +46,23 @@ void XmlAuthzCredentialGenerator::getAllowedDummyAuthz(ROLES role) {
     role = getRequiredRole();
     validity = "valid";
   }
-  char userName[100];
+
+  std::string userName;
   switch (role) {
     case READER_ROLE:
-      sprintf(userName, kPRiUsername, "reader", randomValue(2));
+      userName = "reader" + std::to_string(randomValue(2));
       break;
     case WRITER_ROLE:
-      sprintf(userName, kPRiUsername, "writer", randomValue(2));
+      userName = "writer" + std::to_string(randomValue(2));
       break;
     case QUERY_ROLE:
-      sprintf(userName, kPRiUsername, "reader", randomValue(1) + 3);
+      userName = "reader" + std::to_string(randomValue(1) + 3);
       break;
     case ADMIN_ROLE:
-      sprintf(userName, "%s", adminUsers[randomValue(adminUsrSz)]);
+      userName = adminUsers[randomValue(adminUsrSz)];
       break;
     case NO_ROLE:
-      sprintf(userName, kPRiUsername, "user", randomValue(2));
+      userName = "user" + std::to_string(randomValue(2));
       break;
   }
 
@@ -93,29 +94,29 @@ std::string XmlAuthzCredentialGenerator::getAllowedUser(ROLES role) {
     role = getRequiredRole();
     validity = "valid";
   }
-  char userName[256];
+  std::string userName;
   switch (role) {
     case READER_ROLE:
-      sprintf(userName, kPRiUsername, userPrefix.c_str(),
-              readerIndices[randomValue(readerIndSz)]);
+      userName =
+          userPrefix + std::to_string(readerIndices[randomValue(readerIndSz)]);
       break;
     case WRITER_ROLE:
-      sprintf(userName, kPRiUsername, userPrefix.c_str(),
-              writerIndices[randomValue(writerIndSz)]);
+      userName =
+          userPrefix + std::to_string(writerIndices[randomValue(writerIndSz)]);
       break;
     case QUERY_ROLE:
-      sprintf(userName, kPRiUsername, userPrefix.c_str(),
-              queryIndices[randomValue(queryIndSz)]);
+      userName =
+          userPrefix + std::to_string(queryIndices[randomValue(queryIndSz)]);
       break;
     case ADMIN_ROLE:
     case NO_ROLE:
-      sprintf(userName, kPRiUsername, userPrefix.c_str(),
-              adminIndices[randomValue(adminIndSz)]);
+      userName =
+          userPrefix + std::to_string(adminIndices[randomValue(adminIndSz)]);
       break;
   }
   BOOST_LOG_TRIVIAL(info) << "inserted " << validity << " username "
                           << userName;
-  return std::string(userName);
+  return userName;
 }
 
 void XmlAuthzCredentialGenerator::getAllowedLdapAuthz(ROLES role) {

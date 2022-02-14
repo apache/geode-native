@@ -266,10 +266,9 @@ DUNIT_TASK(CLIENT1, ClientOp)
                   ->getPoolManager()
                   .find(poolNameString.c_str())
                   ->getMinConnections();
-    char logmsg[100] = {0};
-    sprintf(logmsg, "Pool level not equal to min level. Expected %d, actual %d",
-            min, level);
-    ASSERT(level == min, logmsg);
+    ASSERT(level == min,
+           std::string("Pool level not equal to min level. Expected ") +
+               std::to_string(min) + ", actual " + std::to_string(level));
 
     putThread *threads[25];
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
@@ -287,9 +286,9 @@ DUNIT_TASK(CLIENT1, ClientOp)
                   ->getPoolManager()
                   .find(poolNameString.c_str())
                   ->getMaxConnections();
-    sprintf(logmsg, "Pool level not equal to max level. Expected %d, actual %d",
-            max, level);
-    ASSERT(level == max, logmsg);
+    ASSERT(level == max,
+           std::string("Pool level not equal to max level. Expected ") +
+               std::to_string(max) + ", actual " + std::to_string(level));
 
     for (int thdIdx = 0; thdIdx < 10; thdIdx++) {
       threads[thdIdx]->stop();
@@ -307,22 +306,21 @@ DUNIT_TASK(CLIENT1, ClientOp)
               ->getPoolManager()
               .find(poolNameString.c_str())
               ->getMinConnections();
-    sprintf(logmsg,
-            "Pool level not equal to min level after idle timeout. "
-            "Expected %d, actual %d",
-            min, level);
-    ASSERT(level == min, logmsg);
+    ASSERT(
+        level == min,
+        std::string(
+            "Pool level not equal to min level after idle timeout. Expected ") +
+            std::to_string(min) + ", actual " + std::to_string(level));
 
     LOG("Waiting 1 minute for load conditioning to kick in");
     SLEEP(60000);
 
     level = TestUtils::getCacheImpl(getHelper()->cachePtr)
                 ->getPoolSize(poolNameString);
-    sprintf(logmsg,
-            "Pool level not equal to min level after load "
-            "conditioning. Expected %d, actual %d",
-            min, level);
-    ASSERT(level == min, logmsg);
+    ASSERT(level == min, std::string("Pool level not equal to min level after "
+                                     "load conditioning. Expected ") +
+                             std::to_string(min) + ", actual " +
+                             std::to_string(level));
   }
 END_TASK(ClientOp)
 

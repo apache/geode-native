@@ -62,11 +62,4 @@ set_target_properties( ${PROJECT_NAME} PROPERTIES
   FOLDER cli/test/acceptance
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties( ${PROJECT_NAME} PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()
-
 add_dependencies(${PROJECT_NAME} nuget-restore)

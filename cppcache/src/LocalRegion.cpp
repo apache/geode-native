@@ -17,9 +17,9 @@
 
 #include "LocalRegion.hpp"
 
-#include <regex>
 #include <vector>
 
+#include <boost/regex.hpp>
 #include <boost/thread/lock_types.hpp>
 
 #include <geode/PoolManager.hpp>
@@ -3251,9 +3251,9 @@ void LocalRegion::clearKeysOfInterestRegex(const std::string& pattern) {
     return;
   }
 
-  std::regex expression{pattern};
+  boost::regex expression{pattern};
   for (const auto& key : keys()) {
-    if (std::regex_search(key->toString(), expression)) {
+    if (boost::regex_search(key->toString(), expression)) {
       auto err = localDestroyNoCallbacks(key);
       if (err != GF_CACHE_ENTRY_NOT_FOUND) {
         throwExceptionIfError("LocalRegion::clearKeysOfInterest", err);
@@ -3269,10 +3269,9 @@ void LocalRegion::clearKeysOfInterestRegex(
     return;
   }
 
-  static const std::string ALL_KEYS_REGEX = ".*";
   for (const auto& kv : interest_list) {
     const auto& regex = kv.first;
-    if (regex == ALL_KEYS_REGEX) {
+    if (regex == kAllKeysRegex) {
       localClear();
       break;
     } else {

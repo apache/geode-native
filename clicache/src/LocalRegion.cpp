@@ -26,6 +26,7 @@
 #include "CacheStatistics.hpp"
 #include "AttributesMutator.hpp"
 #include "RegionEntry.hpp"
+#include "String.hpp"
 #include "impl/AuthenticatedView.hpp"
 #include "impl/SafeConvert.hpp"
 #include "impl/CacheResolver.hpp"
@@ -588,7 +589,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>( m_nativeptr->get()->getName( ) );
+          return to_String( m_nativeptr->get()->getName( ) );
         }
         finally
         {
@@ -601,7 +602,7 @@ namespace Apache
       {
         try
         {
-          return marshal_as<String^>( m_nativeptr->get()->getFullPath( ) );
+          return to_String( m_nativeptr->get()->getFullPath( ) );
         }
         finally
         {
@@ -688,7 +689,7 @@ namespace Apache
 
           try
           {
-            auto nativeptr = m_nativeptr->get()->getSubregion(marshal_as<std::string>(path));
+            auto nativeptr = m_nativeptr->get()->getSubregion(Apache::Geode::Client::to_utf8(path));
             auto region = Region<TKey, TValue>::Create(nativeptr);
             if (region == nullptr) {
               return nullptr;
@@ -713,7 +714,7 @@ namespace Apache
           {
             native::RegionAttributes regionAttributes;
             return Region<TKey, TValue>::Create(m_nativeptr->get()->createSubregion(
-              marshal_as<std::string>(subRegionName), regionAttributes))->GetLocalView();
+              Apache::Geode::Client::to_utf8(subRegionName), regionAttributes))->GetLocalView();
           }
           finally
           {

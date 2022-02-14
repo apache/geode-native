@@ -15,6 +15,7 @@
 # limitations under the License.
 import re
 import struct
+import sys
 
 from dateutil import parser
 
@@ -33,30 +34,15 @@ class ClientMessageDecoder(DecoderBase):
         self.send_trace_parts_retriever_ = None
         self.send_trace_parser_ = None
         self.connection_states_ = {}
-        self.nc_version_ = None
-        self.send_trace_parts_retriever_ = None
-        self.get_send_trace_parts_functions = {
-            "0.0.42": self.get_send_trace_parts_base,
-            "10.0.3": self.get_send_trace_parts_base,
-            "10.1.1": self.get_send_trace_parts_base,
-            "10.1.2": self.get_send_trace_parts_base,
-            "10.1.3": self.get_send_trace_parts_base,
-            "10.1.4": self.get_send_trace_parts_base,
-            "10.2.0": self.get_send_trace_parts_base,
-            "10.2.1": self.get_send_trace_parts_base,
-            "9.1.1": self.get_send_trace_parts_v911,
-        }
-        self.send_trace_parsers = {
-            "0.0.42": self.parse_request_fields_base,
-            "10.0.3": self.parse_request_fields_base,
-            "10.1.1": self.parse_request_fields_base,
-            "10.1.2": self.parse_request_fields_base,
-            "10.1.3": self.parse_request_fields_base,
-            "10.1.4": self.parse_request_fields_base,
-            "10.2.0": self.parse_request_fields_base,
-            "10.2.1": self.parse_request_fields_base,
-            "9.1.1": self.parse_request_fields_v911,
-        }
+        self.get_send_trace_parts_functions = [
+            self.get_send_trace_parts_base,
+            self.get_send_trace_parts_v911,
+        ]
+        self.send_trace_parsers = [
+            self.parse_request_fields_base,
+            self.parse_request_fields_v911,
+        ]
+
         #
         # Native client code believes this is the list of messages that require a security footer.
         # We will use this list to verify and report if a message is sent that needs one but doesn't
@@ -92,28 +78,26 @@ class ClientMessageDecoder(DecoderBase):
             "USER_CREDENTIAL_MESSAGE",
         ]
 
-    def search_for_version(self, line):
-        if self.nc_version_ == None:
-            expression = re.compile(r"Product version:.*Native (\d+)\.(\d+)\.(\d+)-")
-            match = expression.search(line)
-            if match:
-                major = match.group(1)
-                minor = match.group(2)
-                patch = match.group(3)
-                self.nc_version_ = major + "." + minor + "." + patch
-                self.send_trace_parts_retriever_ = self.get_send_trace_parts_functions[
-                    self.nc_version_
-                ]
-                self.send_trace_parser_ = self.send_trace_parsers[self.nc_version_]
+        self.security_trace_expression_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
+        )
+
+        self.send_trace_expression_v911_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d| ]+)"
+        )
+
+        self.send_trace_expression_base_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
+        )
+        self.send_trace_expression_with_thread_name_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+) \(([\w|\s]+).*\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
+        )
 
     def get_send_trace_parts_v911(self, line, parts):
         result = False
-        expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d| ]+)"
-        )
-        match = expression.search(line)
+        match = self.send_trace_expression_v911_.search(line)
         if match:
-            parts.append(dateutil.parser.parse(match.group(1)))
+            parts.append(parser.parse(match.group(1)))
             # TODO: Revisit parsing TID here if we ever see a v9 client log again
             parts.append("0")
             parts.append(match.group(2))
@@ -124,36 +108,52 @@ class ClientMessageDecoder(DecoderBase):
 
     def get_send_trace_parts_base(self, line, parts):
         result = False
-        expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*([\d|a-f|A-F]+)"
-        )
-        match = expression.search(line)
+        match = self.send_trace_expression_with_thread_name_.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
-            parts.append(match.group(4))
+            parts.append(match.group(4)) 
+            parts.append(match.group(5)) 
             result = True
+        else:
+          match = self.send_trace_expression_base_.search(line)
+          if match:
+              parts.append(parser.parse(match.group(1)))
+              parts.append(match.group(2))
+              parts.append("")
+              parts.append(match.group(3))
+              parts.append(match.group(4))
+              result = True
 
         return result
 
     def get_send_trace_parts(self, line, parts):
         if self.send_trace_parts_retriever_ is not None:
             return self.send_trace_parts_retriever_(line, parts)
+        else:
+            for retriever in self.get_send_trace_parts_functions:
+                if retriever(line, parts):
+                    self.send_trace_parts_retriever_ = retriever
+                    self.send_trace_parser_ = self.send_trace_parsers[
+                        self.get_send_trace_parts_functions.index(retriever)
+                    ]
+                    return True
+            else:
+                return False
 
     def get_add_security_trace_parts(self, line, parts):
         result = False
-        expression = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*([\d|a-f|A-F]+)"
-        )
-        match = expression.search(line)
-        if match:
-            parts.append(parser.parse(match.group(1)))
-            parts.append(match.group(2))
-            parts.append(match.group(3))
-            parts.append(match.group(4))
-            parts.append(match.group(5))
-            result = True
+
+        if "addSec" in line:
+            match = self.security_trace_expression_.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append(match.group(2))
+                parts.append(match.group(3))
+                parts.append(match.group(4))
+                parts.append(match.group(5))
+                result = True
 
         return result
 
@@ -210,22 +210,29 @@ class ClientMessageDecoder(DecoderBase):
     def request_requires_security_footer(self, message_type):
         return message_type in self.message_requires_security_part
 
+    def is_candidate_line(self, line):
+        return "TcrMess" in line or "TcrConn" in line
+
     def process_line(self, line):
         connection = None
         is_send_trace = False
         is_add_security_trace = False
         send_trace = {}
 
-        self.search_for_version(line)
+        if not self.is_candidate_line(line):
+            return
 
         parts = []
         if self.get_send_trace_parts(line, parts):
             (
                 send_trace["Timestamp"],
                 send_trace["tid"],
+                send_trace["ThreadName"],
                 send_trace["Connection"],
                 message_bytes,
             ) = parts
+            if send_trace["ThreadName"] == "":
+              del(send_trace["ThreadName"])
             is_send_trace = True
         elif self.get_add_security_trace_parts(line, parts):
             timestamp, tid, connection, security_footer_length, message_bytes = parts
@@ -252,7 +259,8 @@ class ClientMessageDecoder(DecoderBase):
                     self.request_requires_security_footer(str(send_trace["Type"]))
                 ):
                     print(
-                        "ERROR: Security flag is set, but no footer was added for this message!"
+                        "ERROR: Security flag is set, but no footer was added for this message!",
+                        file=sys.stderr,
                     )
 
                 parse_client_message(send_trace, message_bytes)

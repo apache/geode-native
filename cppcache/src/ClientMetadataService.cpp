@@ -37,8 +37,6 @@ namespace client {
 
 const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
 
-const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
-
 ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
     : m_run(false),
       m_pool(pool),
@@ -66,7 +64,7 @@ void ClientMetadataService::stop() {
 }
 
 void ClientMetadataService::svc() {
-  DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
+  Log::setThreadName("NC CMDSvcThread");
 
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
 
@@ -158,6 +156,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
           m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
+      m_cache->setPrMetadataUpdatedFlag(true);
     }
   } else {
     newCptr = SendClientPRMetadata(colocatedWith.c_str(), cptr);
@@ -171,6 +170,7 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
       m_regionMetaDataMap[colocatedWith.c_str()] = newCptr;
       m_regionMetaDataMap[path] = newCptr;
       LOGINFO("Updated client meta data");
+      m_cache->setPrMetadataUpdatedFlag(true);
     }
   }
 }
@@ -569,7 +569,6 @@ std::shared_ptr<BucketServerLocation> ClientMetadataService::findNextServer(
 std::shared_ptr<ClientMetadataService::ServerToBucketsMap>
 ClientMetadataService::pruneNodes(
     const std::shared_ptr<ClientMetadata>& metadata, const BucketSet& buckets) {
-  BucketSet bucketSetWithoutServer;
   ServerToBucketsMap serverToBucketsMap;
 
   auto prunedServerToBucketsMap = std::make_shared<ServerToBucketsMap>();
@@ -578,12 +577,10 @@ ClientMetadataService::pruneNodes(
     const auto locations = metadata->adviseServerLocations(bucketId);
     if (locations.size() == 0) {
       LOGDEBUG(
-          "ClientMetadataService::pruneNodes Since no server location "
-          "available for bucketId = %d  putting it into "
-          "bucketSetWithoutServer ",
+          "ClientMetadataService::pruneNodes Use non single-hop path "
+          "since no server location is available for bucketId = %d",
           bucketId);
-      bucketSetWithoutServer.insert(bucketId);
-      continue;
+      return nullptr;
     }
 
     for (const auto& location : locations) {
@@ -662,11 +659,6 @@ ClientMetadataService::pruneNodes(
 
     prunedServerToBucketsMap->emplace(server, bucketSet2);
     serverToBucketsMap.erase(server);
-  }
-
-  const auto& itrRes2 = prunedServerToBucketsMap->begin();
-  for (const auto& itr : bucketSetWithoutServer) {
-    itrRes2->second->insert(itr);
   }
 
   return prunedServerToBucketsMap;

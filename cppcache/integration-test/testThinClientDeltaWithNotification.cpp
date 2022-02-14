@@ -84,9 +84,9 @@ void createPooledRegion(const std::string &name, bool ackMode,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(),
-          ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -120,7 +120,9 @@ void createPooledLRURegion(const std::string &name, bool ackMode,
 void createRegion(const char *name, bool ackMode,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   fflush(stdout);
   // ack, caching
   auto regPtr = getHelper()->createRegion(name, ackMode, true, nullptr,
@@ -323,10 +325,9 @@ DUNIT_TASK_DEFINITION(CLIENT2, Client2_VerifyDelta)
   {
     // Wait for notification
     SLEEP(5000);
-    char buff[100];
-    sprintf(buff, "From delta count %d  From data count %d",
-            DeltaEx::fromDeltaCount, DeltaEx::fromDataCount);
-    LOG(buff);
+    LOG(std::string("From delta count ") +
+        std::to_string(DeltaEx::fromDeltaCount) + "From data count " +
+        std::to_string(DeltaEx::fromDataCount));
     ASSERT(DeltaEx::fromDataCount == 13,
            "DeltaEx::fromDataCount should have been 13");
     // 1 for the first case when delta is false, 2 for the second case when

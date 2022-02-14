@@ -52,7 +52,10 @@ if (MSVC)
   )
 endif()
 
-set_target_properties(apache-geode-static PROPERTIES INTERPROCEDURAL_OPTIMIZATION FALSE)
+set_target_properties(apache-geode-static PROPERTIES 
+  INTERPROCEDURAL_OPTIMIZATION FALSE
+  POSITION_INDEPENDENT_CODE ON
+)
 
 # BEGIN Visual Studio organization
 source_group("Header Files" REGULAR_EXPRESSION "\.(hpp|inl)$")

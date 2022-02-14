@@ -21,61 +21,77 @@ from read_values import read_int_value, read_byte_value, call_reader_function
 
 CHUNKED_MESSAGE_HEADER_LENGTH = 17
 
+
 class ChunkedResponseDecoder:
     def __init__(self):
         self.reset()
 
     def add_header(self, connection, header):
-        if len(self.chunked_message) > 0:
-            raise Exception("Previous chunked message is not completed, can't process another header")
+        if len(self.chunked_message) > 2:
+            raise Exception(
+                "Previous chunked message is not completed, can't process another header"
+            )
 
         if len(header) == 2 * CHUNKED_MESSAGE_HEADER_LENGTH:
             offset = 0
             message_type = ""
-            (message_type, offset) = call_reader_function(header, offset, read_int_value)
+            (message_type, offset) = call_reader_function(
+                header, offset, read_int_value
+            )
             self.chunked_message["Type"] = message_types[message_type]
             # TODO: pass connection value in as a parameter
             self.chunked_message["Connection"] = connection
             self.chunked_message["Direction"] = "<---"
-            (self.chunked_message["Parts"], offset) = call_reader_function(header, offset, read_int_value)
-            (self.chunked_message["TransactionId"], offset) = call_reader_function(header, offset, read_int_value)
+            (self.chunked_message["Parts"], offset) = call_reader_function(
+                header, offset, read_int_value
+            )
+            (self.chunked_message["TransactionId"], offset) = call_reader_function(
+                header, offset, read_int_value
+            )
             chunk_size = 0
             flags = 0
             (chunk_size, offset) = call_reader_function(header, offset, read_int_value)
             (flags, offset) = call_reader_function(header, offset, read_byte_value)
-            self.chunked_message["ChunkInfo"] = []
             self.add_chunk_header(chunk_size, flags)
         else:
-            raise IndexError("Chunked message header should be " + str(CHUNKED_MESSAGE_HEADER_LENGTH) + " bytes")
+            raise IndexError(
+                "Chunked message header should be "
+                + str(CHUNKED_MESSAGE_HEADER_LENGTH)
+                + " bytes"
+            )
 
     def add_chunk_header(self, chunk_size, flags):
-        self.chunk_index += 1
-        if len(self.chunked_message) == 0:
+        if len(self.chunked_message) == 2:
             raise Exception("Can't add chunk header before message header")
 
-        key = "Chunk" + str(self.chunk_index)
-        inner_item = dict(ChunkLength=int(chunk_size), Flags=flags)
-        outer_item = {}
-        outer_item[key] = inner_item
-        self.chunked_message["ChunkInfo"].append(outer_item)
+        #
+        # Chunked messages can be *really* large, like several tens of
+        # thousands of chunks for a really huge response.  We used to
+        # report out a list of all the chunk sizes based on all the
+        # chunk headers, but it presented performance issues and really
+        # wasn't conveying particularly interesting info.  Now, we just
+        # tally up all the chunk sizes and report the total size of the
+        # response and the timestamp of the last incoming chunk, both
+        # of which are potentially much more meaningful than the details
+        # of each individual chunk.
+        #
         self.chunk_flags = flags
-
-    def add_chunk(self, chunk):
-        if len(self.chunked_message) == 0:
-            raise Exception("Can't add chunks before message header")
-
-        self.message_body += chunk
+        self.chunked_message["ResponseSize"] += chunk_size
+        self.chunked_message["NumberOfChunks"] += 1
 
     def is_complete_message(self):
         return self.chunk_flags & 0x1
 
-    def get_decoded_message(self):
-        return self.chunked_message
+    def get_decoded_message(self, time_stamp):
+        # Return a re-ordered dictionary, with Timestamp at the front.  This
+        # makes output consistent with other messages
+        decoded_message = {"Timestamp": time_stamp}
+        decoded_message.update(self.chunked_message)
+        return decoded_message
 
     def reset(self):
         self.header = ""
-        self.message_body = ""
-        self.chunked_message = {}
+        # self.message_body = ""
+        self.chunked_message = {"ResponseSize": 0, "NumberOfChunks": 0}
         self.complete = False
-        self.chunk_flags = 0xff
-        self.chunk_index = -1
+        self.chunk_flags = 0xFF

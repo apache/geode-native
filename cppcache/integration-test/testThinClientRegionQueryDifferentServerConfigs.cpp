@@ -119,7 +119,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
       results = qry->execute();
       FAIL("Expected a QueryException");
     } catch (const QueryException &ex) {
-      printf("Good expected exception: %s\n", ex.what());
+      std::cout << "Good expected exception : " << ex.what() << "\n";
     }
 
     // now region queries
@@ -131,7 +131,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, InitClientCreateRegionAndRunQueries)
       results = reg->query(qry2Str.c_str());
       FAIL("Expected a QueryException");
     } catch (const QueryException &ex) {
-      printf("Good expected exception: %s\n", ex.what());
+      std::cout << "Good expected exception : " << ex.what() << "\n";
     }
 
     LOG("StepOne complete.");
@@ -177,7 +177,7 @@ DUNIT_TASK_DEFINITION(CLIENT1, CreateRegionAndRunQueries)
       results = reg->query(qry1Str.c_str());
       FAIL("Expected a QueryException");
     } catch (const QueryException &ex) {
-      printf("Good expected exception: %s\n", ex.what());
+      std::cout << "Good expected exception : " << ex.what() << "\n";
     }
     results = reg->query(qry2Str.c_str());
     ASSERT(results->size() == static_cast<size_t>(qh.getPositionSetSize() *

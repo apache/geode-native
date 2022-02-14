@@ -22,6 +22,7 @@
 
 #include <geode/EntryEvent.hpp>
 #include <string>
+#include <sstream>
 #include <util/Log.hpp>
 
 namespace apache {
@@ -139,13 +140,13 @@ class TallyListener : public CacheListener {
   void afterRegionDestroy(const RegionEvent&) override {}
 
   void showTallies() {
-    char buf[1024];
-    sprintf(buf,
-            "TallyListener state: (updates = %d, creates = %d , invalidates = "
-            "%d destroys = %d Regionclears = %d)",
-            getUpdates(), getCreates(), getInvalidates(), getDestroys(),
-            getClears());
-    LOG(buf);
+    std::stringstream strm;
+    strm << "TallyListener state: (updates = " << getUpdates()
+         << ", creates = " << getCreates()
+         << ", invalidates = " << getInvalidates()
+         << ", destroys = " << getDestroys()
+         << ", regionclears = " << getClears() << ")";
+    LOG(strm.str());
   }
 };
 
@@ -158,10 +159,10 @@ void TallyListener::afterCreate(const EntryEvent& event) {
 
   auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
   if (!m_quiet) {
-    char buf[1024];
-    sprintf(buf, "TallyListener create - key = \"%s\", value = \"%s\"",
-            m_lastKey->toString().c_str(), strPtr->value().c_str());
-    LOGDEBUG(buf);
+    std::stringstream strm;
+    strm << "TallyListener create - key = " << m_lastKey->toString()
+         << ", value = \"" << strPtr->value() << "\"";
+    LOGDEBUG(strm.str());
   }
   std::string keyString(m_lastKey->toString().c_str());
   if ((!m_ignoreTimeout) && (keyString.find("timeout") != std::string::npos)) {
@@ -178,10 +179,10 @@ void TallyListener::afterUpdate(const EntryEvent& event) {
   checkcallbackArg(event);
   auto strPtr = std::dynamic_pointer_cast<CacheableString>(event.getNewValue());
   if (!m_quiet) {
-    char buf[1024];
-    sprintf(buf, "TallyListener update - key = \"%s\", value = \"%s\"",
-            m_lastKey->toString().c_str(), strPtr->value().c_str());
-    LOG(buf);
+    std::stringstream strm;
+    strm << "TallyListener update - key = " << m_lastKey->toString()
+         << ", value = \"" << strPtr->value() << "\"";
+    LOGDEBUG(strm.str());
   }
   std::string keyString(m_lastKey->toString().c_str());
   if ((!m_ignoreTimeout) && (keyString.find("timeout") != std::string::npos)) {

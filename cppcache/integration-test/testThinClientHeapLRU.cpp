@@ -63,9 +63,7 @@ void createOnekEntries() {
   dunit::sleep(10000);
   auto me = dataReg->entries(false);
   LOG("Verifying size outside loop");
-  char buf[1024];
-  sprintf(buf, "region size is %zd", me.size());
-  LOG(buf);
+  LOG(std::string("region size is d") + std::to_string(me.size()));
 
   ASSERT(me.size() <= 1024, "Should have evicted anything over 1024 entries");
 }

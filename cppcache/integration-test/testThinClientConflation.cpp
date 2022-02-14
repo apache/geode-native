@@ -54,9 +54,9 @@ class OperMonitor : public CacheListener {
     if (valuePtr != nullptr) {
       m_value = valuePtr->value();
     }
-    sprintf(buf, "Key = %s, Value = %d", keyPtr->toString().c_str(),
-            valuePtr->value());
-    LOG(buf);
+    auto msg = std::string("Key = ") + keyPtr->toString() +
+               ", Value = " + std::to_string(valuePtr->value());
+    LOG(msg);
   }
 
  public:
@@ -69,18 +69,19 @@ class OperMonitor : public CacheListener {
 
   void validate(bool conflation) {
     LOG("validate called");
-    char buf[256] = {'\0'};
 
     if (conflation) {
-      sprintf(buf, "Conflation On: Expected events = 2, Actual = %d", m_events);
-      ASSERT(m_events == 2, buf);
+      auto msg = std::string("Conflation On: Expected events = 2, Actual = ") +
+                 std::to_string(m_events);
+      ASSERT(m_events == 2, msg);
     } else {
-      sprintf(buf, "Conflation Off: Expected events = 5, Actual = %d",
-              m_events);
-      ASSERT(m_events == 5, buf);
+      auto msg = std::string("Conflation Off: Expected events = 5, Actual = ") +
+                 std::to_string(m_events);
+      ASSERT(m_events == 5, msg);
     }
-    sprintf(buf, "Expected Value = 5, Actual = %d", m_value);
-    ASSERT(m_value == 5, buf);
+    auto msg =
+        std::string("Expected Value = 5, Actual = ") + std::to_string(m_value);
+    ASSERT(m_value == 5, msg);
   }
 };
 

@@ -20,12 +20,17 @@
  * limitations under the License.
  */
 
-#include "fw_dunit.hpp"
+#include <string>
+#include <sstream>
+#include <iomanip>
+
 #include <ace/OS.h>
 #include <ace/High_Res_Timer.h>
+
+#include "fw_dunit.hpp"
 #include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"
-#include <string>
+
 #include "SerializationRegistry.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheImpl.hpp"
@@ -33,7 +38,7 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 #include "CacheHelper.hpp"
 
-namespace { // NOLINT(google-build-namespaces)
+namespace {  // NOLINT(google-build-namespaces)
 
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableInt32;
@@ -85,22 +90,18 @@ void _verifyEntry(const char* name, const char* key, const char* val,
                   bool noKey, bool isCreated = false) {
   // Verify key and value exist in this region, in this process.
   const char* value = val ? val : "";
-  char* buf =
-      reinterpret_cast<char*>(malloc(1024 + strlen(key) + strlen(value)));
-  ASSERT(buf, "Unable to malloc buffer for logging.");
-  if (!isCreated) {
-    if (noKey) {
-      sprintf(buf, "Verify key %s does not exist in region %s", key, name);
-    } else if (!val) {
-      sprintf(buf, "Verify value for key %s does not exist in region %s", key,
-              name);
-    } else {
-      sprintf(buf, "Verify value for key %s is: %s in region %s", key, value,
-              name);
-    }
-    LOG(buf);
+  std::string msg;
+  if (noKey) {
+    msg =
+        std::string("Verify key ") + key + " does not exist in region " + name;
+  } else if (!val) {
+    msg = std::string("Verify value for key ") + key +
+          " does not exist in region " + name;
+  } else {
+    msg = std::string("Verify value for key ") + key + " is: " + value +
+          " in region " + name;
   }
-  free(buf);
+  LOG(msg);
 
   auto regPtr = getHelper()->getRegion(name);
   ASSERT(regPtr != nullptr, "Region not found.");
@@ -156,7 +157,8 @@ void _verifyEntry(const char* name, const char* key, const char* val,
             std::dynamic_pointer_cast<CacheableString>(regPtr->get(keyPtr));
 
         ASSERT(checkPtr != nullptr, "Value Ptr should not be null.");
-        LOG("In verify loop, get returned " + checkPtr->value() + " for key " + key);
+        LOG("In verify loop, get returned " + checkPtr->value() + " for key " +
+            key);
         if (strcmp(checkPtr->value().c_str(), value) != 0) {
           testValueCnt++;
         } else {
@@ -173,9 +175,7 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 
 void _verifyEntry(const char* name, const char* key, const char* val,
                   int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyEntry() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyEntry() called from ") + std::to_string(line) + "\n");
   _verifyEntry(name, key, val, false);
   LOG("Entry verified.");
 }
@@ -183,29 +183,31 @@ void _verifyEntry(const char* name, const char* key, const char* val,
 #define verifyCreated(x, y) _verifyCreated(x, y, __LINE__)
 
 void _verifyCreated(const char* name, const char* key, int line) {
-  char logmsg[1024];
-  sprintf(logmsg, "verifyCreated() called from %d.\n", line);
-  LOG(logmsg);
+  LOG(std::string("verifyCreated() called from ") + std::to_string(line) +
+      "\n");
   _verifyEntry(name, key, nullptr, false, true);
   LOG("Entry created.");
 }
 void createRegion(const char* name, bool ackMode, bool isCacheEnabled,
                   bool clientNotificationEnabled = false) {
   LOG("createRegion() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name, ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createRegion(name, ackMode, isCacheEnabled,
                                           nullptr, clientNotificationEnabled);
   ASSERT(regPtr != nullptr, "Failed to create region.");
   LOG("Region created.");
 }
-void createPooledRegion(const std::string& name, bool ackMode, const std::string& locators,
+void createPooledRegion(const std::string& name, bool ackMode,
+                        const std::string& locators,
                         const std::string& poolname,
                         bool clientNotificationEnabled = false,
                         bool cachingEnable = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr =
       getHelper()->createPooledRegion(name, ackMode, locators, poolname,
                                       cachingEnable, clientNotificationEnabled);
@@ -218,8 +220,9 @@ void createPooledRegionConcurrencyCheckDisabled(
     const std::string& poolname, bool clientNotificationEnabled = false,
     bool cachingEnable = true, bool concurrencyCheckEnabled = true) {
   LOG("createRegion_Pool() entered.");
-  fprintf(stdout, "Creating region --  %s  ackMode is %d\n", name.c_str(), ackMode);
-  fflush(stdout);
+  std::cout << "Creating region --  " << name << " ackMode is " << ackMode
+            << "\n"
+            << std::flush;
   auto regPtr = getHelper()->createPooledRegionConcurrencyCheckDisabled(
       name, ackMode, locators, poolname, cachingEnable,
       clientNotificationEnabled, concurrencyCheckEnabled);
@@ -230,9 +233,9 @@ void createPooledRegionConcurrencyCheckDisabled(
 void createEntry(const char* name, const char* key,
                  const char* value = nullptr) {
   LOG("createEntry() entered.");
-  fprintf(stdout, "Creating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Creating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Create entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   if (value == nullptr) {
@@ -258,9 +261,9 @@ void createEntry(const char* name, const char* key,
 
 void updateEntry(const char* name, const char* key, const char* value) {
   LOG("updateEntry() entered.");
-  fprintf(stdout, "Updating entry -- key: %s  value: %s in region %s\n", key,
-          value, name);
-  fflush(stdout);
+  std::cout << "Updating entry -- key: " << key << " value: " << value
+            << " in region " << name << "\n"
+            << std::flush;
   // Update entry, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
   auto valPtr = CacheableString::create(value);
@@ -281,16 +284,14 @@ void updateEntry(const char* name, const char* key, const char* value) {
 
 void doNetsearch(const char* name, const char* key, const char* value) {
   LOG("doNetsearch() entered.");
-  fprintf(
-      stdout,
-      "Netsearching for entry -- key: %s  expecting value: %s in region %s\n",
-      key, value, name);
-  fflush(stdout);
+  std::cout << "Netsearching for entry -- key: " << key
+            << " expecting value: " << value << " in region " << name << "\n"
+            << std::flush;
   // Get entry created in Process A, verify entry is correct
   auto keyPtr = CacheableKey::create(key);
 
   auto regPtr = getHelper()->getRegion(name);
-  fprintf(stdout, "netsearch  region %s\n", regPtr->getName().c_str());
+  std::cout << "netsearch region " << regPtr->getName() << "\n" << std::flush;
   fflush(stdout);
   ASSERT(regPtr != nullptr, "Region not found.");
 
@@ -304,10 +305,8 @@ void doNetsearch(const char* name, const char* key, const char* value) {
 
   if (checkPtr != nullptr) {
     LOG("checkPtr is not null");
-    char buf[1024];
-    sprintf(buf, "In net search, get returned %s for key %s",
-            checkPtr->value().c_str(), key);
-    LOG(buf);
+    LOG(std::string("In net search, get returned ") + checkPtr->value() +
+        " for key " + key);
   } else {
     LOG("checkPtr is nullptr");
   }
@@ -365,9 +364,8 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pooled_Locator_ConcurrencyCheckDisabled)
   {
     initClient(true);
-    createPooledRegionConcurrencyCheckDisabled(regionNames[0], USE_ACK,
-                                               locatorsG, poolName, true, true,
-                                               false);
+    createPooledRegionConcurrencyCheckDisabled(
+        regionNames[0], USE_ACK, locatorsG, poolName, true, true, false);
     LOG("StepOne_Pooled_Locator_ConcurrencyCheckDisabled complete.");
   }
 END_TASK_DEFINITION
@@ -470,13 +468,10 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOps)
   {
     HashMapOfCacheable entryMap;
     entryMap.clear();
-    char key[2048];
-    char value[2048];
     for (int32_t item = 0; item < 500; item++) {
-      sprintf(key, "key-%d", item);
-      sprintf(value, "%d", item);
-      entryMap.emplace(CacheableKey::create(key),
-                       CacheableString::create(value));
+      entryMap.emplace(
+          CacheableKey::create(std::string("key-") + std::to_string(item)),
+          CacheableString::create(std::to_string(item)));
     }
 
     auto regPtr0 = getHelper()->getRegion(regionNames[0]);
@@ -485,8 +480,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, PutAllOps)
 
     std::vector<std::shared_ptr<CacheableKey>> getAllkeys;
     for (int32_t item = 0; item < 500; item++) {
-      sprintf(key, "key-%d", item);
-      getAllkeys.push_back(CacheableKey::create(key));
+      getAllkeys.push_back(
+          CacheableKey::create(std::string("key-") + std::to_string(item)));
     }
 
     const auto values = regPtr0->getAll(getAllkeys);
@@ -561,14 +556,14 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepEight)
     HashMapOfCacheable map0;
     map0.clear();
     for (int i = 0; i < 100000; i++) {
-      char key0[50] = {0};
-      char val0[2500] = {0};
-      sprintf(key0, "key-%d", i);
-      sprintf(val0, "%1000d", i);
-      map0.emplace(CacheableKey::create(key0), CacheableString::create(val0));
+      auto key0 = std::string("key-") + std::to_string(i);
+      std::ostringstream val0;
+      val0 << std::left << std::setfill('0') << std::setw(1000) << i;
+      map0.emplace(CacheableKey::create(key0),
+                   CacheableString::create(val0.str()));
     }
-    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
 
+    auto regPtr0 = getHelper()->getRegion(regionNames[0]);
     regPtr0->putAll(map0, std::chrono::seconds(40000));
 
     LOG("StepEight complete.");
@@ -580,9 +575,8 @@ DUNIT_TASK_DEFINITION(CLIENT2, StepNine)
   {
     LOG("Verify large PutAll");
     for (int i = 0; i < 100000; i++) {
-      char key0[50] = {0};
-      sprintf(key0, "key-%d", i);
-      verifyCreated(regionNames[0], key0);
+      auto key0 = std::string("key-") + std::to_string(i);
+      verifyCreated(regionNames[0], key0.c_str());
     }
     LOG("StepNine complete.");
   }
@@ -747,9 +741,8 @@ DUNIT_TASK_DEFINITION(CLIENT1, StepThirteen)
         const auto& mVal = iter.second;
         if (mVal != nullptr) {
           auto val1 = std::dynamic_pointer_cast<PdxTests::PdxTypes1>(mVal);
-          sprintf(buf, "value from map %d , expected value %d ",
-                  val1->getm_i1(), 34324);
-          LOG(buf);
+          LOG(std::string("value from map ") + std::to_string(val1->getm_i1()) +
+              ", expected value 34324");
           ASSERT(val1->getm_i1() == 34324, "value not matched");
         }
       }

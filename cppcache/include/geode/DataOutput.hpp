@@ -274,7 +274,7 @@ class APACHE_GEODE_EXPORT DataOutput {
   inline void writeString(const std::basic_string<_CharT, _Tail...>& value) {
     // without scanning string, making worst case choices.
     // TODO constexp for each string type to jmutf8 length conversion
-    if (value.length() * 3 <= std::numeric_limits<uint16_t>::max()) {
+    if (value.length() * 3 <= (std::numeric_limits<uint16_t>::max)()) {
       write(static_cast<uint8_t>(DSCode::CacheableString));
       writeJavaModifiedUtf8(value);
     } else {
@@ -516,8 +516,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   Pool* m_pool;
 
   inline void writeAscii(const std::string& value) {
-    uint16_t len = static_cast<uint16_t>(
-        std::min<size_t>(value.length(), std::numeric_limits<uint16_t>::max()));
+    uint16_t len = static_cast<uint16_t>(std::min<size_t>(
+        value.length(), (std::numeric_limits<uint16_t>::max)()));
     writeInt(len);
     for (size_t i = 0; i < len; i++) {
       // blindly assumes ascii so mask off only 7 bits
@@ -526,8 +526,8 @@ class APACHE_GEODE_EXPORT DataOutput {
   }
 
   inline void writeAsciiHuge(const std::string& value) {
-    uint32_t len = static_cast<uint32_t>(
-        std::min<size_t>(value.length(), std::numeric_limits<uint32_t>::max()));
+    uint32_t len = static_cast<uint32_t>(std::min<size_t>(
+        value.length(), (std::numeric_limits<uint32_t>::max)()));
     writeInt(static_cast<uint32_t>(len));
     for (size_t i = 0; i < len; i++) {
       // blindly assumes ascii so mask off only 7 bits
@@ -566,7 +566,7 @@ class APACHE_GEODE_EXPORT DataOutput {
     } else {
       auto encodedLen = static_cast<uint16_t>(
           std::min<size_t>(getJavaModifiedUtf8EncodedLength(data, len),
-                           std::numeric_limits<uint16_t>::max()));
+                           (std::numeric_limits<uint16_t>::max)()));
       writeInt(encodedLen);
       ensureCapacity(encodedLen);
       const auto end = m_buf + encodedLen;
@@ -606,7 +606,7 @@ class APACHE_GEODE_EXPORT DataOutput {
 
   inline void writeUtf16Huge(const char16_t* data, size_t length) {
     uint32_t len = static_cast<uint32_t>(
-        std::min<size_t>(length, std::numeric_limits<uint32_t>::max()));
+        std::min<size_t>(length, (std::numeric_limits<uint32_t>::max)()));
     writeInt(len);
     writeUtf16(data, length);
   }
