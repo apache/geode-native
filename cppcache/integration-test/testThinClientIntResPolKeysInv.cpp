@@ -360,7 +360,6 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, StepEight)
   {
     auto regPtr1 = getHelper()->getRegion(regionNames[1]);
-    // regPtr1->registerRegex(regexWildcard);
     regPtr1->registerAllKeys();
 
     verifyInvalid(regionNames[1], keys[0]);

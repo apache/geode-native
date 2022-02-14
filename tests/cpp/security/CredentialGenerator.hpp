@@ -34,8 +34,6 @@
 
 #include <map>
 
-#include <ace/OS.h>
-
 #include <geode/Properties.hpp>
 
 #include "typedefs.hpp"
@@ -136,13 +134,7 @@ class CredentialGenerator {
 
   void getAuthInit(std::shared_ptr<Properties>& prop);
 
-  std::string getPublickeyfile() {
-    auto path =
-        ACE_OS::getenv("TESTSRC")
-            ? std::string(ACE_OS::getenv("TESTSRC"))
-            : std::string(ACE_OS::getenv("BUILDDIR")) + "/framework/data";
-    return path + "/keystore/publickeyfile";
-  }
+  std::string getPublickeyfile();
 
   std::string getServerCmdParams(std::string securityParams,
                                  std::string workingDir = "",

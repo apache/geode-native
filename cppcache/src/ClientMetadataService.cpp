@@ -37,8 +37,6 @@ namespace client {
 
 const BucketStatus::clock::time_point BucketStatus::m_noTimeout{};
 
-const char* ClientMetadataService::NC_CMDSvcThread = "NC CMDSvcThread";
-
 ClientMetadataService::ClientMetadataService(ThinClientPoolDM* pool)
     : m_run(false),
       m_pool(pool),
@@ -66,7 +64,7 @@ void ClientMetadataService::stop() {
 }
 
 void ClientMetadataService::svc() {
-  DistributedSystemImpl::setThreadName(NC_CMDSvcThread);
+  Log::setThreadName("NC CMDSvcThread");
 
   LOGINFO("ClientMetadataService started for pool " + m_pool->getName());
 
