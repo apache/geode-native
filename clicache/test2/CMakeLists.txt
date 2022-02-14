@@ -53,13 +53,6 @@ set_target_properties(Apache.Geode.Tests2 PROPERTIES
   FOLDER cli/test/unit
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(Apache.Geode.Tests2 PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()
-
 add_dependencies(Apache.Geode.Tests2 nuget-restore)
 
 enable_testing()

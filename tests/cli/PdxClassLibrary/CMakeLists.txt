@@ -41,9 +41,3 @@ set_target_properties( PdxClassLibrary PROPERTIES
   FOLDER cli/test/integration
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties( PdxClassLibrary PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()

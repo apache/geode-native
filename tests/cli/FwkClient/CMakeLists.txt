@@ -36,9 +36,3 @@ set_target_properties(FwkClient PROPERTIES
   FOLDER cli/test/integration
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(FwkClient PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()

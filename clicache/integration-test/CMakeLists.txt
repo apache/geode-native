@@ -68,13 +68,6 @@ set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
   FOLDER cli/test/integration
 )
 
-if(NOT "${STRONG_NAME_KEY}" STREQUAL "")
-  set_target_properties(Apache.Geode.Client.UnitTests PROPERTIES
-    VS_GLOBAL_SignAssembly "true"
-    VS_GLOBAL_AssemblyOriginatorKeyFile ${STRONG_NAME_KEY}
-  )
-endif()
-
 add_dependencies(Apache.Geode.Client.UnitTests FwkClient SqLiteImpl)
 add_dependencies(Apache.Geode.Client.UnitTests nuget-restore)
 
