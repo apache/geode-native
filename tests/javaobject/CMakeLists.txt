@@ -19,11 +19,14 @@ find_package(Geode REQUIRED)
 find_package(Java REQUIRED)
 
 include(UseJava)
+include(CheckJavaClassExists)
+
+check_java_class_exists(org.apache.geode.security.AuthenticationExpiredException ${Geode_CLASSPATH} hasAuthenticationExpiredException)
 
 file(GLOB_RECURSE SOURCES "*.java")
 
 # Check for versions of GEODE that don't support AuthenticationExpiredException
-if (${Geode_VERSION} VERSION_LESS ${GEODE_AUTHEXPIREDEXCEPTION_VERSION})
+if (NOT ${hasAuthenticationExpiredException})
   list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/SimulatedExpirationSecurityManager.java)
 endif()
 
@@ -32,4 +35,3 @@ add_jar(javaobject ${SOURCES}
 )
 
 set(EXPORT_FILE_NAME ${CMAKE_CURRENT_BINARY_DIR}/javaobject.jar)
-

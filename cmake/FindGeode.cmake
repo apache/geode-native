@@ -73,7 +73,8 @@ if(Geode_gfsh_EXECUTABLE)
     # TODO error checking
   else()
     if(var MATCHES "([0-9]+\\.[0-9]+\\.[0-9]+)")
-      set(Geode_VERSION ${var})
+	  set(Geode_VERSION "${CMAKE_MATCH_1}")
+	  set(Geode_VERSION_FULL ${var})
     else()
       # TODO version parsing error
     endif()
