@@ -65,6 +65,7 @@ std::shared_ptr<apache::geode::client::Region> setupRegion(
                         apache::geode::client::RegionShortcut::CACHING_PROXY)
                     .setPoolName("default")
                     .setCacheListener(listener)
+                    .setConcurrencyChecksEnabled(false)
                     .create("region");
   return region;
 }
