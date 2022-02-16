@@ -330,13 +330,13 @@ PdxWriter& PdxLocalWriter::markIdentityField(const std::string&) {
   return *this;
 }
 
-uint8_t* PdxLocalWriter::getPdxStream(int& pdxLen) {
-  uint8_t* stPos =
+std::vector<uint8_t> PdxLocalWriter::getPdxStream() {
+  uint8_t* buffer =
       const_cast<uint8_t*>(m_dataOutput->getBuffer()) + m_startPositionOffset;
-  int len = PdxHelper::readInt32 /*readByte*/ (stPos);
-  pdxLen = len;
-  // ignore len and typeid
-  return m_dataOutput->getBufferCopyFrom(stPos + 8, len);
+  int32_t len = PdxHelper::readInt32(buffer);
+  buffer += 8;
+
+  return std::vector<uint8_t>{buffer, buffer + len};
 }
 
 void PdxLocalWriter::writeByte(int8_t byte) { m_dataOutput->write(byte); }

@@ -1172,9 +1172,11 @@ void TcrMessage::handleByteArrayResponse(
         m_value = CacheableInt32::create(typeId);
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_TYPE_BY_ID) {
         // PdxType will come in response
-        input.advanceCursor(5);  // part header
-        m_value = serializationRegistry.deserialize(
-            input, static_cast<int8_t>(DSCode::PdxType));
+        input.advanceCursor(sizeof(int32_t));  // ignore part size
+        if (input.readBoolean()) {             // part type. If 1 is an object
+          m_value = serializationRegistry.deserialize(
+              input, static_cast<int8_t>(DSCode::PdxType));
+        }
       } else if (m_msgTypeRequest == TcrMessage::GET_PDX_ENUM_BY_ID) {
         // PdxType will come in response
         input.advanceCursor(5);  // part header
