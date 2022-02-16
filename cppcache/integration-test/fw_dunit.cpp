@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+#ifdef _WIN32
+// TODO. Remove this whenever ACE_Process is removed
+#define FD_SETSIZE 1024
+#endif
+
 #ifdef USE_SMARTHEAP
 #include <smrtheap.h>
 #endif
