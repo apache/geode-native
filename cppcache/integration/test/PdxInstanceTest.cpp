@@ -235,7 +235,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
       << "pdxInstanceDeserialization should be equal to 1.";
 
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
-      << "pdxInstanceCreations should be equal to 0.";
+      << "pdxInstanceCreations should be equal to 1";
 
   EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializationTime())
       << "pdxInstanceDeserializationTime should be equal to 0.";
@@ -256,10 +256,10 @@ TEST(PdxInstanceTest, testPdxInstance) {
       << "pdxInstanceDeserialization should be equal to 1.";
 
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
-      << "pdxInstanceCreations should be equal to 0.";
+      << "pdxInstanceCreations should be equal to 1.";
 
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
-      << "pdxInstanceDeserializationTime should be greater than 0.";
+      << "pdxInstanceDeserializationTime should be less than 0.";
 
   auto pdxTypeFromPdxTypeInstanceGet =
       std::dynamic_pointer_cast<PdxTests::PdxType>(
@@ -310,7 +310,7 @@ TEST(PdxInstanceTest, testNestedPdxInstance) {
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
       << "pdxInstanceCreations should be equal to 1";
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
-      << "pdxInstanceDeserializationTime should be greater than 0";
+      << "pdxInstanceDeserializationTime should be less than 0";
 
   auto parentPdx = std::dynamic_pointer_cast<ParentPdx>(object);
   EXPECT_TRUE(parentPdx);
