@@ -45,17 +45,17 @@ enum Gender { male, female, other };
 
 class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
  private:
-  int m_childId;
-  std::string m_childName;
-  std::shared_ptr<CacheableEnum> m_enum;
+  int childId_;
+  std::string childName_;
+  std::shared_ptr<CacheableEnum> enum_;
 
  public:
   ChildPdx() {}
 
   explicit ChildPdx(int id) {
-    m_childId = id;
-    m_childName = "name-" + std::to_string(id);
-    m_enum = CacheableEnum::create("Gender", "female", 5);
+    childId_ = id;
+    childName_ = "name-" + std::to_string(id);
+    enum_ = CacheableEnum::create("Gender", "female", 5);
   }
 
   ~ChildPdx() override = default;
@@ -65,9 +65,9 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
     return objectSize;
   }
 
-  int32_t getChildId() { return m_childId; }
+  int32_t getChildId() { return childId_; }
 
-  const std::string& getChildName() { return m_childName; }
+  const std::string& getChildName() { return childName_; }
 
   using PdxSerializable::fromData;
   using PdxSerializable::toData;
@@ -92,12 +92,12 @@ class TESTOBJECT_EXPORT ChildPdx : public PdxSerializable {
 
 class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
  private:
-  int m_parentId;
-  std::string m_parentName;
-  std::shared_ptr<Cacheable> m_childPdx;
-  std::shared_ptr<CacheableEnum> m_enum;
-  char16_t m_char;
-  std::vector<char16_t> m_charArray;
+  int parentId_;
+  std::string parentName_;
+  std::shared_ptr<Cacheable> childPdx_;
+  std::shared_ptr<CacheableEnum> enum_;
+  char16_t char_;
+  std::vector<char16_t> charArray_;
 
  public:
   ParentPdx();
@@ -107,19 +107,19 @@ class TESTOBJECT_EXPORT ParentPdx : public PdxSerializable {
 
   virtual size_t objectSize() const override { return sizeof(ParentPdx); }
 
-  int32_t getParentId() { return m_parentId; }
+  int32_t getParentId() { return parentId_; }
 
-  const std::string& getParentName() { return m_parentName; }
+  const std::string& getParentName() { return parentName_; }
 
   std::shared_ptr<ChildPdx> getChildPdx() {
-    return std::dynamic_pointer_cast<ChildPdx>(m_childPdx);
+    return std::dynamic_pointer_cast<ChildPdx>(childPdx_);
   }
 
-  std::shared_ptr<CacheableEnum> getEnum() { return m_enum; }
+  std::shared_ptr<CacheableEnum> getEnum() { return enum_; }
 
-  char16_t getChar() { return m_char; }
+  char16_t getChar() { return char_; }
 
-  std::vector<char16_t> getCharArray() { return m_charArray; }
+  std::vector<char16_t> getCharArray() { return charArray_; }
 
   using PdxSerializable::fromData;
   using PdxSerializable::toData;

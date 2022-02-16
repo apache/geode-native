@@ -336,7 +336,7 @@ std::vector<uint8_t> PdxLocalWriter::getPdxStream() {
   int32_t len = PdxHelper::readInt32(buffer);
   buffer += 8;
 
-  return {buffer, buffer + len};
+  return std::vector<uint8_t>{buffer, buffer + len};
 }
 
 void PdxLocalWriter::writeByte(int8_t byte) { m_dataOutput->write(byte); }

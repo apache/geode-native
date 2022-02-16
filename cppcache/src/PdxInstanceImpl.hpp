@@ -220,15 +220,15 @@ class PdxInstanceImpl : public WritablePdxInstance {
   const std::vector<uint8_t>& getPdxStream() const;
 
  private:
-  mutable std::vector<uint8_t> m_buffer;
-  mutable int32_t m_typeId;
+  mutable std::vector<uint8_t> buffer_;
+  mutable int32_t typeId_;
 
-  std::shared_ptr<PdxType> m_pdxType;
+  std::shared_ptr<PdxType> pdxType_;
   FieldVsValues m_updatedFields;
-  CachePerfStats& m_cacheStats;
-  PdxTypeRegistry& m_pdxTypeRegistry;
-  const CacheImpl& m_cacheImpl;
-  bool m_enableTimeStatistics;
+  CachePerfStats& cacheStats_;
+  PdxTypeRegistry& pdxTypeRegistry_;
+  const CacheImpl& cacheImpl_;
+  bool enableTimeStatistics_;
 
   std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields() const;
 
@@ -319,20 +319,6 @@ class PdxInstanceImpl : public WritablePdxInstance {
       std::shared_ptr<CacheableHashTable> OtherObj);
 
   DataInput getDataInputForField(const std::string& fieldname) const;
-
-  static int8_t m_BooleanDefaultBytes[];
-  static int8_t m_ByteDefaultBytes[];
-  static int8_t m_CharDefaultBytes[];
-  static int8_t m_ShortDefaultBytes[];
-  static int8_t m_IntDefaultBytes[];
-  static int8_t m_LongDefaultBytes[];
-  static int8_t m_FloatDefaultBytes[];
-  static int8_t m_DoubleDefaultBytes[];
-  static int8_t m_DateDefaultBytes[];
-  static int8_t m_StringDefaultBytes[];
-  static int8_t m_ObjectDefaultBytes[];
-  static int8_t m_NULLARRAYDefaultBytes[];
-  static std::shared_ptr<PdxFieldType> m_DefaultPdxFieldType;
 };
 }  // namespace client
 }  // namespace geode

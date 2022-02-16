@@ -306,16 +306,16 @@ TEST(PdxInstanceTest, testNestedPdxInstance) {
   EXPECT_TRUE(object);
 
   EXPECT_EQ(0, cachePerfStats.getPdxInstanceDeserializations())
-      << "pdxInstanceDeserialization should be equal to 1.";
+      << "pdxInstanceDeserialization should be equal to 0";
   EXPECT_EQ(1, cachePerfStats.getPdxInstanceCreations())
-      << "pdxInstanceCreations should be equal to 0.";
+      << "pdxInstanceCreations should be equal to 1";
   EXPECT_LT(0, cachePerfStats.getPdxInstanceDeserializationTime())
-      << "pdxInstanceDeserializationTime should be greater than 0.";
+      << "pdxInstanceDeserializationTime should be greater than 0";
 
   auto parentPdx = std::dynamic_pointer_cast<ParentPdx>(object);
   EXPECT_TRUE(parentPdx);
   EXPECT_TRUE(original.equals(*parentPdx, false))
-      << "ParentPdx objects should be equal.";
+      << "ParentPdx objects should be equal";
 }
 
 TEST(PdxInstanceTest, testCreateJsonInstance) {
