@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+#ifdef _WIN32
+// TODO. Remove this whenever ACE_Process is removed
+#define FD_SETSIZE 1024
+#endif
+
 #ifdef USE_SMARTHEAP
 #include <smrtheap.h>
 #endif
@@ -26,10 +31,8 @@
 #include <list>
 #include <map>
 
-#include <ace/Get_Opt.h>
-
-#include <boost/asio.hpp>
 #include <boost/process.hpp>
+#include <boost/program_options.hpp>
 #include <boost/interprocess/mapped_region.hpp>
 
 #ifdef _WIN32
@@ -48,6 +51,7 @@
 
 namespace bp = boost::process;
 namespace bip = boost::interprocess;
+namespace bpo = boost::program_options;
 
 static std::string g_programName;
 static uint32_t g_coordinatorPid = 0;
@@ -729,42 +733,39 @@ int dmain(int argc, char *argv[]) {
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
+
   setupCRTOutput();
   auto timebomb = std::chrono::seconds{std::stoi(Utils::getEnv("TIMEBOMB"))};
   TimeBomb tb(timebomb, []() { gClientCleanup.trigger(); });
   tb.arm();
 
+  g_programName = argv[0];
+  bpo::options_description generic("Options");
+  auto &&options = generic.add_options();
+  options("worker,s", bpo::value<int>(), "Set worker ID");
+  options("coordinator,m", bpo::value<int>(), "Set coordinator PID");
+  options("help", "Shows this help");
+
+  bpo::variables_map vm;
+  bpo::store(bpo::parse_command_line(argc, argv, generic), vm);
+  bpo::notify(vm);
+
+  int result = 0;
+  int workerId = 0;
+
+  auto iter = vm.find("worker");
+  if (iter != vm.end()) {
+    workerId = iter->second.as<int>();
+  }
+
+  iter = vm.find("coordinator");
+  if (iter != vm.end()) {
+    g_coordinatorPid = iter->second.as<int>();
+  } else {
+    g_coordinatorPid = boost::this_process::get_id();
+  }
+
   try {
-    g_programName = argv[0];
-    const ACE_TCHAR options[] = ACE_TEXT("s:m:");
-    ACE_Get_Opt cmd_opts(argc, argv, options);
-
-    int result = 0;
-
-    int workerId = 0;
-    int option = 0;
-    while ((option = cmd_opts()) != EOF) {
-      switch (option) {
-        case 's':
-          workerId = std::stoul(cmd_opts.opt_arg());
-          std::cout << "Using process id: " << workerId << "\n" << std::flush;
-          break;
-        case 'm':
-          g_coordinatorPid = std::stoul(cmd_opts.opt_arg());
-          std::cout << "Using coordinator id: " << g_coordinatorPid << "\n"
-                    << std::flush;
-          break;
-        default:
-          std::cout << "ignoring option: " << cmd_opts.last_option()
-                    << " with value " << cmd_opts.opt_arg() << "\n"
-                    << std::flush;
-      }
-    }
-
-    if (g_coordinatorPid == 0) {
-      g_coordinatorPid = boost::this_process::get_id();
-    }
-
     if (workerId > 0) {
       dunit::TestWorker worker(workerId);
       worker.begin();
@@ -783,6 +784,7 @@ int dmain(int argc, char *argv[]) {
     std::cout << "final worker id " << workerId << ", result " << result
               << "\n";
     std::cout << "before calling cleanup " << workerId << "\n";
+
     gClientCleanup.trigger();
     std::cout << "after calling cleanup\n";
     return result;

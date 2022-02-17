@@ -112,6 +112,7 @@ foreach(FILE ${SOURCES})
       ACE::ACE
       Boost::boost
       Boost::iostreams
+      Boost::program_options
       test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage
