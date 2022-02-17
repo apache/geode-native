@@ -17,7 +17,6 @@
 
 #include "HostStatSampler.hpp"
 
-#include <algorithm>
 #include <chrono>
 #include <map>
 #include <thread>
@@ -36,11 +35,8 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
-#include "../ClientProxyMembershipID.hpp"
 #include "../CppCacheLibrary.hpp"
-#include "../DistributedSystem.hpp"
 #include "../TcrConnectionManager.hpp"
-#include "../util/Log.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "StatArchiveWriter.hpp"
 
@@ -89,7 +85,7 @@ HostStatSampler::HostStatSampler(boost::filesystem::path filePath,
       m_isStatDiskSpaceEnabled(statDiskSpaceLimit != 0),
       m_archiveFileName(std::move(filePath)),
       m_archiveFileSizeLimit(
-          std::min(statFileLimit * mebibyte, MAX_STATS_FILE_LIMIT)),
+          (std::min)(statFileLimit * mebibyte, MAX_STATS_FILE_LIMIT)),
       m_archiveDiskSpaceLimit(statDiskSpaceLimit * mebibyte),
       m_spaceUsed(0),
       m_sampleRate(sampleRate),
@@ -122,7 +118,7 @@ void HostStatSampler::initStatDiskSpaceEnabled() {
 void HostStatSampler::initRollIndex() {
   forEachIndexStatFile(
       [&](const int32_t index, const boost::filesystem::path&) {
-        m_rollIndex = std::max(m_rollIndex, index + 1);
+        m_rollIndex = (std::max)(m_rollIndex, index + 1);
       });
 }
 
