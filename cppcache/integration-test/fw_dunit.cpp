@@ -47,6 +47,9 @@
 #define __DUNIT_NO_MAIN__
 #include "fw_dunit.hpp"
 
+#include "Utils.hpp"
+
+namespace bp = boost::process;
 namespace bip = boost::interprocess;
 namespace bpo = boost::program_options;
 
@@ -724,15 +727,17 @@ void log(std::string s, int lineno, const char * /*filename*/) {
             << std::flush;
 }
 
-void cleanup() { gClientCleanup.callClientCleanup(); }
-
 int dmain(int argc, char *argv[]) {
+  using apache::geode::client::Utils;
+
 #ifdef USE_SMARTHEAP
   MemRegisterTask();
 #endif
 
   setupCRTOutput();
-  TimeBomb tb(&cleanup);
+  auto timebomb = std::chrono::seconds{std::stoi(Utils::getEnv("TIMEBOMB"))};
+  TimeBomb tb(timebomb, []() { gClientCleanup.trigger(); });
+  tb.arm();
 
   g_programName = argv[0];
   bpo::options_description generic("Options");
@@ -780,7 +785,7 @@ int dmain(int argc, char *argv[]) {
               << "\n";
     std::cout << "before calling cleanup " << workerId << "\n";
 
-    gClientCleanup.callClientCleanup();
+    gClientCleanup.trigger();
     std::cout << "after calling cleanup\n";
     return result;
   } catch (dunit::TestException &te) {
@@ -796,7 +801,7 @@ int dmain(int argc, char *argv[]) {
               << std::flush;
   }
 
-  gClientCleanup.callClientCleanup();
+  gClientCleanup.trigger();
   return 1;
 }
 

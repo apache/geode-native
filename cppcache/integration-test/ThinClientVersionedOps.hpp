@@ -32,10 +32,10 @@
 
 // This is the test for tracking work. bug#304
 
-putThread *thread1 = nullptr;
-putThread *thread2 = nullptr;
-putThread *thread3 = nullptr;
-putThread *thread4 = nullptr;
+PutThread* thread1 = nullptr;
+PutThread* thread2 = nullptr;
+PutThread* thread3 = nullptr;
+PutThread* thread4 = nullptr;
 
 const char *regNames[] = {"DistRegionAck", "DistRegionNoAck"};
 const char *group1 = "A";
@@ -185,7 +185,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, threadPutonClient1)
   {
     auto rptr = getHelper()->getRegion(regNames[0]);
-    thread4 = new putThread(rptr, false);
+    thread4 = new PutThread(rptr, false);
     thread4->setParams(0, 10, 1, true, false, 0);
     thread4->start();
     LOG("Task: threadPutonClient1 Done");
@@ -309,7 +309,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, PutOnClient1)
   {
     auto rptr = getHelper()->getRegion(regNames[0]);
-    thread1 = new putThread(rptr, false);
+    thread1 = new PutThread(rptr, false);
     thread1->setParams(0, 5, 1, true, false, 1);
     thread1->start();
     LOG("PUT ops done on client 1");
@@ -319,7 +319,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT2, PutOnClient2)
   {
     auto rptr = getHelper()->getRegion(regNames[0]);
-    thread2 = new putThread(rptr, false);
+    thread2 = new PutThread(rptr, false);
     thread2->setParams(0, 5, 1, false, false, 0);  // 0, 5, 1, false, false, 0
     thread2->start();
     LOG("PUT ops done on client 2");
@@ -329,7 +329,7 @@ END_TASK_DEFINITION
 DUNIT_TASK_DEFINITION(CLIENT1, testServerGC)
   {
     auto rptr = getHelper()->getRegion(regNames[0]);
-    thread3 = new putThread(rptr, false);
+    thread3 = new PutThread(rptr, false);
     thread3->setParams(0, 5000, 1, true, false, 0);  // 0, 5, 1, false, false, 0
     thread3->start();
     LOG("5000 PUT ops done on client 1");
