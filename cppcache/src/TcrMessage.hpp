@@ -351,6 +351,7 @@ class TcrMessage {
   void readKeyPart(DataInput& input);
   void readBooleanPartAsObject(DataInput& input, bool* boolVal);
   void readIntPart(DataInput& input, uint32_t* intValue);
+  uint32_t readIntPart(DataInput& input);
   bool readExceptionPart(DataInput& input, uint8_t isLastChunk,
                          bool skipFirstPart = true);
   void readVersionTag(DataInput& input, uint16_t endpointMemId,
