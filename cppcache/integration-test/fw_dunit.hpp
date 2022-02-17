@@ -118,9 +118,12 @@ END_TASK(validate)
 #include <iostream>
 #include <string>
 
+#include <geode/Exception.hpp>
+
 #include <boost/interprocess/managed_shared_memory.hpp>
 
 #include <signal.h>
+#include "ClientCleanup.hpp"
 #include "TimeBomb.hpp"
 
 #define ASSERT(x, y)                                     \
