@@ -316,7 +316,7 @@ namespace Apache.Geode.Client.UnitTests
     private const string JavaServerStopArgs = "stop server";
     private const string LocatorStartArgs = "start locator --max-heap=512m";
     private const string LocatorStopArgs = "stop locator";
-    private const int MaxWaitMillis = 60000;
+    private const int MaxWaitMillis = 60000*5;
 
     private static string m_testDir = null;
     private static Dictionary<int, string> m_runningJavaServers =

@@ -37,6 +37,31 @@
 #include "ThinClientPoolDM.hpp"
 #include "Utils.hpp"
 
+namespace {
+using apache::geode::client::IllegalStateException;
+using apache::geode::client::PdxType;
+using apache::geode::client::PdxTypeRegistry;
+using apache::geode::client::Pool;
+using apache::geode::client::SerializationRegistry;
+
+std::shared_ptr<PdxType> checkAndFetchPdxType(
+    Pool* pool, std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
+    const std::shared_ptr<SerializationRegistry>& serializationRegistry,
+    int32_t typeId) {
+  auto pType = pdxTypeRegistry->getPdxType(typeId);
+  if (pType != nullptr) {
+    return pType;
+  }
+
+  pType = std::dynamic_pointer_cast<PdxType>(
+      serializationRegistry->GetPDXTypeById(pool, typeId));
+  pdxTypeRegistry->addLocalPdxType(pType->getPdxClassName(), pType);
+  pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
+
+  return pType;
+}
+}  // namespace
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -47,60 +72,23 @@ PdxHelper::PdxHelper() {}
 
 PdxHelper::~PdxHelper() {}
 
-void PdxHelper::serializePdxWithRetries(
-    DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject,
-    int maxRetries) {
-  auto retries = 0;
-  auto before = output.getCursor();
+void PdxHelper::serializePdx(DataOutput& output, PdxInstanceImpl* instance) {
+  auto cacheImpl = CacheRegionHelper::getCacheImpl(output.getCache());
+  auto registry = cacheImpl->getPdxTypeRegistry();
 
-  for (;;) {
-    try {
-      serializePdx(output, pdxObject);
-      break;
-    } catch (UnknownPdxTypeException&) {
-      if (retries++ >= maxRetries) {
-        throw;
-      } else {
-        if (auto instance =
-                std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject)) {
-          instance->setPdxId(0);
-        }
+  auto type = instance->getPdxType(DataOutputInternal::getPool(output));
+  PdxLocalWriter plw{output, type, registry};
+  instance->toData(plw);
+  plw.endObjectWriting();  // now write typeid
 
-        output.advanceCursor(before - output.getCursor());
-        LOGDEBUG("Retrying PDX serialization due to PDX unknown exception");
-      }
-    }
-  }
+  instance->updatePdxStream(plw.getPdxStream());
 }
 
 void PdxHelper::serializePdx(
     DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject) {
-  auto pdxII = std::dynamic_pointer_cast<PdxInstanceImpl>(pdxObject);
   auto cacheImpl = CacheRegionHelper::getCacheImpl(output.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto& cachePerfStats = cacheImpl->getCachePerfStats();
-
-  if (pdxII != nullptr) {
-    auto piPt = pdxII->getPdxType();
-    if (piPt != nullptr &&
-        piPt->getTypeId() ==
-            0)  // from pdxInstance factory need to get typeid from server
-    {
-      int typeId = pdxTypeRegistry->getPDXIdForType(
-          piPt, DataOutputInternal::getPool(output));
-      pdxII->setPdxId(typeId);
-    }
-    auto plw = PdxLocalWriter(output, piPt, pdxTypeRegistry);
-    pdxII->toData(plw);
-    plw.endObjectWriting();  // now write typeid
-    int len = 0;
-    uint8_t* pdxStream = plw.getPdxStream(len);
-    pdxII->updatePdxStream(pdxStream, len);
-
-    delete[] pdxStream;
-
-    return;
-  }
 
   auto&& className = pdxObject->getClassName();
   auto localPdxType = pdxTypeRegistry->getLocalPdxType(className);
@@ -165,8 +153,8 @@ void PdxHelper::serializePdx(
 std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
                                                            int32_t typeId,
                                                            int32_t length) {
-  std::shared_ptr<PdxSerializable> pdxObjectptr = nullptr;
-  std::shared_ptr<PdxType> pdxLocalType = nullptr;
+  std::shared_ptr<PdxSerializable> object;
+  std::shared_ptr<PdxType> localType;
 
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
@@ -175,37 +163,36 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
   auto pType = pdxTypeRegistry->getPdxType(typeId);
   if (pType) {
     // this may happen with PdxInstanceFactory
-    pdxLocalType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
+    localType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
   }
-  if (pType && pdxLocalType) {
+  if (pType && localType) {
     // type found
     auto&& pdxClassname = pType->getPdxClassName();
     LOGDEBUG("deserializePdx ClassName = " + pdxClassname +
              ", isLocal = " + std::to_string(pType->isLocal()));
 
-    pdxObjectptr = serializationRegistry->getPdxSerializableType(pdxClassname);
+    object = serializationRegistry->getPdxSerializableType(pdxClassname);
     if (pType->isLocal())  // local type no need to read Unread data
     {
       auto plr = PdxLocalReader(dataInput, pType, length, pdxTypeRegistry);
-      pdxObjectptr->fromData(plr);
+      object->fromData(plr);
       plr.moveStream();
     } else {
       auto prr = PdxRemoteReader(dataInput, pType, length, pdxTypeRegistry);
-      pdxObjectptr->fromData(prr);
+      object->fromData(prr);
       auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-      auto preserveData = prr.getPreservedData(mergedVersion, pdxObjectptr);
+      auto preserveData = prr.getPreservedData(mergedVersion, object);
       if (preserveData != nullptr) {
         pdxTypeRegistry->setPreserveData(
-            pdxObjectptr, preserveData,
+            object, preserveData,
             cacheImpl
                 ->getExpiryTaskManager());  // it will set data in weakhashmap
       }
       prr.moveStream();
 
-      if (auto pdxWrapper =
-              std::dynamic_pointer_cast<PdxWrapper>(pdxObjectptr)) {
-        if (!pdxWrapper->getObject()) {
+      if (auto wrapper = std::dynamic_pointer_cast<PdxWrapper>(object)) {
+        if (!wrapper->getObject()) {
           // No serializer was registered to deserialize this type.
           // Fall back to PdxInstance
           return nullptr;
@@ -213,23 +200,22 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       }
     }
   } else {
-    // type not found; need to get from server
-    if (!pType) {
+    if (pType == nullptr) {
       pType = std::dynamic_pointer_cast<PdxType>(
           serializationRegistry->GetPDXTypeById(
               DataInputInternal::getPool(dataInput), typeId));
-      pdxLocalType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
+      localType = pdxTypeRegistry->getLocalPdxType(pType->getPdxClassName());
     }
-    pdxObjectptr =
+
+    object =
         serializationRegistry->getPdxSerializableType(pType->getPdxClassName());
-    if (!pdxLocalType) {
+    if (!localType) {
       // need to know local type
-      auto pdxRealObject = pdxObjectptr;
-      auto prtc =
-          PdxReaderWithTypeCollector(dataInput, pType, length, pdxTypeRegistry);
-      pdxObjectptr->fromData(prtc);
-      if (auto pdxWrapper =
-              std::dynamic_pointer_cast<PdxWrapper>(pdxObjectptr)) {
+      auto pdxRealObject = object;
+      PdxReaderWithTypeCollector prtc{dataInput, pType, length,
+                                      pdxTypeRegistry};
+      object->fromData(prtc);
+      if (auto pdxWrapper = std::dynamic_pointer_cast<PdxWrapper>(object)) {
         if (!pdxWrapper->getObject()) {
           // No serializer was registered to deserialize this type.
           // Fall back to PdxInstance
@@ -238,35 +224,35 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       }
 
       // Check for the PdxWrapper
-      pdxLocalType = prtc.getLocalType();
+      localType = prtc.getLocalType();
 
-      if (*pType == *pdxLocalType) {
+      if (*pType == *localType) {
         pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(), pType);
         pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
         pType->setLocal(true);
       } else {
         // Need to know local type and then merge type
-        pdxLocalType->InitializeType();
-        pdxLocalType->setTypeId(pdxTypeRegistry->getPDXIdForType(
-            pdxObjectptr->getClassName(), DataInputInternal::getPool(dataInput),
-            pdxLocalType, true));
-        pdxLocalType->setLocal(true);
+        localType->InitializeType();
+        auto id = pdxTypeRegistry->getPDXIdForType(
+            object->getClassName(), DataInputInternal::getPool(dataInput),
+            localType, true);
+        localType->setTypeId(id);
+        localType->setLocal(true);
         pdxTypeRegistry->addLocalPdxType(pdxRealObject->getClassName(),
-                                         pdxLocalType);  // added local type
-        pdxTypeRegistry->addPdxType(pdxLocalType->getTypeId(), pdxLocalType);
+                                         localType);  // added local type
+        pdxTypeRegistry->addPdxType(id, localType);
 
         pType->InitializeType();
         pdxTypeRegistry->addPdxType(pType->getTypeId(),
                                     pType);  // adding remote type
 
         // create merge type
-        createMergedType(pdxLocalType, pType, dataInput);
+        createMergedType(localType, pType, dataInput);
 
         auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-        if (auto preserveData =
-                prtc.getPreservedData(mergedVersion, pdxObjectptr)) {
-          pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
+        if (auto preserveData = prtc.getPreservedData(mergedVersion, object)) {
+          pdxTypeRegistry->setPreserveData(object, preserveData,
                                            cacheImpl->getExpiryTaskManager());
         }
       }
@@ -276,28 +262,30 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& dataInput,
       LOGDEBUG("Adding type %d ", pType->getTypeId());
       pdxTypeRegistry->addPdxType(pType->getTypeId(),
                                   pType);  // adding remote type
-      auto prr = PdxRemoteReader(dataInput, pType, length, pdxTypeRegistry);
-      pdxObjectptr->fromData(prr);
+      PdxRemoteReader prr{dataInput, pType, length, pdxTypeRegistry};
+      object->fromData(prr);
 
       // Check for PdxWrapper to getObject.
 
-      createMergedType(pdxLocalType, pType, dataInput);
+      createMergedType(localType, pType, dataInput);
 
       auto mergedVersion = pdxTypeRegistry->getMergedType(pType->getTypeId());
 
-      auto preserveData = prr.getPreservedData(mergedVersion, pdxObjectptr);
+      auto preserveData = prr.getPreservedData(mergedVersion, object);
       if (preserveData != nullptr) {
-        pdxTypeRegistry->setPreserveData(pdxObjectptr, preserveData,
+        pdxTypeRegistry->setPreserveData(object, preserveData,
                                          cacheImpl->getExpiryTaskManager());
       }
+
       prr.moveStream();
     }
   }
-  return pdxObjectptr;
+
+  return object;
 }
 
 std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
-    DataInput& dataInput, bool forceDeserialize) {
+    DataInput& dataInput) {
   auto cacheImpl = CacheRegionHelper::getCacheImpl(dataInput.getCache());
   auto pdxTypeRegistry = cacheImpl->getPdxTypeRegistry();
   auto serializationRegistry = cacheImpl->getSerializationRegistry();
@@ -306,7 +294,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
   const auto len = dataInput.readInt32();
   const auto typeId = dataInput.readInt32();
 
-  if (!pdxTypeRegistry->getPdxReadSerialized() || forceDeserialize) {
+  if (!pdxTypeRegistry->getPdxReadSerialized()) {
     const auto pos = dataInput.currentBufferPosition();
     if (auto pdxObject = PdxHelper::deserializePdx(dataInput, typeId, len)) {
       cachePerfStats.incPdxDeSerialization(len + 9);  // pdxLen + 1 + 2*4
@@ -315,32 +303,19 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(
     dataInput.rewindCursor(dataInput.currentBufferPosition() - pos);
   }
 
-  checkAndFetchPdxType(DataInputInternal::getPool(dataInput), pdxTypeRegistry,
-                       serializationRegistry, typeId);
+  auto pType =
+      checkAndFetchPdxType(DataInputInternal::getPool(dataInput),
+                           pdxTypeRegistry, serializationRegistry, typeId);
 
-  cachePerfStats.incPdxInstanceCreations();
-
-  auto pdxObject = std::make_shared<PdxInstanceImpl>(
-      const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, typeId,
+  auto object = std::make_shared<PdxInstanceImpl>(
+      const_cast<uint8_t*>(dataInput.currentBufferPosition()), len, pType,
       cachePerfStats, *pdxTypeRegistry, *cacheImpl,
       cacheImpl->getDistributedSystem()
           .getSystemProperties()
           .getEnableTimeStatistics());
 
   dataInput.advanceCursor(len);
-
-  return std::move(pdxObject);
-}
-void PdxHelper::checkAndFetchPdxType(
-    Pool* pool, std::shared_ptr<PdxTypeRegistry>& pdxTypeRegistry,
-    const std::shared_ptr<SerializationRegistry>& serializationRegistry,
-    int32_t typeId) {
-  if (!pdxTypeRegistry->getPdxType(typeId)) {
-    auto pType = std::dynamic_pointer_cast<PdxType>(
-        serializationRegistry->GetPDXTypeById(pool, typeId));
-    pdxTypeRegistry->addLocalPdxType(pType->getPdxClassName(), pType);
-    pdxTypeRegistry->addPdxType(pType->getTypeId(), pType);
-  }
+  return std::move(object);
 }
 
 void PdxHelper::createMergedType(std::shared_ptr<PdxType> localType,
