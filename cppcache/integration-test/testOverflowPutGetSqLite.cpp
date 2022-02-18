@@ -247,28 +247,34 @@ void testEntryInvalidate(std::shared_ptr<Region> &regionPtr, uint32_t num) {
   ASSERT(v.size() == num, "size of key vec not equal");
 }
 
-class PutThread : public ACE_Task_Base {
- private:
-  std::shared_ptr<Region> m_regPtr;
-  int m_min;
-  int m_max;
-
+class PutThread {
  public:
-  PutThread(std::shared_ptr<Region> &regPtr, int min, int max)
-      : m_regPtr(regPtr), m_min(min), m_max(max) {}
+  PutThread(std::shared_ptr<Region> region, int min, int max)
+      : min_{min}, max_{max}, region_{region} {}
 
-  int svc(void) override {
+  void run() {
     /** put some values into the cache. */
-    doNput(m_regPtr, m_max, m_min);
+    doNput(region_, max_, min_);
     /** do some gets... printing what we find in the cache. */
-    doNget(m_regPtr, m_max, m_min);
+    doNget(region_, max_, min_);
     LOG("Completed doNget");
-    return 0;
   }
 
-  void start() { activate(); }
+  void start() {
+    thread_ = std::thread{[this]() { run(); }};
+  }
 
-  void stop() { wait(); }
+  void stop() {
+    if (thread_.joinable()) {
+      thread_.join();
+    }
+  }
+
+ protected:
+  int min_;
+  int max_;
+  std::thread thread_;
+  std::shared_ptr<Region> region_;
 };
 
 void verifyGetAll(std::shared_ptr<Region> region, int startIndex) {

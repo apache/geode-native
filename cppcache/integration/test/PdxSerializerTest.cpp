@@ -56,9 +56,7 @@ class NonPdxType {
   bool operator==(const NonPdxType& rhs) const {
     return longValue == rhs.longValue;
   }
-  //  bool operator!=(const NonPdxType& rhs) const { return !(rhs == *this); }
 
-  int64_t getLongValue() { return longValue; }
   void setLongValue(int64_t value) { this->longValue = value; }
 
   friend TestPdxSerializer;
@@ -115,18 +113,19 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
   return region;
 }
 
-void assertNonPdxType(const std::shared_ptr<NonPdxType>& expected,
-                      const std::shared_ptr<Cacheable>& actual) {
-  ASSERT_NE(nullptr, actual);
-  auto pdxWrapper = std::dynamic_pointer_cast<PdxWrapper>(actual);
-  ASSERT_NE(nullptr, pdxWrapper);
-  auto object = pdxWrapper->getObject();
-  ASSERT_NE(nullptr, object);
-  auto nonPdxType = std::static_pointer_cast<NonPdxType>(object);
-  ASSERT_NE(nullptr, nonPdxType);
-  EXPECT_EQ(2, nonPdxType->getLongValue());
+void expectNonPdxTypeEquals(const std::shared_ptr<NonPdxType>& expected,
+                            const std::shared_ptr<Cacheable>& actual) {
+  EXPECT_TRUE(actual);
 
-  EXPECT_NE(expected, nonPdxType);
+  auto wrapper = std::dynamic_pointer_cast<PdxWrapper>(actual);
+  EXPECT_TRUE(wrapper);
+
+  auto object = wrapper->getObject();
+  EXPECT_TRUE(object);
+
+  auto nonPdxType = std::static_pointer_cast<NonPdxType>(object);
+  EXPECT_TRUE(nonPdxType);
+
   EXPECT_EQ(*expected, *nonPdxType);
 }
 
@@ -150,7 +149,7 @@ TEST(PdxSerializerTest, canSerializeNonPdxSerializableType) {
         std::make_shared<TestPdxSerializer>());
 
     region->put("2", std::make_shared<PdxWrapper>(nonPdxType, CLASSNAME1));
-    assertNonPdxType(nonPdxType, region->get("2"));
+    expectNonPdxTypeEquals(nonPdxType, region->get("2"));
   }
 
   {
@@ -159,7 +158,7 @@ TEST(PdxSerializerTest, canSerializeNonPdxSerializableType) {
     cache.getTypeRegistry().registerPdxSerializer(
         std::make_shared<TestPdxSerializer>());
 
-    assertNonPdxType(nonPdxType, region->get("2"));
+    expectNonPdxTypeEquals(nonPdxType, region->get("2"));
   }
 }
 

@@ -46,6 +46,7 @@
 #include "GetAllServersResponse.hpp"
 #include "LocatorListResponse.hpp"
 #include "PdxHelper.hpp"
+#include "PdxInstanceImpl.hpp"
 #include "QueueConnectionResponse.hpp"
 #include "ThinClientPoolDM.hpp"
 
@@ -555,7 +556,12 @@ int32_t SerializationRegistry::GetPDXIdForType(
 std::shared_ptr<Serializable> SerializationRegistry::GetPDXTypeById(
     Pool* pool, int32_t typeId) const {
   if (auto poolDM = dynamic_cast<ThinClientPoolDM*>(pool)) {
-    return poolDM->GetPDXTypeById(typeId);
+    auto result = poolDM->GetPDXTypeById(typeId);
+    if (result == nullptr) {
+      throw IllegalStateException("Unknown pdx type=" + std::to_string(typeId));
+    }
+
+    return result;
   }
 
   throw IllegalStateException("Pool not found, Pdx operation failed");
@@ -734,14 +740,20 @@ void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
 }
 
 void PdxTypeHandler::serialize(
-    const std::shared_ptr<PdxSerializable>& pdxSerializable,
+    const std::shared_ptr<PdxSerializable>& serializable,
     DataOutput& dataOutput) const {
-  PdxHelper::serializePdxWithRetries(dataOutput, pdxSerializable);
+  auto instance = std::dynamic_pointer_cast<PdxInstanceImpl>(serializable);
+
+  if (instance != nullptr) {
+    PdxHelper::serializePdx(dataOutput, instance.get());
+  } else {
+    PdxHelper::serializePdx(dataOutput, serializable);
+  }
 }
 
 std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(
     DataInput& dataInput) const {
-  return PdxHelper::deserializePdx(dataInput, false);
+  return PdxHelper::deserializePdx(dataInput);
 }
 
 void DataSerializableHandler::serialize(

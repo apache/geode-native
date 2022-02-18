@@ -161,28 +161,6 @@ class HostStatSampler {
   bool isRunning() const;
 
  private:
-  std::recursive_mutex m_samplingLock;
-  bool m_adminError;
-  std::thread m_thread;
-  std::atomic<bool> m_running;
-  std::atomic<bool> m_stopRequested;
-  std::atomic<bool> m_isStatDiskSpaceEnabled;
-  std::unique_ptr<StatArchiveWriter> m_archiver;
-  std::unique_ptr<StatSamplerStats> m_samplerStats;
-  const char* m_durableClientId;
-  std::chrono::seconds m_durableTimeout;
-
-  boost::filesystem::path m_archiveFileName;
-  size_t m_archiveFileSizeLimit;
-  size_t m_archiveDiskSpaceLimit;
-  size_t m_spaceUsed = 0;
-  std::chrono::milliseconds m_sampleRate;
-  StatisticsManager* m_statMngr;
-  CacheImpl* m_cache;
-
-  int64_t m_pid;
-  system_clock::time_point m_startTime;
-
   /**
    * For testing only.
    */
@@ -192,12 +170,7 @@ class HostStatSampler {
 
   boost::filesystem::path initStatFileWithExt();
 
-  /**
-   * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
-   * to a new file name. This integer rollIndex will be used to format the
-   * file name into which the current archiveFile will be renamed.
-   */
-  int32_t m_rollIndex;
+
 
   /**
    * This function rolls the existing archive file.
@@ -219,13 +192,42 @@ class HostStatSampler {
 
   void initStatDiskSpaceEnabled();
 
-  static const char* NC_HSS_Thread;
 
   friend TestableHostStatSampler;
   void initRollIndex();
 
   template <typename _Function>
   void forEachIndexStatFile(_Function function) const;
+
+ private:
+  std::recursive_mutex samplingMutex_;
+  bool adminError_;
+  std::thread thread_;
+  std::atomic<bool> running_;
+  std::atomic<bool> stopRequested_;
+  std::atomic<bool> isStatDiskSpaceEnabled_;
+  std::unique_ptr<StatArchiveWriter> archiver_;
+  std::unique_ptr<StatSamplerStats> samplerStats_;
+  const char* durableClientId_;
+  std::chrono::seconds durableTimeout_;
+
+  boost::filesystem::path archiveFileName_;
+  size_t archiveFileSizeLimit_;
+  size_t archiveDiskSpaceLimit_;
+  size_t spaceUsed_ = 0;
+  std::chrono::milliseconds sampleRate_;
+  StatisticsManager* statsMgr_;
+  CacheImpl* cache_;
+
+  int64_t pid_;
+  system_clock::time_point startTime_;
+
+  /**
+   * The archiveFile, after it exceeds archiveFileSizeLimit should be rolled
+   * to a new file name. This integer rollIndex will be used to format the
+   * file name into which the current archiveFile will be renamed.
+   */
+  int32_t rollIndex_;
 };
 
 }  // namespace statistics

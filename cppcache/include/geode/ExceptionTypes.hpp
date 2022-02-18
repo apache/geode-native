@@ -850,18 +850,6 @@ class APACHE_GEODE_EXPORT SslException : public Exception {
   }
 };
 
-/**
- *@brief Thrown when an unknown pdx type is found.
- **/
-class APACHE_GEODE_EXPORT UnknownPdxTypeException : public Exception {
- public:
-  using Exception::Exception;
-  ~UnknownPdxTypeException() noexcept override {}
-  std::string getName() const override {
-    return "apache::geode::client::UnknownPdxTypeException";
-  }
-};
-
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

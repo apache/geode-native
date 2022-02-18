@@ -17,6 +17,7 @@
 
 #include <geode/ExpirationAction.hpp>
 #include <geode/Region.hpp>
+#include <geode/SystemProperties.hpp>
 
 #include "fw_helper.hpp"
 #include "CacheRegionHelper.hpp"

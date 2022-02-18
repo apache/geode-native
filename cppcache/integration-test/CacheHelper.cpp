@@ -46,6 +46,8 @@
 #include <chrono>
 #include <thread>
 
+#include <boost/asio.hpp>
+
 #ifndef ROOT_NAME
 #define ROOT_NAME "Root"
 #endif
@@ -1016,11 +1018,14 @@ void CacheHelper::initServer(int instance, const std::string &xml,
                              const char * /*unused*/, bool ssl,
                              bool enableDelta, bool, bool testServerGC,
                              bool untrustedCert, bool useSecurityManager) {
-  if (!isServerCleanupCallbackRegistered &&
-      gClientCleanup.registerCallback(&CacheHelper::cleanupServerInstances)) {
+  if (!isServerCleanupCallbackRegistered) {
     isServerCleanupCallbackRegistered = true;
+    gClientCleanup.registerCallback(
+        []() { CacheHelper::cleanupServerInstances(); });
+
     std::cout << "TimeBomb registered server cleanupcallback \n";
   }
+
   std::cout << "Inside initServer added\n";
 
   static const auto gfjavaenv = Utils::getEnv("GFJAVA");
@@ -1424,9 +1429,11 @@ void CacheHelper::initLocator(int instance, bool ssl, bool, int dsId,
                               bool useSecurityManager) {
   static const auto gfjavaenv = Utils::getEnv("GFJAVA");
 
-  if (!isLocatorCleanupCallbackRegistered &&
-      gClientCleanup.registerCallback(&CacheHelper::cleanupLocatorInstances)) {
+  if (!isLocatorCleanupCallbackRegistered) {
     isLocatorCleanupCallbackRegistered = true;
+
+    gClientCleanup.registerCallback(
+        []() { CacheHelper::cleanupLocatorInstances(); });
   }
 
   std::string currDir = boost::filesystem::current_path().string();
@@ -1530,22 +1537,28 @@ int CacheHelper::getRandomNumber() {
 }
 
 int CacheHelper::getRandomAvailablePort() {
-  while (true) {
-    int port = CacheHelper::getRandomNumber();
-    ACE_INET_Addr addr(port, "localhost");
-    ACE_SOCK_Acceptor acceptor;
-    int result = acceptor.open(addr, 0, AF_INET);
-    if (result == -1) {
-      continue;
-    } else {
-      result = acceptor.close();
-      if (result == -1) {
-        continue;
-      } else {
-        return port;
-      }
+  using boost::asio::io_service;
+  using boost::asio::ip::tcp;
+  namespace bip = boost::asio::ip;
+
+  io_service service;
+  bip::tcp::acceptor acceptor(service, bip::tcp::v4());
+
+  int result = 0;
+  while (result == 0) {
+    uint16_t port = getRandomNumber();
+    bip::tcp::endpoint ep{bip::address_v4::loopback(), port};
+
+    try {
+      acceptor.bind(ep);
+      acceptor.listen();
+      result = port;
+    } catch (boost::system::system_error &e) {
+      std::clog << "Error: " << e.what() << std::endl;
     }
   }
+
+  return result;
 }
 
 std::string CacheHelper::unitTestOutputFile() {

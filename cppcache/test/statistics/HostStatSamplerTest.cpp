@@ -66,9 +66,9 @@ class TestableHostStatSampler : public HostStatSampler {
 
   void initRollIndex() { HostStatSampler::initRollIndex(); }
 
-  int32_t getRollIndex() { return HostStatSampler::m_rollIndex; }
+  int32_t getRollIndex() { return HostStatSampler::rollIndex_; }
 
-  size_t getSpaceUsed() { return HostStatSampler::m_spaceUsed; }
+  size_t getSpaceUsed() { return HostStatSampler::spaceUsed_; }
 };
 
 TEST(HostStatSamplerTest,

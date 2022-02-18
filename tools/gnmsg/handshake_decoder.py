@@ -48,7 +48,7 @@ class HandshakeDecoder(DecoderBase):
         }
 
     def is_handshake_trace(self, line):
-        expression = re.compile(r"Handshake bytes \(\d+\):\s*([0-9|a-f|A-F]+)")
+        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
         match = expression.search(line)
         if match:
             return True
@@ -56,7 +56,7 @@ class HandshakeDecoder(DecoderBase):
             return False
 
     def get_handshake_bytes(self, line):
-        expression = re.compile(r"Handshake bytes \(\d+\):\s*([0-9|a-f|A-F]+)")
+        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
         match = expression.search(line)
         if match:
             return match.group(1)

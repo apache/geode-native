@@ -28,10 +28,10 @@ namespace testobject {
 void ChildPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ChildPdx::toData() Started......");
 
-  pw.writeInt("m_childId", m_childId);
+  pw.writeInt("m_childId", childId_);
   pw.markIdentityField("m_childId");
-  pw.writeObject("m_enum", m_enum);
-  pw.writeString("m_childName", m_childName);
+  pw.writeObject("m_enum", enum_);
+  pw.writeString("m_childName", childName_);
 
   LOGDEBUG("ChildPdx::toData() Done......");
 }
@@ -39,17 +39,17 @@ void ChildPdx::toData(PdxWriter& pw) const {
 void ChildPdx::fromData(PdxReader& pr) {
   LOGINFO("ChildPdx::fromData() start...");
 
-  m_childId = pr.readInt("m_childId");
-  LOGINFO("ChildPdx::fromData() m_childId = %d ", m_childId);
-  m_enum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
-  m_childName = pr.readString("m_childName");
+  childId_ = pr.readInt("m_childId");
+  LOGINFO("ChildPdx::fromData() m_childId = %d ", childId_);
+  enum_ = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
+  childName_ = pr.readString("m_childName");
 
   LOGINFO("ChildPdx::fromData() end...");
 }
 
 std::string ChildPdx::toString() const {
-  return "ChildPdx: [m_childId=" + std::to_string(m_childId) +
-         "] [ m_childName=" + m_childName + " ]";
+  return "ChildPdx: [m_childId=" + std::to_string(childId_) +
+         "] [ m_childName=" + childName_ + " ]";
 }
 
 bool ChildPdx::equals(ChildPdx& other) const {
@@ -60,32 +60,57 @@ bool ChildPdx::equals(ChildPdx& other) const {
     LOGINFO("ChildPdx::equals1");
     return false;
   }
-  if ((m_childName == other.m_childName) && (m_childId == other.m_childId) &&
-      (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
-      (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
-      (m_enum->getEnumName() == other.m_enum->getEnumName())) {
+  if ((childName_ == other.childName_) && (childId_ == other.childId_) &&
+      (enum_->getEnumOrdinal() == other.enum_->getEnumOrdinal()) &&
+      (enum_->getEnumClassName() == other.enum_->getEnumClassName()) &&
+      (enum_->getEnumName() == other.enum_->getEnumName())) {
     LOGINFO("ChildPdx::equals2");
     return true;
   }
   return false;
 }
 
+ParentPdx::ParentPdx()
+    : parentId_{-1},
+      parentName_{},
+      childPdx_{},
+      enum_{},
+      char_{L'\0'},
+      charArray_{} {}
+
+ParentPdx::ParentPdx(int id)
+    : parentId_{id},
+      parentName_{"name-" + std::to_string(id)},
+      childPdx_{std::make_shared<ChildPdx>(id)},
+      enum_{CacheableEnum::create("Gender", "male", 6)},
+      char_{'C'},
+      charArray_{{'X', 'Y'}} {}
+
+const std::string& ParentPdx::getClassName() const {
+  static std::string className = "testobject.ParentPdx";
+  return className;
+}
+
+std::shared_ptr<PdxSerializable> ParentPdx::createDeserializable() {
+  return std::make_shared<ParentPdx>();
+}
+
 void ParentPdx::toData(PdxWriter& pw) const {
   LOGDEBUG("ParentPdx::toData() Started......");
 
-  pw.writeInt("m_parentId", m_parentId);
+  pw.writeInt("m_parentId", parentId_);
   LOGDEBUG("ParentPdx::toData() m_parentId......");
   pw.markIdentityField("m_parentId");
-  pw.writeObject("m_enum", m_enum);
+  pw.writeObject("m_enum", enum_);
   LOGDEBUG("ParentPdx::toData() m_enum......");
-  pw.writeString("m_parentName", m_parentName);
+  pw.writeString("m_parentName", parentName_);
   LOGDEBUG("ParentPdx::toData() m_parentName......");
-  pw.writeObject("m_childPdx", m_childPdx);
+  pw.writeObject("m_childPdx", childPdx_);
   LOGDEBUG("ParentPdx::toData() m_childPdx......");
   pw.markIdentityField("m_childPdx");
 
-  pw.writeChar("m_char", m_char);
-  pw.writeCharArray("m_charArray", m_charArray);
+  pw.writeChar("m_char", char_);
+  pw.writeCharArray("m_charArray", charArray_);
 
   LOGDEBUG("ParentPdx::toData() Done......");
 }
@@ -93,17 +118,17 @@ void ParentPdx::toData(PdxWriter& pw) const {
 void ParentPdx::fromData(PdxReader& pr) {
   LOGINFO("ParentPdx::fromData() start...");
 
-  m_parentId = pr.readInt("m_parentId");
-  LOGINFO("ParentPdx::fromData() m_parentId = %d ", m_parentId);
-  m_enum = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
+  parentId_ = pr.readInt("m_parentId");
+  LOGINFO("ParentPdx::fromData() m_parentId = %d ", parentId_);
+  enum_ = std::dynamic_pointer_cast<CacheableEnum>(pr.readObject("m_enum"));
   LOGINFO("ParentPdx::fromData() read gender ");
-  m_parentName = pr.readString("m_parentName");
-  LOGINFO("ParentPdx::fromData() m_parentName = %s ", m_parentName.c_str());
-  m_childPdx = pr.readObject("m_childPdx");
+  parentName_ = pr.readString("m_parentName");
+  LOGINFO("ParentPdx::fromData() m_parentName = %s ", parentName_.c_str());
+  childPdx_ = pr.readObject("m_childPdx");
   LOGINFO("ParentPdx::fromData() start3...");
 
-  m_char = pr.readChar("m_char");
-  m_charArray = pr.readCharArray("m_charArray");
+  char_ = pr.readChar("m_char");
+  charArray_ = pr.readCharArray("m_charArray");
 
   LOGINFO("ParentPdx::fromData() end...");
 }
@@ -111,22 +136,21 @@ void ParentPdx::fromData(PdxReader& pr) {
 std::string ParentPdx::toString() const {
   std::stringstream strm;
 
-  strm << "ParentPdx: [m_parentId=" << m_parentId
-       << "][m_parentName = " << m_parentName << "][m_childPdx = " << m_childPdx
+  strm << "ParentPdx: [m_parentId=" << parentId_
+       << "][m_parentName = " << parentName_ << "][m_childPdx = " << childPdx_
        << "] ";
   return strm.str();
 }
 
 bool ParentPdx::equals(const ParentPdx& other, bool isPdxReadSerialized) const {
-  if ((m_parentName == other.m_parentName) &&
-      (m_parentId == other.m_parentId) &&
-      (m_enum->getEnumOrdinal() == other.m_enum->getEnumOrdinal()) &&
-      (m_enum->getEnumClassName() == other.m_enum->getEnumClassName()) &&
-      (m_enum->getEnumName() == other.m_enum->getEnumName()) &&
-      m_char == other.m_char && m_charArray == other.m_charArray) {
+  if ((parentName_ == other.parentName_) && (parentId_ == other.parentId_) &&
+      (enum_->getEnumOrdinal() == other.enum_->getEnumOrdinal()) &&
+      (enum_->getEnumClassName() == other.enum_->getEnumClassName()) &&
+      (enum_->getEnumName() == other.enum_->getEnumName()) &&
+      char_ == other.char_ && charArray_ == other.charArray_) {
     if (!isPdxReadSerialized) {
-      ChildPdx* ch1 = dynamic_cast<ChildPdx*>(m_childPdx.get());
-      ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.m_childPdx.get());
+      ChildPdx* ch1 = dynamic_cast<ChildPdx*>(childPdx_.get());
+      ChildPdx* ch2 = dynamic_cast<ChildPdx*>(other.childPdx_.get());
 
       if (ch1->equals(*ch2)) {
         return true;

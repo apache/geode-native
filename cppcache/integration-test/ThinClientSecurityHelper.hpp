@@ -170,46 +170,54 @@ void initClientAuth(char UserType) {
   }
 }
 
-// This putThread class is used in
+// This PutThread class is used in
 // testThinClientTracking,testThinClientTicket304, testThinClientTicket317
 
-class putThread : public ACE_Task_Base {
+class PutThread {
  public:
-  explicit putThread(std::shared_ptr<Region> r, bool regInt = false,
-                     int waitTime = 0) {
-    m_reg = r;
-    m_regInt = regInt;
-    m_numthreads = 1;
-    m_numops = 0;
-    m_isCallBack = false;
-    m_sameKey = false;
-    m_waitTime = waitTime;
+  explicit PutThread(std::shared_ptr<Region> r, bool regInt = false,
+                     int waitTime = 0)
+      : region_{r},
+        numOps_{0},
+        numThreads_{1},
+        isCallback_{false},
+        sameKey_{false},
+        regInt_{regInt},
+        waitTime_{waitTime} {
   }
 
   void setParams(int opcode, int numofops, int numthreads,
                  bool isCallBack = false, bool sameKey = false,
                  int waitTime = 0) {  //
-    m_opcode = opcode;
-    m_numops = numofops;
-    m_numthreads = numthreads;
-    m_isCallBack = isCallBack;
-    m_sameKey = sameKey;
-    m_waitTime = waitTime;
+    opcode_ = opcode;
+    numOps_ = numofops;
+    numThreads_ = numthreads;
+    isCallback_ = isCallBack;
+    sameKey_ = sameKey;
+    waitTime_ = waitTime;
   }
 
   void start() {
-    m_run = true;
-    activate(THR_NEW_LWP | THR_JOINABLE, m_numthreads);
-  }
-
-  void stop() {
-    if (m_run) {
-      m_run = false;
-      wait();
+    for(auto i = 0; i < numThreads_; ++i) {
+      threads_.emplace_back([this](){
+        run();
+      });
     }
   }
 
-  int svc() override {
+  void wait() {
+    for(auto& thread : threads_) {
+      if(thread.joinable()) {
+        thread.join();
+      }
+    }
+  }
+
+  void stop() {
+      wait();
+  }
+
+  void run() {
     int ops = 0;
     std::string key_str;
     std::shared_ptr<CacheableKey> key;
@@ -217,49 +225,49 @@ class putThread : public ACE_Task_Base {
     std::vector<std::shared_ptr<CacheableKey>> keys0;
 
     auto pid = boost::this_process::get_id();
-    if (m_regInt) {
-      m_reg->registerAllKeys(false, true);
+    if (regInt_) {
+      region_->registerAllKeys(false, true);
     }
-    if (m_waitTime != 0) {
-      std::this_thread::sleep_for(std::chrono::seconds{m_waitTime});
+    if (waitTime_ != 0) {
+      std::this_thread::sleep_for(std::chrono::seconds{waitTime_});
     }
-    while (ops++ < m_numops) {
-      if (m_sameKey) {
+    while (ops++ < numOps_) {
+      if (sameKey_) {
         key_str = "key-1";
       } else {
         key_str = "key-" + std::to_string(ops);
       }
 
       key = CacheableKey::create(key_str);
-      if (m_opcode == 0) {
+      if (opcode_ == 0) {
         std::string value_str;
 
-        if (m_isCallBack) {
+        if (isCallback_) {
           auto boolptr = CacheableBoolean::create("true");
           value_str = "client1-value" + std::to_string(ops);
           value = CacheableString::create(value_str);
-          m_reg->put(key, value, boolptr);
+          region_->put(key, value, boolptr);
         } else {
           value_str = "client2-value" + std::to_string(ops);
           value = CacheableString::create(value_str);
-          m_reg->put(key, value);
+          region_->put(key, value);
         }
-      } else if (m_opcode == 1) {
-        m_reg->get(key);
-      } else if (m_opcode == 5) {
+      } else if (opcode_ == 1) {
+        region_->get(key);
+      } else if (opcode_ == 5) {
         keys0.push_back(key);
-        if (ops == m_numops) {
-          m_reg->registerKeys(keys0, false, true);
+        if (ops == numOps_) {
+          region_->registerKeys(keys0, false, true);
         }
-      } else if (m_opcode == 6) {
-        m_reg->registerRegex("key-[1-3]", false, true);
+      } else if (opcode_ == 6) {
+        region_->registerRegex("key-[1-3]", false, true);
       } else {
         try {
-          if (m_isCallBack) {
+          if (isCallback_) {
             auto boolptr = CacheableBoolean::create("true");
-            m_reg->destroy(key, boolptr);
+            region_->destroy(key, boolptr);
           } else {
-            m_reg->destroy(key);
+            region_->destroy(key);
           }
         } catch (Exception& ex) {
           auto tid =
@@ -268,18 +276,20 @@ class putThread : public ACE_Task_Base {
         }
       }
     }
-    return 0;
   }
 
-  std::shared_ptr<Region> m_reg;
-  bool m_run;
-  int m_opcode;
-  int m_numops;
-  int m_numthreads;
-  bool m_isCallBack;
-  bool m_sameKey;
-  bool m_regInt;
-  int m_waitTime;
+ protected:
+  std::shared_ptr<Region> region_;
+
+  int opcode_;
+  int numOps_;
+  int numThreads_;
+  bool isCallback_;
+  bool sameKey_;
+  bool regInt_;
+  int waitTime_;
+
+  std::vector<std::thread> threads_;
 };
 
 }  // namespace
