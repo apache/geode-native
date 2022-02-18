@@ -97,7 +97,7 @@ std::string Utils::convertHostToCanonicalForm(const std::string& endpoints) {
   }
 
   auto hostname = endpoints.substr(0, pos);
-  auto port = endpoints.substr(pos);
+  auto port = endpoints.substr(pos + 1);
 
   if (hostname == "localhost") {
     hostname = boost::asio::ip::host_name();
@@ -112,7 +112,7 @@ std::string Utils::convertHostToCanonicalForm(const std::string& endpoints) {
     hostname = results->host_name();
   }
 
-  return hostname + port;
+  return hostname + ':' + port;
 }
 
 void Utils::parseEndpointNamesString(

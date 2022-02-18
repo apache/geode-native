@@ -45,7 +45,7 @@ const int ClientProxyMembershipID::VERSION_MASK = 0x8;
 const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
-    : m_hostPort(0), m_vmViewId(0) {}
+    : hostPort_(0), vmViewId_(0) {}
 
 ClientProxyMembershipID::~ClientProxyMembershipID() noexcept = default;
 
@@ -80,16 +80,16 @@ void ClientProxyMembershipID::initHostAddressVector(
     const boost::asio::ip::address& address) {
   if (address.is_v6()) {
     auto bytes = address.to_v6().to_bytes();
-    m_hostAddr.assign(bytes.begin(), bytes.end());
+    hostAddr_.assign(bytes.begin(), bytes.end());
   } else {
     auto bytes = address.to_v4().to_bytes();
-    m_hostAddr.assign(bytes.begin(), bytes.end());
+    hostAddr_.assign(bytes.begin(), bytes.end());
   }
 }
 
 void ClientProxyMembershipID::initHostAddressVector(const uint8_t* hostAddr,
                                                     uint32_t hostAddrLen) {
-  m_hostAddr.assign(hostAddr, hostAddr + hostAddrLen);
+  hostAddr_.assign(hostAddr, hostAddr + hostAddrLen);
 }
 
 void ClientProxyMembershipID::initObjectVars(
@@ -100,22 +100,21 @@ void ClientProxyMembershipID::initObjectVars(
     const char* uniqueTag, uint32_t vmViewId) {
   DataOutputInternal m_memID;
   if (dsname == nullptr) {
-    m_dsname = std::string("");
+    dsName_ = std::string("");
   } else {
-    m_dsname = std::string(dsname);
+    dsName_ = std::string(dsname);
   }
-  m_hostPort = hostPort;
+  hostPort_ = hostPort;
   if (uniqueTag == nullptr) {
-    m_uniqueTag = std::string("");
+    uniqueTag_ = std::string("");
   } else {
-    m_uniqueTag = std::string(uniqueTag);
+    uniqueTag_ = std::string(uniqueTag);
   }
 
-  m_vmViewId = vmViewId;
+  vmViewId_ = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
   m_memID.write(static_cast<int8_t>(DSCode::InternalDistributedMember));
-  m_memID.writeBytes(m_hostAddr.data(),
-                     static_cast<int32_t>(m_hostAddr.size()));
+  m_memID.writeBytes(hostAddr_.data(), static_cast<int32_t>(hostAddr_.size()));
   m_memID.writeInt(static_cast<int32_t>(synch_counter));
   m_memID.writeString(hostname);
   m_memID.write(splitBrainFlag);
@@ -139,45 +138,45 @@ void ClientProxyMembershipID::initObjectVars(
   size_t len;
   char* buf =
       reinterpret_cast<char*>(const_cast<uint8_t*>(m_memID.getBuffer(&len)));
-  m_memIDStr.append(buf, len);
+  memIdStr_.append(buf, len);
 
-  clientID.append(hostname);
-  clientID.append("(");
-  clientID.append(std::to_string(vPID));
-  clientID.append(":loner):");
-  clientID.append(std::to_string(synch_counter));
-  clientID.append(":");
-  clientID.append(getUniqueTag());
-  clientID.append(":");
-  clientID.append(getDSName());
+  clientId_.append(hostname);
+  clientId_.append("(");
+  clientId_.append(std::to_string(vPID));
+  clientId_.append(":loner):");
+  clientId_.append(std::to_string(synch_counter));
+  clientId_.append(":");
+  clientId_.append(getUniqueTag());
+  clientId_.append(":");
+  clientId_.append(getDSName());
 
   for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-    m_hashKey.append(":");
-    m_hashKey.append(std::to_string(m_hostAddr[i]));
+    hashKey_.append(":");
+    hashKey_.append(std::to_string(hostAddr_[i]));
   }
-  m_hashKey.append(":");
-  m_hashKey.append(std::to_string(getHostPort()));
-  m_hashKey.append(":");
-  m_hashKey.append(getDSName());
-  m_hashKey.append(":");
-  if (!m_uniqueTag.empty()) {
-    m_hashKey.append(getUniqueTag());
+  hashKey_.append(":");
+  hashKey_.append(std::to_string(getHostPort()));
+  hashKey_.append(":");
+  hashKey_.append(getDSName());
+  hashKey_.append(":");
+  if (!uniqueTag_.empty()) {
+    hashKey_.append(getUniqueTag());
   } else {
-    m_hashKey.append(":");
-    m_hashKey.append(std::to_string(m_vmViewId));
+    hashKey_.append(":");
+    hashKey_.append(std::to_string(vmViewId_));
   }
-  LOGDEBUG("GethashKey %s client id: %s ", m_hashKey.c_str(), clientID.c_str());
+  LOGDEBUG("GethashKey %s client id: %s ", hashKey_.c_str(), clientId_.c_str());
 }
 
 const std::string& ClientProxyMembershipID::getDSMemberId() const {
-  return m_memIDStr;
+  return memIdStr_;
 }
 
 const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
-  return clientID;
+  return clientId_;
 }
 
-std::string ClientProxyMembershipID::getHashKey() { return m_hashKey; }
+std::string ClientProxyMembershipID::getHashKey() { return hashKey_; }
 
 void ClientProxyMembershipID::toData(DataOutput&) const {
   throw IllegalStateException("Member ID toData() not implemented.");
@@ -314,9 +313,9 @@ int16_t ClientProxyMembershipID::compareTo(
   std::string myUniqueTag = getUniqueTag();
   std::string otherUniqueTag = otherMember.getUniqueTag();
   if (myUniqueTag.empty() && otherUniqueTag.empty()) {
-    if (m_vmViewId < otherMember.m_vmViewId) {
+    if (vmViewId_ < otherMember.vmViewId_) {
       return -1;
-    } else if (m_vmViewId > otherMember.m_vmViewId) {
+    } else if (vmViewId_ > otherMember.vmViewId_) {
       return 1;
     }  // else they're the same, so continue
   } else if (myUniqueTag.empty()) {

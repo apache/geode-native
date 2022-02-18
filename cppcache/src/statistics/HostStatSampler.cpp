@@ -67,10 +67,10 @@ HostStatSampler::HostStatSampler(boost::filesystem::path filePath,
 
     : HostStatSampler(std::move(filePath), sampleRate, statFileLimit,
                       statDiskSpaceLimit) {
-  m_cache = cache;
-  m_samplerStats = std::unique_ptr<StatSamplerStats>(
+  cache_ = cache;
+  samplerStats_ = std::unique_ptr<StatSamplerStats>(
       new StatSamplerStats(statMngr->getStatisticsFactory()));
-  m_statMngr = statMngr;
+  statsMgr_ = statMngr;
 
   initStatDiskSpaceEnabled();
 }
@@ -79,36 +79,36 @@ HostStatSampler::HostStatSampler(boost::filesystem::path filePath,
                                  std::chrono::milliseconds sampleRate,
                                  size_t statFileLimit,
                                  size_t statDiskSpaceLimit)
-    : m_adminError(false),
-      m_running(false),
-      m_stopRequested(false),
-      m_isStatDiskSpaceEnabled(statDiskSpaceLimit != 0),
-      m_archiveFileName(std::move(filePath)),
-      m_archiveFileSizeLimit(
+    : adminError_(false),
+      running_(false),
+      stopRequested_(false),
+      isStatDiskSpaceEnabled_(statDiskSpaceLimit != 0),
+      archiveFileName_(std::move(filePath)),
+      archiveFileSizeLimit_(
           (std::min)(statFileLimit * mebibyte, MAX_STATS_FILE_LIMIT)),
-      m_archiveDiskSpaceLimit(statDiskSpaceLimit * mebibyte),
-      m_spaceUsed(0),
-      m_sampleRate(sampleRate),
-      m_pid(boost::this_process::get_id()),
-      m_startTime(system_clock::now()),
-      m_rollIndex(0) {
-  if (m_isStatDiskSpaceEnabled) {
-    if (m_archiveFileSizeLimit == 0 ||
-        m_archiveFileSizeLimit > m_archiveDiskSpaceLimit) {
-      m_archiveFileSizeLimit = m_archiveDiskSpaceLimit;
+      archiveDiskSpaceLimit_(statDiskSpaceLimit * mebibyte),
+      spaceUsed_(0),
+      sampleRate_(sampleRate),
+      pid_(boost::this_process::get_id()),
+      startTime_(system_clock::now()),
+      rollIndex_(0) {
+  if (isStatDiskSpaceEnabled_) {
+    if (archiveFileSizeLimit_ == 0 ||
+        archiveFileSizeLimit_ > archiveDiskSpaceLimit_) {
+      archiveFileSizeLimit_ = archiveDiskSpaceLimit_;
     }
   }
 }
 
 void HostStatSampler::initStatDiskSpaceEnabled() {
-  if (m_isStatDiskSpaceEnabled) {
+  if (isStatDiskSpaceEnabled_) {
     initStatFileWithExt();
 
     initRollIndex();
 
-    auto exists = boost::filesystem::exists(m_archiveFileName);
-    if (exists && m_archiveFileSizeLimit > 0) {
-      changeArchive(m_archiveFileName);
+    auto exists = boost::filesystem::exists(archiveFileName_);
+    if (exists && archiveFileSizeLimit_ > 0) {
+      changeArchive(archiveFileName_);
     } else {
       writeGfs();
     }
@@ -118,7 +118,7 @@ void HostStatSampler::initStatDiskSpaceEnabled() {
 void HostStatSampler::initRollIndex() {
   forEachIndexStatFile(
       [&](const int32_t index, const boost::filesystem::path&) {
-        m_rollIndex = (std::max)(m_rollIndex, index + 1);
+        rollIndex_ = (std::max)(rollIndex_, index + 1);
       });
 }
 
@@ -129,57 +129,57 @@ boost::filesystem::path HostStatSampler::initStatFileWithExt() {
 HostStatSampler::~HostStatSampler() noexcept = default;
 
 const boost::filesystem::path& HostStatSampler::createArchiveFilename() {
-  if (!m_isStatDiskSpaceEnabled) {
+  if (!isStatDiskSpaceEnabled_) {
     const auto pid = std::to_string(boost::this_process::get_id());
 
-    if (!m_archiveFileName.has_extension()) {
-      m_archiveFileName += "-" + pid;
+    if (!archiveFileName_.has_extension()) {
+      archiveFileName_ += "-" + pid;
     } else {
-      m_archiveFileName = m_archiveFileName.parent_path() /
-                          m_archiveFileName.stem() += "-" + pid;
+      archiveFileName_ =
+          archiveFileName_.parent_path() / archiveFileName_.stem() += "-" + pid;
     }
-    m_archiveFileName += GFS_EXTENSION;
+    archiveFileName_ += GFS_EXTENSION;
   }
 
-  return m_archiveFileName;
+  return archiveFileName_;
 }
 
 const boost::filesystem::path& HostStatSampler::getArchiveFilename() const {
-  return m_archiveFileName;
+  return archiveFileName_;
 }
 
 size_t HostStatSampler::getArchiveFileSizeLimit() const {
-  return m_archiveFileSizeLimit;
+  return archiveFileSizeLimit_;
 }
 
 size_t HostStatSampler::getArchiveDiskSpaceLimit() const {
-  return m_archiveDiskSpaceLimit;
+  return archiveDiskSpaceLimit_;
 }
 
 std::chrono::milliseconds HostStatSampler::getSampleRate() const {
-  return m_sampleRate;
+  return sampleRate_;
 }
 
 void HostStatSampler::accountForTimeSpentWorking(int64_t nanosSpentWorking) {
-  m_samplerStats->tookSample(nanosSpentWorking);
+  samplerStats_->tookSample(nanosSpentWorking);
 }
 
 std::recursive_mutex& HostStatSampler::getStatListMutex() {
-  return m_statMngr->getListMutex();
+  return statsMgr_->getListMutex();
 }
 
 std::vector<Statistics*>& HostStatSampler::getStatistics() {
-  return m_statMngr->getStatsList();
+  return statsMgr_->getStatsList();
 }
 
 std::vector<Statistics*>& HostStatSampler::getNewStatistics() {
-  return m_statMngr->getNewlyAddedStatsList();
+  return statsMgr_->getNewlyAddedStatsList();
 }
 
-int64_t HostStatSampler::getSystemId() { return m_pid; }
+int64_t HostStatSampler::getSystemId() { return pid_; }
 
 system_clock::time_point HostStatSampler::getSystemStartTime() {
-  return m_startTime;
+  return startTime_;
 }
 
 const std::string& HostStatSampler::getSystemDirectoryPath() {
@@ -193,19 +193,19 @@ const std::string& HostStatSampler::getProductDescription() const {
 void HostStatSampler::changeArchive(boost::filesystem::path filename) {
   if (filename.empty()) {
     // terminate the sampling thread
-    m_stopRequested = true;
+    stopRequested_ = true;
     return;
   }
 
   filename = chkForGFSExt(filename);
 
-  if (m_archiver) {
-    m_archiver->closeFile();
+  if (archiver_) {
+    archiver_->closeFile();
   }
 
   rollArchive(filename);
 
-  m_archiver.reset(new StatArchiveWriter(filename.string(), this, m_cache));
+  archiver_.reset(new StatArchiveWriter(filename.string(), this, cache_));
 }
 
 boost::filesystem::path HostStatSampler::chkForGFSExt(
@@ -215,7 +215,7 @@ boost::filesystem::path HostStatSampler::chkForGFSExt(
   }
 
   auto tmp = filename;
-  if (m_isStatDiskSpaceEnabled) {
+  if (isStatDiskSpaceEnabled_) {
     return tmp += GFS_EXTENSION;
   }
   return tmp.replace_extension(GFS_EXTENSION);
@@ -235,7 +235,7 @@ void HostStatSampler::rollArchive(const boost::filesystem::path& filename) {
   while (true) {
     auto newFilename = filename.parent_path() / filename.stem();
     newFilename += "-";
-    newFilename += std::to_string(m_rollIndex++);
+    newFilename += std::to_string(rollIndex_++);
     newFilename += extension;
 
     if (boost::filesystem::exists(newFilename)) {
@@ -248,24 +248,24 @@ void HostStatSampler::rollArchive(const boost::filesystem::path& filename) {
 }
 
 void HostStatSampler::start() {
-  if (!m_running.exchange(true)) {
-    m_thread = std::thread(&HostStatSampler::svc, this);
+  if (!running_.exchange(true)) {
+    thread_ = std::thread(&HostStatSampler::svc, this);
   }
 }
 
 void HostStatSampler::stop() {
-  m_stopRequested = true;
-  m_thread.join();
+  stopRequested_ = true;
+  thread_.join();
 }
 
-bool HostStatSampler::isRunning() const { return m_running; }
+bool HostStatSampler::isRunning() const { return running_; }
 
 void HostStatSampler::putStatsInAdminRegion() {
   try {
     // Get Values of gets, puts,misses,listCalls,numThreads
     static bool initDone = false;
     static std::string clientId = "";
-    auto adminRgn = m_statMngr->getAdminRegion();
+    auto adminRgn = statsMgr_->getAdminRegion();
     if (adminRgn == nullptr) return;
     auto conn_man = adminRgn->getConnectionManager();
     if (conn_man->isNetDown()) {
@@ -282,7 +282,7 @@ void HostStatSampler::putStatsInAdminRegion() {
         int puts = 0, gets = 0, misses = 0, numListeners = 0, numThreads = 0,
             creates = 0;
         int64_t cpuTime = 0;
-        auto gf = m_statMngr->getStatisticsFactory();
+        auto gf = statsMgr_->getStatisticsFactory();
         if (gf) {
           const auto cacheStatType = gf->findType("CachePerfStats");
           if (cacheStatType) {
@@ -305,7 +305,7 @@ void HostStatSampler::putStatsInAdminRegion() {
         if (clientId.empty()) {
           auto memId = conn_man->getCacheImpl()
                            ->getClientProxyMembershipIDFactory()
-                           .create(m_durableClientId, m_durableTimeout);
+                           .create(durableClientId_, durableTimeout_);
           clientId = memId->getDSMemberIdForThinClientUse();
         }
 
@@ -314,7 +314,7 @@ void HostStatSampler::putStatsInAdminRegion() {
       }
     }
   } catch (const Exception&) {
-    m_adminError = true;
+    adminError_ = true;
   }
 }
 
@@ -324,54 +324,53 @@ void HostStatSampler::writeGfs() {
 }
 
 void HostStatSampler::forceSample() {
-  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
+  std::lock_guard<decltype(samplingMutex_)> guard(samplingMutex_);
 
-  if (m_archiver) {
-    m_archiver->sample();
-    m_archiver->flush();
+  if (archiver_) {
+    archiver_->sample();
+    archiver_->flush();
   }
 }
 
 void HostStatSampler::doSample(const boost::filesystem::path& archiveFilename) {
-  std::lock_guard<decltype(m_samplingLock)> guard(m_samplingLock);
+  std::lock_guard<decltype(samplingMutex_)> guard(samplingMutex_);
 
-  if (!m_adminError) {
+  if (!adminError_) {
     putStatsInAdminRegion();
   }
 
-  if (m_archiver) {
-    m_archiver->sample();
+  if (archiver_) {
+    archiver_->sample();
 
-    if (m_archiveFileSizeLimit != 0) {
-      auto size = m_archiver->getSampleSize();
-      auto bytesWritten = m_archiver->bytesWritten();
-      if (bytesWritten > (m_archiveFileSizeLimit - size)) {
+    if (archiveFileSizeLimit_ != 0) {
+      auto size = archiver_->getSampleSize();
+      auto bytesWritten = archiver_->bytesWritten();
+      if (bytesWritten > (archiveFileSizeLimit_ - size)) {
         // roll the archive
         changeArchive(archiveFilename);
       }
     }
-    m_spaceUsed += m_archiver->bytesWritten();
+    spaceUsed_ += archiver_->bytesWritten();
     // delete older stat files if disk limit is about to be exceeded.
-    if ((m_archiveDiskSpaceLimit != 0) &&
-        (m_spaceUsed >=
-         (m_archiveDiskSpaceLimit - m_archiver->getSampleSize()))) {
+    if ((archiveDiskSpaceLimit_ != 0) &&
+        (spaceUsed_ >= (archiveDiskSpaceLimit_ - archiver_->getSampleSize()))) {
       checkDiskLimit();
     }
 
     // It will flush the contents to the archive file, in every
     // sample run.
 
-    m_archiver->flush();
+    archiver_->flush();
   }
 }
 
 template <typename _Function>
 void HostStatSampler::forEachIndexStatFile(_Function function) const {
-  const boost::regex statsFilter(m_archiveFileName.stem().string() +
+  const boost::regex statsFilter(archiveFileName_.stem().string() +
                                  R"(-([\d]+))" +
-                                 m_archiveFileName.extension().string());
+                                 archiveFileName_.extension().string());
 
-  auto dir = m_archiveFileName.parent_path();
+  auto dir = archiveFileName_.parent_path();
   if (dir.empty()) {
     dir = boost::filesystem::current_path();
   }
@@ -394,27 +393,27 @@ void HostStatSampler::forEachIndexStatFile(_Function function) const {
 }
 
 void HostStatSampler::checkDiskLimit() {
-  m_spaceUsed = 0;
+  spaceUsed_ = 0;
 
   std::map<int32_t, std::pair<boost::filesystem::path, size_t>> indexedFiles;
   forEachIndexStatFile(
       [&](const int32_t index, const boost::filesystem::path& file) {
         const auto size = boost::filesystem::file_size(file);
         indexedFiles.emplace(index, std::make_pair(file, size));
-        m_spaceUsed += size;
+        spaceUsed_ += size;
       });
 
-  if (m_archiver) {
-    m_spaceUsed += m_archiver->bytesWritten();
+  if (archiver_) {
+    spaceUsed_ += archiver_->bytesWritten();
   }
 
   for (const auto& i : indexedFiles) {
-    if (m_spaceUsed > m_archiveDiskSpaceLimit) {
+    if (spaceUsed_ > archiveDiskSpaceLimit_) {
       const auto& file = i.second.first;
       const auto size = i.second.second;
       try {
         boost::filesystem::remove(file);
-        m_spaceUsed -= size;
+        spaceUsed_ -= size;
       } catch (boost::filesystem::filesystem_error& e) {
         LOGWARN("Could not delete " + file.string() + ": " + e.what());
       }
@@ -429,13 +428,13 @@ void HostStatSampler::svc(void) {
     // for the first time the sampler needs to add the pid to the filename
     // passed to it.
     auto archiveFilename = createArchiveFilename();
-    if (!m_isStatDiskSpaceEnabled) {
+    if (!isStatDiskSpaceEnabled_) {
       changeArchive(archiveFilename);
     }
     auto samplingRate = milliseconds(getSampleRate());
     bool gotexception = false;
     int waitTime = 0;
-    while (!m_stopRequested) {
+    while (!stopRequested_) {
       try {
         if (gotexception) {
           std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -461,7 +460,7 @@ void HostStatSampler::svc(void) {
         auto sleepDuration =
             samplingRate - duration_cast<milliseconds>(spentWorking);
         static const auto wakeInterval = milliseconds(100);
-        while (!m_stopRequested && sleepDuration > milliseconds::zero()) {
+        while (!stopRequested_ && sleepDuration > milliseconds::zero()) {
           std::this_thread::sleep_for(
               sleepDuration > wakeInterval ? wakeInterval : sleepDuration);
           sleepDuration -= wakeInterval;
@@ -477,9 +476,9 @@ void HostStatSampler::svc(void) {
         gotexception = true;
       }
     }
-    m_samplerStats->close();
-    if (m_archiver != nullptr) {
-      m_archiver->close();
+    samplerStats_->close();
+    if (archiver_ != nullptr) {
+      archiver_->close();
     }
   } catch (Exception& e) {
     // log the exception and let the thread exit.
@@ -490,7 +489,7 @@ void HostStatSampler::svc(void) {
        LOGERROR("Exception in sampler thread ");
        closeSpecialStats();
    }*/
-  m_running = false;
+  running_ = false;
 }
 
 }  // namespace statistics
