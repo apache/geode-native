@@ -24,7 +24,7 @@
 #include <string>
 #include <vector>
 
-#include <ace/INET_Addr.h>
+#include <boost/asio.hpp>
 
 #include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
@@ -46,8 +46,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   ClientProxyMembershipID(std::string dsName, std::string randString,
                           const std::string& hostname,
-                          const ACE_INET_Addr& address, uint32_t hostPort,
-                          const std::string& durableClientId,
+                          const boost::asio::ip::address& address,
+                          uint32_t hostPort, const std::string& durableClientId,
                           const std::chrono::seconds durableClientTimeOut =
                               std::chrono::seconds::zero());
 
@@ -73,7 +73,7 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
   size_t objectSize() const override { return 0; }
 
-  void initHostAddressVector(const ACE_INET_Addr& address);
+  void initHostAddressVector(const boost::asio::ip::address& address);
 
   void initHostAddressVector(const uint8_t* hostAddr, uint32_t hostAddrLen);
 
@@ -84,13 +84,13 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
                       int8_t splitBrainFlag, const char* dsname,
                       const char* uniqueTag, uint32_t vmViewId);
 
-  std::string getDSName() const { return m_dsname; }
-  std::string getUniqueTag() const { return m_uniqueTag; }
-  const std::vector<uint8_t>& getHostAddr() const { return m_hostAddr; }
+  std::string getDSName() const { return dsName_; }
+  std::string getUniqueTag() const { return uniqueTag_; }
+  const std::vector<uint8_t>& getHostAddr() const { return hostAddr_; }
   uint32_t getHostAddrLen() const {
-    return static_cast<uint32_t>(m_hostAddr.size());
+    return static_cast<uint32_t>(hostAddr_.size());
   }
-  uint32_t getHostPort() const { return m_hostPort; }
+  uint32_t getHostPort() const { return hostPort_; }
   std::string getHashKey() override;
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
   int32_t hashcode() const override {
@@ -98,10 +98,10 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
     std::stringstream hostAddressString;
     hostAddressString << std::hex;
     for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      hostAddressString << ":" << static_cast<int>(m_hostAddr[i]);
+      hostAddressString << ":" << static_cast<int>(hostAddr_[i]);
     }
     result += internal::geode_hash<std::string>{}(hostAddressString.str());
-    result += m_hostPort;
+    result += hostPort_;
     return result;
   }
 
@@ -113,24 +113,24 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   Serializable* readEssentialData(DataInput& input);
 
  private:
-  std::string m_memIDStr;
-  std::string m_dsmemIDStr;
-  std::string clientID;
+  void readVersion(int flags, DataInput& input);
+  void readAdditionalData(DataInput& input);
 
-  std::string m_dsname;
-  uint32_t m_hostPort;
-  std::vector<uint8_t> m_hostAddr;
+ private:
+  std::string memIdStr_;
+  std::string clientId_;
 
-  std::string m_uniqueTag;
-  std::string m_hashKey;
-  uint32_t m_vmViewId;
+  std::string dsName_;
+  uint32_t hostPort_;
+  std::vector<uint8_t> hostAddr_;
+
+  std::string uniqueTag_;
+  std::string hashKey_;
+  uint32_t vmViewId_;
+
   static const uint8_t LONER_DM_TYPE = 13;
   static const int VERSION_MASK;
   static const int8_t TOKEN_ORDINAL;
-
-  void readVersion(int flags, DataInput& input);
-
-  void readAdditionalData(DataInput& input);
 };
 
 }  // namespace client

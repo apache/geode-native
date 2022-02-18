@@ -17,6 +17,7 @@
 
 #include <QueueConnectionRequest.hpp>
 
+#include <boost/asio.hpp>
 #include <boost/process/environment.hpp>
 
 #include <gtest/gtest.h>
@@ -34,8 +35,10 @@ class QueueConnectionRequestTest : public ::testing::Test,
                                    public ByteArrayFixture {};
 
 TEST_F(QueueConnectionRequestTest, testToData) {
+  namespace bip = boost::asio::ip;
+
   DataOutputInternal dataOutput;
-  ACE_INET_Addr addr(10, "localhost");
+  auto address = bip::make_address("127.0.0.1");
   ServerLocation srv("server", 10);
   std::set<ServerLocation> servLoc;
   servLoc.insert(srv);
@@ -44,7 +47,7 @@ TEST_F(QueueConnectionRequestTest, testToData) {
   const std::string hostname = "name";
   const std::string durableClientId = "id-1";
 
-  const ClientProxyMembershipID qCR(dsName, randString, hostname, addr, 10,
+  const ClientProxyMembershipID qCR(dsName, randString, hostname, address, 10,
                                     durableClientId);
 
   QueueConnectionRequest queueConnReq(qCR, servLoc, -1, false);
