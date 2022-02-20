@@ -13,27 +13,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import re
+
+from dateutil import parser
 
 from decoder_base import DecoderBase
 from ds_codes import ds_codes
+from ds_fids import ds_fids
 from modified_utf8 import utf8m_to_utf8s
 from connection_types import ConnectionTypes, ConnectionTypeStrings
 
 from read_values import (
-    read_number_from_hex_string,
-    read_byte_value,
-    read_number_from_hex_string,
-    read_short_value,
-    read_number_from_hex_string,
-    read_int_value,
-    read_long_value,
-    read_string_value,
-    read_jmutf8_string_value,
-    read_number_from_hex_string,
     call_reader_function,
+    read_byte_value,
+    read_cacheable_ascii_string_value,
+    read_fixed_id_byte_value,
+    read_geode_jmutf8_string_value,
+    read_int_value,
+    read_short_value,
+    read_unsigned_byte_value,
 )
+
+# TODO: Find a more reasonable place for this and other REPLY_* constants
+REPLY_SSL_ENABLED = 21
 
 
 class HandshakeDecoder(DecoderBase):
@@ -46,8 +48,50 @@ class HandshakeDecoder(DecoderBase):
             2: "SECURITY_CREDENTIALS_DHENCRYPT",
             3: "SECURITY_MULTIUSER_NOTIFICATIONCHANNEL",
         }
+        self.client_connection_request_expression_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F]+\): sending \d+ bytes to locator:\s*([0-9|a-f|A-F]+)"
+        )
+        self.client_connection_response_expression_ = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
+        )
 
-    def is_handshake_trace(self, line):
+    def is_client_connection_request(self, line):
+        match = self.client_connection_request_expression_.search(line)
+        if match:
+            return True
+        else:
+            return False
+
+    def get_client_connection_request_parts(self, line, parts):
+        result = False
+        match = self.client_connection_request_expression_.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            result = True
+
+        return result
+
+    def is_client_connection_response(self, line):
+        match = self.client_connection_response_expression_.search(line)
+        if match:
+            return True
+        else:
+            return False
+
+    def get_client_connection_response_parts(self, line, parts):
+        result = False
+        match = self.client_connection_response_expression_.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            result = True
+
+        return result
+
+    def is_server_handshake_trace(self, line):
         expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
         match = expression.search(line)
         if match:
@@ -55,7 +99,7 @@ class HandshakeDecoder(DecoderBase):
         else:
             return False
 
-    def get_handshake_bytes(self, line):
+    def get_server_handshake_bytes(self, line):
         expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
         match = expression.search(line)
         if match:
@@ -72,10 +116,18 @@ class HandshakeDecoder(DecoderBase):
         result = ""
 
         if int(address_size) == 4:
-            (octet1, offset) = call_reader_function(string, offset, read_byte_value)
-            (octet2, offset) = call_reader_function(string, offset, read_byte_value)
-            (octet3, offset) = call_reader_function(string, offset, read_byte_value)
-            (octet4, offset) = call_reader_function(string, offset, read_byte_value)
+            (octet1, offset) = call_reader_function(
+                string, offset, read_unsigned_byte_value
+            )
+            (octet2, offset) = call_reader_function(
+                string, offset, read_unsigned_byte_value
+            )
+            (octet3, offset) = call_reader_function(
+                string, offset, read_unsigned_byte_value
+            )
+            (octet4, offset) = call_reader_function(
+                string, offset, read_unsigned_byte_value
+            )
             result = (
                 str(octet1) + "." + str(octet2) + "." + str(octet3) + "." + str(octet4)
             )
@@ -104,7 +156,7 @@ class HandshakeDecoder(DecoderBase):
             string_bytes = string[offset : offset + string_length * 2]
             hostname = utf8m_to_utf8s(
                 self.convert_to_bytes(string_bytes, string_length * 2)
-            ).decode("utf-8")
+            )
             offset += string_length * 2
         elif string_type == "CacheableStringHuge":
             (length_byte_3, offset) = call_reader_function(
@@ -173,8 +225,8 @@ class HandshakeDecoder(DecoderBase):
         )
         return (self.credentials_types[credential_type], offset)
 
-    def get_handshake_info(self, line, handshake_info):
-        handshake_bytes = self.get_handshake_bytes(line)
+    def get_server_handshake_info(self, line, handshake_info):
+        handshake_bytes = self.get_server_handshake_bytes(line)
         (connection_type, offset) = call_reader_function(
             handshake_bytes, 0, read_byte_value
         )
@@ -290,8 +342,108 @@ class HandshakeDecoder(DecoderBase):
             handshake_bytes, offset
         )
 
+    def decode_client_connection_request(self, line, handshake_request):
+        parts = []
+        if self.get_client_connection_request_parts(line, parts):
+            offset = 0
+            handshake_request["Timestamp"] = parts[0]
+            handshake_request["tid"] = parts[1]
+            handshake_request["Direction"] = "--->"
+            handshake_request["Type"] = "ClientConnectionRequest"
+            request_bytes = parts[2]
+
+            (handshake_request["GossipVersion"], offset) = call_reader_function(
+                request_bytes, offset, read_int_value
+            )
+            (handshake_request["ProtocolOrdinal"], offset) = call_reader_function(
+                request_bytes, offset, read_short_value
+            )
+
+            (ds_code, offset) = call_reader_function(
+                request_bytes, offset, read_byte_value
+            )
+
+            (dsfid, offset) = call_reader_function(
+                request_bytes, offset, read_byte_value
+            )
+            if ds_fids[dsfid] != "ClientConnectionRequest":
+                raise TypeError("Expected type 'ClientConnectionRequest'")
+
+            server_group = {}
+            (ds_code, offset) = call_reader_function(
+                request_bytes, offset, read_byte_value
+            )
+            server_group["DSCode"] = ds_codes[ds_code]
+
+            (server_group["Name"], offset) = read_geode_jmutf8_string_value(
+                request_bytes, offset
+            )
+            handshake_request["ServerGroup"] = server_group
+
+            (server_location_count, offset) = call_reader_function(
+                request_bytes, offset, read_int_value
+            )
+            handshake_request["ServerLocations"] = server_location_count
+
+            # TODO: Decode server locations.  Not concerned about this right now because we don't have a log showing
+            # native client actually sending any.
+
+    def read_server_location(self, line, handshake_response, offset):
+        server_location = {}
+        (server_location["hostname"], offset) = read_cacheable_ascii_string_value(
+            line, offset
+        )
+        (server_location["port"], offset) = call_reader_function(
+            line, offset, read_int_value
+        )
+
+        handshake_response["ServerLocation"] = server_location
+        return offset
+
+    def decode_client_connection_response(self, line, handshake_response):
+        parts = []
+        if self.get_client_connection_response_parts(line, parts):
+            handshake_response["Timestamp"] = parts[0]
+            handshake_response["tid"] = parts[1]
+            handshake_response["Direction"] = "--->"
+            handshake_response["Type"] = "ClientConnectionResponse"
+            response_bytes = parts[2]
+            offset = 0
+
+            handshake_response["Direction"] = "<---"
+            (ssl_enabled, offset) = call_reader_function(
+                response_bytes, offset, read_byte_value
+            )
+            if ssl_enabled == REPLY_SSL_ENABLED:
+                handshake_response["SSLEnabled"] = "True"
+            else:
+                handshake_response["SSLEnabled"] = "False"
+                offset = 0
+
+            (fixed_id, offset) = read_fixed_id_byte_value(response_bytes, offset)
+            if ds_fids[fixed_id] == "ClientConnectionResponse":
+                (server_found, offset) = call_reader_function(
+                    response_bytes, offset, read_byte_value
+                )
+                handshake_response["ServerFound"] = (
+                    "True" if server_found == 1 else "False"
+                )
+
+                if server_found == 1:
+                    offset = self.read_server_location(
+                        response_bytes, handshake_response, offset
+                    )
+            else:
+                raise TypeError("Expected type 'ClientConnectionRequest'")
+
     def process_line(self, line):
         handshake = {}
-        if self.is_handshake_trace(line):
-            self.get_handshake_info(line, handshake)
+        if self.is_client_connection_request(line):
+            self.decode_client_connection_request(line, handshake)
+            self.output_queue_.put({"handshake": handshake})
+        elif self.is_client_connection_response(line):
+            self.decode_client_connection_response(line, handshake)
+            self.output_queue_.put({"handshake": handshake})
+        elif self.is_server_handshake_trace(line):
+            self.get_server_handshake_info(line, handshake)
             self.output_queue_.put({"handshake": handshake})

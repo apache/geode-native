@@ -23,7 +23,7 @@ from read_values import (
     read_byte_value,
     read_cacheable,
     read_int_value,
-    read_jmutf8_string_value,
+    read_geode_jmutf8_string_value,
     read_long_value,
     read_short_value,
     read_string_value,
@@ -177,8 +177,8 @@ def parse_raw_string_part(message_bytes, offset):
     (string_part["IsObject"], offset) = call_reader_function(
         message_bytes, offset, read_byte_value
     )
-    (string_part["Value"], offset) = read_jmutf8_string_value(
-        message_bytes, string_part["Size"], offset
+    (string_part["Value"], offset) = read_geode_jmutf8_string_value(
+        message_bytes, offset
     )
     return (string_part, offset)
 
