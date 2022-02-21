@@ -389,12 +389,6 @@ class TestProcess {
     }
   }
 
-  void terminate() {
-    if (running_) {
-      process_.terminate();
-    }
-  }
-
   bool running() const { return running_; }
 
  protected:
@@ -435,13 +429,12 @@ class TestDriver {
   }
 
   ~TestDriver() {
-    // kill off any children that have not yet terminated.
     for (uint32_t i = 0; i < TestState::WORKER_COUNT;) {
       auto worker = m_workers[i++];
-      worker->terminate();
       worker->stop();
-      delete worker;  // worker destructor should terminate process.
+      delete worker;
     }
+
     dunit::Dunit::close();
   }
 

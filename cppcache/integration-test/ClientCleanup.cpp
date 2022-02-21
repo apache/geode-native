@@ -32,5 +32,5 @@ void ClientCleanup::trigger() {
 }
 
 void ClientCleanup::registerCallback(std::function<void()> callback) {
-  callbacks_.emplace_back(callback);
+  callbacks_.emplace_front(callback);
 }
