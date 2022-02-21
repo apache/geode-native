@@ -183,7 +183,6 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
 GfErrType ThinClientLocatorHelper::getAllServers(
     std::vector<std::shared_ptr<ServerLocation> >& servers,
     const std::string& serverGrp) const {
-  LOGDEBUG("%s(%p)", __GNFN__, this);
   for (const auto& loc : getLocators()) {
     LOGDEBUG("%s(%p): getAllServers getting servers from server = %s ",
              __GNFN__, this, loc.getServerName().c_str());
