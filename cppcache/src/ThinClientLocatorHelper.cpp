@@ -55,8 +55,7 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
     : locators_(locators.begin(), locators.end()),
       m_poolDM(poolDM),
       m_sniProxyHost(""),
-      m_sniProxyPort(0) {
-}
+      m_sniProxyPort(0) {}
 
 ThinClientLocatorHelper::ThinClientLocatorHelper(
     const std::vector<std::string>& locators, const std::string& sniProxyHost,
@@ -64,8 +63,7 @@ ThinClientLocatorHelper::ThinClientLocatorHelper(
     : locators_(locators.begin(), locators.end()),
       m_poolDM(poolDM),
       m_sniProxyHost(sniProxyHost),
-      m_sniProxyPort(sniProxyPort) {
-}
+      m_sniProxyPort(sniProxyPort) {}
 
 size_t ThinClientLocatorHelper::getConnRetries() const {
   auto retries = m_poolDM->getRetryAttempts();
