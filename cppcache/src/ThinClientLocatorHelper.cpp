@@ -295,7 +295,7 @@ GfErrType ThinClientLocatorHelper::updateLocators(
   auto locators = getLocators();
   for (const auto& loc : locators) {
     LOGFINER(
-        "%(%p): Querying locator list at: [%s:%d] for update from group [%s]",
+        "%s(%p): Querying locator list at: [%s:%d] for update from group [%s]",
         __GNFN__, this, loc.getServerName().c_str(), loc.getPort(),
         serverGrp.c_str());
 
