@@ -30,7 +30,9 @@
 #include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "ChunkedFunctionExecutionResponse.hpp"
 #include "DataInputInternal.hpp"
+#include "FunctionExecution.hpp"
 #include "PutAllPartialResultServerException.hpp"
 #include "RegionGlobalLocks.hpp"
 #include "RemoteQuery.hpp"
@@ -2693,6 +2695,24 @@ GfErrType ThinClientRegion::handleServerException(
   return error;
 }
 
+GfErrType ThinClientRegion::handleServerFunctionError(
+    const std::string& func, const std::string& errorMsg) {
+  GfErrType error = GF_NOERR;
+  setThreadLocalExceptionMessage(errorMsg);
+  if (errorMsg.find("Function attributes at client and server don't match") !=
+      std::string::npos) {
+    // This is a hack to detect function attributes mismatch since the server is
+    // returning an error instead of sending back an exception.
+    error = GF_FUNCTION_ATTRIBUTES_MISMATCH_EXCEPTION;
+  } else {
+    error = GF_CACHESERVER_EXCEPTION;
+  }
+
+  LOGFINER(func + ": A function error (" + errorMsg +
+           ") happened at remote server.");
+  return error;
+}
+
 void ThinClientRegion::receiveNotification(const TcrMessage& msg) {
   std::unique_lock<std::mutex> lock(m_notificationMutex, std::defer_lock);
   {
@@ -2840,7 +2860,7 @@ void ThinClientRegion::releaseGlobals(bool isFailover) {
 
 void ThinClientRegion::executeFunction(
     const std::string& func, const std::shared_ptr<Cacheable>& args,
-    std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+    std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
     std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
     std::chrono::milliseconds timeout) {
   int32_t attempt = 0;
@@ -2859,30 +2879,34 @@ void ThinClientRegion::executeFunction(
     if (reExecuteForServ) {
       msg = new TcrMessageExecuteRegionFunction(
           new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-          routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
+          routingObj, funcAttrs, failedNodes, timeout, m_tcrdm.get(),
           static_cast<int8_t>(1));
     } else {
       msg = new TcrMessageExecuteRegionFunction(
           new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-          routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
+          routingObj, funcAttrs, failedNodes, timeout, m_tcrdm.get(),
           static_cast<int8_t>(0));
     }
     TcrMessageReply reply(true, m_tcrdm.get());
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
+        new ChunkedFunctionExecutionResponse(reply, funcAttrs.hasResult(), rc));
     reply.setChunkedResultHandler(resultCollector);
     reply.setTimeout(timeout);
     GfErrType err = GF_NOERR;
-    err = m_tcrdm->sendSyncRequest(*msg, reply, !(getResult & 1));
+    err = m_tcrdm->sendSyncRequest(*msg, reply, !funcAttrs.isHA());
     resultCollector->reset();
     delete msg;
     delete resultCollector;
-    if (err == GF_NOERR &&
-        (reply.getMessageType() == TcrMessage::EXCEPTION ||
-         reply.getMessageType() == TcrMessage::EXECUTE_REGION_FUNCTION_ERROR)) {
-      err = ThinClientRegion::handleServerException("Execute",
-                                                    reply.getException());
+    if (err == GF_NOERR) {
+      auto replyType = reply.getMessageType();
+      if (replyType == TcrMessage::EXCEPTION) {
+        err = ThinClientRegion::handleServerException(
+            "ThinClientRegion::executeFunction", reply.getException());
+      } else if (replyType == TcrMessage::EXECUTE_REGION_FUNCTION_ERROR) {
+        err = ThinClientRegion::handleServerFunctionError(
+            "ThinClientRegion::executeFunction", reply.getFunctionError());
+      }
     }
 
     if (ThinClientBaseDM::isFatalClientError(err)) {
@@ -2918,7 +2942,7 @@ void ThinClientRegion::executeFunction(
         LOGINFO("function timeout. Name: %s, timeout: %s, params: %" PRIu8
                 ", "
                 "retryAttempts: %d ",
-                func.c_str(), to_string(timeout).c_str(), getResult,
+                func.c_str(), to_string(timeout).c_str(), funcAttrs.getFlags(),
                 retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_TIMEOUT);
       } else if (err == GF_CLIENT_WAIT_TIMEOUT ||
@@ -2926,7 +2950,8 @@ void ThinClientRegion::executeFunction(
         LOGINFO(
             "function timeout, possibly bucket is not available. Name: %s, "
             "timeout: %s, params: %" PRIu8 ", retryAttempts: %d ",
-            func.c_str(), to_string(timeout).c_str(), getResult, retryAttempts);
+            func.c_str(), to_string(timeout).c_str(), funcAttrs.getFlags(),
+            retryAttempts);
         throwExceptionIfError("ExecuteOnRegion", GF_CLIENT_WAIT_TIMEOUT);
       } else {
         LOGDEBUG("executeFunction err = %d ", err);
@@ -2938,14 +2963,14 @@ void ThinClientRegion::executeFunction(
     }
   } while (reExecuteForServ);
 
-  if (reExecute && (getResult & 1)) {
-    reExecuteFunction(func, args, routingObj, getResult, rc, retryAttempts,
+  if (reExecute && funcAttrs.isHA()) {
+    reExecuteFunction(func, args, routingObj, funcAttrs, rc, retryAttempts,
                       failedNodes, timeout);
   }
 }
 std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     const std::string& func, const std::shared_ptr<Cacheable>& args,
-    std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+    std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
     std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
     std::shared_ptr<CacheableHashSet>& failedNodes,
     std::chrono::milliseconds timeout) {
@@ -2961,23 +2986,28 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     reExecute = false;
     TcrMessageExecuteRegionFunction msg(
         new DataOutput(m_cacheImpl->createDataOutput()), func, this, args,
-        routingObj, getResult, failedNodes, timeout, m_tcrdm.get(),
+        routingObj, funcAttrs, failedNodes, timeout, m_tcrdm.get(),
         static_cast<int8_t>(1));
     TcrMessageReply reply(true, m_tcrdm.get());
     // need to check
     ChunkedFunctionExecutionResponse* resultCollector(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2, rc));
+        new ChunkedFunctionExecutionResponse(reply, funcAttrs.hasResult(), rc));
     reply.setChunkedResultHandler(resultCollector);
     reply.setTimeout(timeout);
 
     GfErrType err = GF_NOERR;
-    err = m_tcrdm->sendSyncRequest(msg, reply, !(getResult & 1));
+    err = m_tcrdm->sendSyncRequest(msg, reply, !funcAttrs.isHA());
     delete resultCollector;
-    if (err == GF_NOERR &&
-        (reply.getMessageType() == TcrMessage::EXCEPTION ||
-         reply.getMessageType() == TcrMessage::EXECUTE_REGION_FUNCTION_ERROR)) {
-      err = ThinClientRegion::handleServerException("Execute",
-                                                    reply.getException());
+
+    if (err == GF_NOERR) {
+      auto replyType = reply.getMessageType();
+      if (replyType == TcrMessage::EXCEPTION) {
+        err = ThinClientRegion::handleServerException(
+            "ThinClientRegion::reExecuteFunction", reply.getException());
+      } else if (replyType == TcrMessage::EXECUTE_REGION_FUNCTION_ERROR) {
+        err = ThinClientRegion::handleServerFunctionError(
+            "ThinClientRegion::reExecuteFunction", reply.getFunctionError());
+      }
     }
 
     if (ThinClientBaseDM::isFatalClientError(err)) {
@@ -3024,7 +3054,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
 
 bool ThinClientRegion::executeFunctionSH(
     const std::string& func, const std::shared_ptr<Cacheable>& args,
-    uint8_t getResult, std::shared_ptr<ResultCollector> rc,
+    FunctionAttributes funcAttrs, std::shared_ptr<ResultCollector> rc,
     const std::shared_ptr<ClientMetadataService::ServerToKeysMap>& locationMap,
     std::shared_ptr<CacheableHashSet>& failedNodes,
     std::chrono::milliseconds timeout, bool allBuckets) {
@@ -3039,7 +3069,7 @@ bool ThinClientRegion::executeFunctionSH(
     const auto& serverLocation = locationIter.first;
     const auto& routingObj = locationIter.second;
     auto worker = std::make_shared<OnRegionFunctionExecution>(
-        func, this, args, routingObj, getResult, timeout,
+        func, this, args, routingObj, funcAttrs, timeout,
         dynamic_cast<ThinClientPoolDM*>(m_tcrdm.get()), resultCollectorLock, rc,
         userAttr, false, serverLocation, allBuckets);
     threadPool.perform(worker);
@@ -3052,12 +3082,17 @@ bool ThinClientRegion::executeFunctionSH(
     auto err = worker->getResult();
     auto currentReply = worker->getReply();
 
-    if (err == GF_NOERR &&
-        (currentReply->getMessageType() == TcrMessage::EXCEPTION ||
-         currentReply->getMessageType() ==
-             TcrMessage::EXECUTE_REGION_FUNCTION_ERROR)) {
-      err = ThinClientRegion::handleServerException(
-          "Execute", currentReply->getException());
+    if (err == GF_NOERR) {
+      auto replyType = currentReply->getMessageType();
+      if (replyType == TcrMessage::EXCEPTION) {
+        err = ThinClientRegion::handleServerException(
+            "ThinClientRegion::executeFunctionSH",
+            currentReply->getException());
+      } else if (replyType == TcrMessage::EXECUTE_REGION_FUNCTION_ERROR) {
+        err = ThinClientRegion::handleServerFunctionError(
+            "ThinClientRegion::executeFunctionSH",
+            currentReply->getFunctionError());
+      }
     }
 
     if (err != GF_NOERR) {
@@ -3070,9 +3105,7 @@ bool ThinClientRegion::executeFunctionSH(
           }
         }
 
-        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
-          abortError = err;
-        } else if (getResult & 1) {  // isHA = true
+        if (funcAttrs.isHA()) {
           reExecute = true;
           worker->getResultCollector()->reset();
           {
@@ -3090,6 +3123,8 @@ bool ThinClientRegion::executeFunctionSH(
                 failedNodeIds->size());
             failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
           }
+        } else if (abortError == GF_NOERR) {
+          abortError = err;
         }
       } else if ((err == GF_NOTCON) || (err == GF_CLIENT_WAIT_TIMEOUT) ||
                  (err == GF_CLIENT_WAIT_TIMEOUT_REFRESH_PRMETADATA)) {
@@ -3104,9 +3139,7 @@ bool ThinClientRegion::executeFunctionSH(
           }
         }
 
-        if (!(getResult & 1) && abortError == GF_NOERR) {  // isHA = false
-          abortError = err;
-        } else if (getResult & 1) {  // isHA = true
+        if (funcAttrs.isHA()) {
           reExecute = true;
           worker->getResultCollector()->reset();
           {
@@ -3114,6 +3147,8 @@ bool ThinClientRegion::executeFunctionSH(
                 *resultCollectorLock);
             rc->clearResults();
           }
+        } else if (abortError == GF_NOERR) {  // isHA = false
+          abortError = err;
         }
       } else {
         if (ThinClientBaseDM::isFatalClientError(err)) {
@@ -3136,8 +3171,8 @@ bool ThinClientRegion::executeFunctionSH(
   return reExecute;
 }
 
-GfErrType ThinClientRegion::getFuncAttributes(
-    const std::string& func, std::shared_ptr<std::vector<int8_t>>* attr) {
+GfErrType ThinClientRegion::getFuncAttributes(const std::string& func,
+                                              FunctionAttributes& attrs) {
   GfErrType err = GF_NOERR;
 
   // do TCR GET_FUNCTION_ATTRIBUTES
@@ -3151,7 +3186,7 @@ GfErrType ThinClientRegion::getFuncAttributes(
   }
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
-      *attr = reply.getFunctionAttributes();
+      attrs = reply.getFunctionAttributes();
       break;
     }
     case TcrMessage::EXCEPTION: {
@@ -3477,140 +3512,6 @@ void ChunkedQueryResponse::skipClass(DataInput& input) {
         "ChunkedQueryResponse::skipClass: "
         "Did not get expected class header byte");
   }
-}
-
-void ChunkedFunctionExecutionResponse::reset() {
-  // m_functionExecutionResults->clear();
-}
-
-void ChunkedFunctionExecutionResponse::handleChunk(
-    const uint8_t* chunk, int32_t chunkLen, uint8_t isLastChunkWithSecurity,
-    const CacheImpl* cacheImpl) {
-  LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk");
-  auto input = cacheImpl->createDataInput(chunk, chunkLen, m_msg.getPool());
-
-  uint32_t partLen;
-
-  TcrMessageHelper::ChunkObjectType arrayType;
-  if ((arrayType = TcrMessageHelper::readChunkPartHeader(
-           m_msg, input, "ChunkedFunctionExecutionResponse", partLen,
-           isLastChunkWithSecurity)) ==
-      TcrMessageHelper::ChunkObjectType::EXCEPTION) {
-    // encountered an exception part, so return without reading more
-    m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
-    return;
-  }
-
-  if (m_getResult == false) {
-    return;
-  }
-
-  if (static_cast<TcrMessageHelper::ChunkObjectType>(arrayType) ==
-      TcrMessageHelper::ChunkObjectType::NULL_OBJECT) {
-    LOGDEBUG("ChunkedFunctionExecutionResponse::handleChunk nullptr object");
-    //	m_functionExecutionResults->push_back(nullptr);
-    m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
-    return;
-  }
-
-  // from here need to look value part + memberid AND -1 for array type
-  auto startLen = static_cast<size_t>(input.getBytesRead() - 1);
-
-  // read and ignore array length
-  input.readArrayLength();
-
-  // read a byte to determine whether to read exception part for sendException
-  // or read objects.
-  auto partType = static_cast<DSCode>(input.read());
-  bool isExceptionPart = false;
-  // See If partType is JavaSerializable
-  const int CHUNK_HDR_LEN = 5;
-  const int SECURE_PART_LEN = 5 + 8;
-  bool readPart = true;
-  LOGDEBUG(
-      "ChunkedFunctionExecutionResponse::handleChunk chunkLen = %d & partLen "
-      "= "
-      "%d ",
-      chunkLen, partLen);
-  if (partType == DSCode::JavaSerializable) {
-    isExceptionPart = true;
-    // reset the input.
-    input.reset();
-
-    if (((isLastChunkWithSecurity & 0x02) &&
-         (chunkLen - static_cast<int32_t>(partLen) <=
-          CHUNK_HDR_LEN + SECURE_PART_LEN)) ||
-        (((isLastChunkWithSecurity & 0x02) == 0) &&
-         (chunkLen - static_cast<int32_t>(partLen) <= CHUNK_HDR_LEN))) {
-      readPart = false;
-      partLen = input.readInt32();
-      input.advanceCursor(1);  // skip isObject byte
-      input.advanceCursor(partLen);
-    } else {
-      // skip first part i.e JavaSerializable.
-      TcrMessageHelper::skipParts(m_msg, input, 1);
-
-      // read the second part which is string in usual manner, first its
-      // length.
-      partLen = input.readInt32();
-
-      // then isObject byte
-      input.read();  // ignore iSobject
-
-      startLen = input.getBytesRead();  // reset from here need to look value
-      // part + memberid AND -1 for array type
-
-      // Since it is contained as a part of other results, read arrayType
-      // which is arrayList = 65.
-      input.read();
-
-      // read and ignore its len which is 2
-      input.readArrayLength();
-    }
-  } else {
-    // rewind cursor by 1 to what we had read a byte to determine whether to
-    // read exception part or read objects.
-    input.rewindCursor(1);
-  }
-
-  // Read either object or exception string from sendException.
-  std::shared_ptr<Serializable> value;
-  // std::shared_ptr<Cacheable> memberId;
-  if (readPart) {
-    input.readObject(value);
-    // TODO: track this memberId for PrFxHa
-    // input.readObject(memberId);
-    auto objectlen = input.getBytesRead() - startLen;
-
-    auto memberIdLen = partLen - objectlen;
-    input.advanceCursor(memberIdLen);
-    LOGDEBUG("function partlen = %d , objectlen = %z,  memberidlen = %z ",
-             partLen, objectlen, memberIdLen);
-    LOGDEBUG("function input.getBytesRemaining() = %z ",
-             input.getBytesRemaining());
-
-  } else {
-    value = CacheableString::create("Function exception result.");
-  }
-  if (m_rc != nullptr) {
-    std::shared_ptr<Cacheable> result = nullptr;
-    if (isExceptionPart) {
-      result = std::make_shared<UserFunctionExecutionException>(
-          std::dynamic_pointer_cast<CacheableString>(value)->value());
-    } else {
-      result = value;
-    }
-    if (m_resultCollectorLock) {
-      std::lock_guard<decltype(*m_resultCollectorLock)> guard(
-          *m_resultCollectorLock);
-      m_rc->addResult(result);
-    } else {
-      m_rc->addResult(result);
-    }
-  }
-
-  m_msg.readSecureObjectPart(input, false, true, isLastChunkWithSecurity);
-  //  m_functionExecutionResults->push_back(value);
 }
 
 void ChunkedGetAllResponse::reset() {

@@ -149,6 +149,7 @@ TcrMessage::TcrMessage()
       m_tombstoneVersions(),
       m_tombstoneKeys(),
       m_exceptionMessage(),
+      functionError_(),
       m_regionName("INVALID_REGION_NAME"),
       m_regex(),
       m_colocatedWith(),
@@ -176,8 +177,7 @@ TcrMessage::TcrMessage()
       m_metaDataVersion(0),
       m_serverGroupVersion(0),
       m_boolValue(0),
-      m_isCallBackArguement(false),
-      m_hasResult(0) {}
+      m_isCallBackArguement(false) {}
 
 const std::vector<std::shared_ptr<CacheableKey>>* TcrMessage::getKeys() const {
   return m_keyList;
@@ -215,6 +215,10 @@ const std::string& TcrMessage::getException() {
   return m_exceptionMessage;
 }
 
+const std::string& TcrMessage::getFunctionError() const {
+  return functionError_;
+}
+
 bool TcrMessage::isDurable() const { return m_isDurable; }
 
 bool TcrMessage::receiveValues() const { return m_receiveValues; }
@@ -233,7 +237,7 @@ int8_t TcrMessage::getserverGroupVersion() const {
   return m_serverGroupVersion;
 }
 
-std::shared_ptr<std::vector<int8_t>> TcrMessage::getFunctionAttributes() {
+FunctionAttributes TcrMessage::getFunctionAttributes() const {
   return m_functionAttributes;
 }
 
@@ -307,7 +311,7 @@ std::shared_ptr<VersionTag> TcrMessage::getVersionTag() const {
   return m_versionTag;
 }
 
-uint8_t TcrMessage::hasResult() const { return m_hasResult; }
+bool TcrMessage::hasResult() const { return m_functionAttributes.hasResult(); }
 
 std::shared_ptr<CacheableHashMap> TcrMessage::getTombstoneVersions() const {
   return m_tombstoneVersions;
@@ -1036,14 +1040,12 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
       if (!chunk.empty()) {
-        // DeleteArray<const uint8_t> delChunk(bytes);
-        //  DataInput input(bytes, len);
-        // TODO: this not send two part...
-        // looks like this is our exception so only one part will come
-        // readExceptionPart(input, false);
-        // readSecureObjectPart(input, false, true,
-        // isLastChunkAndisSecurityHeader );
-        chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
+        auto input =
+            m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
+                chunk.data(), len);
+        functionError_ = readStringPart(input);
+        readSecureObjectPart(input, false, true,
+                             isLastChunkAndisSecurityHeader);
       }
       break;
     }
@@ -1187,12 +1189,11 @@ void TcrMessage::handleByteArrayResponse(
         input.readInt32();
         input.advanceCursor(1);  // ignore byte
 
-        if (!m_functionAttributes) {
-          m_functionAttributes = std::make_shared<std::vector<int8_t>>();
-        }
-        m_functionAttributes->push_back(input.read());
-        m_functionAttributes->push_back(input.read());
-        m_functionAttributes->push_back(input.read());
+        bool hasResult = input.read() != 0;
+        bool isHA = input.read() != 0;
+        bool optimizeForWrite = input.read() != 0;
+        m_functionAttributes =
+            FunctionAttributes{isHA, hasResult, optimizeForWrite};
       } else if (m_msgTypeRequest == TcrMessage::REQUEST) {
         int32_t receivednumparts = 2;
         readObjectPart(input);
@@ -2578,17 +2579,17 @@ TcrMessageExecuteCqWithIr::TcrMessageExecuteCqWithIr(
 
 TcrMessageExecuteFunction::TcrMessageExecuteFunction(
     DataOutput* dataOutput, const std::string& funcName,
-    const std::shared_ptr<Cacheable>& args, uint8_t getResult,
+    const std::shared_ptr<Cacheable>& args, FunctionAttributes funcAttrs,
     ThinClientBaseDM* connectionDM, std::chrono::milliseconds timeout) {
   m_request.reset(dataOutput);
 
   m_msgType = TcrMessage::EXECUTE_FUNCTION;
+  m_functionAttributes = funcAttrs;
   m_tcdm = connectionDM;
-  m_hasResult = getResult;
 
   uint32_t numOfParts = 3;
   writeHeader(m_msgType, numOfParts);
-  writeByteAndTimeOutPart(getResult, timeout);
+  writeByteAndTimeOutPart(funcAttrs.getFlags(), timeout);
   writeRegionPart(funcName);  // function name string
   writeObjectPart(args);
   writeMessageLength();
@@ -2597,18 +2598,18 @@ TcrMessageExecuteFunction::TcrMessageExecuteFunction(
 TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
     DataOutput* dataOutput, const std::string& funcName, const Region* region,
     const std::shared_ptr<Cacheable>& args,
-    std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+    std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
     std::shared_ptr<CacheableHashSet> failedNodes,
     std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM,
     int8_t reExecute) {
   m_request.reset(dataOutput);
 
   m_msgType = TcrMessage::EXECUTE_REGION_FUNCTION;
+  m_functionAttributes = funcAttrs;
   m_tcdm = connectionDM;
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_hasResult = getResult;
 
   if (routingObj && routingObj->size() == 1) {
     LOGDEBUG("setting up key");
@@ -2623,7 +2624,7 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
     numOfParts++;
   }
   writeHeader(m_msgType, numOfParts);
-  writeByteAndTimeOutPart(getResult, timeout);
+  writeByteAndTimeOutPart(funcAttrs.getFlags(), timeout);
   writeRegionPart(m_regionName);
   writeRegionPart(funcName);  // function name string
   writeObjectPart(args);
@@ -2651,17 +2652,18 @@ TcrMessageExecuteRegionFunctionSingleHop::
     TcrMessageExecuteRegionFunctionSingleHop(
         DataOutput* dataOutput, const std::string& funcName,
         const Region* region, const std::shared_ptr<Cacheable>& args,
-        std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
+        std::shared_ptr<CacheableHashSet> routingObj,
+        FunctionAttributes funcAttrs,
         std::shared_ptr<CacheableHashSet> failedNodes, bool allBuckets,
         std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM) {
   m_request.reset(dataOutput);
 
   m_msgType = TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP;
+  m_functionAttributes = funcAttrs;
   m_tcdm = connectionDM;
   m_regionName =
       region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath();
   m_region = region;
-  m_hasResult = getResult;
 
   uint32_t numOfParts =
       6 + (routingObj ? static_cast<int32_t>(routingObj->size()) : 0);
@@ -2671,7 +2673,7 @@ TcrMessageExecuteRegionFunctionSingleHop::
     numOfParts++;
   }
   writeHeader(m_msgType, numOfParts);
-  writeByteAndTimeOutPart(getResult, timeout);
+  writeByteAndTimeOutPart(funcAttrs.getFlags(), timeout);
   writeRegionPart(m_regionName);
   writeRegionPart(funcName);  // function name string
   writeObjectPart(args);

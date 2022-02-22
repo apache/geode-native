@@ -38,6 +38,7 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "EventIdMap.hpp"
+#include "FunctionAttributes.hpp"
 #include "InterestResultPolicy.hpp"
 #include "util/concurrent/binary_semaphore.hpp"
 
@@ -248,6 +249,7 @@ class TcrMessage {
   const std::map<std::string, int>* getCqs() const;
   bool getBoolValue() const;
   const std::string& getException();
+  const std::string& getFunctionError() const;
 
   const char* getMsgData() const;
   size_t getMsgLength() const;
@@ -267,7 +269,7 @@ class TcrMessage {
   int8_t getMetaDataVersion() const;
   uint32_t getEntryNotFound() const;
   int8_t getserverGroupVersion() const;
-  std::shared_ptr<std::vector<int8_t>> getFunctionAttributes();
+  FunctionAttributes getFunctionAttributes() const;
 
   // set the DM for chunked response messages
   void setDM(ThinClientBaseDM* dm);
@@ -321,7 +323,7 @@ class TcrMessage {
 
   void setVersionTag(std::shared_ptr<VersionTag> versionTag);
   std::shared_ptr<VersionTag> getVersionTag() const;
-  uint8_t hasResult() const;
+  bool hasResult() const;
   std::shared_ptr<CacheableHashMap> getTombstoneVersions() const;
   std::shared_ptr<CacheableHashSet> getTombstoneKeys() const;
 
@@ -402,7 +404,7 @@ class TcrMessage {
   std::unique_ptr<DataInput> m_delta;
   int8_t* m_deltaBytes;
   std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* m_fpaSet;
-  std::shared_ptr<std::vector<int8_t>> m_functionAttributes;
+  FunctionAttributes m_functionAttributes;
   std::shared_ptr<CacheableBytes> m_connectionIDBytes;
   std::shared_ptr<Properties> m_creds;
   std::shared_ptr<CacheableKey> m_key;
@@ -414,6 +416,7 @@ class TcrMessage {
   std::shared_ptr<CacheableHashMap> m_tombstoneVersions;
   std::shared_ptr<CacheableHashSet> m_tombstoneKeys;
   std::string m_exceptionMessage;
+  std::string functionError_;
   std::string m_regionName;
   std::string m_regex;
   std::string m_colocatedWith;
@@ -444,7 +447,6 @@ class TcrMessage {
   int8_t m_serverGroupVersion;
   bool m_boolValue;
   bool m_isCallBackArguement;
-  uint8_t m_hasResult;
 
   friend class TcrMessageHelper;
 };
@@ -715,7 +717,7 @@ class TcrMessageExecuteRegionFunction : public TcrMessage {
   TcrMessageExecuteRegionFunction(
       DataOutput* dataOutput, const std::string& funcName, const Region* region,
       const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<CacheableHashSet> failedNodes,
       std::chrono::milliseconds timeout,
       ThinClientBaseDM* connectionDM = nullptr, int8_t reExecute = 0);
@@ -728,7 +730,7 @@ class TcrMessageExecuteRegionFunctionSingleHop : public TcrMessage {
   TcrMessageExecuteRegionFunctionSingleHop(
       DataOutput* dataOutput, const std::string& funcName, const Region* region,
       const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableHashSet> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableHashSet> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<CacheableHashSet> failedNodes, bool allBuckets,
       std::chrono::milliseconds timeout, ThinClientBaseDM* connectionDM);
 
@@ -874,7 +876,7 @@ class TcrMessageExecuteFunction : public TcrMessage {
  public:
   TcrMessageExecuteFunction(DataOutput* dataOutput, const std::string& funcName,
                             const std::shared_ptr<Cacheable>& args,
-                            uint8_t getResult, ThinClientBaseDM* connectionDM,
+                            FunctionAttributes funcAttrs, ThinClientBaseDM* connectionDM,
                             std::chrono::milliseconds timeout);
 
   ~TcrMessageExecuteFunction() override = default;

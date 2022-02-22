@@ -23,6 +23,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "ChunkedFunctionExecutionResponse.hpp"
 #include "ClientProxyMembershipID.hpp"
 #include "Connector.hpp"
 #include "DistributedSystemImpl.hpp"
@@ -606,9 +607,8 @@ bool TcrConnection::replyHasResult(const TcrMessage& request,
   // no need of it now, this will not come here
   if (request.getMessageType() ==
       TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
-    ChunkedFunctionExecutionResponse* resultCollector =
-        static_cast<ChunkedFunctionExecutionResponse*>(
-            reply.getChunkedResultHandler());
+    auto resultCollector = static_cast<ChunkedFunctionExecutionResponse*>(
+        reply.getChunkedResultHandler());
     if (resultCollector->getResult() == false) {
       LOGDEBUG(
           "TcrConnection::sendRequestForChunkedResponse: function execution, "

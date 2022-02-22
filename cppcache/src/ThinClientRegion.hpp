@@ -28,6 +28,7 @@
 
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
+#include "FunctionAttributes.hpp"
 #include "LocalRegion.hpp"
 #include "Queue.hpp"
 #include "RegionGlobalLocks.hpp"
@@ -138,6 +139,9 @@ class ThinClientRegion : public LocalRegion {
   static GfErrType handleServerException(const std::string& func,
                                          const std::string& exceptionMsg);
 
+  static GfErrType handleServerFunctionError(const std::string& func,
+                                             const std::string& error);
+
   void acquireGlobals(bool failover) override;
   void releaseGlobals(bool failover) override;
 
@@ -147,14 +151,14 @@ class ThinClientRegion : public LocalRegion {
 
   std::shared_ptr<CacheableVector> reExecuteFunction(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::shared_ptr<CacheableHashSet>& failedNodes,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   bool executeFunctionSH(
       const std::string& func, const std::shared_ptr<Cacheable>& args,
-      uint8_t getResult, std::shared_ptr<ResultCollector> rc,
+      FunctionAttributes funcAttrs, std::shared_ptr<ResultCollector> rc,
       const std::shared_ptr<ClientMetadataService::ServerToKeysMap>&
           locationMap,
       std::shared_ptr<CacheableHashSet>& failedNodes,
@@ -163,12 +167,12 @@ class ThinClientRegion : public LocalRegion {
 
   void executeFunction(
       const std::string&, const std::shared_ptr<Cacheable>& args,
-      std::shared_ptr<CacheableVector> routingObj, uint8_t getResult,
+      std::shared_ptr<CacheableVector> routingObj, FunctionAttributes funcAttrs,
       std::shared_ptr<ResultCollector> rc, int32_t retryAttempts,
       std::chrono::milliseconds timeout = DEFAULT_QUERY_RESPONSE_TIMEOUT);
 
   GfErrType getFuncAttributes(const std::string& func,
-                              std::shared_ptr<std::vector<int8_t>>* attr);
+                              FunctionAttributes& attr);
 
   boost::shared_mutex& getMetadataMutex();
 
@@ -443,47 +447,6 @@ class ChunkedQueryResponse : public TcrChunkedResult {
   void readObjectPartList(DataInput& input, bool isResultSet);
 };
 
-/**
- * Handle each chunk of the chunked function execution response.
- *
- *
- */
-class ChunkedFunctionExecutionResponse : public TcrChunkedResult {
- private:
-  TcrMessage& m_msg;
-  // std::shared_ptr<CacheableVector>  m_functionExecutionResults;
-  bool m_getResult;
-  std::shared_ptr<ResultCollector> m_rc;
-  std::shared_ptr<std::recursive_mutex> m_resultCollectorLock;
-
- public:
-  inline ChunkedFunctionExecutionResponse(TcrMessage& msg, bool getResult,
-                                          std::shared_ptr<ResultCollector> rc)
-      : TcrChunkedResult(), m_msg(msg), m_getResult(getResult), m_rc(rc) {}
-
-  inline ChunkedFunctionExecutionResponse(
-      TcrMessage& msg, bool getResult, std::shared_ptr<ResultCollector> rc,
-      const std::shared_ptr<std::recursive_mutex>& resultCollectorLock)
-      : TcrChunkedResult(),
-        m_msg(msg),
-        m_getResult(getResult),
-        m_rc(rc),
-        m_resultCollectorLock(resultCollectorLock) {}
-
-  ChunkedFunctionExecutionResponse(const ChunkedFunctionExecutionResponse&) =
-      delete;
-  ChunkedFunctionExecutionResponse& operator=(
-      const ChunkedFunctionExecutionResponse&) = delete;
-
-  ~ChunkedFunctionExecutionResponse() noexcept override = default;
-
-  inline bool getResult() const { return m_getResult; }
-
-  void handleChunk(const uint8_t* chunk, int32_t chunkLen,
-                   uint8_t isLastChunkWithSecurity,
-                   const CacheImpl* cacheImpl) override;
-  void reset() override;
-};
 
 /**
  * Handle each chunk of the chunked getAll response.

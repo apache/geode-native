@@ -678,6 +678,7 @@ class APACHE_GEODE_EXPORT CqInvalidException : public Exception {
     return "apache::geode::client::CqInvalidException";
   }
 };
+
 /**
  *@brief Thrown if function execution failed
  **/
@@ -687,6 +688,20 @@ class APACHE_GEODE_EXPORT FunctionException : public Exception {
   ~FunctionException() noexcept override {}
   std::string getName() const override {
     return "apache::geode::client::FunctionException";
+  }
+};
+
+/**
+ *@brief Thrown if function attributes does not match with the ones at the
+ *       server
+ **/
+class APACHE_GEODE_EXPORT FunctionAttributesMismatchException
+    : public FunctionException {
+ public:
+  using FunctionException::FunctionException;
+  ~FunctionAttributesMismatchException() noexcept override {}
+  std::string getName() const override {
+    return "apache::geode::client::FunctionAttributesMismatchException";
   }
 };
 

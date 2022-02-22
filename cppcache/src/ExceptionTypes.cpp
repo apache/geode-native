@@ -42,6 +42,7 @@ using apache::geode::client::DuplicateDurableClientException;
 using apache::geode::client::EntryDestroyedException;
 using apache::geode::client::EntryExistsException;
 using apache::geode::client::EntryNotFoundException;
+using apache::geode::client::FunctionAttributesMismatchException;
 using apache::geode::client::FunctionException;
 using apache::geode::client::GeodeIOException;
 using apache::geode::client::IllegalArgumentException;
@@ -381,6 +382,16 @@ using apache::geode::client::UnknownException;
   throw QueryExecutionLowMemoryException{message};
 }
 
+[[noreturn]] void functionAttributesMismatchException(std::string message,
+                                                      std::string& exMsg,
+                                                      GfErrType, std::string) {
+  message.append(
+      !exMsg.empty()
+          ? exMsg
+          : ": Function attributes at client and server don't match");
+  throw FunctionAttributesMismatchException{message};
+}
+
 [[noreturn]] void unknownException(std::string message, std::string& exMsg,
                                    GfErrType err, std::string func) {
   LOGINFO("error code: %d", err);
@@ -452,6 +463,8 @@ std::map<GfErrType, error_function_t>& get_error_map() {
       {GF_PUTALL_PARTIAL_RESULT_EXCEPTION, putAllPartialResultException},
       {GF_LOW_MEMORY_EXCEPTION, lowMemoryException},
       {GF_QUERY_EXECUTION_LOW_MEMORY_EXCEPTION, queryLowMemoryException},
+      {GF_FUNCTION_ATTRIBUTES_MISMATCH_EXCEPTION,
+       functionAttributesMismatchException},
       {GF_NOERR, unknownException},
       {GF_DEADLK, unknownException},
       {GF_EACCES, unknownException},

@@ -24,6 +24,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "ChunkedFunctionExecutionResponse.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "StackTrace.hpp"
 #include "TcrConnectionManager.hpp"
@@ -763,7 +764,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
       type == TcrMessage::REMOVE_ALL ||
       ((type == TcrMessage::EXECUTE_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
-       (request.hasResult() & 2)) ||
+       request.hasResult()) ||
       type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
       type == TcrMessage::EXECUTECQ_MSG_TYPE ||
       type == TcrMessage::STOPCQ_MSG_TYPE ||
@@ -807,10 +808,9 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
     if (type == TcrMessage::EXECUTE_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION ||
         type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP) {
-      ChunkedFunctionExecutionResponse* resultCollector =
-          dynamic_cast<ChunkedFunctionExecutionResponse*>(
-              reply.getChunkedResultHandler());
-      if (resultCollector->getResult() == false) {
+      auto resultCollector = dynamic_cast<ChunkedFunctionExecutionResponse*>(
+          reply.getChunkedResultHandler());
+      if (!resultCollector->getResult()) {
         LOGDEBUG("TcrEndpoint::send: function execution, no response desired");
         //            m_opConnections.put( conn, false );
         //  return GF_NOERR;

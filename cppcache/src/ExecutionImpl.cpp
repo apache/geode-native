@@ -17,13 +17,14 @@
 
 #include "ExecutionImpl.hpp"
 
-#include <sstream>
+#include <boost/thread/lock_types.hpp>
 
 #include <geode/DefaultResultCollector.hpp>
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
 #include "CacheImpl.hpp"
+#include "ChunkedFunctionExecutionResponse.hpp"
 #include "NoResult.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
@@ -35,22 +36,19 @@ namespace apache {
 namespace geode {
 namespace client {
 
-FunctionToFunctionAttributes ExecutionImpl::m_func_attrs;
-std::recursive_mutex ExecutionImpl::m_func_attrs_lock;
 Execution ExecutionImpl::withFilter(
     std::shared_ptr<CacheableVector> routingObj) {
   if (routingObj == nullptr) {
     throw IllegalArgumentException("Execution::withFilter: filter is null");
   }
-  if (m_region == nullptr) {
+  if (region_ == nullptr) {
     throw UnsupportedOperationException(
         "Execution::withFilter: FunctionService::onRegion needs to be called "
         "first before calling this function");
   }
   //      m_routingObj = routingObj;
-  return Execution(std::unique_ptr<ExecutionImpl>(
-      new ExecutionImpl(routingObj, m_args, m_rc, m_region, m_allServer, m_pool,
-                        m_authenticatedView)));
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      routingObj, args_, rc_, region_, allServer_, pool_, authenticatedView_)));
 }
 
 Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
@@ -58,9 +56,8 @@ Execution ExecutionImpl::withArgs(std::shared_ptr<Cacheable> args) {
     throw IllegalArgumentException("Execution::withArgs: args is null");
   }
   //  m_args = args;
-  return Execution(std::unique_ptr<ExecutionImpl>(
-      new ExecutionImpl(m_routingObj, args, m_rc, m_region, m_allServer, m_pool,
-                        m_authenticatedView)));
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      routingObj_, args, rc_, region_, allServer_, pool_, authenticatedView_)));
 }
 
 Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
@@ -69,18 +66,8 @@ Execution ExecutionImpl::withCollector(std::shared_ptr<ResultCollector> rs) {
         "Execution::withCollector: collector is null");
   }
   //	m_rc = rs;
-  return Execution(std::unique_ptr<ExecutionImpl>(
-      new ExecutionImpl(m_routingObj, m_args, rs, m_region, m_allServer, m_pool,
-                        m_authenticatedView)));
-}
-
-std::shared_ptr<std::vector<int8_t>> ExecutionImpl::getFunctionAttributes(
-    const std::string& func) {
-  auto&& itr = m_func_attrs.find(func);
-  if (itr != m_func_attrs.end()) {
-    return itr->second;
-  }
-  return nullptr;
+  return Execution(std::unique_ptr<ExecutionImpl>(new ExecutionImpl(
+      routingObj_, args_, rs, region_, allServer_, pool_, authenticatedView_)));
 }
 
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
@@ -88,268 +75,241 @@ std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::shared_ptr<Cacheable>& args,
     const std::shared_ptr<ResultCollector>& rs, const std::string& func,
     std::chrono::milliseconds timeout) {
-  m_routingObj = routingObj;
-  m_args = args;
-  m_rc = rs;
+  routingObj_ = routingObj;
+  args_ = args;
+  rc_ = rs;
   return execute(func, timeout);
+}
+
+FunctionAttributes ExecutionImpl::getFunctionAttributes(
+    const std::string& func) {
+  boost::shared_lock<boost::shared_mutex> lock(funcAttrsMutex_);
+  auto&& itr = funcAttrs_.find(func);
+
+  if (itr != funcAttrs_.end()) {
+    return itr->second;
+  }
+
+  return {};
+}
+
+FunctionAttributes ExecutionImpl::updateFunctionAttributes(
+    const std::string& funcName) {
+  GfErrType err = GF_NOERR;
+  boost::upgrade_lock<boost::shared_mutex> lock{funcAttrsMutex_};
+
+  auto&& iter = funcAttrs_.find(funcName);
+  if (iter != funcAttrs_.end()) {
+    return iter->second;
+  }
+
+  FunctionAttributes attrs;
+  boost::upgrade_to_unique_lock<boost::shared_mutex> uniqueLock{lock};
+  if (region_) {
+    err = dynamic_cast<ThinClientRegion*>(region_.get())
+              ->getFuncAttributes(funcName, attrs);
+  } else if (pool_) {
+    err = getFuncAttributes(funcName, attrs);
+  }
+  if (err != GF_NOERR) {
+    throwExceptionIfError("Execute::GET_FUNCTION_ATTRIBUTES", err);
+  }
+  if (attrs && err == GF_NOERR) {
+    funcAttrs_[funcName] = attrs;
+  }
+
+  return attrs;
+}
+
+void ExecutionImpl::clearFunctionAttributes(const std::string& funcName) {
+  boost::unique_lock<decltype(funcAttrsMutex_)> guard{funcAttrsMutex_};
+  funcAttrs_.erase(funcName);
 }
 
 std::shared_ptr<ResultCollector> ExecutionImpl::execute(
     const std::string& func, std::chrono::milliseconds timeout) {
   LOGDEBUG("ExecutionImpl::execute: ");
   GuardUserAttributes gua;
-  if (m_authenticatedView != nullptr) {
+  if (authenticatedView_ != nullptr) {
     LOGDEBUG("ExecutionImpl::execute function on authenticated cache");
-    gua.setAuthenticatedView(m_authenticatedView);
+    gua.setAuthenticatedView(authenticatedView_);
   }
-  bool serverHasResult = false;
-  bool serverIsHA = false;
-  bool serverOptimizeForWrite = false;
 
-  auto&& attr = getFunctionAttributes(func);
-  {
-    if (attr == nullptr) {
-      std::lock_guard<decltype(m_func_attrs_lock)> _guard(m_func_attrs_lock);
-      GfErrType err = GF_NOERR;
-      attr = getFunctionAttributes(func);
-      if (attr == nullptr) {
-        if (m_region != nullptr) {
-          err = dynamic_cast<ThinClientRegion*>(m_region.get())
-                    ->getFuncAttributes(func, &attr);
-        } else if (m_pool != nullptr) {
-          err = getFuncAttributes(func, &attr);
-        }
-        if (err != GF_NOERR) {
-          throwExceptionIfError("Execute::GET_FUNCTION_ATTRIBUTES", err);
-        }
-        if (!attr->empty() && err == GF_NOERR) {
-          m_func_attrs[func] = attr;
-        }
-      }
-    }
+  auto&& attrs = getFunctionAttributes(func);
+  if (!attrs) {
+    attrs = updateFunctionAttributes(func);
   }
-  serverHasResult = ((attr->at(0) == 1) ? true : false);
-  serverIsHA = ((attr->at(1) == 1) ? true : false);
-  serverOptimizeForWrite = ((attr->at(2) == 1) ? true : false);
 
   LOGDEBUG(
       "ExecutionImpl::execute got functionAttributes from server for function "
       "= %s serverHasResult = %d serverIsHA = %d serverOptimizeForWrite = %d ",
-      func.c_str(), serverHasResult, serverIsHA, serverOptimizeForWrite);
+      func.c_str(), attrs.hasResult(), attrs.isHA(),
+      attrs.isOptimizedForWrite());
 
-  if (serverHasResult == false) {
-    m_rc = std::make_shared<NoResult>();
-  } else if (m_rc == nullptr) {
-    m_rc = std::make_shared<DefaultResultCollector>();
+  if (!attrs.hasResult()) {
+    rc_ = std::make_shared<NoResult>();
+  } else if (!rc_) {
+    rc_ = std::make_shared<DefaultResultCollector>();
   }
 
-  uint8_t isHAHasResultOptimizeForWrite = 0;
-  if (serverIsHA) {
-    isHAHasResultOptimizeForWrite = isHAHasResultOptimizeForWrite | 1;
-  }
-
-  if (serverHasResult) {
-    isHAHasResultOptimizeForWrite = isHAHasResultOptimizeForWrite | 2;
-  }
-
-  if (serverOptimizeForWrite) {
-    isHAHasResultOptimizeForWrite = isHAHasResultOptimizeForWrite | 4;
-  }
-
-  LOGDEBUG("ExecutionImpl::execute: isHAHasResultOptimizeForWrite = %d",
-           isHAHasResultOptimizeForWrite);
+  LOGDEBUG("ExecutionImpl::execute: function state = %d", attrs.getFlags());
   TXState* txState = TSSTXStateWrapper::get().getTXState();
 
-  if (txState != nullptr && m_allServer == true) {
+  if (txState != nullptr && allServer_ == true) {
     throw UnsupportedOperationException(
         "Execution::execute: Transaction function execution on all servers is "
         "not supported");
   }
 
-  if (m_region != nullptr) {
-    int32_t retryAttempts = 3;
-    if (m_pool != nullptr) {
-      retryAttempts = m_pool->getRetryAttempts();
-    }
-
-    if (m_pool != nullptr && m_pool->getPRSingleHopEnabled()) {
-      auto tcrdm = std::dynamic_pointer_cast<ThinClientPoolDM>(m_pool);
-      if (!tcrdm) {
-        throw IllegalArgumentException(
-            "Execute: pool cast to ThinClientPoolDM failed");
+  try {
+    if (region_ != nullptr) {
+      int32_t retryAttempts = 3;
+      if (pool_ != nullptr) {
+        retryAttempts = pool_->getRetryAttempts();
       }
-      auto cms = tcrdm->getClientMetaDataService();
-      auto failedNodes = CacheableHashSet::create();
-      if ((!m_routingObj || m_routingObj->empty()) &&
-          txState == nullptr) {  // For transactions we should not create
-                                 // multiple threads
-        LOGDEBUG("ExecutionImpl::execute: m_routingObj is empty");
-        auto serverToBucketsMap = cms->groupByServerToAllBuckets(
-            m_region,
-            /*serverOptimizeForWrite*/ (isHAHasResultOptimizeForWrite & 4) ==
-                4);
-        if (!serverToBucketsMap || serverToBucketsMap->empty()) {
-          LOGDEBUG(
-              "ExecutionImpl::execute: m_routingObj is empty and locationMap "
-              "is also empty so use old FE onRegion");
-          std::dynamic_pointer_cast<ThinClientRegion>(m_region)
-              ->executeFunction(
-                  func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
-                  m_rc, (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                  timeout);
-          dynamic_cast<ThinClientRegion*>(m_region.get())
-              ->setMetaDataRefreshed(false);
-          cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
-        } else {
-          // convert server to bucket map to server to key map where bucket id
-          // is key.
-          auto serverToKeysMap =
-              std::make_shared<ClientMetadataService::ServerToKeysMap>(
-                  serverToBucketsMap->size());
-          for (const auto& entry : *serverToBucketsMap) {
-            auto keys = std::make_shared<CacheableHashSet>(
-                static_cast<int32_t>(entry.second->size()));
-            for (const auto& bucket : *(entry.second)) {
-              keys->insert(CacheableInt32::create(bucket));
-            }
-            serverToKeysMap->emplace(entry.first, keys);
-          }
-          LOGDEBUG(
-              "ExecutionImpl::execute: withoutFilter and locationMap is not "
-              "empty");
-          bool reExecute = std::dynamic_pointer_cast<ThinClientRegion>(m_region)
-                               ->executeFunctionSH(
-                                   func, m_args, isHAHasResultOptimizeForWrite,
-                                   m_rc, serverToKeysMap, failedNodes, timeout,
-                                   /*allBuckets*/ true);
-          if (reExecute) {  // Fallback to old FE onREgion
-            if (isHAHasResultOptimizeForWrite & 1) {  // isHA = true
-              m_rc->clearResults();
-              auto rs =
-                  std::dynamic_pointer_cast<ThinClientRegion>(m_region)
-                      ->reExecuteFunction(func, m_args, m_routingObj,
-                                          isHAHasResultOptimizeForWrite, m_rc,
-                                          (isHAHasResultOptimizeForWrite & 1)
-                                              ? retryAttempts
-                                              : 0,
-                                          failedNodes, timeout);
-            }
-          }
+
+      if (pool_ != nullptr && pool_->getPRSingleHopEnabled()) {
+        auto tcrdm = std::dynamic_pointer_cast<ThinClientPoolDM>(pool_);
+        if (!tcrdm) {
+          throw IllegalArgumentException(
+              "Execute: pool cast to ThinClientPoolDM failed");
         }
-      } else if (m_routingObj != nullptr && m_routingObj->size() == 1) {
-        LOGDEBUG("executeFunction onRegion WithFilter size equal to 1 ");
-        dynamic_cast<ThinClientRegion*>(m_region.get())
-            ->executeFunction(
-                func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
-                (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                timeout);
-      } else {
-        if (txState == nullptr) {
-          auto serverToKeysMap = cms->getServerToFilterMapFESHOP(
-              m_routingObj, m_region, /*serverOptimizeForWrite*/
-              (isHAHasResultOptimizeForWrite & 4) == 4);
-          if (!serverToKeysMap || serverToKeysMap->empty()) {
+        auto cms = tcrdm->getClientMetaDataService();
+        auto failedNodes = CacheableHashSet::create();
+        if ((!routingObj_ || routingObj_->empty()) &&
+            txState == nullptr) {  // For transactions we should not create
+                                   // multiple threads
+          LOGDEBUG("ExecutionImpl::execute: m_routingObj is empty");
+          auto serverToBucketsMap = cms->groupByServerToAllBuckets(
+              region_, attrs.isOptimizedForWrite());
+          if (!serverToBucketsMap || serverToBucketsMap->empty()) {
             LOGDEBUG(
-                "ExecutionImpl::execute: withFilter but locationMap is empty "
-                "so use old FE onRegion");
-            dynamic_cast<ThinClientRegion*>(m_region.get())
-                ->executeFunction(
-                    func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
-                    m_rc,
-                    (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                    timeout);
-            cms->enqueueForMetadataRefresh(m_region->getFullPath(), 0);
+                "ExecutionImpl::execute: m_routingObj is empty and locationMap "
+                "is also empty so use old FE onRegion");
+            std::dynamic_pointer_cast<ThinClientRegion>(region_)
+                ->executeFunction(func, args_, routingObj_, attrs, rc_,
+                                  attrs.isHA() ? retryAttempts : 0, timeout);
+            dynamic_cast<ThinClientRegion*>(region_.get())
+                ->setMetaDataRefreshed(false);
+            cms->enqueueForMetadataRefresh(region_->getFullPath(), 0);
           } else {
+            // convert server to bucket map to server to key map where bucket id
+            // is key.
+            auto serverToKeysMap =
+                std::make_shared<ClientMetadataService::ServerToKeysMap>(
+                    serverToBucketsMap->size());
+            for (const auto& entry : *serverToBucketsMap) {
+              auto keys = std::make_shared<CacheableHashSet>(
+                  static_cast<int32_t>(entry.second->size()));
+              for (const auto& bucket : *(entry.second)) {
+                keys->insert(CacheableInt32::create(bucket));
+              }
+              serverToKeysMap->emplace(entry.first, keys);
+            }
             LOGDEBUG(
-                "ExecutionImpl::execute: withFilter and locationMap is not "
+                "ExecutionImpl::execute: withoutFilter and locationMap is not "
                 "empty");
             bool reExecute =
-                dynamic_cast<ThinClientRegion*>(m_region.get())
-                    ->executeFunctionSH(func, m_args,
-                                        isHAHasResultOptimizeForWrite, m_rc,
+                std::dynamic_pointer_cast<ThinClientRegion>(region_)
+                    ->executeFunctionSH(func, args_, attrs, rc_,
                                         serverToKeysMap, failedNodes, timeout,
-                                        /*allBuckets*/ false);
+                                        /*allBuckets*/ true);
             if (reExecute) {  // Fallback to old FE onREgion
-              if (isHAHasResultOptimizeForWrite & 1) {  // isHA = true
-                m_rc->clearResults();
-                auto rs =
-                    dynamic_cast<ThinClientRegion*>(m_region.get())
-                        ->reExecuteFunction(func, m_args, m_routingObj,
-                                            isHAHasResultOptimizeForWrite, m_rc,
-                                            (isHAHasResultOptimizeForWrite & 1)
-                                                ? retryAttempts
-                                                : 0,
-                                            failedNodes, timeout);
+              if (attrs.isHA()) {
+                rc_->clearResults();
+                auto rs = std::dynamic_pointer_cast<ThinClientRegion>(region_)
+                              ->reExecuteFunction(
+                                  func, args_, routingObj_, attrs, rc_,
+                                  attrs.isHA() ? retryAttempts : 0, failedNodes,
+                                  timeout);
               }
             }
           }
-        } else {  // For transactions use old way
-          dynamic_cast<ThinClientRegion*>(m_region.get())
-              ->executeFunction(
-                  func, m_args, m_routingObj, isHAHasResultOptimizeForWrite,
-                  m_rc, (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0,
-                  timeout);
-        }
-      }
-    } else {  // w/o single hop, Fallback to old FE onREgion
-      dynamic_cast<ThinClientRegion*>(m_region.get())
-          ->executeFunction(
-              func, m_args, m_routingObj, isHAHasResultOptimizeForWrite, m_rc,
-              (isHAHasResultOptimizeForWrite & 1) ? retryAttempts : 0, timeout);
-    }
-    /*    } catch (TransactionDataNodeHasDepartedException e) {
-                    if(txState == nullptr)
-                    {
-                            GfErrTypeThrowException("Transaction is nullptr",
-       GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-                    }
-
-                    if(!txState->isReplay())
-                            txState->replay(false);
-            } catch(TransactionDataRebalancedException e) {
-                    if(txState == nullptr)
-                    {
-                            GfErrTypeThrowException("Transaction is nullptr",
-       GF_CACHE_ILLEGAL_STATE_EXCEPTION);
-                    }
-
-                    if(!txState->isReplay())
-                            txState->replay(true);
+        } else if (routingObj_ != nullptr && routingObj_->size() == 1) {
+          LOGDEBUG("executeFunction onRegion WithFilter size equal to 1 ");
+          dynamic_cast<ThinClientRegion*>(region_.get())
+              ->executeFunction(func, args_, routingObj_, attrs, rc_,
+                                attrs.isHA() ? retryAttempts : 0, timeout);
+        } else {
+          if (txState == nullptr) {
+            auto serverToKeysMap = cms->getServerToFilterMapFESHOP(
+                routingObj_, region_, attrs.isOptimizedForWrite());
+            if (!serverToKeysMap || serverToKeysMap->empty()) {
+              LOGDEBUG(
+                  "ExecutionImpl::execute: withFilter but locationMap is empty "
+                  "so use old FE onRegion");
+              dynamic_cast<ThinClientRegion*>(region_.get())
+                  ->executeFunction(func, args_, routingObj_, attrs, rc_,
+                                    attrs.isHA() ? retryAttempts : 0, timeout);
+              cms->enqueueForMetadataRefresh(region_->getFullPath(), 0);
+            } else {
+              LOGDEBUG(
+                  "ExecutionImpl::execute: withFilter and locationMap is not "
+                  "empty");
+              bool reExecute =
+                  dynamic_cast<ThinClientRegion*>(region_.get())
+                      ->executeFunctionSH(func, args_, attrs, rc_,
+                                          serverToKeysMap, failedNodes, timeout,
+                                          /*allBuckets*/ false);
+              if (reExecute) {       // Fallback to old FE onREgion
+                if (attrs.isHA()) {  // isHA = true
+                  rc_->clearResults();
+                  auto rs = dynamic_cast<ThinClientRegion*>(region_.get())
+                                ->reExecuteFunction(
+                                    func, args_, routingObj_, attrs, rc_,
+                                    attrs.isHA() ? retryAttempts : 0,
+                                    failedNodes, timeout);
+                }
+              }
             }
-    */
-    if (serverHasResult == true) {
-      // ExecutionImpl::addResults(m_rc, rs);
-      m_rc->endResults();
-    }
-
-    return m_rc;
-  } else if (m_pool != nullptr) {
-    if (txState != nullptr) {
-      throw UnsupportedOperationException(
-          "Execution::execute: Transaction function execution on pool is not "
-          "supported");
-    }
-    if (m_allServer == false) {
-      executeOnPool(
-          func, isHAHasResultOptimizeForWrite,
-          (isHAHasResultOptimizeForWrite & 1) ? m_pool->getRetryAttempts() : 0,
-          timeout);
-      if (serverHasResult == true) {
-        // ExecutionImpl::addResults(m_rc, rs);
-        m_rc->endResults();
+          } else {  // For transactions use old way
+            dynamic_cast<ThinClientRegion*>(region_.get())
+                ->executeFunction(func, args_, routingObj_, attrs, rc_,
+                                  attrs.isHA() ? retryAttempts : 0, timeout);
+          }
+        }
+      } else {  // w/o single hop, Fallback to old FE onREgion
+        dynamic_cast<ThinClientRegion*>(region_.get())
+            ->executeFunction(func, args_, routingObj_, attrs, rc_,
+                              attrs.isHA() ? retryAttempts : 0, timeout);
       }
-      return m_rc;
+
+      if (attrs.hasResult()) {
+        rc_->endResults();
+      }
+
+      return rc_;
+    } else if (pool_ != nullptr) {
+      if (txState != nullptr) {
+        throw UnsupportedOperationException(
+            "Execution::execute: Transaction function execution on pool is not "
+            "supported");
+      }
+      if (!allServer_) {
+        executeOnPool(func, attrs, attrs.isHA() ? pool_->getRetryAttempts() : 0,
+                      timeout);
+        if (attrs.hasResult()) {
+          rc_->endResults();
+        }
+        return rc_;
+      }
+      executeOnAllServers(func, attrs, timeout);
+    } else {
+      throw IllegalStateException("Execution::execute: should not be here");
     }
-    executeOnAllServers(func, isHAHasResultOptimizeForWrite, timeout);
-  } else {
-    throw IllegalStateException("Execution::execute: should not be here");
+  } catch (FunctionAttributesMismatchException&) {
+    LOGERROR("Execution::execute: function '%s' attributes mismatch detected",
+             func.c_str());
+    clearFunctionAttributes(func);
+    throw;
   }
-  return m_rc;
+
+  return rc_;
 }
 
-GfErrType ExecutionImpl::getFuncAttributes(
-    const std::string& func, std::shared_ptr<std::vector<int8_t>>* attr) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
+GfErrType ExecutionImpl::getFuncAttributes(const std::string& func,
+                                           FunctionAttributes& attr) {
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(pool_.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "Execute: pool cast to ThinClientPoolDM failed");
@@ -370,11 +330,11 @@ GfErrType ExecutionImpl::getFuncAttributes(
   }
   switch (reply.getMessageType()) {
     case TcrMessage::RESPONSE: {
-      *attr = reply.getFunctionAttributes();
+      attr = reply.getFunctionAttributes();
       break;
     }
     case TcrMessage::EXCEPTION: {
-      err = dynamic_cast<ThinClientRegion*>(m_region.get())
+      err = dynamic_cast<ThinClientRegion*>(region_.get())
                 ->handleServerException("Region::GET_FUNCTION_ATTRIBUTES",
                                         reply.getException());
       break;
@@ -406,24 +366,25 @@ void ExecutionImpl::addResults(
 }
 
 void ExecutionImpl::executeOnAllServers(const std::string& func,
-                                        uint8_t getResult,
+                                        FunctionAttributes funcAttrs,
                                         std::chrono::milliseconds timeout) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(pool_.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "Execute: pool cast to ThinClientPoolDM failed");
   }
-  std::shared_ptr<CacheableString> exceptionPtr = nullptr;
+
+  std::string exceptionMsg;
   GfErrType err = tcrdm->sendRequestToAllServers(
-      func.c_str(), getResult, timeout, m_args, m_rc, exceptionPtr);
+      func.c_str(), funcAttrs, timeout, args_, rc_, exceptionMsg);
 
   if (err != GF_NOERR) {
     LOGDEBUG("Execute failed: %d", err);
     if (err == GF_CACHESERVER_EXCEPTION) {
       std::string message;
-      if (exceptionPtr) {
+      if (!exceptionMsg.empty()) {
         message = std::string("Execute: exception at the server side: ") +
-                  exceptionPtr->value().c_str();
+                  exceptionMsg.c_str();
       } else {
         message = "Execute: failed to execute function with server.";
       }
@@ -434,30 +395,14 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
   }
 }
 std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
-    const std::string& func, uint8_t getResult, int32_t retryAttempts,
-    std::chrono::milliseconds timeout) {
-  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(m_pool.get());
+    const std::string& func, FunctionAttributes funcAttrs,
+    int32_t retryAttempts, std::chrono::milliseconds timeout) {
+  ThinClientPoolDM* tcrdm = dynamic_cast<ThinClientPoolDM*>(pool_.get());
   if (tcrdm == nullptr) {
     throw IllegalArgumentException(
         "Execute: pool cast to ThinClientPoolDM failed");
   }
   int32_t attempt = 0;
-
-  // auto csArray = tcrdm->getServers();
-
-  // if (csArray != nullptr && csArray->length() != 0) {
-  //  for (int i = 0; i < csArray->length(); i++)
-  //  {
-  //   auto cs = csArray[i];
-  //    TcrEndpoint *ep = nullptr;
-  //    /*
-  //    std::string endpointStr =
-  //    Utils::convertHostToCanonicalForm(cs->value().c_str()
-  //    );
-  //    */
-  //    ep = tcrdm->addEP(cs->value().c_str());
-  //  }
-  //}
 
   // if pools retry attempts are not set then retry once on all available
   // endpoints
@@ -470,43 +415,50 @@ std::shared_ptr<CacheableVector> ExecutionImpl::executeOnPool(
     TcrMessageExecuteFunction msg(
         new DataOutput(
             tcrdm->getConnectionManager().getCacheImpl()->createDataOutput()),
-        funcName, m_args, getResult, tcrdm, timeout);
+        funcName, args_, funcAttrs, tcrdm, timeout);
     TcrMessageReply reply(true, tcrdm);
     auto resultCollector = std::unique_ptr<ChunkedFunctionExecutionResponse>(
-        new ChunkedFunctionExecutionResponse(reply, (getResult & 2) == 2,
-                                             m_rc));
+        new ChunkedFunctionExecutionResponse(reply, funcAttrs.hasResult(),
+                                             rc_));
     reply.setChunkedResultHandler(resultCollector.get());
     reply.setTimeout(timeout);
 
     GfErrType err = GF_NOERR;
-    err = tcrdm->sendSyncRequest(msg, reply, !(getResult & 1));
+    // Function failover logic is not handled in the network layer. That's why
+    // attemptFailover should be always be false when calling sendSyncRequest
+    err = tcrdm->sendSyncRequest(msg, reply, false);
     LOGFINE("executeOnPool %d attempt = %d retryAttempts = %d", err, attempt,
             retryAttempts);
-    if (err == GF_NOERR &&
-        (reply.getMessageType() == TcrMessage::EXCEPTION ||
-         reply.getMessageType() == TcrMessage::EXECUTE_FUNCTION_ERROR)) {
-      err = ThinClientRegion::handleServerException("Execute",
-                                                    reply.getException());
+
+    if (err == GF_NOERR) {
+      auto replyType = reply.getMessageType();
+      if (replyType == TcrMessage::EXCEPTION) {
+        err = ThinClientRegion::handleServerException(
+            "ExecutionImpl::executeOnPool", reply.getException());
+      } else if (replyType == TcrMessage::EXECUTE_FUNCTION_ERROR) {
+        err = ThinClientRegion::handleServerFunctionError(
+            "ExecutionImpl::executeOnPool", reply.getFunctionError());
+      }
     }
+
     if (ThinClientBaseDM::isFatalClientError(err)) {
       throwExceptionIfError("ExecuteOnPool:", err);
     } else if (err != GF_NOERR) {
-      if (getResult & 1) {
+      if (funcAttrs.isHA()) {
         resultCollector->reset();
-        m_rc->clearResults();
+        rc_->clearResults();
         attempt++;
         if (attempt > 0) {
-          getResult |= 8;  // Send this on server, so that it can identify that
-                           // it is a retry attempt.
+          funcAttrs.markRetry();
         }
         continue;
       } else {
         throwExceptionIfError("ExecuteOnPool:", err);
       }
     }
-    return nullptr;
+    return {};
   }
-  return nullptr;
+  return {};
 }
 
 }  // namespace client
