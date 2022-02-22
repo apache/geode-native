@@ -21,7 +21,7 @@
 #define GEODE_INTEGRATION_TEST_CLIENT_CLEANUP_H_
 
 #include <functional>
-#include <vector>
+#include <list>
 
 class ClientCleanup {
  public:
@@ -29,7 +29,7 @@ class ClientCleanup {
   void registerCallback(std::function<void()> callback);
 
  protected:
-  std::vector<std::function<void()>> callbacks_;
+  std::list<std::function<void()>> callbacks_;
 };
 
 #endif  // GEODE_INTEGRATION_TEST_CLIENT_CLEANUP_H_
