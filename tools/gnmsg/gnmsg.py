@@ -16,31 +16,12 @@
 import json
 import queue
 import os
-import re
 import sys
-import threading
 import traceback
 
 
-from modified_utf8 import utf8m_to_utf8s
-from numeric_conversion import to_hex_digit
 import command_line
 
-from ds_codes import ds_codes
-from connection_types import ConnectionTypes, ConnectionTypeStrings
-from read_values import (
-    read_number_from_hex_string,
-    read_byte_value,
-    read_number_from_hex_string,
-    read_short_value,
-    read_number_from_hex_string,
-    read_int_value,
-    read_long_value,
-    read_string_value,
-    read_jmutf8_string_value,
-    read_number_from_hex_string,
-    call_reader_function,
-)
 from client_message_decoder import ClientMessageDecoder
 from server_message_decoder import ServerMessageDecoder
 from handshake_decoder import HandshakeDecoder
