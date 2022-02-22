@@ -22,7 +22,6 @@
 
 #include <chrono>
 
-#include <ace/High_Res_Timer.h>
 
 #include <boost/process.hpp>
 

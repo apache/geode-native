@@ -440,7 +440,6 @@ GfErrType LRUEntriesMap::remove(const std::shared_ptr<CacheableKey>& key,
   GfErrType err;
   if ((err = segmentRPtr->remove(key, result, me, updateCount, versionTag,
                                  afterRemote, isEntryFound)) == GF_NOERR) {
-    // ACE_Guard<MapSegment> _guard(*segmentRPtr);
     if (result != nullptr && me != nullptr) {
       lru_queue_.remove(me);
       LRUEntryProperties& lru_prop = me->getLRUProperties();

@@ -22,9 +22,6 @@
 #include "BuiltinCacheableWrappers.hpp"
 #include "Utils.hpp"
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <iostream>
 #include <string>
 

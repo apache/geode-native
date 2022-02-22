@@ -16,8 +16,6 @@
  */
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"
 

@@ -19,9 +19,6 @@
 #include <iostream>
 #include <list>
 
-#include <ace/INET_Addr.h>
-#include <ace/SOCK_Acceptor.h>
-
 #include <boost/process.hpp>
 #include <boost/regex.hpp>
 
@@ -1382,7 +1379,7 @@ void CacheHelper::terminate_process_file(
       pidFileName + ", pid=" + pid);
 
   // Didn't exit on its own, kill it.
-  LOG("ACE::terminate_process: pid=" + pid);
+  LOG("terminate_process: pid=" + pid);
 
   boost::process::pid_t id =
       static_cast<boost::process::pid_t>(std::stoul(pid));

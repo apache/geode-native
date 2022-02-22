@@ -20,9 +20,6 @@
 #include <thread>
 #include <chrono>
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>

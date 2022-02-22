@@ -89,8 +89,6 @@ BEGIN_TEST.
 #include <string>
 #include <typeinfo>
 
-#include <ace/ACE.h>
-#include <ace/OS.h>
 
 #include <geode/Exception.hpp>
 
@@ -107,7 +105,7 @@ BEGIN_TEST.
 #define ASSERT_EQ(x, y) _ASSERT_EQ(x, y, __LINE__, __FILE__)
 
 #define ASSERT_STREQ(x, y)                                            \
-  ASSERT((strcmp(x, y) == 0),                                         \
+  ASSERT(x == y,                                         \
          (std::string("Assert: " #x " == " #y ", Expected: \"") + x + \
           "\", Actual: \"" + y + "\"")                                \
              .c_str())

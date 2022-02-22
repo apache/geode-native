@@ -19,8 +19,6 @@
 #define ROOT_SCOPE DISTRIBUTED_ACK
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include "BuiltinCacheableWrappers.hpp"
 
 #include <string>

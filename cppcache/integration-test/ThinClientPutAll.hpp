@@ -24,9 +24,6 @@
 #include <sstream>
 #include <iomanip>
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include "fw_dunit.hpp"
 #include "testobject/PdxType.hpp"
 #include "testobject/VariousPdxTypes.hpp"

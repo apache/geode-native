@@ -22,8 +22,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 
 #include "fw_dunit.hpp"
 #include "ThinClientHelper.hpp"

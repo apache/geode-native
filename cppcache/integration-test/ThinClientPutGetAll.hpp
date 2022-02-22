@@ -21,8 +21,6 @@
 #define GEODE_INTEGRATION_TEST_THINCLIENTPUTGETALL_H_
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include <string>
 #include <unordered_map>
 

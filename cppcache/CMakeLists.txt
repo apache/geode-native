@@ -89,7 +89,6 @@ elseif (WIN32)
 endif()
 
 target_link_libraries(_apache-geode INTERFACE
-  ACE::ACE
   Boost::boost
   Boost::filesystem
   Boost::thread
@@ -98,6 +97,7 @@ target_link_libraries(_apache-geode INTERFACE
   XercesC::XercesC
   OpenSSL::SSL
   OpenSSL::Crypto
+  ${CMAKE_DL_LIBS}
 )
 
 if (USE_PCH)

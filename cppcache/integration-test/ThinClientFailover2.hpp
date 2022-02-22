@@ -21,9 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <ace/High_Res_Timer.h>
 
-#include <ace/OS.h>
 #include <string>
 
 #define ThinClientFailover2 "DistOps"
@@ -341,9 +339,6 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT1, StepOne_Pool_Locator)
   {
-    char buff[2048];
-    char* buf = getcwd(buff, 2048);
-    LOG(buf);
     initClient(true);
     createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__", true);
     auto regPtr = getHelper()->getRegion(regionName);
@@ -354,9 +349,6 @@ END_TASK_DEFINITION
 
 DUNIT_TASK_DEFINITION(CLIENT2, StepTwo_Pool_Locator)
   {
-    char buff[2048];
-    char* buf = getcwd(buff, 2048);
-    LOG(buf);
     initClient(true);
     createPooledRegion(regionName, USE_ACK, locatorsG, "__TEST_POOL1__", true);
     auto regPtr = getHelper()->getRegion(regionName);

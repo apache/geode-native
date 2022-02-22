@@ -20,9 +20,6 @@
 #include <thread>
 #include <chrono>
 
-#include <ace/High_Res_Timer.h>
-#include <ace/OS.h>
-
 #include <geode/EntryEvent.hpp>
 
 #define ROOT_NAME "testThinClientHAEventIDMap"

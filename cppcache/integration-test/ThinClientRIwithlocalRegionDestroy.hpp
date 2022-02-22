@@ -21,8 +21,6 @@
  */
 #include "fw_dunit.hpp"
 #include <geode/RegionEvent.hpp>
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include <string>
 
 #define ROOT_NAME "ThinClientRIwithlocalRegionDestroy"

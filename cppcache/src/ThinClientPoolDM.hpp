@@ -27,9 +27,6 @@
 #include <string>
 #include <vector>
 
-#include <ace/Semaphore.h>
-#include <ace/Time_Value.h>
-
 #include <geode/Pool.hpp>
 #include <geode/ResultCollector.hpp>
 

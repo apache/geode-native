@@ -94,7 +94,6 @@ target_link_libraries(cpp-integration-test
     apache-geode
     integration-framework
     testobject
-    ACE::ACE
     GTest::gtest
     GTest::gtest_main
     GTest::gmock

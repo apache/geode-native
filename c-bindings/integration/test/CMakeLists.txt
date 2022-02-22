@@ -38,7 +38,6 @@ target_link_libraries(${PROJECT_NAME}
     apache-geode-c
     integration-framework
     testobject
-    ACE::ACE
     GTest::gtest
     GTest::gtest_main
     Boost::boost
