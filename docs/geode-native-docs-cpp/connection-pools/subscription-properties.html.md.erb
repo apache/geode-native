@@ -23,7 +23,7 @@ Each connection pool has a single subscription connection that can be to any ser
 
 When a client registers interest for a region, if the connection pool does not already have a subscription channel, the connection pool sends a message to the server locator, and the server locator chooses servers to host the queue and return those server names to the client. The client then contacts the chosen servers and asks them to create the queue.
 
-The client maintains at least one connection with each server hosting a queue. If the server does not detect any connections from a non-durable client, it drops the client queue and closes all artifacts for the client. For information about durable client subscriptions, see [Implementing Durable Client/Server Messaging](/serverman/developing/events/implementing_durable_client_server_messaging.html).
+The client maintains at least one connection with each server hosting a queue. If the server does not detect any connections from a non-durable client, it drops the client queue and closes all artifacts for the client. For information about durable client subscriptions, see [Implementing Durable Client/Server Messaging](<%=vars.serverman%>/developing/events/implementing_durable_client_server_messaging.html).
 
 ## <a id="subscription-properties__section_294BD33FBDC6454FAD9C5118829EBBA4" class="no-quick-link"></a>Requesting a Subscription Region Queue
 
