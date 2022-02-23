@@ -62,11 +62,9 @@ ds_codes = {
     89: "CacheableStringHuge",
     92: "InternalDistributedMember",
     94: "CacheableEnum",
-    38: "ClientProxyMembershipId",
+    38: "ClientProxyMembershipId or CacheableUserData2",
     39: "CacheableUserData",
-    38: "CacheableUserData2",
-    37: "CacheableUserData4",
+    37: "InterestResultPolicy or CacheableUserData4",
     93: "PDX",
     94: "PDX_ENUM",
-    37: "InterestResultPolicy",
 }

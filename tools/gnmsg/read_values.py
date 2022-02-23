@@ -51,6 +51,39 @@ def read_long_value(string, offset):
     return read_number_from_hex_string(string, offset, 16)
 
 
+def read_array_length(message_bytes, offset):
+    (byte_value, offset) = call_reader_function(message_bytes, offset, read_byte_value)
+    array_len = 0
+    if byte_value == 255:
+        raise Exception("Don't know how to handle len == -1 in serialized array!")
+    elif byte_value == 254:
+        (array_len, offset) = call_reader_function(
+            message_bytes, offset, read_short_value
+        )
+    elif byte_value == 253:
+        (array_len, offset) = call_reader_function(
+            message_bytes, offset, read_int_value
+        )
+    else:
+        array_len = byte_value
+    return array_len, offset
+
+
+def read_byte_array(string, offset):
+    (array_length, offset) = read_array_length(string, offset)
+    byte_string = ""
+    for i in range(offset, offset + (array_length * 2), 2):
+        byte_string += string[i : i + 2]
+        byte_string += " "
+    byte_string = byte_string[:-1]
+    return byte_string, offset + (array_length * 2)
+
+
+def read_boolean_value(message_bytes, offset):
+    (bool_val, offset) = call_reader_function(message_bytes, offset, read_byte_value)
+    return "True" if bool_val == 1 else "False", offset
+
+
 def read_unsigned_vl(string, offset):
     shift = 0
     result = 0
@@ -86,6 +119,19 @@ def read_fixed_id_byte_value(string, offset):
     return (byte_value, offset)
 
 
+def read_cacheable_string_value(string, offset):
+    (dscode, offset) = call_reader_function(string, offset, read_byte_value)
+    string_type = ds_codes[dscode]
+    if string_type == "CacheableString":
+        (string_length, offset) = call_reader_function(string, offset, read_short_value)
+        return read_geode_jmutf8_string_value(string, offset, string_length)
+    elif string_type == "CacheableStringHuge":
+        (string_length, offset) = call_reader_function(string, offset, read_int_value)
+        offset += string_length
+    else:
+        raise TypeError("Expected CacheableString or CacheableStringHuge")
+
+
 def read_cacheable_ascii_string_value(string, offset):
     (ds_code, offset) = call_reader_function(string, offset, read_byte_value)
     string_value = []
@@ -101,37 +147,29 @@ def read_cacheable_ascii_string_value(string, offset):
 
 
 # Decodes a hex string to JM utf-8 bytes, returns plain utf-8 string
-def read_geode_jmutf8_string_value(buffer, offset):
+def read_geode_jmutf8_string_value(buffer, offset, string_length):
     cursor = offset
     string = []
     bad_length = IndexError("Insufficient length for JM utf-8 string")
 
-    while cursor < len(buffer):
+    while cursor < string_length:
         code_point, cursor = call_reader_function(buffer, cursor, read_byte_value)
         if code_point == 0:
-            if cursor < len(buffer) - 1:
-                # special treatment for Geode - rather than encode actual JM utf-8
-                # NULL char, they chose to just put 0 in for empty strings in the
-                # protocol.  Le sigh
-                break
-            else:
-                raise bad_length
+            raise TypeError("Should not encounter a 0 byte in JM utf-8")
         elif code_point < 0x7F:  # one-byte encoding
             string.append(code_point)
         elif (code_point & 0xE0) == 0xC0:  # two-byte encoding
-            if cursor < len(buffer) - 1:
+            if cursor < string_length - 1:
                 (byte2, cursor) = call_reader_function(buffer, cursor, read_byte_value)
                 string.append(code_point)
                 string.append(byte2)
-                if (byte2 & 0x80) == 0x80:  # Null char, end of string(???)
-                    break
             else:
                 raise bad_length
         # 3-byte or 6-byte encoding.  We don't care which here, because we'll
         # just pick up the next 3-byte encoding in the loop, and the conversion
         # at the end will raise an exception if there's a problem.
         elif (code_point & 0xF0) == 0xE0:
-            if cursor < len(buffer) - 3:
+            if cursor < string_length - 3:
                 (byte2, cursor) = call_reader_function(buffer, cursor, read_byte_value)
                 (byte3, cursor) = call_reader_function(buffer, cursor, read_byte_value)
                 string.append(code_point)

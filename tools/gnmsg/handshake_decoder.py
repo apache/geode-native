@@ -25,12 +25,15 @@ from connection_types import ConnectionTypes, ConnectionTypeStrings
 
 from read_values import (
     call_reader_function,
+    read_boolean_value,
+    read_byte_array,
     read_byte_value,
     read_cacheable_ascii_string_value,
     read_fixed_id_byte_value,
     read_geode_jmutf8_string_value,
     read_int_value,
     read_short_value,
+    read_cacheable_string_value,
     read_unsigned_byte_value,
 )
 
@@ -53,6 +56,9 @@ class HandshakeDecoder(DecoderBase):
         )
         self.client_connection_response_expression_ = re.compile(
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
+        )
+        self.server_handshake_expression_ = expression = re.compile(
+            r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
         )
 
     def is_client_connection_request(self, line):
@@ -92,16 +98,14 @@ class HandshakeDecoder(DecoderBase):
         return result
 
     def is_server_handshake_trace(self, line):
-        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
-        match = expression.search(line)
+        match = self.server_handshake_expression_.search(line)
         if match:
             return True
         else:
             return False
 
     def get_server_handshake_bytes(self, line):
-        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
-        match = expression.search(line)
+        match = self.server_handshake_expression_.search(line)
         if match:
             return match.group(1)
         else:
@@ -381,12 +385,8 @@ class HandshakeDecoder(DecoderBase):
             handshake_request["Type"] = request_type
             if request_type == "ClientConnectionRequest":
                 server_group = {}
-                (ds_code, offset) = call_reader_function(
-                    request_bytes, offset, read_byte_value
-                )
-                server_group["dscode"] = ds_codes[ds_code]
 
-                (server_group["name"], offset) = read_geode_jmutf8_string_value(
+                (server_group["name"], offset) = read_cacheable_string_value(
                     request_bytes, offset
                 )
                 handshake_request["servergroup"] = server_group
@@ -394,15 +394,64 @@ class HandshakeDecoder(DecoderBase):
                 (server_location_count, offset) = call_reader_function(
                     request_bytes, offset, read_int_value
                 )
-                handshake_request["serverlocations"] = server_location_count
+                handshake_request["ServerLocationCount"] = server_location_count
 
-                # todo: decode server locations.  not concerned about this right now because we don't have a log showing
-                # native client actually sending any.
+                server_locations = {}
+                for i in range(handshake_request["ServerLocationCount"]):
+                    (server_location, offset) = self.read_server_location(
+                        request_bytes, offset
+                    )
+                    server_locations["Server" + str(i)] = server_location
+                handshake_request["ServerLocations"] = server_locations
+
+            elif request_type == "QueueConnectionRequest":
+                server_group = {}
+                (server_group["name"], offset) = read_cacheable_string_value(
+                    request_bytes, offset
+                )
+                handshake_request["servergroup"] = server_group
+
+                (ds_code, offset) = read_fixed_id_byte_value(request_bytes, offset)
+                if ds_codes[ds_code] != "ClientProxyMembershipId or CacheableUserData2":
+                    raise TypeError("Expected type ClientProxyMembershipId")
+                (
+                    handshake_request["ClientProxyMembershipId"],
+                    offset,
+                ) = read_byte_array(request_bytes, offset)
+
+                (
+                    handshake_request["ThisValueIsAlways1"],
+                    offset,
+                ) = call_reader_function(request_bytes, offset, read_int_value)
+
+                (
+                    handshake_request["RedundantCopies"],
+                    offset,
+                ) = call_reader_function(request_bytes, offset, read_int_value)
+
+                (
+                    handshake_request["ServerLocationCount"],
+                    offset,
+                ) = call_reader_function(request_bytes, offset, read_int_value)
+
+                server_locations = {}
+                for i in range(handshake_request["ServerLocationCount"]):
+                    (server_location, offset) = self.read_server_location(
+                        request_bytes, offset
+                    )
+                    server_locations["Server" + str(i)] = server_location
+                handshake_request["ServerLocations"] = server_locations
+
+                (
+                    handshake_request["FindDurable"],
+                    offset,
+                ) = call_reader_function(request_bytes, offset, read_boolean_value)
+
             else:
                 pass
                 # TODO: decode other request types (locator list, server list, ...)
 
-    def read_server_location(self, line, handshake_response, offset):
+    def read_server_location(self, line, offset):
         server_location = {}
         (server_location["hostname"], offset) = read_cacheable_ascii_string_value(
             line, offset
@@ -411,8 +460,7 @@ class HandshakeDecoder(DecoderBase):
             line, offset, read_int_value
         )
 
-        handshake_response["ServerLocation"] = server_location
-        return offset
+        return server_location, offset
 
     def decode_locator_response(self, line, handshake_response):
         parts = []
@@ -445,9 +493,10 @@ class HandshakeDecoder(DecoderBase):
                 )
 
                 if server_found == 1:
-                    offset = self.read_server_location(
-                        response_bytes, handshake_response, offset
-                    )
+                    (
+                        handshake_response["ServerLocation"],
+                        offset,
+                    ) = self.read_server_location(response_bytes, offset)
             else:
                 pass
                 # TODO: decode other response types
