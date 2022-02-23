@@ -108,8 +108,14 @@ class HandshakeDecoder(DecoderBase):
             exit(1)
 
     # TODO: Find a handshake that uses a list and implement this function to parse it
-    def read_list_of_ports(string):
-        return (1001, 1002, 1003)
+    def read_list_of_ports(self, string, offset):
+        (number_of_ports, offset) = call_reader_function(string, offset, read_int_value)
+        ports = []
+        for i in range(number_of_ports):
+            (port, offset) = call_reader_function(string, offset, read_int_value)
+            ports.append(port)
+
+        return (ports, offset)
 
     def get_client_proxy_address(self, string, offset):
         (address_size, offset) = call_reader_function(string, offset, read_byte_value)
@@ -131,6 +137,14 @@ class HandshakeDecoder(DecoderBase):
             result = (
                 str(octet1) + "." + str(octet2) + "." + str(octet3) + "." + str(octet4)
             )
+        else:
+            # don't really know what these bytes represent, so we'll just do a hex dump.
+            for i in range(offset, offset + (address_size * 2), 2):
+                result += string[i : i + 2]
+                result += " "
+            result = result[:-1]
+            offset += address_size * 2
+
         return (result, offset)
 
     def convert_to_bytes(self, string, length):
@@ -241,15 +255,13 @@ class HandshakeDecoder(DecoderBase):
         )
 
         ports = ()
-        if (connection_type == ConnectionTypes.PRIMARY_SERVER_TO_CLIENT) or (
-            connection_type == ConnectionTypes.SECONDARY_SERVER_TO_CLIENT
-        ):
-            ports = self.read_list_of_ports(handshake_bytes)
+        if connection_type == ConnectionTypes.CLIENT_TO_SERVER:
+            (handshake_info["ReadTimeout"], offset) = call_reader_function(
+                handshake_bytes, offset, read_int_value
+            )
+        else:
+            (ports, offset) = self.read_list_of_ports(handshake_bytes, offset)
             handshake_info["Ports"] = ports
-
-        (handshake_info["ReadTimeout"], offset) = call_reader_function(
-            handshake_bytes, offset, read_int_value
-        )
 
         (handshake_info["FixedIDByte"], offset) = call_reader_function(
             handshake_bytes, offset, read_byte_value
@@ -342,14 +354,13 @@ class HandshakeDecoder(DecoderBase):
             handshake_bytes, offset
         )
 
-    def decode_client_connection_request(self, line, handshake_request):
+    def decode_locator_request(self, line, handshake_request):
         parts = []
         if self.get_client_connection_request_parts(line, parts):
             offset = 0
             handshake_request["Timestamp"] = parts[0]
             handshake_request["tid"] = parts[1]
             handshake_request["Direction"] = "--->"
-            handshake_request["Type"] = "ClientConnectionRequest"
             request_bytes = parts[2]
 
             (handshake_request["GossipVersion"], offset) = call_reader_function(
@@ -366,27 +377,30 @@ class HandshakeDecoder(DecoderBase):
             (dsfid, offset) = call_reader_function(
                 request_bytes, offset, read_byte_value
             )
-            if ds_fids[dsfid] != "ClientConnectionRequest":
-                raise TypeError("Expected type 'ClientConnectionRequest'")
+            request_type = ds_fids[dsfid]
+            handshake_request["Type"] = request_type
+            if request_type == "ClientConnectionRequest":
+                server_group = {}
+                (ds_code, offset) = call_reader_function(
+                    request_bytes, offset, read_byte_value
+                )
+                server_group["dscode"] = ds_codes[ds_code]
 
-            server_group = {}
-            (ds_code, offset) = call_reader_function(
-                request_bytes, offset, read_byte_value
-            )
-            server_group["DSCode"] = ds_codes[ds_code]
+                (server_group["name"], offset) = read_geode_jmutf8_string_value(
+                    request_bytes, offset
+                )
+                handshake_request["servergroup"] = server_group
 
-            (server_group["Name"], offset) = read_geode_jmutf8_string_value(
-                request_bytes, offset
-            )
-            handshake_request["ServerGroup"] = server_group
+                (server_location_count, offset) = call_reader_function(
+                    request_bytes, offset, read_int_value
+                )
+                handshake_request["serverlocations"] = server_location_count
 
-            (server_location_count, offset) = call_reader_function(
-                request_bytes, offset, read_int_value
-            )
-            handshake_request["ServerLocations"] = server_location_count
-
-            # TODO: Decode server locations.  Not concerned about this right now because we don't have a log showing
-            # native client actually sending any.
+                # todo: decode server locations.  not concerned about this right now because we don't have a log showing
+                # native client actually sending any.
+            else:
+                pass
+                # TODO: decode other request types (locator list, server list, ...)
 
     def read_server_location(self, line, handshake_response, offset):
         server_location = {}
@@ -400,13 +414,12 @@ class HandshakeDecoder(DecoderBase):
         handshake_response["ServerLocation"] = server_location
         return offset
 
-    def decode_client_connection_response(self, line, handshake_response):
+    def decode_locator_response(self, line, handshake_response):
         parts = []
         if self.get_client_connection_response_parts(line, parts):
             handshake_response["Timestamp"] = parts[0]
             handshake_response["tid"] = parts[1]
-            handshake_response["Direction"] = "--->"
-            handshake_response["Type"] = "ClientConnectionResponse"
+            handshake_response["Direction"] = "<---"
             response_bytes = parts[2]
             offset = 0
 
@@ -421,7 +434,9 @@ class HandshakeDecoder(DecoderBase):
                 offset = 0
 
             (fixed_id, offset) = read_fixed_id_byte_value(response_bytes, offset)
-            if ds_fids[fixed_id] == "ClientConnectionResponse":
+            response_type = ds_fids[fixed_id]
+            handshake_response["Type"] = response_type
+            if response_type == "ClientConnectionResponse":
                 (server_found, offset) = call_reader_function(
                     response_bytes, offset, read_byte_value
                 )
@@ -434,15 +449,16 @@ class HandshakeDecoder(DecoderBase):
                         response_bytes, handshake_response, offset
                     )
             else:
-                raise TypeError("Expected type 'ClientConnectionRequest'")
+                pass
+                # TODO: decode other response types
 
     def process_line(self, line):
         handshake = {}
         if self.is_client_connection_request(line):
-            self.decode_client_connection_request(line, handshake)
+            self.decode_locator_request(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_client_connection_response(line):
-            self.decode_client_connection_response(line, handshake)
+            self.decode_locator_response(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_server_handshake_trace(line):
             self.get_server_handshake_info(line, handshake)
