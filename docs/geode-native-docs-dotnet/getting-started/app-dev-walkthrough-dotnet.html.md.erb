@@ -2,6 +2,7 @@
 title:  .NET Application Development Walkthrough
 ---
 
+
 <!--
 Licensed to the Apache Software Foundation (ASF) under one or more
 contributor license agreements.  See the NOTICE file distributed with
@@ -28,7 +29,7 @@ This walkthrough assumes that certain components are in place:
   [Getting Started with the Native Library](getting-started-nc-client.html). Follow the ease-of-use
   recommendations by installing the Native Client in `C:\Program Files\nativeclient`.
 
-- The **CMake** tool suite. Download and install CMake, following the instructions on [cmake.org] (https://cmake.org).
+- The **CMake** tool suite. Download and install CMake, following the instructions on [cmake.org](https://cmake.org).
 
 - **Geode**: Install and configure Geode. See the [_Geode User's Guide_](http://geode.apache.org/docs/) for instructions and system requirements.
 
@@ -97,7 +98,7 @@ should contain the following CMake instructions:
 
     set_target_properties(MyProject PROPERTIES
         VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-        VS_DOTNET_REFERENCES "System;${<%=vars.product_name%>Native_DOTNET_LIBRARY}")
+        VS_DOTNET_REFERENCES "System;{GemFireNative_DOTNET_LIBRARY})
     ```
 
 Combined, the above elements comprise the following CMakeLists.txt:
@@ -120,7 +121,7 @@ target_link_libraries(MyProject
 
 set_target_properties(MyProject PROPERTIES
     VS_DOTNET_TARGET_FRAMEWORK_VERSION "v4.5.2"
-    VS_DOTNET_REFERENCES "System;${<%=vars.product_name%>Native_DOTNET_LIBRARY}")
+    VS_DOTNET_REFERENCES "System;${GemFireNative_DOTNET_LIBRARY}")
 ```
 
 ## <a id="building_the_app_dotnet"></a>Configuring the App
