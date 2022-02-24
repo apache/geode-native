@@ -20,10 +20,11 @@ from ds_codes import ds_codes
 from read_values import (
     call_reader_function,
     parse_key_or_value,
+    read_array_length,
     read_byte_value,
     read_cacheable,
-    read_int_value,
     read_geode_jmutf8_string_value,
+    read_int_value,
     read_long_value,
     read_short_value,
     read_string_value,
@@ -63,6 +64,7 @@ def parse_regex_part(message_bytes, offset):
         message_bytes, regex_part["Size"], offset
     )
     return (regex_part, offset)
+
 
 def parse_object_part(message_bytes, offset):
     object_part = {}
@@ -135,24 +137,6 @@ def parse_flags_part(message_bytes, offset):
     return (flags_part, offset)
 
 
-def read_array_len(message_bytes, offset):
-    (byte_value, offset) = call_reader_function(message_bytes, offset, read_byte_value)
-    array_len = 0
-    if byte_value == 255:
-        raise Exception("Don't know how to handle len == -1 in serialized array!")
-    elif byte_value == 254:
-        (array_len, offset) = call_reader_function(
-            message_bytes, offset, read_short_value
-        )
-    elif byte_value == 253:
-        (array_len, offset) = call_reader_function(
-            message_bytes, offset, read_int_value
-        )
-    else:
-        array_len = byte_value
-    return (array_len, offset)
-
-
 def parse_credentials(message_bytes, offset):
     credentials = {}
     array_len = 0
@@ -162,7 +146,7 @@ def parse_credentials(message_bytes, offset):
     (credentials["IsObject"], offset) = call_reader_function(
         message_bytes, offset, read_byte_value
     )
-    (array_len, offset) = read_array_len(message_bytes, offset)
+    (array_len, offset) = read_array_length(message_bytes, offset)
     for i in range(0, array_len):
         (credentials["Key" + str(i)], offset) = read_cacheable(message_bytes, offset)
         (credentials["Value" + str(i)], offset) = read_cacheable(message_bytes, offset)
@@ -262,11 +246,13 @@ def parse_interest_result_policy_part(message_bytes, offset):
 
     return (interest_result_policy_part, offset)
 
+
 def parse_interest_type_part(message_bytes, offset):
     value, offset = parse_raw_int_part(message_bytes, offset)
     value["InterestType"] = interest_type[value["Value"]]
     del value["Value"]
     return value, offset
+
 
 def read_put_message(properties, message_bytes, offset):
     (properties["Region"], offset) = parse_region_part(message_bytes, offset)
@@ -475,10 +461,13 @@ def read_add_pdx_type_message(properties, message_bytes, offset):
     properties["PdxType"], offset = read_object_as_raw_bytes(message_bytes, offset)
     properties["TypeId"], offset = read_int_part(message_bytes, offset)
 
+
 def read_register_interest_message(properties, message_bytes, offset):
     properties["Region"], offset = parse_region_part(message_bytes, offset)
     properties["InterestType"], offset = parse_interest_type_part(message_bytes, offset)
-    properties["InterestResultPolicy"], offset = parse_interest_result_policy_part(message_bytes, offset)
+    properties["InterestResultPolicy"], offset = parse_interest_result_policy_part(
+        message_bytes, offset
+    )
     properties["IsDurable"], offset = parse_raw_byte_part(message_bytes, offset)
     properties["Regex"], offset = parse_regex_part(message_bytes, offset)
 
@@ -493,6 +482,7 @@ def read_register_interest_message(properties, message_bytes, offset):
     caching_enabled, serialize_values = byte_values.split(" ")
     properties["Param2"]["CachingEnabled"] = int(caching_enabled)
     properties["Param2"]["SerializeValues"] = int(serialize_values)
+
 
 client_message_parsers = {
     "ADD_PDX_TYPE": read_add_pdx_type_message,

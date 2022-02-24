@@ -25,12 +25,15 @@ from connection_types import ConnectionTypes, ConnectionTypeStrings
 
 from read_values import (
     call_reader_function,
+    read_boolean_value,
+    read_byte_array,
     read_byte_value,
     read_cacheable_ascii_string_value,
     read_fixed_id_byte_value,
     read_geode_jmutf8_string_value,
     read_int_value,
     read_short_value,
+    read_cacheable_string_value,
     read_unsigned_byte_value,
 )
 
@@ -54,6 +57,12 @@ class HandshakeDecoder(DecoderBase):
         self.client_connection_response_expression_ = re.compile(
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
         )
+        self.server_handshake_expression_ = expression = re.compile(
+            r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
+        )
+
+    def is_candidate_line(self, line):
+        return "Helper::sendR" in line or "ake bytes:" in line
 
     def is_client_connection_request(self, line):
         match = self.client_connection_request_expression_.search(line)
@@ -92,24 +101,28 @@ class HandshakeDecoder(DecoderBase):
         return result
 
     def is_server_handshake_trace(self, line):
-        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
-        match = expression.search(line)
+        match = self.server_handshake_expression_.search(line)
         if match:
             return True
         else:
             return False
 
     def get_server_handshake_bytes(self, line):
-        expression = re.compile(r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)")
-        match = expression.search(line)
+        match = self.server_handshake_expression_.search(line)
         if match:
             return match.group(1)
         else:
             exit(1)
 
     # TODO: Find a handshake that uses a list and implement this function to parse it
-    def read_list_of_ports(string):
-        return (1001, 1002, 1003)
+    def read_list_of_ports(self, string, offset):
+        (number_of_ports, offset) = call_reader_function(string, offset, read_int_value)
+        ports = []
+        for i in range(number_of_ports):
+            (port, offset) = call_reader_function(string, offset, read_int_value)
+            ports.append(port)
+
+        return (ports, offset)
 
     def get_client_proxy_address(self, string, offset):
         (address_size, offset) = call_reader_function(string, offset, read_byte_value)
@@ -131,6 +144,14 @@ class HandshakeDecoder(DecoderBase):
             result = (
                 str(octet1) + "." + str(octet2) + "." + str(octet3) + "." + str(octet4)
             )
+        else:
+            # don't really know what these bytes represent, so we'll just do a hex dump.
+            for i in range(offset, offset + (address_size * 2), 2):
+                result += string[i : i + 2]
+                result += " "
+            result = result[:-1]
+            offset += address_size * 2
+
         return (result, offset)
 
     def convert_to_bytes(self, string, length):
@@ -241,15 +262,13 @@ class HandshakeDecoder(DecoderBase):
         )
 
         ports = ()
-        if (connection_type == ConnectionTypes.PRIMARY_SERVER_TO_CLIENT) or (
-            connection_type == ConnectionTypes.SECONDARY_SERVER_TO_CLIENT
-        ):
-            ports = self.read_list_of_ports(handshake_bytes)
+        if connection_type == ConnectionTypes.CLIENT_TO_SERVER:
+            (handshake_info["ReadTimeout"], offset) = call_reader_function(
+                handshake_bytes, offset, read_int_value
+            )
+        else:
+            (ports, offset) = self.read_list_of_ports(handshake_bytes, offset)
             handshake_info["Ports"] = ports
-
-        (handshake_info["ReadTimeout"], offset) = call_reader_function(
-            handshake_bytes, offset, read_int_value
-        )
 
         (handshake_info["FixedIDByte"], offset) = call_reader_function(
             handshake_bytes, offset, read_byte_value
@@ -342,14 +361,77 @@ class HandshakeDecoder(DecoderBase):
             handshake_bytes, offset
         )
 
-    def decode_client_connection_request(self, line, handshake_request):
+    def read_client_connection_request(self, request_bytes, offset):
+        client_connection_request = {}
+        server_group = {}
+        (server_group["name"], offset) = read_cacheable_string_value(
+            request_bytes, offset
+        )
+        client_connection_request["ServerGroup"] = server_group
+        (server_location_count, offset) = call_reader_function(
+            request_bytes, offset, read_int_value
+        )
+        client_connection_request["ServerLocationCount"] = server_location_count
+        server_locations = {}
+        for i in range(client_connection_request["ServerLocationCount"]):
+            (server_location, offset) = self.read_server_location(request_bytes, offset)
+            server_locations["Server" + str(i)] = server_location
+        client_connection_request["ServerLocations"] = server_locations
+        return client_connection_request, offset
+
+    def read_queue_connection_request(self, request_bytes, offset):
+        queue_connection_request = {}
+        server_group = {}
+        (server_group["name"], offset) = read_cacheable_string_value(
+            request_bytes, offset
+        )
+        queue_connection_request["servergroup"] = server_group
+        (ds_fid, offset) = read_fixed_id_byte_value(request_bytes, offset)
+        if ds_fids[ds_fid] != "ClientProxyMembershipId":
+            raise TypeError("Expected type ClientProxyMembershipId")
+        (
+            queue_connection_request["ClientProxyMembershipId"],
+            offset,
+        ) = read_byte_array(request_bytes, offset)
+        (
+            queue_connection_request["ThisValueIsAlways1"],
+            offset,
+        ) = call_reader_function(request_bytes, offset, read_int_value)
+        (
+            queue_connection_request["RedundantCopies"],
+            offset,
+        ) = call_reader_function(request_bytes, offset, read_int_value)
+        (
+            queue_connection_request["ServerLocationCount"],
+            offset,
+        ) = call_reader_function(request_bytes, offset, read_int_value)
+        server_locations = {}
+        for i in range(queue_connection_request["ServerLocationCount"]):
+            (server_location, offset) = self.read_server_location(request_bytes, offset)
+            server_locations["Server" + str(i)] = server_location
+        queue_connection_request["ServerLocations"] = server_locations
+        (
+            queue_connection_request["FindDurable"],
+            offset,
+        ) = call_reader_function(request_bytes, offset, read_boolean_value)
+        return queue_connection_request, offset
+
+    def read_locator_list_request(self, request_bytes, offset):
+        locator_list_request = {}
+        server_group = {}
+        (server_group["name"], offset) = read_cacheable_string_value(
+            request_bytes, offset
+        )
+        locator_list_request["servergroup"] = server_group
+        return locator_list_request, offset
+
+    def decode_locator_request(self, line, handshake_request):
         parts = []
         if self.get_client_connection_request_parts(line, parts):
             offset = 0
             handshake_request["Timestamp"] = parts[0]
             handshake_request["tid"] = parts[1]
             handshake_request["Direction"] = "--->"
-            handshake_request["Type"] = "ClientConnectionRequest"
             request_bytes = parts[2]
 
             (handshake_request["GossipVersion"], offset) = call_reader_function(
@@ -366,29 +448,30 @@ class HandshakeDecoder(DecoderBase):
             (dsfid, offset) = call_reader_function(
                 request_bytes, offset, read_byte_value
             )
-            if ds_fids[dsfid] != "ClientConnectionRequest":
-                raise TypeError("Expected type 'ClientConnectionRequest'")
+            request_type = ds_fids[dsfid]
+            handshake_request["Type"] = request_type
+            if request_type == "ClientConnectionRequest":
+                (
+                    handshake_request["ClientConnectionRequest"],
+                    offset,
+                ) = self.read_client_connection_request(request_bytes, offset)
 
-            server_group = {}
-            (ds_code, offset) = call_reader_function(
-                request_bytes, offset, read_byte_value
-            )
-            server_group["DSCode"] = ds_codes[ds_code]
+            elif request_type == "QueueConnectionRequest":
+                (
+                    handshake_request["QueueConnectionRequest"],
+                    offset,
+                ) = self.read_queue_connection_request(request_bytes, offset)
 
-            (server_group["Name"], offset) = read_geode_jmutf8_string_value(
-                request_bytes, offset
-            )
-            handshake_request["ServerGroup"] = server_group
+            elif request_type == "LocatorListRequest":
+                (
+                    handshake_request["LocatorListRequest"],
+                    offset,
+                ) = self.read_locator_list_request(request_bytes, offset)
+            else:
+                pass
+                # TODO: decode other request types (locator list, server list, ...)
 
-            (server_location_count, offset) = call_reader_function(
-                request_bytes, offset, read_int_value
-            )
-            handshake_request["ServerLocations"] = server_location_count
-
-            # TODO: Decode server locations.  Not concerned about this right now because we don't have a log showing
-            # native client actually sending any.
-
-    def read_server_location(self, line, handshake_response, offset):
+    def read_server_location(self, line, offset):
         server_location = {}
         (server_location["hostname"], offset) = read_cacheable_ascii_string_value(
             line, offset
@@ -397,16 +480,70 @@ class HandshakeDecoder(DecoderBase):
             line, offset, read_int_value
         )
 
-        handshake_response["ServerLocation"] = server_location
-        return offset
+        return server_location, offset
 
-    def decode_client_connection_response(self, line, handshake_response):
+    def read_locator_location(self, line, offset):
+        return self.read_server_location(line, offset)
+
+    def read_client_connection_response(self, response_bytes, offset):
+        client_connection_response = {}
+        (server_found, offset) = call_reader_function(
+            response_bytes, offset, read_byte_value
+        )
+        client_connection_response["ServerFound"] = (
+            "True" if server_found == 1 else "False"
+        )
+
+        if server_found == 1:
+            (
+                client_connection_response["ServerLocation"],
+                offset,
+            ) = self.read_server_location(response_bytes, offset)
+        return client_connection_response, offset
+
+    def read_queue_connection_response(self, response_bytes, offset):
+        queue_connection_response = {}
+
+        (
+            queue_connection_response["DurableQueueFound"],
+            offset,
+        ) = read_boolean_value(response_bytes, offset)
+
+        (
+            queue_connection_response["ServerLocationCount"],
+            offset,
+        ) = call_reader_function(response_bytes, offset, read_int_value)
+
+        server_locations = {}
+        for i in range(queue_connection_response["ServerLocationCount"]):
+            (server_location, offset) = self.read_server_location(
+                response_bytes, offset
+            )
+            server_locations["Server" + str(i)] = server_location
+        queue_connection_response["ServerLocations"] = server_locations
+        return queue_connection_response, offset
+
+    def read_locator_list_response(self, response_bytes, offset):
+        locator_list_response = {}
+        (
+            locator_list_response["LocatorLocationCount"],
+            offset,
+        ) = call_reader_function(response_bytes, offset, read_int_value)
+        locator_locations = {}
+        for i in range(locator_list_response["LocatorLocationCount"]):
+            (locator_location, offset) = self.read_locator_location(
+                response_bytes, offset
+            )
+            locator_locations["Locator" + str(i)] = locator_location
+        locator_list_response["LocatorLocations"] = locator_locations
+        return locator_list_response, offset
+
+    def decode_locator_response(self, line, handshake_response):
         parts = []
         if self.get_client_connection_response_parts(line, parts):
             handshake_response["Timestamp"] = parts[0]
             handshake_response["tid"] = parts[1]
-            handshake_response["Direction"] = "--->"
-            handshake_response["Type"] = "ClientConnectionResponse"
+            handshake_response["Direction"] = "<---"
             response_bytes = parts[2]
             offset = 0
 
@@ -421,28 +558,37 @@ class HandshakeDecoder(DecoderBase):
                 offset = 0
 
             (fixed_id, offset) = read_fixed_id_byte_value(response_bytes, offset)
-            if ds_fids[fixed_id] == "ClientConnectionResponse":
-                (server_found, offset) = call_reader_function(
-                    response_bytes, offset, read_byte_value
-                )
-                handshake_response["ServerFound"] = (
-                    "True" if server_found == 1 else "False"
-                )
-
-                if server_found == 1:
-                    offset = self.read_server_location(
-                        response_bytes, handshake_response, offset
-                    )
+            response_type = ds_fids[fixed_id]
+            handshake_response["Type"] = response_type
+            if response_type == "ClientConnectionResponse":
+                (
+                    handshake_response["ClientConnectionResponse"],
+                    offset,
+                ) = self.read_client_connection_response(response_bytes, offset)
+            elif response_type == "QueueConnectionResponse":
+                (
+                    handshake_response["QueueConnectionResponse"],
+                    offset,
+                ) = self.read_queue_connection_response(response_bytes, offset)
+            elif response_type == "LocatorListResponse":
+                (
+                    handshake_response["LocatorListResponse"],
+                    offset,
+                ) = self.read_locator_list_response(response_bytes, offset)
             else:
-                raise TypeError("Expected type 'ClientConnectionRequest'")
+                pass
+                # TODO: decode other response types
 
     def process_line(self, line):
+        if not self.is_candidate_line(line):
+            return
+
         handshake = {}
         if self.is_client_connection_request(line):
-            self.decode_client_connection_request(line, handshake)
+            self.decode_locator_request(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_client_connection_response(line):
-            self.decode_client_connection_response(line, handshake)
+            self.decode_locator_response(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_server_handshake_trace(line):
             self.get_server_handshake_info(line, handshake)

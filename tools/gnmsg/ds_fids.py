@@ -33,6 +33,8 @@ ds_fids = {
     31: "CacheableUndefined",
     32: "Struct",
     36: "EventId",
+    37: "InterestResultPolicy",
+    38: "ClientProxyMembershipId",
     92: "InternalDistributedMember",
     110: "TXCommitMessage",
     2131: "DiskVersionTag",
