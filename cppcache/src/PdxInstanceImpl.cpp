@@ -494,9 +494,9 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
       case DSCode::PdxType:
       case DSCode::BooleanArray:
       case DSCode::CharArray:
-      case DSCode::CacheableUserData4:
-      case DSCode::ClientProxyMembershipId:
       case DSCode::CacheableUserData:
+      case DSCode::CacheableUserData2:
+      case DSCode::CacheableUserData4:
       case DSCode::NullObj:
       case DSCode::Class:
       case DSCode::JavaSerializable:
@@ -521,9 +521,8 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
       case DSCode::CacheableTimeUnit:
       case DSCode::CacheableIdentityHashMap:
       case DSCode::CacheableStack:
-      case DSCode::InternalDistributedMember:
       case DSCode::PDX:
-      case DSCode::CacheableEnum:
+      case DSCode::PDX_ENUM:
       case DSCode::CacheableString:
       case DSCode::CacheableNullString:
       case DSCode::CacheableASCIIString:
@@ -704,12 +703,11 @@ int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
       case DSCode::CacheableASCIIString:
       case DSCode::CacheableASCIIStringHuge:
       case DSCode::CacheableStringHuge:
-      case DSCode::InternalDistributedMember:
-      case DSCode::CacheableEnum:
-      case DSCode::ClientProxyMembershipId:
       case DSCode::CacheableUserData:
+      case DSCode::CacheableUserData2:
       case DSCode::CacheableUserData4:
       case DSCode::PDX:
+      case DSCode::PDX_ENUM:
         break;
     }
   }

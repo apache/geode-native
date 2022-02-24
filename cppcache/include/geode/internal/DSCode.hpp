@@ -35,6 +35,9 @@ enum class DSCode : int32_t {
                  // TcrMessage and  C# DistributedM.cpp
   BooleanArray = 26,
   CharArray = 27,
+  CacheableUserData = 39,
+  CacheableUserData2 = 38,
+  CacheableUserData4 = 37,
   NullObj = 41,
   CacheableString = 42,
   Class = 43,
@@ -71,15 +74,8 @@ enum class DSCode : int32_t {
   CacheableASCIIString = 87,
   CacheableASCIIStringHuge = 88,
   CacheableStringHuge = 89,
-  InternalDistributedMember = 92,
-  CacheableEnum = 94,
-  ClientProxyMembershipId = 38,
-  CacheableUserData = 39,
-  CacheableUserData2 = 38,
-  CacheableUserData4 = 37,
   PDX = 93,
-  PDX_ENUM = 94,
-  InterestResultPolicy = 37,
+  PDX_ENUM = 94
 };
 
 }  // namespace internal

@@ -192,7 +192,7 @@ bool TcrConnection::initTcrConnection(
   handShakeMsg.write(static_cast<int8_t>(DSCode::FixedIDByte));
   // Writing byte for ClientProxyMembershipID class id=38 as registered on the
   // java server.
-  handShakeMsg.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
+  handShakeMsg.write(static_cast<int8_t>(DSFid::ClientProxyMembershipId));
   if (endpointObj->getPoolHADM()) {
     ClientProxyMembershipID* memId =
         endpointObj->getPoolHADM()->getMembershipId();
@@ -1122,12 +1122,11 @@ std::shared_ptr<CacheableString> TcrConnection::readHandshakeString(
     case DSCode::CacheableStack:
     case DSCode::CacheableASCIIStringHuge:
     case DSCode::CacheableStringHuge:
-    case DSCode::InternalDistributedMember:
-    case DSCode::CacheableEnum:
-    case DSCode::ClientProxyMembershipId:
     case DSCode::CacheableUserData:
+    case DSCode::CacheableUserData2:
     case DSCode::CacheableUserData4:
-    case DSCode::PDX: {
+    case DSCode::PDX:
+    case DSCode::PDX_ENUM: {
       m_conn.reset();
       throwException(
           GeodeIOException("TcrConnection::TcrConnection: "
