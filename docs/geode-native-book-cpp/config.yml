@@ -45,5 +45,10 @@ template_variables:
   book_title_short: Geode Native C++ Docs
   local_header_title: Apache Geode Native C++
   local_header_img: /images/Apache_Geode_logo_symbol.png
+  serverman: https://geode.apache.org/docs/guide/latest
+  geodeman: https://geode.apache.org/docs/guide/latest
+  cppapiref: https://geode.apache.org/releases/latest/cppdocs/
+  dotnetapiref: https://geode.apache.org/releases/latest/dotnetdocs/
+  javaapiref: https://geode.apache.org/releases/latest/javadoc/index.html
 
 broken_link_exclusions: iefix|using_custom_classes|arrowhead|cppdocs|dotnetdocs|#
