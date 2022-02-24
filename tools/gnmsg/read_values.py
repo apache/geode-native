@@ -81,7 +81,8 @@ def read_byte_array(string, offset):
 
 def read_boolean_value(message_bytes, offset):
     (bool_val, offset) = call_reader_function(message_bytes, offset, read_byte_value)
-    return "True" if bool_val == 1 else "False", offset
+    bool_string = "True" if bool_val == 1 else "False"
+    return bool_string, offset
 
 
 def read_unsigned_vl(string, offset):
