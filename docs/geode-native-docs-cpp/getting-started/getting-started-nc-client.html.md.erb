@@ -44,8 +44,8 @@ You can choose whether to use a large, remote, production-quality cluster; a sma
 development cluster; or something in-between, such as a testing or experimental lab installation.
 
 In the _<%=vars.product_name%> User's Guide_,
-see [Configuring and Running a Cluster](serverman/configuring/chapter_overview.html) 
-and [Client/Server Configuration](serverman/topologies_and_comm/cs_configuration/chapter_overview.html) for instructions on setting up and starting the cluster for a client/server configuration.
+see [Configuring and Running a Cluster](<%=vars.serverman%>/configuring/chapter_overview.html) 
+and [Client/Server Configuration](<%=vars.serverman%>/topologies_and_comm/cs_configuration/chapter_overview.html) for instructions on setting up and starting the cluster for a client/server configuration.
 
 ### <a id="connecting_to_server"></a>Connecting to the Server
 
@@ -86,7 +86,7 @@ auto regionFactory = cache.createRegionFactory(RegionShortcut::PROXY);
 auto region = regionFactory.setPoolName("pool").create("exampleRegion");
 ```
 
-See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](serverman/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)
+See the _<%=vars.product_name%> User Guide_ section [Configuring a Client/Server System](<%=vars.serverman%>/topologies_and_comm/cs_configuration/setting_up_a_client_server_system.html)
 for more details.
 
 ### <a id="app_dev_walkthroughs"></a>Application Development Walkthrough
