@@ -386,8 +386,8 @@ class HandshakeDecoder(DecoderBase):
             request_bytes, offset
         )
         queue_connection_request["servergroup"] = server_group
-        (ds_code, offset) = read_fixed_id_byte_value(request_bytes, offset)
-        if ds_codes[ds_code] != "ClientProxyMembershipId or CacheableUserData2":
+        (ds_fid, offset) = read_fixed_id_byte_value(request_bytes, offset)
+        if ds_fids[ds_fid] != "ClientProxyMembershipId":
             raise TypeError("Expected type ClientProxyMembershipId")
         (
             queue_connection_request["ClientProxyMembershipId"],
