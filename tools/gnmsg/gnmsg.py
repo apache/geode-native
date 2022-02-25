@@ -39,24 +39,11 @@ def scan_opened_file(
     start_string,
 ):
     separator = start_string
-    if dump_handshake:
-        handshake_decoder = HandshakeDecoder(output_queue)
-        for line in file:
-            handshake_decoder.process_line(line.decode("utf-8").rstrip())
-            try:
-                data = output_queue.get_nowait()
-                for key, value in data.items():
-                    if key == "handshake":
-                        print(separator + json.dumps(value, indent=2, default=str))
-                        separator = ","
-            except queue.Empty:
-                continue
-
-    separator = start_string
     for line in file:
         linestr = line.decode("utf-8").rstrip()
         client_decoder.process_line(linestr)
         server_decoder.process_line(linestr)
+        handshake_decoder.process_line(linestr)
         try:
             data = output_queue.get_nowait()
             for key, value in data.items():
@@ -68,6 +55,9 @@ def scan_opened_file(
                     else:
                         print(separator + json.dumps(value, indent=2, default=str))
                         separator = ","
+                elif key == "handshake" and dump_handshake:
+                    print(separator + json.dumps(value, indent=2, default=str))
+                    separator = ","
 
         except queue.Empty:
             continue

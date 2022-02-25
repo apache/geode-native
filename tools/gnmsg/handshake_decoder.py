@@ -64,14 +64,14 @@ class HandshakeDecoder(DecoderBase):
     def is_candidate_line(self, line):
         return "Helper::sendR" in line or "ake bytes:" in line
 
-    def is_client_connection_request(self, line):
+    def is_locator_request(self, line):
         match = self.client_connection_request_expression_.search(line)
         if match:
             return True
         else:
             return False
 
-    def get_client_connection_request_parts(self, line, parts):
+    def get_locator_request_parts(self, line, parts):
         result = False
         match = self.client_connection_request_expression_.search(line)
         if match:
@@ -82,14 +82,14 @@ class HandshakeDecoder(DecoderBase):
 
         return result
 
-    def is_client_connection_response(self, line):
+    def is_locator_response(self, line):
         match = self.client_connection_response_expression_.search(line)
         if match:
             return True
         else:
             return False
 
-    def get_client_connection_response_parts(self, line, parts):
+    def get_locator_response_parts(self, line, parts):
         result = False
         match = self.client_connection_response_expression_.search(line)
         if match:
@@ -425,52 +425,6 @@ class HandshakeDecoder(DecoderBase):
         locator_list_request["servergroup"] = server_group
         return locator_list_request, offset
 
-    def decode_locator_request(self, line, handshake_request):
-        parts = []
-        if self.get_client_connection_request_parts(line, parts):
-            offset = 0
-            handshake_request["Timestamp"] = parts[0]
-            handshake_request["tid"] = parts[1]
-            handshake_request["Direction"] = "--->"
-            request_bytes = parts[2]
-
-            (handshake_request["GossipVersion"], offset) = call_reader_function(
-                request_bytes, offset, read_int_value
-            )
-            (handshake_request["ProtocolOrdinal"], offset) = call_reader_function(
-                request_bytes, offset, read_short_value
-            )
-
-            (ds_code, offset) = call_reader_function(
-                request_bytes, offset, read_byte_value
-            )
-
-            (dsfid, offset) = call_reader_function(
-                request_bytes, offset, read_byte_value
-            )
-            request_type = ds_fids[dsfid]
-            handshake_request["Type"] = request_type
-            if request_type == "ClientConnectionRequest":
-                (
-                    handshake_request["ClientConnectionRequest"],
-                    offset,
-                ) = self.read_client_connection_request(request_bytes, offset)
-
-            elif request_type == "QueueConnectionRequest":
-                (
-                    handshake_request["QueueConnectionRequest"],
-                    offset,
-                ) = self.read_queue_connection_request(request_bytes, offset)
-
-            elif request_type == "LocatorListRequest":
-                (
-                    handshake_request["LocatorListRequest"],
-                    offset,
-                ) = self.read_locator_list_request(request_bytes, offset)
-            else:
-                pass
-                # TODO: decode other request types (locator list, server list, ...)
-
     def read_server_location(self, line, offset):
         server_location = {}
         (server_location["hostname"], offset) = read_cacheable_ascii_string_value(
@@ -538,16 +492,61 @@ class HandshakeDecoder(DecoderBase):
         locator_list_response["LocatorLocations"] = locator_locations
         return locator_list_response, offset
 
+    def decode_locator_request(self, line, handshake_request):
+        parts = []
+        if self.get_locator_request_parts(line, parts):
+            offset = 0
+            handshake_request["Timestamp"] = parts[0]
+            handshake_request["tid"] = parts[1]
+            handshake_request["Direction"] = "--->"
+            request_bytes = parts[2]
+
+            (handshake_request["GossipVersion"], offset) = call_reader_function(
+                request_bytes, offset, read_int_value
+            )
+            (handshake_request["ProtocolOrdinal"], offset) = call_reader_function(
+                request_bytes, offset, read_short_value
+            )
+
+            (ds_code, offset) = call_reader_function(
+                request_bytes, offset, read_byte_value
+            )
+
+            (dsfid, offset) = call_reader_function(
+                request_bytes, offset, read_byte_value
+            )
+            request_type = ds_fids[dsfid]
+            handshake_request["Type"] = request_type
+            if request_type == "ClientConnectionRequest":
+                (
+                    handshake_request["ClientConnectionRequest"],
+                    offset,
+                ) = self.read_client_connection_request(request_bytes, offset)
+
+            elif request_type == "QueueConnectionRequest":
+                (
+                    handshake_request["QueueConnectionRequest"],
+                    offset,
+                ) = self.read_queue_connection_request(request_bytes, offset)
+
+            elif request_type == "LocatorListRequest":
+                (
+                    handshake_request["LocatorListRequest"],
+                    offset,
+                ) = self.read_locator_list_request(request_bytes, offset)
+            else:
+                pass
+                # TODO: decode other request types (locator list, server list, ...)
+
     def decode_locator_response(self, line, handshake_response):
         parts = []
-        if self.get_client_connection_response_parts(line, parts):
+        if self.get_locator_response_parts(line, parts):
             handshake_response["Timestamp"] = parts[0]
             handshake_response["tid"] = parts[1]
             handshake_response["Direction"] = "<---"
             response_bytes = parts[2]
             offset = 0
 
-            handshake_response["Direction"] = "<---"
             (ssl_enabled, offset) = call_reader_function(
                 response_bytes, offset, read_byte_value
             )
@@ -584,10 +583,10 @@ class HandshakeDecoder(DecoderBase):
             return
 
         handshake = {}
-        if self.is_client_connection_request(line):
+        if self.is_locator_request(line):
             self.decode_locator_request(line, handshake)
             self.output_queue_.put({"handshake": handshake})
-        elif self.is_client_connection_response(line):
+        elif self.is_locator_response(line):
             self.decode_locator_response(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_server_handshake_trace(line):
