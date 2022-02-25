@@ -58,7 +58,7 @@ class HandshakeDecoder(DecoderBase):
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
         )
         self.server_handshake_expression_ = expression = re.compile(
-            r"Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
         )
 
     def is_candidate_line(self, line):
@@ -107,10 +107,12 @@ class HandshakeDecoder(DecoderBase):
         else:
             return False
 
-    def get_server_handshake_bytes(self, line):
+    def get_server_handshake_parts(self, line, parts):
         match = self.server_handshake_expression_.search(line)
         if match:
-            return match.group(1)
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
         else:
             exit(1)
 
@@ -247,7 +249,14 @@ class HandshakeDecoder(DecoderBase):
         return (self.credentials_types[credential_type], offset)
 
     def get_server_handshake_info(self, line, handshake_info):
-        handshake_bytes = self.get_server_handshake_bytes(line)
+        parts = []
+        self.get_server_handshake_parts(line, parts)
+        handshake_info["Timestamp"] = parts[0]
+        handshake_info["tid"] = parts[1]
+        handshake_info["Direction"] = "--->"
+        handshake_info["Type"] = "ServerHandshake"
+        handshake_bytes = parts[2]
+
         (connection_type, offset) = call_reader_function(
             handshake_bytes, 0, read_byte_value
         )
