@@ -320,7 +320,7 @@ void TcrMessage::writeInterestResultPolicyPart(InterestResultPolicy policy) {
   m_request->writeInt(static_cast<int32_t>(3));  // size
   m_request->write(static_cast<int8_t>(1));      // isObject
   m_request->write(static_cast<int8_t>(DSCode::FixedIDByte));
-  m_request->write(static_cast<int8_t>(DSCode::InterestResultPolicy));
+  m_request->write(static_cast<int8_t>(DSFid::InterestResultPolicy));
   m_request->write(static_cast<int8_t>(policy));
 }
 
@@ -3103,8 +3103,8 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     apache::geode::client::DataInput& input) {
   uint8_t typeidLen = input.read();
   if (typeidLen == 1) {
-    auto typeidofMember = static_cast<DSCode>(input.read());
-    if (typeidofMember != DSCode::InternalDistributedMember) {
+    auto typeidofMember = static_cast<DSFid>(input.read());
+    if (typeidofMember != DSFid::InternalDistributedMember) {
       throw Exception(
           "Reading DSMember. Expecting type id 92 for "
           "InternalDistributedMember. ");
@@ -3115,8 +3115,8 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
     memId->fromData(input);
     return std::shared_ptr<DSMemberForVersionStamp>(memId);
   } else if (typeidLen == 2) {
-    auto typeidofMember = input.readInt16();
-    if (typeidofMember != static_cast<int16_t>(DSFid::DiskStoreId)) {
+    auto typeidofMember = static_cast<DSFid>(input.readInt16());
+    if (typeidofMember != DSFid::DiskStoreId) {
       throw Exception(
           "Reading DSMember. Expecting type id 2133 for DiskStoreId. ");
     }

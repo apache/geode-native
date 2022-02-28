@@ -93,7 +93,7 @@ class APACHE_GEODE_EXPORT CacheableEnum
     return size;
   }
 
-  virtual DSCode getDsCode() const override { return DSCode::CacheableEnum; }
+  virtual DSCode getDsCode() const override { return DSCode::PDX_ENUM; }
 
   /**
    * Display this object as c string.

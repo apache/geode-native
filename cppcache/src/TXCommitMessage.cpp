@@ -73,10 +73,10 @@ void TXCommitMessage::fromData(DataInput& input) {
     m_regions.push_back(rc);
   }
 
-  const auto fixedId = static_cast<const DSCode>(input.read());
-  if (fixedId == DSCode::FixedIDByte) {
-    const auto dscode = static_cast<const DSCode>(input.read());
-    if (dscode == DSCode::ClientProxyMembershipId) {
+  const auto dsCode = static_cast<const DSCode>(input.read());
+  if (dsCode == DSCode::FixedIDByte) {
+    const auto fixedId = static_cast<const DSFid>(input.read());
+    if (fixedId == DSFid::ClientProxyMembershipId) {
       ClientProxyMembershipID memId1;
 
       input.advanceCursor(input.readArrayLength());
@@ -84,18 +84,16 @@ void TXCommitMessage::fromData(DataInput& input) {
       input.readInt32();
     } else {
       LOGERROR("TXCommitMessage::fromData Unexpected type id: %" PRId8
-               "while "
-               "desirializing commit response",
-               dscode);
+               "while deserializing commit response",
+               fixedId);
       GfErrTypeThrowException(
           "TXCommitMessage::fromData Unable to handle commit response",
           GF_CACHE_ILLEGAL_STATE_EXCEPTION);
     }
-  } else if (fixedId != DSCode::NullObj) {
+  } else if (dsCode != DSCode::NullObj) {
     LOGERROR("TXCommitMessage::fromData Unexpected type id: %" PRId8
-             "while desirializing "
-             "commit response",
-             fixedId);
+             "while deserializing commit response",
+             dsCode);
     GfErrTypeThrowException(
         "TXCommitMessage::fromData Unable to handle commit response",
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);

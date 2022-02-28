@@ -303,7 +303,7 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     case DSCode::PDX: {
       return pdxTypeHandler_->deserialize(input);
     }
-    case DSCode::CacheableEnum: {
+    case DSCode::PDX_ENUM: {
       auto enumObject = CacheableEnum::create(" ", " ", 0);
       enumObject->fromData(input);
       return std::move(enumObject);
@@ -362,7 +362,6 @@ std::shared_ptr<Serializable> SerializationRegistry::deserialize(
     case DSCode::CacheableASCIIString:
     case DSCode::CacheableASCIIStringHuge:
     case DSCode::CacheableStringHuge:
-    case DSCode::InternalDistributedMember:
       break;
   }
 
@@ -441,12 +440,11 @@ SerializationRegistry::deserializeDataSerializableFixedId(DataInput& input,
     case DSCode::CacheableASCIIString:
     case DSCode::CacheableASCIIStringHuge:
     case DSCode::CacheableStringHuge:
-    case DSCode::InternalDistributedMember:
-    case DSCode::CacheableEnum:
-    case DSCode::ClientProxyMembershipId:
     case DSCode::CacheableUserData:
+    case DSCode::CacheableUserData2:
     case DSCode::CacheableUserData4:
     case DSCode::PDX:
+    case DSCode::PDX_ENUM:
       throw IllegalStateException("Invalid fixed ID");
   }
 
@@ -823,8 +821,7 @@ void DataSerializableHandler::serialize(
     case DSCode::CacheableASCIIString:
     case DSCode::CacheableASCIIStringHuge:
     case DSCode::CacheableStringHuge:
-    case DSCode::InternalDistributedMember:
-    case DSCode::CacheableEnum:
+    case DSCode::PDX_ENUM:
     case DSCode::PDX:
       IllegalStateException("Invalid DS Code.");
   }
@@ -899,8 +896,7 @@ std::shared_ptr<DataSerializable> DataSerializableHandler::deserialize(
     case DSCode::CacheableASCIIString:
     case DSCode::CacheableASCIIStringHuge:
     case DSCode::CacheableStringHuge:
-    case DSCode::InternalDistributedMember:
-    case DSCode::CacheableEnum:
+    case DSCode::PDX_ENUM:
     case DSCode::PDX:
       break;
   }
