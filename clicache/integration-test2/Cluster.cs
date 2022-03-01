@@ -70,11 +70,13 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < locatorCount_; i++)
             {
-                var startJmxManager = (i == 0);
                 var locator = new Locator(this, new List<Locator>(),
-                    name_ + "/locator/" + i.ToString(), startJmxManager);
+                    name_ + "/locator/" + i.ToString(), i == 0);
                 locators_.Add(locator);
-                success = (locator.Start() == 0);
+                if (locator.Start() != 0 ) {
+                    success = false;
+                    break;
+                }
             }
             return success;
         }
@@ -91,6 +93,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 if (localResult != 0)
                 {
                     success = false;
+                    break;
                 }
             }
             return success;
