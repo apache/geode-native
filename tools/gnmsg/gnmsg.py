@@ -47,17 +47,17 @@ def scan_opened_file(
         try:
             data = output_queue.get_nowait()
             for key, value in data.items():
-                if key == "message" and dump_messages:
-                    if thread_id:
-                        if "tid" in value.keys() and value["tid"] == thread_id:
-                            print(separator + json.dumps(value, indent=2, default=str))
-                            separator = ","
-                    else:
+                if (
+                    "tid" not in value.keys()
+                    or ("tid" in value.keys() and value["tid"] == thread_id)
+                    or thread_id is None
+                ):
+                    if key == "message" and dump_messages:
                         print(separator + json.dumps(value, indent=2, default=str))
                         separator = ","
-                elif key == "handshake" and dump_handshake:
-                    print(separator + json.dumps(value, indent=2, default=str))
-                    separator = ","
+                    elif key == "handshake" and dump_handshake:
+                        print(separator + json.dumps(value, indent=2, default=str))
+                        separator = ","
 
         except queue.Empty:
             continue

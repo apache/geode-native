@@ -15,6 +15,7 @@
 # limitations under the License.
 import re
 
+from collections import OrderedDict
 from dateutil import parser
 
 from decoder_base import DecoderBase
@@ -22,15 +23,16 @@ from ds_codes import ds_codes
 from ds_fids import ds_fids
 from modified_utf8 import utf8m_to_utf8s
 from connection_types import ConnectionTypes, ConnectionTypeStrings
+from handshake_acceptance_codes import server_handshake_reply_codes
 
 from read_values import (
     call_reader_function,
     read_boolean_value,
     read_byte_array,
+    read_byte_array_with_length,
     read_byte_value,
     read_cacheable_ascii_string_value,
     read_fixed_id_byte_value,
-    read_geode_jmutf8_string_value,
     read_int_value,
     read_short_value,
     read_cacheable_string_value,
@@ -52,17 +54,20 @@ class HandshakeDecoder(DecoderBase):
             3: "SECURITY_MULTIUSER_NOTIFICATIONCHANNEL",
         }
         self.client_connection_request_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): sending \d+ bytes to locator:\s*([0-9|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): sending \d+ bytes to locator:\s*([0-9|a-f|A-F]+)"
         )
         self.client_connection_response_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*([\d|a-f|A-F|x|X]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
         )
-        self.server_handshake_expression_ = expression = re.compile(
+        self.server_handshake_request_expression_ = expression = re.compile(
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
+        )
+        self.server_handshake_response_expression_ = expression = re.compile(
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\].*isClientNotification=([t|r|u|e|f|a|l|s]+),\s+Handshake response bytes: \(\d+\)\s*([0-9|a-f|A-F]+)"
         )
 
     def is_candidate_line(self, line):
-        return "Helper::sendR" in line or "ake bytes:" in line
+        return "Helper::sendR" in line or "ake bytes:" in line or "onse bytes:" in line
 
     def is_locator_request(self, line):
         match = self.client_connection_request_expression_.search(line)
@@ -100,15 +105,15 @@ class HandshakeDecoder(DecoderBase):
 
         return result
 
-    def is_server_handshake_trace(self, line):
-        match = self.server_handshake_expression_.search(line)
+    def is_server_handshake_request(self, line):
+        match = self.server_handshake_request_expression_.search(line)
         if match:
             return True
         else:
             return False
 
-    def get_server_handshake_parts(self, line, parts):
-        match = self.server_handshake_expression_.search(line)
+    def get_server_handshake_request_parts(self, line, parts):
+        match = self.server_handshake_request_expression_.search(line)
         if match:
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
@@ -116,7 +121,23 @@ class HandshakeDecoder(DecoderBase):
         else:
             exit(1)
 
-    # TODO: Find a handshake that uses a list and implement this function to parse it
+    def is_server_handshake_response(self, line):
+        match = self.server_handshake_response_expression_.search(line)
+        if match:
+            return True
+        else:
+            return False
+
+    def get_server_handshake_response_parts(self, line, parts):
+        match = self.server_handshake_response_expression_.search(line)
+        if match:
+            parts.append(parser.parse(match.group(1)))
+            parts.append(match.group(2))
+            parts.append(match.group(3))
+            parts.append(match.group(4))
+        else:
+            exit(1)
+
     def read_list_of_ports(self, string, offset):
         (number_of_ports, offset) = call_reader_function(string, offset, read_int_value)
         ports = []
@@ -250,11 +271,11 @@ class HandshakeDecoder(DecoderBase):
 
     def get_server_handshake_info(self, line, handshake_info):
         parts = []
-        self.get_server_handshake_parts(line, parts)
+        self.get_server_handshake_request_parts(line, parts)
         handshake_info["Timestamp"] = parts[0]
         handshake_info["tid"] = parts[1]
         handshake_info["Direction"] = "--->"
-        handshake_info["Type"] = "ServerHandshake"
+        handshake_info["Type"] = "ServerHandshakeRequest"
         handshake_bytes = parts[2]
 
         (connection_type, offset) = call_reader_function(
@@ -587,17 +608,78 @@ class HandshakeDecoder(DecoderBase):
                 pass
                 # TODO: decode other response types
 
+    def decode_server_handshake_response(self, line, handshake_response):
+        parts = []
+        self.get_server_handshake_response_parts(line, parts)
+
+        handshake_response["Timestamp"] = parts[0]
+        handshake_response["tid"] = parts[1]
+        handshake_response["Direction"] = "<---"
+        handshake_response["Type"] = "ServerHandshakeResponse"
+
+        is_client_notification = True if parts[2] == "true" else False
+        handshake_response["IsClientNotification"] = str(is_client_notification)
+
+        response_bytes = parts[3]
+        offset = 0
+        (acceptance_code, offset) = call_reader_function(
+            response_bytes, offset, read_byte_value
+        )
+        handshake_response["AcceptanceCode"] = server_handshake_reply_codes[
+            acceptance_code
+        ]
+
+        (server_queue_status, offset) = call_reader_function(
+            response_bytes, offset, read_byte_value
+        )
+        if server_queue_status == 1:
+            handshake_response["ServerQueueStatus"] = "REDUNDANT_SERVER"
+        elif server_queue_status == 2:
+            handshake_response["ServerQueueStatus"] = "PRIMARY_SERVER"
+        else:
+            handshake_response["ServerQueueStatus"] = "NON_REDUNDANT_SERVER"
+
+        (handshake_response["QueueSize"], offset) = call_reader_function(
+            response_bytes, offset, read_int_value
+        )
+
+        if not is_client_notification:
+            (receive_message_length, offset) = call_reader_function(
+                response_bytes, offset, read_int_value
+            )
+            (receive_message, offset) = read_byte_array_with_length(
+                response_bytes, offset, receive_message_length
+            )
+            handshake_response["ReceiveMessage"] = receive_message
+
+        (receive_message_length, offset) = call_reader_function(
+            response_bytes, offset, read_short_value
+        )
+        (receive_message, offset) = read_byte_array_with_length(
+            response_bytes, offset, receive_message_length
+        )
+        handshake_response["ReceiveMessage2"] = receive_message
+
+        if not is_client_notification:
+            (delta_enabled, offset) = call_reader_function(
+                response_bytes, offset, read_byte_value
+            )
+            handshake_response["DeltaEnabled"] = "True" if delta_enabled else "False"
+
     def process_line(self, line):
         if not self.is_candidate_line(line):
             return
 
-        handshake = {}
+        handshake = OrderedDict()
         if self.is_locator_request(line):
             self.decode_locator_request(line, handshake)
             self.output_queue_.put({"handshake": handshake})
         elif self.is_locator_response(line):
             self.decode_locator_response(line, handshake)
             self.output_queue_.put({"handshake": handshake})
-        elif self.is_server_handshake_trace(line):
+        elif self.is_server_handshake_request(line):
             self.get_server_handshake_info(line, handshake)
+            self.output_queue_.put({"handshake": handshake})
+        elif self.is_server_handshake_response(line):
+            self.decode_server_handshake_response(line, handshake)
             self.output_queue_.put({"handshake": handshake})
