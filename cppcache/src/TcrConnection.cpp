@@ -943,8 +943,7 @@ std::vector<int8_t> TcrConnection::readHandshakeData(
   if (msgLength < 0) {
     msgLength = 0;
   }
-  std::vector<int8_t> message(msgLength + 1);
-  message.data()[msgLength] = '\0';
+  std::vector<int8_t> message(msgLength);
   if (msgLength == 0) {
     return message;
   }
