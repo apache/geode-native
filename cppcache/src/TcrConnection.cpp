@@ -154,18 +154,20 @@ bool TcrConnection::initTcrConnection(
   if (isClientNotification) {
     isNotificationChannel = true;
     if (isSecondary) {
-      handShakeMsg.write(static_cast<int8_t>(SECONDARY_SERVER_TO_CLIENT));
+      handShakeMsg.write(
+          static_cast<int8_t>(acceptor::SECONDARY_SERVER_TO_CLIENT));
     } else {
-      handShakeMsg.write(static_cast<int8_t>(PRIMARY_SERVER_TO_CLIENT));
+      handShakeMsg.write(
+          static_cast<int8_t>(acceptor::PRIMARY_SERVER_TO_CLIENT));
     }
   } else {
-    handShakeMsg.write(static_cast<int8_t>(CLIENT_TO_SERVER));
+    handShakeMsg.write(static_cast<int8_t>(acceptor::CLIENT_TO_SERVER));
   }
 
   Version::write(handShakeMsg, Version::current());
   LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
 
-  handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
+  handShakeMsg.write(static_cast<int8_t>(acceptance_codes::REPLY_OK));
 
   // Send byte REPLY_OK = (byte)58;
   if (!isClientNotification) {
@@ -241,11 +243,13 @@ bool TcrConnection::initTcrConnection(
 
   if (isNotificationChannel && !doIneedToSendCreds) {
     handShakeMsg.write(
-        static_cast<uint8_t>(SECURITY_MULTIUSER_NOTIFICATIONCHANNEL));
+        static_cast<uint8_t>(security::SECURITY_MULTIUSER_NOTIFICATIONCHANNEL));
   } else if (tmpIsSecurityOn) {
-    handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_NORMAL));
+    handShakeMsg.write(
+        static_cast<uint8_t>(security::SECURITY_CREDENTIALS_NORMAL));
   } else {
-    handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_NONE));
+    handShakeMsg.write(
+        static_cast<uint8_t>(security::SECURITY_CREDENTIALS_NONE));
   }
 
   if (tmpIsSecurityOn) {
@@ -304,7 +308,9 @@ bool TcrConnection::initTcrConnection(
 
     LOGDEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
     /* adongre */
-    if (acceptanceCode[0] == REPLY_SSL_ENABLED && !sysProp.sslEnabled()) {
+    if (acceptanceCode[0] ==
+            static_cast<int8_t>(acceptance_codes::REPLY_SSL_ENABLED) &&
+        !sysProp.sslEnabled()) {
       LOGERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
           "SSL is enabled on server, enable SSL in client as well");
@@ -380,33 +386,33 @@ bool TcrConnection::initTcrConnection(
     }
 
     switch (acceptanceCode[0]) {
-      case REPLY_OK:
-      case SUCCESSFUL_SERVER_TO_CLIENT:
+      case static_cast<int>(acceptance_codes::REPLY_OK):
+      case static_cast<int>(acceptance_codes::SUCCESSFUL_SERVER_TO_CLIENT):
         LOGFINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
                  serverQueueStatus[0], recvMsgLen2);
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
-      case REPLY_AUTHENTICATION_FAILED: {
+      case static_cast<int>(acceptance_codes::REPLY_AUTHENTICATION_FAILED): {
         AuthenticationFailedException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_AUTHENTICATION_REQUIRED: {
+      case static_cast<int>(acceptance_codes::REPLY_AUTHENTICATION_REQUIRED): {
         AuthenticationRequiredException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_DUPLICATE_DURABLE_CLIENT: {
+      case static_cast<int>(acceptance_codes::REPLY_DUPLICATE_DURABLE_CLIENT): {
         DuplicateDurableClientException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_REFUSED:
-      case REPLY_INVALID:
-      case UNSUCCESSFUL_SERVER_TO_CLIENT: {
+      case static_cast<int>(acceptance_codes::REPLY_REFUSED):
+      case static_cast<int>(acceptance_codes::REPLY_INVALID):
+      case static_cast<int>(acceptance_codes::UNSUCCESSFUL_SERVER_TO_CLIENT): {
         LOGERROR("Handshake rejected by server[%s]: %s",
                  m_endpointObj->name().c_str(),
                  reinterpret_cast<char*>(recvMessage.data()));
