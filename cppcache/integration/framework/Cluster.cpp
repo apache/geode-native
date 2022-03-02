@@ -73,7 +73,7 @@ Locator::Locator(Locator &&move)
 
 const LocatorAddress &Locator::getAddress() const { return locatorAddress_; }
 
-void Locator::start() {
+void Locator::start(bool startJmxManager) {
   if (started_) return;
 
   auto safeName = name_;
@@ -109,7 +109,7 @@ void Locator::start() {
                      .withClasspath(cluster_.getClasspath())
                      .withSecurityManager(cluster_.getSecurityManager())
                      .withPreferIPv6(cluster_.getUseIPv6())
-                     .withJmxManagerStart(true);
+                     .withJmxManagerStart(startJmxManager);
 
   if (cluster_.useSsl()) {
     locator.withConnect(false)
@@ -485,8 +485,12 @@ void Cluster::startServers() {
 void Cluster::startLocators() {
   std::vector<std::future<void>> futures;
 
+  bool startJmxManager = true;
   for (auto &locator : locators_) {
-    futures.push_back(std::async(std::launch::async, [&] { locator.start(); }));
+    futures.push_back(std::async(std::launch::async, [&, startJmxManager] {
+      locator.start(startJmxManager);
+    }));
+    startJmxManager = false;
   }
 
   // TODO hack until there is a way to either tell servers to retry or wait

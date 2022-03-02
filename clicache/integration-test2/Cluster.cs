@@ -71,9 +71,12 @@ namespace Apache.Geode.Client.IntegrationTests
             for (var i = 0; i < locatorCount_; i++)
             {
                 var locator = new Locator(this, new List<Locator>(),
-                    name_ + "/locator/" + i.ToString());
+                    name_ + "/locator/" + i.ToString(), i == 0);
                 locators_.Add(locator);
-                success = (locator.Start() == 0);
+                if (locator.Start() != 0 ) {
+                    success = false;
+                    break;
+                }
             }
             return success;
         }
@@ -90,6 +93,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 if (localResult != 0)
                 {
                     success = false;
+                    break;
                 }
             }
             return success;
@@ -165,12 +169,14 @@ namespace Apache.Geode.Client.IntegrationTests
         private string name_;
         private List<Locator> locators_;
         private bool started_;
+        private bool startJmxManager_;
 
-        public Locator(Cluster cluster, List<Locator> locators, string name)
+        public Locator(Cluster cluster, List<Locator> locators, string name, bool startJmxManager)
         {
             cluster_ = cluster;
             locators_ = locators;
             name_ = name;
+            startJmxManager_ = startJmxManager;
             var address = new Address();
             address.address = "localhost";
             address.port = Framework.FreeTcpPort();
@@ -193,7 +199,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withPort(Address.port)
                     .withMaxHeap("256m")
                     .withJmxManagerPort(cluster_.jmxManagerPort)
-                    .withJmxManagerStart(true)
+                    .withJmxManagerStart(startJmxManager_)
                     .withHttpServicePort(0);
                 if (cluster_.UseSSL)
                 {
