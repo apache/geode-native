@@ -207,8 +207,14 @@ def read_cacheable(message_bytes, offset):
             message_bytes, offset, read_byte_value
         )
         value["Value"] = "False" if bool_val == 0 else "True"
+    elif value["DSCode"] == "CacheableInt16":
+        (int_val, offset) = call_reader_function(message_bytes, offset, read_short_value)
+        value["Value"] = int_val
     elif value["DSCode"] == "CacheableInt32":
         (int_val, offset) = call_reader_function(message_bytes, offset, read_int_value)
+        value["Value"] = int_val
+    elif value["DSCode"] == "CacheableInt64":
+        (int_val, offset) = call_reader_function(message_bytes, offset, read_long_value)
         value["Value"] = int_val
     elif value["DSCode"] == "NullObj":
         # Gah!  Nasty little bug in the protocol here.  NC writes '1' in the
