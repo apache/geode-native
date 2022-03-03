@@ -60,7 +60,7 @@ size_t JavaModifiedUtf8::encodedLength(const char16_t* data, size_t length) {
 
 std::string JavaModifiedUtf8::fromString(const std::string& utf8) {
   std::string jmutf8;
-  auto cursor = 0;
+  size_t cursor = 0;
 
   while (cursor < utf8.size()) {
     auto byte1 = utf8[cursor++];
