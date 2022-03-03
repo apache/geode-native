@@ -20,6 +20,7 @@
 #include <codecvt>
 #include <locale>
 
+#include "geode/ExceptionTypes.hpp"
 #include "string.hpp"
 
 namespace apache {
@@ -58,7 +59,64 @@ size_t JavaModifiedUtf8::encodedLength(const char16_t* data, size_t length) {
 }
 
 std::string JavaModifiedUtf8::fromString(const std::string& utf8) {
-  return fromString(to_utf16(utf8));
+  std::string jmutf8;
+  auto cursor = 0;
+
+  while (cursor < utf8.size()) {
+    auto byte1 = utf8[cursor++];
+    if ((byte1 & 0x80) == 0) {
+      if (byte1) {
+        jmutf8 += byte1;
+      } else {
+        jmutf8 += static_cast<uint8_t>(0xC0);
+        jmutf8 += static_cast<uint8_t>(0x80);
+      }
+    } else if ((byte1 & 0xE0) == 0xC0) {
+      if (cursor <= utf8.size() - 1) {
+        jmutf8 += byte1;
+        jmutf8 += utf8[cursor++];
+      } else {
+        throw IllegalArgumentException(
+            "Invalid utf-8 string passed to conversion method");
+      }
+    } else if ((byte1 & 0xF0) == 0xE0) {
+      if (cursor <= utf8.size() - 2) {
+        jmutf8 += byte1;
+        jmutf8 += utf8[cursor++];
+        jmutf8 += utf8[cursor++];
+      } else {
+        throw IllegalArgumentException(
+            "Invalid utf-8 string passed to conversion method");
+      }
+    } else if ((byte1 & 0xF8) == 0xF0) {
+      if (cursor <= utf8.size() - 3) {
+        auto byte2 = utf8[cursor++];
+        auto byte3 = utf8[cursor++];
+        auto byte4 = utf8[cursor++];
+
+        uint32_t code_point = (byte1 & 0x07) << 18;
+        code_point += (byte2 & 0x3F) << 12;
+        code_point += (byte3 & 0x3F) << 6;
+        code_point += byte4 & 0x3F;
+
+        jmutf8 += static_cast<uint8_t>(0xED);
+        jmutf8 +=
+            static_cast<uint8_t>((0xA0 + (((code_point >> 16) - 1) & 0x0F)));
+        jmutf8 += static_cast<uint8_t>((0x80 + ((code_point >> 10) & 0x3F)));
+
+        jmutf8 += static_cast<uint8_t>(0xED);
+        jmutf8 += static_cast<uint8_t>((0xB0 + ((code_point >> 6) & 0x0F)));
+        jmutf8 += byte4;
+      } else {
+        throw IllegalArgumentException(
+            "Invalid utf-8 string passed to conversion method");
+      }
+
+    } else {
+      throw IllegalArgumentException("Invalid utf-8 start code");
+    }
+  }
+  return jmutf8;
 }
 
 std::string JavaModifiedUtf8::fromString(const std::u16string& utf16) {
