@@ -148,8 +148,8 @@ class TcrConnection {
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
    */
-  char* sendRequest(
-      const char* buffer, size_t len, size_t* recvLen,
+  std::tuple<std::unique_ptr<char[]>, std::size_t> sendRequest(
+      const char* buffer, size_t len,
       std::chrono::microseconds sendTimeoutSec = DEFAULT_WRITE_TIMEOUT,
       std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT,
       int32_t request = -1);
@@ -197,8 +197,7 @@ class TcrConnection {
    * @exception  TimeoutException  if timeout happens at any of the 3 socket
    * operation: 1 write, 2 read
    */
-  char* receive(
-      size_t* recvLen, ConnErrType* opErr,
+  std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType> receive(
       std::chrono::microseconds receiveTimeoutSec = DEFAULT_READ_TIMEOUT);
 
   //  readMessage is now public
@@ -212,10 +211,9 @@ class TcrConnection {
    * @exception  GeodeIOException  if an I/O error occurs (socket failure).
    * @exception  TimeoutException  if timeout happens during read
    */
-  char* readMessage(size_t* recvLen,
-                    std::chrono::microseconds receiveTimeoutSec,
-                    bool doHeaderTimeoutRetries, ConnErrType* opErr,
-                    bool isNotificationMessage = false, int32_t request = -1);
+  std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType> readMessage(
+      std::chrono::microseconds receiveTimeoutSec, bool doHeaderTimeoutRetries,
+      bool isNotificationMessage = false, int32_t request = -1);
 
   /**
    * This method reads an interest list response  message from the socket

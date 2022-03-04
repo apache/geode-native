@@ -34,6 +34,7 @@
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
 #include "Version.hpp"
+#include "util/make_unique.hpp"
 
 #define throwException(ex)                            \
   do {                                                \
@@ -531,11 +532,9 @@ ConnErrType TcrConnection::sendData(const char* buffer, size_t length,
   return CONN_NOERR;
 }
 
-char* TcrConnection::sendRequest(const char* buffer, size_t len,
-                                 size_t* recvLen,
-                                 std::chrono::microseconds sendTimeoutSec,
-                                 std::chrono::microseconds receiveTimeoutSec,
-                                 int32_t request) {
+std::tuple<std::unique_ptr<char[]>, std::size_t> TcrConnection::sendRequest(
+    const char* buffer, size_t len, std::chrono::microseconds sendTimeoutSec,
+    std::chrono::microseconds receiveTimeoutSec, int32_t request) {
   const auto start = std::chrono::system_clock::now();
   send(buffer, len, sendTimeoutSec);
   const auto timeSpent = start - std::chrono::system_clock::now();
@@ -547,8 +546,10 @@ char* TcrConnection::sendRequest(const char* buffer, size_t len,
 
   receiveTimeoutSec -=
       std::chrono::duration_cast<decltype(receiveTimeoutSec)>(timeSpent);
-  ConnErrType opErr = CONN_NOERR;
-  return readMessage(recvLen, receiveTimeoutSec, true, &opErr, false, request);
+
+  auto result = readMessage(receiveTimeoutSec, true, false, request);
+
+  return {std::move(std::get<0>(result)), std::get<1>(result)};
 }
 
 void TcrConnection::sendRequestForChunkedResponse(
@@ -628,26 +629,22 @@ void TcrConnection::send(const char* buffer, size_t len,
   }
 }
 
-char* TcrConnection::receive(size_t* recvLen, ConnErrType* opErr,
-                             std::chrono::microseconds receiveTimeoutSec) {
-  return readMessage(recvLen, receiveTimeoutSec, false, opErr, true);
+std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType>
+TcrConnection::receive(std::chrono::microseconds receiveTimeoutSec) {
+  return readMessage(receiveTimeoutSec, false, true);
 }
 
-char* TcrConnection::readMessage(size_t* recvLen,
-                                 std::chrono::microseconds receiveTimeoutSec,
-                                 bool doHeaderTimeoutRetries,
-                                 ConnErrType* opErr, bool isNotificationMessage,
-                                 int32_t request) {
+std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType>
+TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
+                           bool doHeaderTimeoutRetries,
+                           bool isNotificationMessage, int32_t request) {
   char msg_header[HEADER_LENGTH];
-  int32_t msgLen;
-  ConnErrType error;
 
-  std::chrono::microseconds headerTimeout = receiveTimeoutSec;
-  if (doHeaderTimeoutRetries && receiveTimeoutSec == DEFAULT_READ_TIMEOUT) {
-    headerTimeout = DEFAULT_READ_TIMEOUT * DEFAULT_TIMEOUT_RETRIES;
-  }
-
-  error = receiveData(msg_header, HEADER_LENGTH, headerTimeout);
+  auto error = receiveData(
+      msg_header, HEADER_LENGTH,
+      (doHeaderTimeoutRetries && receiveTimeoutSec == DEFAULT_READ_TIMEOUT)
+          ? DEFAULT_READ_TIMEOUT * DEFAULT_TIMEOUT_RETRIES
+          : receiveTimeoutSec);
 
   if (error != CONN_NOERR) {
     //  the !isNotificationMessage ensures that notification channel
@@ -659,7 +656,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       if (isNotificationMessage) {
         // fix #752 - do not throw periodic TimeoutException for subscription
         // channels to avoid frequent stack trace processing.
-        return nullptr;
+        return {nullptr, 0, error};
       } else {
         throwException(TimeoutException(
             "TcrConnection::readMessage: "
@@ -667,8 +664,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
       }
     } else {
       if (isNotificationMessage) {
-        *opErr = CONN_IOERR;
-        return nullptr;
+        return {nullptr, 0, CONN_IOERR};
       }
       throwException(GeodeIOException(
           "TcrConnection::readMessage: "
@@ -686,30 +682,27 @@ char* TcrConnection::readMessage(size_t* recvLen,
       reinterpret_cast<uint8_t*>(msg_header), HEADER_LENGTH);
   // ignore msgType
   input.readInt32();
-  msgLen = input.readInt32();
+  auto msgLen = input.readInt32();
   //  check that message length is valid.
-  if (!(msgLen > 0) && request == TcrMessage::GET_CLIENT_PR_METADATA) {
-    char* fullMessage;
-    *recvLen = HEADER_LENGTH + msgLen;
-    _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-    std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
-    return fullMessage;
-    // exit(0);
+  if (msgLen <= 0 && request == TcrMessage::GET_CLIENT_PR_METADATA) {
+    auto fullMessage = make_unique<char[]>(sizeof(msg_header));
+    std::memcpy(fullMessage.get(), msg_header, sizeof(msg_header));
+    return {std::move(fullMessage), sizeof(msg_header), CONN_NOERR};
   }
 
-  // user has to delete this pointer
-  char* fullMessage;
-  *recvLen = HEADER_LENGTH + msgLen;
-  _GEODE_NEW(fullMessage, char[HEADER_LENGTH + msgLen]);
-  std::memcpy(fullMessage, msg_header, HEADER_LENGTH);
+  auto recvLen = HEADER_LENGTH + msgLen;
+  auto fullMessage = make_unique<char[]>(recvLen);
+  std::memcpy(fullMessage.get(), msg_header, HEADER_LENGTH);
 
   std::chrono::microseconds mesgBodyTimeout = receiveTimeoutSec;
   if (isNotificationMessage) {
     mesgBodyTimeout = receiveTimeoutSec * DEFAULT_TIMEOUT_RETRIES;
   }
-  error = receiveData(fullMessage + HEADER_LENGTH, msgLen, mesgBodyTimeout);
+  error =
+      receiveData(fullMessage.get() + HEADER_LENGTH, msgLen, mesgBodyTimeout);
   if (error != CONN_NOERR) {
-    delete[] fullMessage;
+    fullMessage.reset();
+    recvLen = 0;
     //  the !isNotificationMessage ensures that notification channel
     // gets the GeodeIOException and not TimeoutException;
     // this is required since header has already been read meaning there could
@@ -721,8 +714,7 @@ char* TcrConnection::readMessage(size_t* recvLen,
           "connection timed out while receiving message body"));
     } else {
       if (isNotificationMessage) {
-        *opErr = CONN_IOERR;
-        return nullptr;
+        return {nullptr, 0, CONN_IOERR};
       }
       throwException(
           GeodeIOException("TcrConnection::readMessage: "
@@ -734,9 +726,10 @@ char* TcrConnection::readMessage(size_t* recvLen,
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
       m_endpointObj->name().c_str(),
-      Utils::convertBytesToString(fullMessage + HEADER_LENGTH, msgLen).c_str());
+      Utils::convertBytesToString(fullMessage.get() + HEADER_LENGTH, msgLen)
+          .c_str());
 
-  return fullMessage;
+  return {std::move(fullMessage), recvLen, CONN_NOERR};
 }
 
 void TcrConnection::readMessageChunked(TcrMessageReply& reply,

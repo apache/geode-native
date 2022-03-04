@@ -1129,11 +1129,12 @@ void TcrMessage::chunkSecurityHeader(int skipPart,
 }
 
 void TcrMessage::handleByteArrayResponse(
-    const char* bytearray, int32_t len, uint16_t endpointMemId,
-    const SerializationRegistry& serializationRegistry,
+    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer,
+    uint16_t endpointMemId, const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      reinterpret_cast<uint8_t*>(const_cast<char*>(bytearray)), len, getPool());
+      reinterpret_cast<uint8_t*>(std::get<0>(buffer).get()),
+      std::get<1>(buffer), getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -1152,7 +1153,7 @@ void TcrMessage::handleByteArrayResponse(
   LOGDEBUG(
       "Message type=%d, length=%d, parts=%d, txid=%d and eack %d with data "
       "length=%d",
-      m_msgType, msglen, numparts, m_txId, earlyack, len);
+      m_msgType, msglen, numparts, m_txId, earlyack, std::get<1>(buffer));
 
   // LOGFINE("Message type=%d, length=%d, parts=%d, txid=%d and eack %d with
   // data length=%d",
@@ -1449,7 +1450,7 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::RESPONSE_CLIENT_PR_METADATA: {
-      if (len == 17) {
+      if (std::get<1>(buffer) == 17) {
         LOGDEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
         return;
       }
@@ -3002,17 +3003,17 @@ TcrMessageKeySet::TcrMessageKeySet(DataOutput* dataOutput,
   writeMessageLength();
 }
 
-void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
-                         const SerializationRegistry& serializationRegistry,
-                         MemberListForVersionStamp& memberListForVersionStamp) {
+void TcrMessage::setData(
+    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer, uint16_t memId,
+    const SerializationRegistry& serializationRegistry,
+    MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
     m_request = std::unique_ptr<DataOutput>(new DataOutput(
         m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
             getPool())));
   }
-  if (bytearray) {
-    DeleteArray<const char> delByteArr(bytearray);
-    handleByteArrayResponse(bytearray, len, memId, serializationRegistry,
+  if (std::get<0>(buffer)) {
+    handleByteArrayResponse(std::move(buffer), memId, serializationRegistry,
                             memberListForVersionStamp);
   }
 }
