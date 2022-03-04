@@ -1035,13 +1035,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
       if (!chunk.empty()) {
-        // DeleteArray<const uint8_t> delChunk(bytes);
-        //  DataInput input(bytes, len);
-        // TODO: this not send two part...
-        // looks like this is our exception so only one part will come
-        // readExceptionPart(input, false);
-        // readSecureObjectPart(input, false, true,
-        // isLastChunkAndisSecurityHeader );
         chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       }
       break;
@@ -1058,7 +1051,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::RESPONSE_FROM_SECONDARY: {
-      // TODO: how many parts
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
         LOGFINEST("processChunk - got response from secondary, ignoring.");
@@ -1092,7 +1084,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     default: {
-      // TODO: how many parts what should we do here
       if (chunk.empty()) {
         LOGWARN(
             "Got unhandled message type %d while processing response, "
@@ -1341,12 +1332,8 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::LOCAL_DESTROY: {
       int32_t regionLen = input.readInt32();
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      m_regionName.resize(regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
 
       readKeyPart(input);
 
@@ -1376,12 +1363,8 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::LOCAL_UPDATE: {
       int32_t regionLen = input.readInt32();
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      m_regionName.resize(regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
 
       readKeyPart(input);
       //  Read delta flag
@@ -1430,12 +1413,8 @@ void TcrMessage::handleByteArrayResponse(
     case TcrMessage::CLEAR_REGION: {
       int32_t regionLen = input.readInt32();
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      m_regionName.resize(regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
       // skip callbackarg part
       // skipParts(input, 1);
       readCallbackObjectPart(input);
@@ -1543,13 +1522,8 @@ void TcrMessage::handleByteArrayResponse(
       uint32_t tombstoneOpType;
       int32_t regionLen = input.readInt32();
       input.read();
-      char* regname = nullptr;
-
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      m_regionName.resize(regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
       readIntPart(input, &tombstoneOpType);  // partlen;
       // read and ignore length
       input.readInt32();
