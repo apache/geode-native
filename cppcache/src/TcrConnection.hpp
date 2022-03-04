@@ -32,14 +32,7 @@
 #include "util/concurrent/binary_semaphore.hpp"
 #include "util/synchronized_set.hpp"
 
-#define DEFAULT_TIMEOUT_RETRIES 12
-
-enum class acceptor : ::std::int8_t {
-  CLIENT_TO_SERVER = 100,
-  PRIMARY_SERVER_TO_CLIENT = 101,
-  SECONDARY_SERVER_TO_CLIENT = 102
-};
-enum class acceptance_codes : ::std::int8_t {
+enum class AcceptanceCode : ::std::int8_t {
   REPLY_SSL_ENABLED = 21,
   REPLY_OK = 59,
   REPLY_REFUSED = 60,
@@ -49,11 +42,6 @@ enum class acceptance_codes : ::std::int8_t {
   REPLY_DUPLICATE_DURABLE_CLIENT = 64,
   SUCCESSFUL_SERVER_TO_CLIENT = 105,
   UNSUCCESSFUL_SERVER_TO_CLIENT = 106
-};
-enum class security : ::std::uint8_t {
-  SECURITY_CREDENTIALS_NONE = 0,
-  SECURITY_CREDENTIALS_NORMAL = 1,
-  SECURITY_MULTIUSER_NOTIFICATIONCHANNEL = 3
 };
 
 namespace apache {
