@@ -551,16 +551,13 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
   LOGFINE("Started subscription channel for endpoint %s", m_name.c_str());
   while (isRunning) {
     try {
-      size_t dataLen;
-      ConnErrType opErr = CONN_NOERR;
-      auto data = m_notifyConnection->receive(&dataLen, &opErr,
-                                              std::chrono::seconds(5));
+      auto data = m_notifyConnection->receive(std::chrono::seconds(5));
 
-      if (opErr == CONN_IOERR) {
+      if (std::get<2>(data) == CONN_IOERR) {
         // Endpoint is disconnected, this exception is expected
         LOGFINER(
             "IO exception while receiving subscription event for endpoint %d",
-            opErr);
+            std::get<2>(data));
         if (isRunning) {
           setConnectionStatus(false);
           // close notification channel
@@ -574,14 +571,15 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         break;
       }
 
-      if (data) {
+      if (std::get<0>(data)) {
         TcrMessageReply msg(true, m_baseDM);
+        auto size_for_stats = std::get<1>(data);
         msg.initCqMap();
-        msg.setData(data, static_cast<int32_t>(dataLen),
+        msg.setData({std::move(std::get<0>(data)), std::get<1>(data)},
                     getDistributedMemberID(),
                     *(m_cacheImpl->getSerializationRegistry()),
                     *(m_cacheImpl->getMemberListForVersionStamp()));
-        handleNotificationStats(static_cast<int64_t>(dataLen));
+        handleNotificationStats(static_cast<int64_t>(size_for_stats));
         LOGDEBUG("receive notification %d", msg.getMessageType());
 
         if (!isRunning) {
@@ -802,13 +800,12 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
         reply.setCallBackArguement(true);
       }
     }
-    size_t dataLen;
     auto data = conn->sendRequest(request.getMsgData(), request.getMsgLength(),
-                                  &dataLen, request.getTimeout(),
-                                  reply.getTimeout(), request.getMessageType());
+                                  request.getTimeout(), reply.getTimeout(),
+                                  request.getMessageType());
     reply.setMessageTypeRequest(type);
     reply.setData(
-        data, static_cast<int32_t>(dataLen), getDistributedMemberID(),
+        std::move(data), getDistributedMemberID(),
         *(m_cacheImpl->getSerializationRegistry()),
         *(m_cacheImpl
               ->getMemberListForVersionStamp()));  // memory is released by

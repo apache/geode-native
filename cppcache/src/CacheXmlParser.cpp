@@ -24,9 +24,9 @@
 #include <geode/PoolManager.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
-#include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "util/make_unique.hpp"
 #include "util/string.hpp"
 
 #if defined(_WIN32)
@@ -462,15 +462,12 @@ void CacheXmlParser::parseMemory(const char *buffer, int size) {
  * @throws UnknownException otherwise
  */
 CacheXmlParser *CacheXmlParser::parse(const char *cacheXml, Cache *cache) {
-  CacheXmlParser *handler;
-  _GEODE_NEW(handler, CacheXmlParser(cache));
   // use RAII to delete the handler object in case of exceptions
-  DeleteObject<CacheXmlParser> delHandler(handler);
+  auto handler = make_unique<CacheXmlParser>(cache);
 
   {
     handler->parseFile(cacheXml);
-    delHandler.noDelete();
-    return handler;
+    return handler.release();
   }
 }
 
@@ -494,8 +491,7 @@ void CacheXmlParser::setAttributes(Cache *) {}
  *
  */
 void CacheXmlParser::create(Cache *cache) {
-  // use DeleteObject class to delete cacheCreation_ in case of exceptions
-  DeleteObject<CacheXmlCreation> delCacheCreation(cacheCreation_);
+  std::unique_ptr<CacheXmlCreation> delCacheCreation(cacheCreation_);
 
   if (cache == nullptr) {
     throw IllegalArgumentException(
@@ -505,7 +501,7 @@ void CacheXmlParser::create(Cache *cache) {
     throw CacheXmlException("XML: Element <cache> was not provided in the xml");
   }
   cacheCreation_->create(cache);
-  delCacheCreation.noDelete();
+  delCacheCreation.release();
   LOGINFO("Declarative configuration of cache completed successfully");
 }
 

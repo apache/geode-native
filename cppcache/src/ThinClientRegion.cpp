@@ -27,7 +27,6 @@
 #include <geode/SystemProperties.hpp>
 #include <geode/UserFunctionExecutionException.hpp>
 
-#include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
@@ -472,10 +471,11 @@ void ThinClientRegion::registerRegex(const std::string& regex,
         "Region::registerRegex: Regex string is empty");
   }
 
-  const auto interestPolicy =
-      getInitialValues                    ? InterestResultPolicy::KEYS_VALUES
-      : caching && kAllKeysRegex != regex ? InterestResultPolicy::KEYS
-                                          : InterestResultPolicy::NONE;
+  const auto interestPolicy = getInitialValues
+                                  ? InterestResultPolicy::KEYS_VALUES
+                                  : caching && kAllKeysRegex != regex
+                                        ? InterestResultPolicy::KEYS
+                                        : InterestResultPolicy::NONE;
 
   LOGDEBUG("ThinClientRegion::registerRegex : interestPolicy is %d",
            interestPolicy);

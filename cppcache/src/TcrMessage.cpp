@@ -21,7 +21,6 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "AutoDelete.hpp"
 #include "BucketServerLocation.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
@@ -1035,13 +1034,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
     case EXECUTE_FUNCTION_ERROR:
     case EXECUTE_REGION_FUNCTION_ERROR: {
       if (!chunk.empty()) {
-        // DeleteArray<const uint8_t> delChunk(bytes);
-        //  DataInput input(bytes, len);
-        // TODO: this not send two part...
-        // looks like this is our exception so only one part will come
-        // readExceptionPart(input, false);
-        // readSecureObjectPart(input, false, true,
-        // isLastChunkAndisSecurityHeader );
         chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       }
       break;
@@ -1058,7 +1050,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     case TcrMessage::RESPONSE_FROM_SECONDARY: {
-      // TODO: how many parts
       chunkSecurityHeader(1, chunk, len, isLastChunkAndisSecurityHeader);
       if (chunk.size()) {
         LOGFINEST("processChunk - got response from secondary, ignoring.");
@@ -1092,7 +1083,6 @@ void TcrMessage::processChunk(const std::vector<uint8_t>& chunk, int32_t len,
       break;
     }
     default: {
-      // TODO: how many parts what should we do here
       if (chunk.empty()) {
         LOGWARN(
             "Got unhandled message type %d while processing response, "
@@ -1129,11 +1119,12 @@ void TcrMessage::chunkSecurityHeader(int skipPart,
 }
 
 void TcrMessage::handleByteArrayResponse(
-    const char* bytearray, int32_t len, uint16_t endpointMemId,
-    const SerializationRegistry& serializationRegistry,
+    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer,
+    uint16_t endpointMemId, const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      reinterpret_cast<uint8_t*>(const_cast<char*>(bytearray)), len, getPool());
+      reinterpret_cast<uint8_t*>(std::get<0>(buffer).get()),
+      std::get<1>(buffer), getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -1152,7 +1143,7 @@ void TcrMessage::handleByteArrayResponse(
   LOGDEBUG(
       "Message type=%d, length=%d, parts=%d, txid=%d and eack %d with data "
       "length=%d",
-      m_msgType, msglen, numparts, m_txId, earlyack, len);
+      m_msgType, msglen, numparts, m_txId, earlyack, std::get<1>(buffer));
 
   // LOGFINE("Message type=%d, length=%d, parts=%d, txid=%d and eack %d with
   // data length=%d",
@@ -1338,14 +1329,10 @@ void TcrMessage::handleByteArrayResponse(
     }
     case TcrMessage::LOCAL_INVALIDATE:
     case TcrMessage::LOCAL_DESTROY: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
 
       readKeyPart(input);
 
@@ -1373,14 +1360,10 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::LOCAL_CREATE:
     case TcrMessage::LOCAL_UPDATE: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
 
       readKeyPart(input);
       //  Read delta flag
@@ -1415,7 +1398,6 @@ void TcrMessage::handleByteArrayResponse(
 
       // read eventid part
       readEventIdPart(input, false);
-      _GEODE_SAFE_DELETE_ARRAY(regname);  // COVERITY ---> 30299 Resource leak
 
       break;
     }
@@ -1427,14 +1409,10 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::LOCAL_DESTROY_REGION:
     case TcrMessage::CLEAR_REGION: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      char* regname = nullptr;
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
       // skip callbackarg part
       // skipParts(input, 1);
       readCallbackObjectPart(input);
@@ -1449,7 +1427,7 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::RESPONSE_CLIENT_PR_METADATA: {
-      if (len == 17) {
+      if (std::get<1>(buffer) == 17) {
         LOGDEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
         return;
       }
@@ -1540,15 +1518,10 @@ void TcrMessage::handleByteArrayResponse(
     }
     case TcrMessage::TOMBSTONE_OPERATION: {
       uint32_t tombstoneOpType;
-      int32_t regionLen = input.readInt32();
-      input.read();
-      char* regname = nullptr;
-
-      regname = new char[regionLen + 1];
-      DeleteArray<char> delRegName(regname);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname), regionLen);
-      regname[regionLen] = '\0';
-      m_regionName = regname;
+      m_regionName.resize(input.readInt32());
+      input.advanceCursor(1);  // ignore byte
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
       readIntPart(input, &tombstoneOpType);  // partlen;
       // read and ignore length
       input.readInt32();
@@ -3002,17 +2975,17 @@ TcrMessageKeySet::TcrMessageKeySet(DataOutput* dataOutput,
   writeMessageLength();
 }
 
-void TcrMessage::setData(const char* bytearray, int32_t len, uint16_t memId,
-                         const SerializationRegistry& serializationRegistry,
-                         MemberListForVersionStamp& memberListForVersionStamp) {
+void TcrMessage::setData(
+    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer, uint16_t memId,
+    const SerializationRegistry& serializationRegistry,
+    MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
     m_request = std::unique_ptr<DataOutput>(new DataOutput(
         m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
             getPool())));
   }
-  if (bytearray) {
-    DeleteArray<const char> delByteArr(bytearray);
-    handleByteArrayResponse(bytearray, len, memId, serializationRegistry,
+  if (std::get<0>(buffer)) {
+    handleByteArrayResponse(std::move(buffer), memId, serializationRegistry,
                             memberListForVersionStamp);
   }
 }
