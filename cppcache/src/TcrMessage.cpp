@@ -21,7 +21,6 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/SystemProperties.hpp>
 
-#include "AutoDelete.hpp"
 #include "BucketServerLocation.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
@@ -1330,10 +1329,10 @@ void TcrMessage::handleByteArrayResponse(
     }
     case TcrMessage::LOCAL_INVALIDATE:
     case TcrMessage::LOCAL_DESTROY: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      m_regionName.resize(regionLen);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
 
       readKeyPart(input);
 
@@ -1361,10 +1360,10 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::LOCAL_CREATE:
     case TcrMessage::LOCAL_UPDATE: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      m_regionName.resize(regionLen);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
 
       readKeyPart(input);
       //  Read delta flag
@@ -1399,7 +1398,6 @@ void TcrMessage::handleByteArrayResponse(
 
       // read eventid part
       readEventIdPart(input, false);
-      _GEODE_SAFE_DELETE_ARRAY(regname);  // COVERITY ---> 30299 Resource leak
 
       break;
     }
@@ -1411,10 +1409,10 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::LOCAL_DESTROY_REGION:
     case TcrMessage::CLEAR_REGION: {
-      int32_t regionLen = input.readInt32();
+      m_regionName.resize(input.readInt32());
       input.advanceCursor(1);  // ignore byte
-      m_regionName.resize(regionLen);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
       // skip callbackarg part
       // skipParts(input, 1);
       readCallbackObjectPart(input);
@@ -1520,10 +1518,10 @@ void TcrMessage::handleByteArrayResponse(
     }
     case TcrMessage::TOMBSTONE_OPERATION: {
       uint32_t tombstoneOpType;
-      int32_t regionLen = input.readInt32();
-      input.read();
-      m_regionName.resize(regionLen);
-      input.readBytesOnly(reinterpret_cast<int8_t*>(regname.data()), regionLen);
+      m_regionName.resize(input.readInt32());
+      input.advanceCursor(1);  // ignore byte
+      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
+                          m_regionName.size());
       readIntPart(input, &tombstoneOpType);  // partlen;
       // read and ignore length
       input.readInt32();

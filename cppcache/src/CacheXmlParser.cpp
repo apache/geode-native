@@ -24,11 +24,10 @@
 #include <geode/PoolManager.hpp>
 #include <geode/internal/chrono/duration.hpp>
 
-#include "AutoDelete.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
-#include "util/string.hpp"
 #include "util/make_unique.hpp"
+#include "util/string.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>

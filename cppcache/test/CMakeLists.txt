@@ -17,7 +17,6 @@ cmake_minimum_required( VERSION 3.10 )
 project(apache-geode_unittests LANGUAGES CXX)
 
 add_executable(apache-geode_unittests
-  AutoDeleteTest.cpp
   ByteArray.cpp
   ByteArray.hpp
   ByteArrayFixture.cpp
