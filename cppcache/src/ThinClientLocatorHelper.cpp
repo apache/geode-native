@@ -40,6 +40,7 @@
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "Version.hpp"
+#include "util/to_underlying.hpp"
 
 INIT_GNFN("ThinClientLocatorHelper")
 
@@ -158,7 +159,8 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
         reinterpret_cast<uint8_t*>(buff), receivedLength);
 
-    if (di.read() == REPLY_SSL_ENABLED && !sys_prop.sslEnabled()) {
+    if (di.read() == to_underlying(AcceptanceCode::REPLY_SSL_ENABLED) &&
+        !sys_prop.sslEnabled()) {
       LOGERROR(
           "%s(%p): SSL is enabled on locator %s, enable SSL in client as well",
           __GNFN__, this, location.toString().c_str());

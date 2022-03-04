@@ -34,6 +34,23 @@
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
 #include "Version.hpp"
+#include "util/to_underlying.hpp"
+
+#define DEFAULT_TIMEOUT_RETRIES 12
+
+namespace {
+enum class Acceptor : ::std::int8_t {
+  CLIENT_TO_SERVER = 100,
+  PRIMARY_SERVER_TO_CLIENT = 101,
+  SECONDARY_SERVER_TO_CLIENT = 102
+};
+
+enum class Security : ::std::uint8_t {
+  SECURITY_CREDENTIALS_NONE = 0,
+  SECURITY_CREDENTIALS_NORMAL = 1,
+  SECURITY_MULTIUSER_NOTIFICATIONCHANNEL = 3
+};
+}  // namespace
 
 #define throwException(ex)                            \
   do {                                                \
@@ -154,18 +171,18 @@ bool TcrConnection::initTcrConnection(
   if (isClientNotification) {
     isNotificationChannel = true;
     if (isSecondary) {
-      handShakeMsg.write(static_cast<int8_t>(SECONDARY_SERVER_TO_CLIENT));
+      handShakeMsg.write(to_underlying(Acceptor::SECONDARY_SERVER_TO_CLIENT));
     } else {
-      handShakeMsg.write(static_cast<int8_t>(PRIMARY_SERVER_TO_CLIENT));
+      handShakeMsg.write(to_underlying(Acceptor::PRIMARY_SERVER_TO_CLIENT));
     }
   } else {
-    handShakeMsg.write(static_cast<int8_t>(CLIENT_TO_SERVER));
+    handShakeMsg.write(to_underlying(Acceptor::CLIENT_TO_SERVER));
   }
 
   Version::write(handShakeMsg, Version::current());
   LOGFINE("Client version ordinal is %d", Version::current().getOrdinal());
 
-  handShakeMsg.write(static_cast<int8_t>(REPLY_OK));
+  handShakeMsg.write(to_underlying(AcceptanceCode::REPLY_OK));
 
   // Send byte REPLY_OK = (byte)58;
   if (!isClientNotification) {
@@ -241,11 +258,11 @@ bool TcrConnection::initTcrConnection(
 
   if (isNotificationChannel && !doIneedToSendCreds) {
     handShakeMsg.write(
-        static_cast<uint8_t>(SECURITY_MULTIUSER_NOTIFICATIONCHANNEL));
+        to_underlying(Security::SECURITY_MULTIUSER_NOTIFICATIONCHANNEL));
   } else if (tmpIsSecurityOn) {
-    handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_NORMAL));
+    handShakeMsg.write(to_underlying(Security::SECURITY_CREDENTIALS_NORMAL));
   } else {
-    handShakeMsg.write(static_cast<uint8_t>(SECURITY_CREDENTIALS_NONE));
+    handShakeMsg.write(to_underlying(Security::SECURITY_CREDENTIALS_NONE));
   }
 
   if (tmpIsSecurityOn) {
@@ -304,7 +321,8 @@ bool TcrConnection::initTcrConnection(
 
     LOGDEBUG(" Handshake: Got Accept Code %d", acceptanceCode[0]);
     /* adongre */
-    if (acceptanceCode[0] == REPLY_SSL_ENABLED && !sysProp.sslEnabled()) {
+    if (acceptanceCode[0] == to_underlying(AcceptanceCode::REPLY_SSL_ENABLED) &&
+        !sysProp.sslEnabled()) {
       LOGERROR("SSL is enabled on server, enable SSL in client as well");
       AuthenticationRequiredException ex(
           "SSL is enabled on server, enable SSL in client as well");
@@ -379,34 +397,34 @@ bool TcrConnection::initTcrConnection(
       ThinClientBaseDM::setDeltaEnabledOnServer(di.readBoolean());
     }
 
-    switch (acceptanceCode[0]) {
-      case REPLY_OK:
-      case SUCCESSFUL_SERVER_TO_CLIENT:
+    switch (static_cast<AcceptanceCode>(acceptanceCode[0])) {
+      case AcceptanceCode::REPLY_OK:
+      case AcceptanceCode::SUCCESSFUL_SERVER_TO_CLIENT:
         LOGFINER("Handshake reply: %u,%u,%u", acceptanceCode[0],
                  serverQueueStatus[0], recvMsgLen2);
         if (isClientNotification) readHandshakeInstantiatorMsg(connectTimeout);
         break;
-      case REPLY_AUTHENTICATION_FAILED: {
+      case AcceptanceCode::REPLY_AUTHENTICATION_FAILED: {
         AuthenticationFailedException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_AUTHENTICATION_REQUIRED: {
+      case AcceptanceCode::REPLY_AUTHENTICATION_REQUIRED: {
         AuthenticationRequiredException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_DUPLICATE_DURABLE_CLIENT: {
+      case AcceptanceCode::REPLY_DUPLICATE_DURABLE_CLIENT: {
         DuplicateDurableClientException ex(
             reinterpret_cast<char*>(recvMessage.data()));
         m_conn.reset();
         throwException(ex);
       }
-      case REPLY_REFUSED:
-      case REPLY_INVALID:
-      case UNSUCCESSFUL_SERVER_TO_CLIENT: {
+      case AcceptanceCode::REPLY_REFUSED:
+      case AcceptanceCode::REPLY_INVALID:
+      case AcceptanceCode::UNSUCCESSFUL_SERVER_TO_CLIENT: {
         LOGERROR("Handshake rejected by server[%s]: %s",
                  m_endpointObj->name().c_str(),
                  reinterpret_cast<char*>(recvMessage.data()));
