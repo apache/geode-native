@@ -21,11 +21,13 @@
 #include <gtest/gtest.h>
 
 #include <geode/DataOutput.hpp>
+#include <geode/ExceptionTypes.hpp>
 
 #include "ByteArrayFixture.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
+#include "util/JavaModifiedUtf8.hpp"
 
 namespace {
 
@@ -34,7 +36,9 @@ using apache::geode::client::CacheableString;
 using apache::geode::client::DataInputInternal;
 using apache::geode::client::DataOutput;
 using apache::geode::client::DataOutputInternal;
+using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::SerializationRegistry;
+using apache::geode::client::internal::JavaModifiedUtf8;
 
 class TestDataOutput : public DataOutputInternal {
  public:
@@ -218,6 +222,86 @@ TEST_F(CacheableStringTests, TestFromDataNonAsciiHuge) {
   str->fromData(in);
 
   EXPECT_EQ(utf8, str->value());
+}
+
+TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
+  {
+    std::string bad_start_code;
+    bad_start_code += static_cast<int8_t>(0xF8);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_start_code),
+                 IllegalArgumentException);
+  }
+
+  {
+    std::string too_short_2byte;
+    too_short_2byte += static_cast<int8_t>(0xC0);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_2byte),
+                 IllegalArgumentException);
+
+    std::string bad_2byte_at_end = "foo";
+    too_short_2byte += static_cast<int8_t>(0xC0);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_2byte),
+                 IllegalArgumentException);
+  }
+
+  {
+    std::string too_short_3byte;
+    too_short_3byte += static_cast<int8_t>(0xE8);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_3byte),
+                 IllegalArgumentException);
+
+    too_short_3byte += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_3byte),
+                 IllegalArgumentException);
+
+    std::string bad_3byte_at_end = "foo";
+    bad_3byte_at_end += static_cast<int8_t>(0xE8);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_3byte_at_end),
+                 IllegalArgumentException);
+
+    bad_3byte_at_end += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_3byte_at_end),
+                 IllegalArgumentException);
+  }
+
+  {
+    std::string too_short_4byte;
+    too_short_4byte += static_cast<int8_t>(0xF7);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+                 IllegalArgumentException);
+
+    too_short_4byte += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+                 IllegalArgumentException);
+
+    too_short_4byte += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+                 IllegalArgumentException);
+
+    std::string bad_4byte_at_end = "foo";
+    bad_4byte_at_end += static_cast<int8_t>(0xF7);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+                 IllegalArgumentException);
+
+    bad_4byte_at_end += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+                 IllegalArgumentException);
+
+    bad_4byte_at_end += static_cast<int8_t>(0x1);
+    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+                 IllegalArgumentException);
+  }
+}
+
+TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
+  std::string utf8;
+  utf8 += 'a';
+
+  auto jmutf8 = JavaModifiedUtf8::fromString(utf8);
+  EXPECT_EQ(utf8.size(), jmutf8.size());
+  for (size_t i = 0; i < utf8.size(); i++) {
+    EXPECT_EQ(utf8[i], jmutf8[i]);
+  }
 }
 
 }  // namespace
