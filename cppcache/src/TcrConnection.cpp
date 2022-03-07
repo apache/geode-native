@@ -532,7 +532,7 @@ ConnErrType TcrConnection::sendData(const char* buffer, size_t length,
   return CONN_NOERR;
 }
 
-std::tuple<std::unique_ptr<char[]>, std::size_t> TcrConnection::sendRequest(
+std::vector<char> TcrConnection::sendRequest(
     const char* buffer, size_t len, std::chrono::microseconds sendTimeoutSec,
     std::chrono::microseconds receiveTimeoutSec, int32_t request) {
   const auto start = std::chrono::system_clock::now();
@@ -547,9 +547,7 @@ std::tuple<std::unique_ptr<char[]>, std::size_t> TcrConnection::sendRequest(
   receiveTimeoutSec -=
       std::chrono::duration_cast<decltype(receiveTimeoutSec)>(timeSpent);
 
-  auto result = readMessage(receiveTimeoutSec, true, false, request);
-
-  return {std::move(std::get<0>(result)), std::get<1>(result)};
+  return std::get<0>(readMessage(receiveTimeoutSec, true, false, request));
 }
 
 void TcrConnection::sendRequestForChunkedResponse(
@@ -629,15 +627,14 @@ void TcrConnection::send(const char* buffer, size_t len,
   }
 }
 
-std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType>
-TcrConnection::receive(std::chrono::microseconds receiveTimeoutSec) {
+std::tuple<std::vector<char>, ConnErrType> TcrConnection::receive(
+    std::chrono::microseconds receiveTimeoutSec) {
   return readMessage(receiveTimeoutSec, false, true);
 }
 
-std::tuple<std::unique_ptr<char[]>, std::size_t, ConnErrType>
-TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
-                           bool doHeaderTimeoutRetries,
-                           bool isNotificationMessage, int32_t request) {
+std::tuple<std::vector<char>, ConnErrType> TcrConnection::readMessage(
+    std::chrono::microseconds receiveTimeoutSec, bool doHeaderTimeoutRetries,
+    bool isNotificationMessage, int32_t request) {
   char msg_header[HEADER_LENGTH];
 
   auto error = receiveData(
@@ -656,7 +653,7 @@ TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
       if (isNotificationMessage) {
         // fix #752 - do not throw periodic TimeoutException for subscription
         // channels to avoid frequent stack trace processing.
-        return {nullptr, 0, error};
+        return {{}, error};
       } else {
         throwException(TimeoutException(
             "TcrConnection::readMessage: "
@@ -664,7 +661,7 @@ TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
       }
     } else {
       if (isNotificationMessage) {
-        return {nullptr, 0, CONN_IOERR};
+        return {{}, CONN_IOERR};
       }
       throwException(GeodeIOException(
           "TcrConnection::readMessage: "
@@ -685,24 +682,21 @@ TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
   auto msgLen = input.readInt32();
   //  check that message length is valid.
   if (msgLen <= 0 && request == TcrMessage::GET_CLIENT_PR_METADATA) {
-    auto fullMessage = make_unique<char[]>(sizeof(msg_header));
-    std::memcpy(fullMessage.get(), msg_header, sizeof(msg_header));
-    return {std::move(fullMessage), sizeof(msg_header), CONN_NOERR};
+    std::vector<char> fullMessage(sizeof(msg_header));
+    std::memcpy(fullMessage.data(), msg_header, sizeof(msg_header));
+    return {fullMessage, CONN_NOERR};
   }
 
-  auto recvLen = HEADER_LENGTH + msgLen;
-  auto fullMessage = make_unique<char[]>(recvLen);
-  std::memcpy(fullMessage.get(), msg_header, HEADER_LENGTH);
+  std::vector<char> fullMessage(HEADER_LENGTH + msgLen);
+  std::memcpy(fullMessage.data(), msg_header, HEADER_LENGTH);
 
   std::chrono::microseconds mesgBodyTimeout = receiveTimeoutSec;
   if (isNotificationMessage) {
     mesgBodyTimeout = receiveTimeoutSec * DEFAULT_TIMEOUT_RETRIES;
   }
   error =
-      receiveData(fullMessage.get() + HEADER_LENGTH, msgLen, mesgBodyTimeout);
+      receiveData(fullMessage.data() + HEADER_LENGTH, msgLen, mesgBodyTimeout);
   if (error != CONN_NOERR) {
-    fullMessage.reset();
-    recvLen = 0;
     //  the !isNotificationMessage ensures that notification channel
     // gets the GeodeIOException and not TimeoutException;
     // this is required since header has already been read meaning there could
@@ -714,7 +708,7 @@ TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
           "connection timed out while receiving message body"));
     } else {
       if (isNotificationMessage) {
-        return {nullptr, 0, CONN_IOERR};
+        return {{}, CONN_IOERR};
       }
       throwException(
           GeodeIOException("TcrConnection::readMessage: "
@@ -726,10 +720,10 @@ TcrConnection::readMessage(std::chrono::microseconds receiveTimeoutSec,
       "TcrConnection::readMessage: received message body from "
       "endpoint %s; bytes: %s",
       m_endpointObj->name().c_str(),
-      Utils::convertBytesToString(fullMessage.get() + HEADER_LENGTH, msgLen)
+      Utils::convertBytesToString(fullMessage.data() + HEADER_LENGTH, msgLen)
           .c_str());
 
-  return {std::move(fullMessage), recvLen, CONN_NOERR};
+  return {fullMessage, CONN_NOERR};
 }
 
 void TcrConnection::readMessageChunked(TcrMessageReply& reply,

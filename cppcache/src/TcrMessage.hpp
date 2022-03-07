@@ -181,7 +181,7 @@ class TcrMessage {
       MemberListForVersionStamp& memberListForVersionStamp);
 
   /* constructors */
-  void setData(std::tuple<std::unique_ptr<char[]>, std::size_t>, uint16_t memId,
+  void setData(std::vector<char>, uint16_t memId,
                const SerializationRegistry& serializationRegistry,
                MemberListForVersionStamp& memberListForVersionStamp);
 
@@ -342,8 +342,7 @@ class TcrMessage {
 
   // some private methods to handle things internally.
   void handleByteArrayResponse(
-      std::tuple<std::unique_ptr<char[]>, std::size_t> buffer,
-      uint16_t endpointMemId,
+      std::vector<char> buffer, uint16_t endpointMemId,
       const SerializationRegistry& serializationRegistry,
       MemberListForVersionStamp& memberListForVersionStamp);
   void readObjectPart(DataInput& input, bool defaultString = false);

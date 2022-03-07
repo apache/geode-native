@@ -607,7 +607,7 @@ void CacheImpl::initializeDeclarativeCache(const std::string& cacheXml) {
       CacheXmlParser::parse(cacheXml.c_str(), m_cache));
   xmlParser->setAttributes(m_cache);
   initServices();
-  xmlParser->create(m_cache);
+  xmlParser->create(*m_cache);
 }
 
 EvictionController* CacheImpl::getEvictionController() {

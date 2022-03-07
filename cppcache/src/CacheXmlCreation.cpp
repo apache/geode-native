@@ -20,6 +20,7 @@
 #include <geode/Cache.hpp>
 
 #include "CacheImpl.hpp"
+#include "CacheRegionHelper.hpp"
 #include "PoolAttributes.hpp"
 
 namespace apache {
@@ -34,37 +35,21 @@ void CacheXmlCreation::addPool(std::shared_ptr<PoolXmlCreation> pool) {
   pools.push_back(pool);
 }
 
-void CacheXmlCreation::create(Cache* cache) {
-  m_cache = cache;
-  m_cache->m_cacheImpl->setPdxIgnoreUnreadFields(m_pdxIgnoreUnreadFields);
-  m_cache->m_cacheImpl->setPdxReadSerialized(m_readPdxSerialized);
+void CacheXmlCreation::create(Cache& cache) {
   // Create any pools before creating any regions.
+  std::for_each(std::begin(pools), std::end(pools),
+                std::bind(&PoolXmlCreation::create,
+                          std::bind(&std::shared_ptr<PoolXmlCreation>::get,
+                                    std::placeholders::_1)));
 
-  for (const auto& pool : pools) {
-    pool->create();
-  }
-
-  for (const auto& rootRegion : rootRegions) {
-    rootRegion->createRoot(cache);
-  }
+  std::for_each(std::begin(rootRegions), std::end(rootRegions),
+                std::bind(&RegionXmlCreation::createRoot,
+                          std::bind(&std::shared_ptr<RegionXmlCreation>::get,
+                                    std::placeholders::_1),
+                          std::ref(*CacheRegionHelper::getCacheImpl(&cache))));
 }
 
-void CacheXmlCreation::setPdxIgnoreUnreadField(bool ignore) {
-  // m_cache->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
-  m_pdxIgnoreUnreadFields = ignore;
-}
-
-void CacheXmlCreation::setPdxReadSerialized(bool val) {
-  // m_cache->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
-  m_readPdxSerialized = val;
-}
-
-CacheXmlCreation::CacheXmlCreation()
-
-    : m_cache(nullptr) {
-  m_pdxIgnoreUnreadFields = false;
-  m_readPdxSerialized = false;
-}
+CacheXmlCreation::CacheXmlCreation() {}
 }  // namespace client
 }  // namespace geode
 }  // namespace apache

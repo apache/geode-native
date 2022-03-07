@@ -1119,12 +1119,11 @@ void TcrMessage::chunkSecurityHeader(int skipPart,
 }
 
 void TcrMessage::handleByteArrayResponse(
-    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer,
-    uint16_t endpointMemId, const SerializationRegistry& serializationRegistry,
+    std::vector<char> buffer, uint16_t endpointMemId,
+    const SerializationRegistry& serializationRegistry,
     MemberListForVersionStamp& memberListForVersionStamp) {
   auto input = m_tcdm->getConnectionManager().getCacheImpl()->createDataInput(
-      reinterpret_cast<uint8_t*>(std::get<0>(buffer).get()),
-      std::get<1>(buffer), getPool());
+      reinterpret_cast<uint8_t*>(buffer.data()), buffer.size(), getPool());
   // TODO:: this need to make sure that pool is there
   //  if(m_tcdm == nullptr)
   //  throw IllegalArgumentException("Pool is nullptr in TcrMessage");
@@ -1143,7 +1142,7 @@ void TcrMessage::handleByteArrayResponse(
   LOGDEBUG(
       "Message type=%d, length=%d, parts=%d, txid=%d and eack %d with data "
       "length=%d",
-      m_msgType, msglen, numparts, m_txId, earlyack, std::get<1>(buffer));
+      m_msgType, msglen, numparts, m_txId, earlyack, buffer.size());
 
   // LOGFINE("Message type=%d, length=%d, parts=%d, txid=%d and eack %d with
   // data length=%d",
@@ -1360,10 +1359,10 @@ void TcrMessage::handleByteArrayResponse(
 
     case TcrMessage::LOCAL_CREATE:
     case TcrMessage::LOCAL_UPDATE: {
-      m_regionName.resize(input.readInt32());
+      m_regionName.resize(std::min(input.readInt32(), 0));
       input.advanceCursor(1);  // ignore byte
-      input.readBytesOnly(reinterpret_cast<int8_t*>(&m_regionName[0]),
-                          m_regionName.size());
+      std::generate(std::begin(m_regionName), std::end(m_regionName),
+                    [&input]() { return static_cast<char>(input.read()); });
 
       readKeyPart(input);
       //  Read delta flag
@@ -1427,7 +1426,7 @@ void TcrMessage::handleByteArrayResponse(
     }
 
     case TcrMessage::RESPONSE_CLIENT_PR_METADATA: {
-      if (std::get<1>(buffer) == 17) {
+      if (buffer.size() == 17) {
         LOGDEBUG("RESPONSE_CLIENT_PR_METADATA len is 17");
         return;
       }
@@ -2975,19 +2974,16 @@ TcrMessageKeySet::TcrMessageKeySet(DataOutput* dataOutput,
   writeMessageLength();
 }
 
-void TcrMessage::setData(
-    std::tuple<std::unique_ptr<char[]>, std::size_t> buffer, uint16_t memId,
-    const SerializationRegistry& serializationRegistry,
-    MemberListForVersionStamp& memberListForVersionStamp) {
+void TcrMessage::setData(std::vector<char> buffer, uint16_t memId,
+                         const SerializationRegistry& serializationRegistry,
+                         MemberListForVersionStamp& memberListForVersionStamp) {
   if (m_request == nullptr) {
     m_request = std::unique_ptr<DataOutput>(new DataOutput(
         m_tcdm->getConnectionManager().getCacheImpl()->createDataOutput(
             getPool())));
   }
-  if (std::get<0>(buffer)) {
-    handleByteArrayResponse(std::move(buffer), memId, serializationRegistry,
-                            memberListForVersionStamp);
-  }
+  handleByteArrayResponse(std::move(buffer), memId, serializationRegistry,
+                          memberListForVersionStamp);
 }
 
 TcrMessage::~TcrMessage() {

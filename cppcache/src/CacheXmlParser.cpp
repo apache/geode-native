@@ -265,8 +265,7 @@ FactoryLoaderFn<PersistenceManager>
 //////////////////////////////////////////////////////////////////
 
 CacheXmlParser::CacheXmlParser(Cache *cache)
-    : cacheCreation_(nullptr),
-      nestedRegions_(0),
+    : nestedRegions_(0),
       config_(nullptr),
       parserMessage_(""),
       flagCacheXmlException_(false),
@@ -490,19 +489,13 @@ void CacheXmlParser::setAttributes(Cache *) {}
  * @throws UnknownException otherwise
  *
  */
-void CacheXmlParser::create(Cache *cache) {
-  std::unique_ptr<CacheXmlCreation> delCacheCreation(cacheCreation_);
-
-  if (cache == nullptr) {
-    throw IllegalArgumentException(
-        "XML:No cache specified for performing configuration");
-  }
-  if (!cacheCreation_) {
+void CacheXmlParser::create(Cache &cache) {
+  if (cacheCreation_) {
+    cacheCreation_->create(cache);
+    LOGINFO("Declarative configuration of cache completed successfully");
+  } else {
     throw CacheXmlException("XML: Element <cache> was not provided in the xml");
   }
-  cacheCreation_->create(cache);
-  delCacheCreation.release();
-  LOGINFO("Declarative configuration of cache completed successfully");
 }
 
 std::string CacheXmlParser::getOptionalAttribute(
@@ -562,27 +555,15 @@ void CacheXmlParser::startCache(const xercesc::Attributes &attrs) {
     }
   }
 
-  _GEODE_NEW(cacheCreation_, CacheXmlCreation());
+  cacheCreation_ = make_unique<CacheXmlCreation>();
 }
 
 void CacheXmlParser::startPdx(const xercesc::Attributes &attrs) {
-  auto ignoreUnreadFields = getOptionalAttribute(attrs, IGNORE_UNREAD_FIELDS);
-  if (!ignoreUnreadFields.empty()) {
-    if (equal_ignore_case(ignoreUnreadFields, "true")) {
-      cacheCreation_->setPdxIgnoreUnreadField(true);
-    } else {
-      cacheCreation_->setPdxIgnoreUnreadField(false);
-    }
-  }
-
-  auto pdxReadSerialized = getOptionalAttribute(attrs, READ_SERIALIZED);
-  if (!pdxReadSerialized.empty()) {
-    if (equal_ignore_case(pdxReadSerialized, "true")) {
-      cacheCreation_->setPdxReadSerialized(true);
-    } else {
-      cacheCreation_->setPdxReadSerialized(false);
-    }
-  }
+  CacheRegionHelper::getCacheImpl(cache_)->setPdxIgnoreUnreadFields(
+      equal_ignore_case(getOptionalAttribute(attrs, IGNORE_UNREAD_FIELDS),
+                        "true"));
+  CacheRegionHelper::getCacheImpl(cache_)->setPdxReadSerialized(
+      equal_ignore_case(getOptionalAttribute(attrs, READ_SERIALIZED), "true"));
 }
 
 void CacheXmlParser::startLocator(const xercesc::Attributes &attrs) {
@@ -1273,7 +1254,7 @@ void CacheXmlParser::endPersistenceManager() {
   }
 }
 
-CacheXmlParser::~CacheXmlParser() { _GEODE_SAFE_DELETE(cacheCreation_); }
+CacheXmlParser::~CacheXmlParser() {}
 
 }  // namespace client
 }  // namespace geode

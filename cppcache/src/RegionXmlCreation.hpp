@@ -107,7 +107,7 @@ class RegionXmlCreation {
    *         at the time of region creation
    * @throws UnknownException otherwise
    */
-  void createRoot(Cache* cache);
+  void createRoot(CacheImpl& cacheImpl);
 
   /**
    * Creates a {@link Region} with the given parent using the

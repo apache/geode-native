@@ -66,7 +66,7 @@ class CacheXmlParser : public xercesc::DefaultHandler {
 
  private:
   std::stack<std::shared_ptr<void>> _stack;
-  CacheXmlCreation* cacheCreation_;
+  std::unique_ptr<CacheXmlCreation> cacheCreation_;
   int32_t nestedRegions_;
   std::shared_ptr<Properties> config_;
   std::string parserMessage_;
@@ -86,7 +86,7 @@ class CacheXmlParser : public xercesc::DefaultHandler {
   void parseFile(const char* filename);
   void parseMemory(const char* buffer, int size);
   void setAttributes(Cache* cache);
-  void create(Cache* cache);
+  void create(Cache& cache);
   void endRegion();
   void startExpirationAttributes(const xercesc::Attributes& attrs);
   void startPersistenceManager(const xercesc::Attributes& attrs);

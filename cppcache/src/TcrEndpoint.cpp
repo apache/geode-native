@@ -553,11 +553,11 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
     try {
       auto data = m_notifyConnection->receive(std::chrono::seconds(5));
 
-      if (std::get<2>(data) == CONN_IOERR) {
+      if (std::get<1>(data) == CONN_IOERR) {
         // Endpoint is disconnected, this exception is expected
         LOGFINER(
             "IO exception while receiving subscription event for endpoint %d",
-            std::get<2>(data));
+            std::get<1>(data));
         if (isRunning) {
           setConnectionStatus(false);
           // close notification channel
@@ -571,83 +571,79 @@ void TcrEndpoint::receiveNotification(std::atomic<bool>& isRunning) {
         break;
       }
 
-      if (std::get<0>(data)) {
-        TcrMessageReply msg(true, m_baseDM);
-        auto size_for_stats = std::get<1>(data);
-        msg.initCqMap();
-        msg.setData({std::move(std::get<0>(data)), std::get<1>(data)},
-                    getDistributedMemberID(),
-                    *(m_cacheImpl->getSerializationRegistry()),
-                    *(m_cacheImpl->getMemberListForVersionStamp()));
-        handleNotificationStats(static_cast<int64_t>(size_for_stats));
-        LOGDEBUG("receive notification %d", msg.getMessageType());
+      TcrMessageReply msg(true, m_baseDM);
+      msg.initCqMap();
+      msg.setData(std::get<0>(data), getDistributedMemberID(),
+                  *(m_cacheImpl->getSerializationRegistry()),
+                  *(m_cacheImpl->getMemberListForVersionStamp()));
+      handleNotificationStats(static_cast<int64_t>(std::get<0>(data).size()));
+      LOGDEBUG("receive notification %d", msg.getMessageType());
 
-        if (!isRunning) {
-          break;
-        }
+      if (!isRunning) {
+        break;
+      }
 
-        if (msg.getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
-          LOGFINE("Received ping from server subscription channel.");
-        }
+      if (msg.getMessageType() == TcrMessage::SERVER_TO_CLIENT_PING) {
+        LOGFINE("Received ping from server subscription channel.");
+      }
 
-        // ignore some message types like REGISTER_INSTANTIATORS
-        if (msg.shouldIgnore()) {
-          continue;
-        }
+      // ignore some message types like REGISTER_INSTANTIATORS
+      if (msg.shouldIgnore()) {
+        continue;
+      }
 
-        bool isMarker = (msg.getMessageType() == TcrMessage::CLIENT_MARKER);
-        if (!msg.hasCqPart()) {
-          if (msg.getMessageType() != TcrMessage::CLIENT_MARKER) {
-            const std::string& regionFullPath1 = msg.getRegionName();
-            auto region1 = m_cacheImpl->getRegion(regionFullPath1);
+      bool isMarker = (msg.getMessageType() == TcrMessage::CLIENT_MARKER);
+      if (!msg.hasCqPart()) {
+        if (msg.getMessageType() != TcrMessage::CLIENT_MARKER) {
+          const std::string& regionFullPath1 = msg.getRegionName();
+          auto region1 = m_cacheImpl->getRegion(regionFullPath1);
 
-            if (region1 != nullptr &&
-                !static_cast<ThinClientRegion*>(region1.get())
-                     ->getDistMgr()
-                     ->isEndpointAttached(this)) {
-              // drop event before even processing the eventid for duplicate
-              // checking
-              LOGFINER("Endpoint %s dropping event for region %s",
-                       m_name.c_str(), regionFullPath1.c_str());
-              continue;
-            }
+          if (region1 != nullptr &&
+              !static_cast<ThinClientRegion*>(region1.get())
+                   ->getDistMgr()
+                   ->isEndpointAttached(this)) {
+            // drop event before even processing the eventid for duplicate
+            // checking
+            LOGFINER("Endpoint %s dropping event for region %s", m_name.c_str(),
+                     regionFullPath1.c_str());
+            continue;
           }
         }
+      }
 
-        if (!checkDupAndAdd(msg.getEventId())) {
-          m_dupCount++;
-          if (m_dupCount % 100 == 1) {
-            LOGFINE("Dropped %dst duplicate notification message", m_dupCount);
-          }
-          continue;
+      if (!checkDupAndAdd(msg.getEventId())) {
+        m_dupCount++;
+        if (m_dupCount % 100 == 1) {
+          LOGFINE("Dropped %dst duplicate notification message", m_dupCount);
         }
+        continue;
+      }
 
-        if (isMarker) {
-          LOGFINE("Got a marker message on endpont %s", m_name.c_str());
-          m_cacheImpl->processMarker();
-          processMarker();
-        } else {
-          if (!msg.hasCqPart())  // || msg.isInterestListPassed())
-          {
-            const std::string& regionFullPath = msg.getRegionName();
-            auto region = m_cacheImpl->getRegion(regionFullPath);
+      if (isMarker) {
+        LOGFINE("Got a marker message on endpont %s", m_name.c_str());
+        m_cacheImpl->processMarker();
+        processMarker();
+      } else {
+        if (!msg.hasCqPart())  // || msg.isInterestListPassed())
+        {
+          const std::string& regionFullPath = msg.getRegionName();
+          auto region = m_cacheImpl->getRegion(regionFullPath);
 
-            if (region != nullptr) {
-              static_cast<ThinClientRegion*>(region.get())
-                  ->receiveNotification(msg);
-            } else {
-              LOGWARN(
-                  "Notification for region %s that does not exist in "
-                  "client cacheImpl.",
-                  regionFullPath.c_str());
-            }
+          if (region != nullptr) {
+            static_cast<ThinClientRegion*>(region.get())
+                ->receiveNotification(msg);
           } else {
-            LOGDEBUG("receive cq notification %d", msg.getMessageType());
-            auto queryService = getQueryService();
-            if (queryService != nullptr) {
-              static_cast<RemoteQueryService*>(queryService.get())
-                  ->receiveNotification(msg);
-            }
+            LOGWARN(
+                "Notification for region %s that does not exist in "
+                "client cacheImpl.",
+                regionFullPath.c_str());
+          }
+        } else {
+          LOGDEBUG("receive cq notification %d", msg.getMessageType());
+          auto queryService = getQueryService();
+          if (queryService != nullptr) {
+            static_cast<RemoteQueryService*>(queryService.get())
+                ->receiveNotification(msg);
           }
         }
       }

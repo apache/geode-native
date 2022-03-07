@@ -71,15 +71,7 @@ class CacheXmlCreation {
    * @throws UnknownException otherwise
    *
    */
-  void create(Cache* cache);
-
-  void setPdxIgnoreUnreadField(bool ignore);
-
-  void setPdxReadSerialized(bool val);
-
-  bool getPdxIgnoreUnreadField() { return m_pdxIgnoreUnreadFields; }
-
-  bool getPdxReadSerialized() { return m_readPdxSerialized; }
+  void create(Cache &cache);
 
   ~CacheXmlCreation() = default;
 
@@ -89,10 +81,6 @@ class CacheXmlCreation {
 
   /** This cache's pools */
   std::vector<std::shared_ptr<PoolXmlCreation>> pools;
-
-  Cache* m_cache;
-  bool m_pdxIgnoreUnreadFields;
-  bool m_readPdxSerialized;
 };
 }  // namespace client
 }  // namespace geode

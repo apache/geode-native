@@ -43,16 +43,16 @@ void RegionXmlCreation::fillIn(std::shared_ptr<Region> regionPtr) {
   }
 }
 
-void RegionXmlCreation::createRoot(Cache* cache) {
-  std::shared_ptr<Region> rootRegPtr = nullptr;
+void RegionXmlCreation::createRoot(CacheImpl& cacheImpl) {
+  std::shared_ptr<Region> rootRegPtr;
 
-  CacheImpl* cacheImpl = CacheRegionHelper::getCacheImpl(cache);
-  cacheImpl->createRegion(regionName, regionAttributes, rootRegPtr);
+  cacheImpl.createRegion(regionName, regionAttributes, rootRegPtr);
+
   fillIn(rootRegPtr);
 }
 
 void RegionXmlCreation::create(std::shared_ptr<Region> parent) {
-  std::shared_ptr<Region> subRegPtr = nullptr;
+  std::shared_ptr<Region> subRegPtr;
 
   subRegPtr = parent->createSubregion(regionName, regionAttributes);
   fillIn(subRegPtr);
