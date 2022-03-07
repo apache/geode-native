@@ -238,13 +238,13 @@ class TcrConnection {
 
   //  Durable clients: return true if server has HA queue.
   ServerQueueStatus inline getServerQueueStatus(int32_t& queueSize) {
-    queueSize = m_queueSize;
-    return m_hasServerQueue;
+    queueSize = queueSize_;
+    return hasServerQueue_;
   }
 
-  uint16_t inline getPort() { return m_port; }
+  uint16_t inline getPort() { return port_; }
 
-  TcrEndpoint* getEndpointObject() const { return m_endpointObj.get(); }
+  TcrEndpoint* getEndpointObject() const { return endpointObj_.get(); }
 
   bool setAndGetBeingUsed(volatile bool isBeingUsed, bool forTransaction);
 
@@ -266,13 +266,13 @@ class TcrConnection {
   }
 
   const TcrConnectionManager& getConnectionManager() {
-    return m_connectionManager;
+    return connectionManager_;
   }
 
  private:
   int64_t connectionId;
-  const TcrConnectionManager& m_connectionManager;
-  int m_expiryTimeVariancePercentage = 0;
+  const TcrConnectionManager& connectionManager_;
+  int expiryTimeVariancePercentage_ = 0;
 
   std::chrono::microseconds calculateHeaderTimeout(
       std::chrono::microseconds receiveTimeout, bool retry);
@@ -341,24 +341,24 @@ class TcrConnection {
   ConnErrType receiveData(char* buffer, size_t length,
                           std::chrono::microseconds receiveTimeoutSec);
 
-  std::shared_ptr<TcrEndpoint> m_endpointObj;
-  std::unique_ptr<Connector> m_conn;
-  ServerQueueStatus m_hasServerQueue;
-  int32_t m_queueSize;
-  uint16_t m_port;
+  std::shared_ptr<TcrEndpoint> endpointObj_;
+  std::unique_ptr<Connector> conn_;
+  ServerQueueStatus hasServerQueue_;
+  int32_t queueSize_;
+  uint16_t port_;
 
   // semaphore to synchronize with the chunked response processing thread
   binary_semaphore chunks_process_semaphore_;
 
-  std::chrono::steady_clock::time_point m_creationTime;
-  std::chrono::steady_clock::time_point m_lastAccessed;
+  std::chrono::steady_clock::time_point creationTime_;
+  std::chrono::steady_clock::time_point lastAccessed_;
 
   // Disallow copy constructor and assignment operator.
   TcrConnection(const TcrConnection&);
   TcrConnection& operator=(const TcrConnection&);
-  volatile bool m_isBeingUsed;
-  std::atomic<uint32_t> m_isUsed;
-  ThinClientPoolDM* m_poolDM;
+  volatile bool isBeingUsed_;
+  std::atomic<uint32_t> isUsed_;
+  ThinClientPoolDM* poolDM_;
   std::chrono::microseconds sendWithTimeouts(
       const char* data, size_t len, std::chrono::microseconds sendTimeout,
       std::chrono::microseconds receiveTimeout);

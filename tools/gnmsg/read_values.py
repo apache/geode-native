@@ -79,6 +79,15 @@ def read_byte_array(string, offset):
     return byte_string, offset + (array_length * 2)
 
 
+def read_byte_array_with_length(string, offset, array_length):
+    byte_string = ""
+    for i in range(offset, offset + (array_length * 2), 2):
+        byte_string += string[i : i + 2]
+        byte_string += " "
+    byte_string = byte_string[:-1]
+    return byte_string, offset + (array_length * 2)
+
+
 def read_boolean_value(message_bytes, offset):
     (bool_val, offset) = call_reader_function(message_bytes, offset, read_byte_value)
     bool_string = "True" if bool_val == 1 else "False"
@@ -153,7 +162,7 @@ def read_geode_jmutf8_string_value(buffer, offset, string_length):
     string = []
     bad_length = IndexError("Insufficient length for JM utf-8 string")
 
-    while cursor < string_length:
+    while cursor < offset + (string_length * 2):
         code_point, cursor = call_reader_function(buffer, cursor, read_byte_value)
         if code_point == 0:
             raise TypeError("Should not encounter a 0 byte in JM utf-8")

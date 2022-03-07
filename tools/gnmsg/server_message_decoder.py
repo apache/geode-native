@@ -18,6 +18,7 @@ import re
 import struct
 import sys
 
+from collections import OrderedDict
 from dateutil import parser
 
 from server_messages import parse_server_message
@@ -357,7 +358,9 @@ class ServerMessageDecoder(DecoderBase):
             pass
         elif self.get_receive_trace_parts(line, parts):
             tid = parts[1]
-            last_header = {"Timestamp": parts[0], "tid": tid, "Connection": parts[2]}
+            last_header = OrderedDict[
+                "Timestamp" : parts[0], "tid":tid, "Connection" : parts[2]
+            ]
             message_bytes = parts[3]
             self.headers_[tid] = last_header
             if (
@@ -383,9 +386,7 @@ class ServerMessageDecoder(DecoderBase):
                 self.chunk_decoders_[tid].add_header(parts[2], parts[4])
 
             if self.chunk_decoders_[tid].is_complete_message():
-                receive_trace = self.chunk_decoders_[tid].get_decoded_message(
-                    parts[0]
-                )
+                receive_trace = self.chunk_decoders_[tid].get_decoded_message(parts[0])
                 receive_trace["tid"] = str(tid)
                 self.output_queue_.put({"message": receive_trace})
                 self.chunk_decoders_[tid].reset()
