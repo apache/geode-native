@@ -167,7 +167,7 @@ std::u32string JavaModifiedUtf8::decodeU32(const char* buf, uint16_t len) {
         code_point += static_cast<int32_t>(byte2 & 0x3F);
         result += code_point;
       } else {
-        result.append(static_cast<int32_t>(0));
+        result += static_cast<int32_t>(0);
       }
     } else if ((i < len - 5) && (byte1 == 0xED)) {
       auto byte2 = buf[i++];
