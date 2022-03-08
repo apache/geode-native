@@ -151,62 +151,7 @@ void JavaModifiedUtf8::encode(const char16_t c, ju8string& jmutf8) {
     jmutf8 += static_cast<uint8_t>(0x80 | (c & 0x3F));
   }
 }
-//
-// def utf8m_to_utf8s(string) :
-//  """
-//  : param string : modified utf8 encoded string
-//  : return : utf8 encoded string
-//  """
-//  new_string = []
-//  length = len(string)
-//  i = 0
-//  while i < length :
-//    byte1 = string[i]
-//    if (byte1 & 0x80) == 0 : # 1byte encoding
-//      new_string.append(byte1)
-//      elif(byte1 & 0xE0) == 0xC0:  # 2byte encoding
-//      i += 1
-//      byte2 = string[i]
-//      if byte1 != 0xC0 or byte2 != 0x80:
-// new_string.append(byte1)
-// new_string.append(byte2)
-//      else:
-// new_string.append(0)
-// elif(byte1 & 0xF0) == 0xE0 : # 3byte encoding
-// i += 1
-// byte2 = string[i]
-// i += 1
-// byte3 = string[i]
-// if i + 3 < length and byte1 == 0xED and (byte2 & 0xF0) == 0xA0:
-//# See if this is a pair of 3byte encodings
-// byte4 = string[i + 1]
-// byte5 = string[i + 2]
-// byte6 = string[i + 3]
-// if byte4 == 0xED and (byte5 & 0xF0) == 0xB0:
-//# Bits in : 11101101 1010xxxx 10xxxxxx
-//# Bits in : 11101101 1011xxxx 10xxxxxx
-// i += 3
-//
-//# Reconstruct 21 bit code
-// u21 = ((byte2 & 0x0F) + 1) << 16
-// u21 += (byte3 & 0x3F) << 10
-// u21 += (byte5 & 0x0F) << 6
-// u21 += byte6 & 0x3F
-//
-//# Bits out : 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-//
-//# Convert to 4byte encoding
-// new_string.append(0xF0 + ((u21 >> 18) & 0x07))
-// new_string.append(0x80 + ((u21 >> 12) & 0x3F))
-// new_string.append(0x80 + ((u21 >> 6) & 0x3F))
-// new_string.append(0x80 + (u21 & 0x3F))
-// continue
-// new_string.append(byte1)
-// new_string.append(byte2)
-// new_string.append(byte3)
-// i += 1
-// return bytes(new_string).decode("utf-8")
-//
+
 std::u32string JavaModifiedUtf8::decodeU32(const char* buf, uint16_t len) {
   std::u32string result;
 
@@ -214,7 +159,7 @@ std::u32string JavaModifiedUtf8::decodeU32(const char* buf, uint16_t len) {
   while (i < len) {
     auto byte1 = buf[i++];
     if (!(byte1 & 0x80)) {
-      result += 0x00000000 & byte1;
+      result += static_cast<int32_t>(byte1) & 0x000000FF;
     } else if ((i < len) && ((byte1 & 0xE0) == 0xC0)) {
       auto byte2 = buf[i++];
       if (!(byte1 == 0xC0) || !(byte2 == 0x80)) {
