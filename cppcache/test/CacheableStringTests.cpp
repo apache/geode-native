@@ -258,9 +258,9 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
                IllegalArgumentException);
 
   std::string too_long_3_byte_encode;
-  too_long_3_byte_encode.push_back(0xE0);
-  too_long_3_byte_encode.push_back(0x80);
-  too_long_3_byte_encode.push_back(0x80);
+  too_long_3_byte_encode.push_back(static_cast<int8_t>(0xE0));
+  too_long_3_byte_encode.push_back(static_cast<int8_t>(0x80));
+  too_long_3_byte_encode.push_back(static_cast<int8_t>(0x80));
   EXPECT_THROW(JavaModifiedUtf8::fromString(too_long_3_byte_encode),
                IllegalArgumentException);
 
