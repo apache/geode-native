@@ -382,7 +382,8 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
 
   auto jmutf8 = JavaModifiedUtf8::fromString(utf8);
 
-  for (auto i = 0; i < ARRAY_SIZE(lowest_boundary_sequences); i++) {
+  for (decltype(ARRAY_SIZE(lowest_boundary_sequences)) i = 0;
+       i < ARRAY_SIZE(lowest_boundary_sequences); i++) {
     utf8.clear();
     expected.clear();
     for (auto byte_value : std::get<0>(lowest_boundary_sequences[i])) {
@@ -396,7 +397,8 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
     EXPECT_TRUE(!memcmp(&expected[0], &jmutf8[0], expected.size()));
   }
 
-  for (auto i = 0; i < ARRAY_SIZE(highest_boundary_sequences); i++) {
+  for (decltype(ARRAY_SIZE(lowest_boundary_sequences)) i = 0;
+       i < ARRAY_SIZE(highest_boundary_sequences); i++) {
     utf8.clear();
     expected.clear();
     for (auto byte_value : std::get<0>(highest_boundary_sequences[i])) {
@@ -410,7 +412,8 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
     EXPECT_TRUE(!memcmp(&expected[0], &jmutf8[0], expected.size()));
   }
 
-  for (auto i = 0; i < ARRAY_SIZE(other_boundary_sequences); i++) {
+  for (decltype(ARRAY_SIZE(lowest_boundary_sequences)) i = 0;
+       i < ARRAY_SIZE(other_boundary_sequences); i++) {
     utf8.clear();
     expected.clear();
     for (auto byte_value : std::get<0>(other_boundary_sequences[i])) {

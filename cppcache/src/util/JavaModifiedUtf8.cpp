@@ -67,10 +67,6 @@ bool JavaModifiedUtf8::IsValidCodePoint(uint16_t code_point) {
                                   utf16_surrogate_codes.end());
 }
 
-// Note on error handling in this method:
-// Error handling here is done just to serve the purpose of not
-// crashing, instead throwing exceptions.  Beyond this, we do NOT fully
-// validate the incoming utf-8 string, it is assumed to be otherwise correct.
 ju8string JavaModifiedUtf8::fromString(const std::string& utf8) {
   ju8string jmutf8;
   size_t cursor = 0;
