@@ -64,6 +64,9 @@ struct JavaModifiedUtf8 {
   static std::u32string decodeU32(const char* buf, uint16_t len);
 
   static char16_t decodeJavaModifiedUtf8Char(const char** pbuf);
+
+ private:
+  static bool IsValidCodePoint(uint16_t code_point);
 };
 
 }  // namespace internal

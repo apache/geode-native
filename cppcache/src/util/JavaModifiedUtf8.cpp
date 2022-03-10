@@ -19,6 +19,7 @@
 
 #include <codecvt>
 #include <locale>
+#include <set>
 
 #include "geode/ExceptionTypes.hpp"
 #include "string.hpp"
@@ -58,6 +59,14 @@ size_t JavaModifiedUtf8::encodedLength(const char16_t* data, size_t length) {
   return encodedLen;
 }
 
+std::set<int> utf16_surrogate_codes = {{0xD800}, {0xDB7F}, {0xDB80}, {0xDBFF},
+                                       {0xDC00}, {0xDF80}, {0xDFFF}};
+
+bool JavaModifiedUtf8::IsValidCodePoint(uint16_t code_point) {
+  return (code_point > 0x7FF) && (utf16_surrogate_codes.find(code_point) ==
+                                  utf16_surrogate_codes.end());
+}
+
 // Note on error handling in this method:
 // Error handling here is done just to serve the purpose of not
 // crashing, instead throwing exceptions.  Beyond this, we do NOT fully
@@ -77,17 +86,36 @@ ju8string JavaModifiedUtf8::fromString(const std::string& utf8) {
       }
     } else if ((byte1 & 0xE0) == 0xC0) {
       if (utf8.size() > 0 && cursor <= utf8.size() - 1) {
-        jmutf8 += byte1;
-        jmutf8 += utf8[cursor++];
+        auto byte2 = utf8[cursor++];
+        int32_t code_point = ((byte1 & 0x1f) << 6) + (byte2 & 0x3f);
+        if (code_point > 0x7F) {
+          jmutf8 += byte1;
+          jmutf8 += byte2;
+        } else {
+          throw IllegalArgumentException(
+              "Invalid utf-8 string passed to conversion method (overly long "
+              "ASCII character)");
+        }
       } else {
         throw IllegalArgumentException(
             "Invalid utf-8 string passed to conversion method");
       }
     } else if ((byte1 & 0xF0) == 0xE0) {
       if (utf8.size() > 2 && cursor <= utf8.size() - 2) {
-        jmutf8 += byte1;
-        jmutf8 += utf8[cursor++];
-        jmutf8 += utf8[cursor++];
+        auto byte2 = utf8[cursor++];
+        auto byte3 = utf8[cursor++];
+
+        uint16_t code_point =
+            ((byte1 & 0x0F) << 12) + ((byte2 & 0x3F) << 6) + (byte3 & 0x3F);
+        if (IsValidCodePoint(code_point)) {
+          jmutf8 += byte1;
+          jmutf8 += byte2;
+          jmutf8 += byte3;
+        } else {
+          throw IllegalArgumentException(
+              "Invalid utf-8 string passed to conversion method (overly long "
+              "3-byte encoding)");
+        }
       } else {
         throw IllegalArgumentException(
             "Invalid utf-8 string passed to conversion method");
@@ -103,14 +131,20 @@ ju8string JavaModifiedUtf8::fromString(const std::string& utf8) {
         code_point += (byte3 & 0x3F) << 6;
         code_point += byte4 & 0x3F;
 
-        jmutf8 += static_cast<uint8_t>(0xED);
-        jmutf8 +=
-            static_cast<uint8_t>((0xA0 + (((code_point >> 16) - 1) & 0x0F)));
-        jmutf8 += static_cast<uint8_t>((0x80 + ((code_point >> 10) & 0x3F)));
+        if (code_point > 0xFFFF) {
+          jmutf8 += static_cast<uint8_t>(0xED);
+          jmutf8 +=
+              static_cast<uint8_t>((0xA0 + (((code_point >> 16) - 1) & 0x0F)));
+          jmutf8 += static_cast<uint8_t>((0x80 + ((code_point >> 10) & 0x3F)));
 
-        jmutf8 += static_cast<uint8_t>(0xED);
-        jmutf8 += static_cast<uint8_t>((0xB0 + ((code_point >> 6) & 0x0F)));
-        jmutf8 += byte4;
+          jmutf8 += static_cast<uint8_t>(0xED);
+          jmutf8 += static_cast<uint8_t>((0xB0 + ((code_point >> 6) & 0x0F)));
+          jmutf8 += byte4;
+        } else {
+          throw IllegalArgumentException(
+              "Invalid utf-8 string passed to conversion method (overly long "
+              "4-byte encoding)");
+        }
       } else {
         throw IllegalArgumentException(
             "Invalid utf-8 string passed to conversion method");
@@ -162,36 +196,36 @@ std::u32string JavaModifiedUtf8::decodeU32(const char* buf, uint16_t len) {
       result += static_cast<int32_t>(byte1) & 0x000000FF;
     } else if ((i < len) && ((byte1 & 0xE0) == 0xC0)) {
       auto byte2 = buf[i++];
-      if (!(byte1 == 0xC0) || !(byte2 == 0x80)) {
+      if (((byte1 & 0xFF) == 0xC0) && ((byte2 & 0xFF) == 0x80)) {
+        result.push_back(static_cast<int32_t>(0));
+      } else {
         int32_t code_point = static_cast<int32_t>(byte1 & 0x1F) << 6;
         code_point += static_cast<int32_t>(byte2 & 0x3F);
-        result += code_point;
-      } else {
-        result += static_cast<int32_t>(0);
+        result.push_back(code_point);
       }
-    } else if ((i < len - 5) && (byte1 == 0xED)) {
+    } else if ((i < len - 4) && ((byte1 & 0xED) == 0xED)) {
       auto byte2 = buf[i++];
       auto byte3 = buf[i++];
       auto byte4 = buf[i++];
       auto byte5 = buf[i++];
       auto byte6 = buf[i++];
-      if (byte4 == 0xED) {
+      if ((byte4 & 0xED) == 0xED) {
         int32_t code_point =
             0x10000 + (static_cast<int32_t>(byte2 & 0xF) << 16);
         code_point += static_cast<int32_t>(byte3 & 0x3F) << 10;
         code_point += static_cast<int32_t>(byte5 & 0xF) << 6;
         code_point += static_cast<int32_t>(byte6 & 0x3F);
-        result += code_point;
+        result.push_back(code_point);
       } else {
         throw IllegalArgumentException("Bad encoding in jmutf-8 string");
       }
-    } else if ((i < len - 2) && ((byte1 & 0xE0) == 0xE0)) {
+    } else if ((i < len - 1) && ((byte1 & 0xE0) == 0xE0)) {
       auto byte2 = buf[i++];
       auto byte3 = buf[i++];
       int32_t code_point = static_cast<int32_t>(byte1 & 0xF) << 12;
       code_point += static_cast<int32_t>(byte2 & 0x3F) << 6;
       code_point += static_cast<int32_t>(byte3 & 0x3F);
-      result += code_point;
+      result.push_back(code_point);
     } else {
       throw IllegalArgumentException("Bad encoding in jmutf-8 string");
     }
