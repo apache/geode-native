@@ -60,7 +60,7 @@ class HandshakeDecoder(DecoderBase):
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*ThinClientLocatorHelper::sendRequest\([0-9|a-f|A-F|x|X]+\): received \d+ bytes from locator:\s*([0-9|a-f|A-F]+)"
         )
         self.server_handshake_request_expression_ = expression = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\]\s*Handshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\].*\sHandshake bytes: \(\d+\):\s*([0-9|a-f|A-F]+)"
         )
         self.server_handshake_response_expression_ = expression = re.compile(
             r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).* ([\d]+) .*\].*isClientNotification=([t|r|u|e|f|a|l|s]+),\s+Handshake response bytes: \(\d+\)\s*([0-9|a-f|A-F]+)"
