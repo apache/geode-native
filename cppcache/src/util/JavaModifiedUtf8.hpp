@@ -49,10 +49,17 @@ struct JavaModifiedUtf8 {
    * Converts given UTF-8 string to Java Modified UTF-8 string.
    */
   static ju8string fromString(const std::string& utf8);
+  static ju8string fromStringImproved(const std::string& utf8);
+
   /**
    * Converts given UTF-16 string to Java Modified UTF-8 string.
    */
   static ju8string fromString(const std::u16string& utf16);
+
+  /**
+   * Converts Java-Modified UTF-8 string to UTF-8 string.
+   */
+  std::string toString(const ju8string& jmutf8);
 
   /**
    * Converts a single UTF-16 code unit into Java Modified UTF-8 code units.
@@ -60,6 +67,8 @@ struct JavaModifiedUtf8 {
   static void encode(const char16_t c, ju8string& jmutf8);
 
   static std::u16string decode(const char* buf, uint16_t len);
+
+  static ju8string decode(const std::string& utf8char);
 
   static std::u32string decodeU32(const char* buf, uint16_t len);
 

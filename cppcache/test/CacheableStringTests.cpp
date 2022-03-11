@@ -244,68 +244,68 @@ std::vector<int> single_utf_16_surrogates[] = {
 TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
   std::string bad_start_code;
   bad_start_code += static_cast<int8_t>(0xF8);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_start_code),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_start_code),
                IllegalArgumentException);
 
   std::string too_short_2byte;
   too_short_2byte += static_cast<int8_t>(0xC0);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_2byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_2byte),
                IllegalArgumentException);
 
   std::string bad_2byte_at_end = "foo";
   bad_2byte_at_end += static_cast<int8_t>(0xC0);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_2byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_2byte_at_end),
                IllegalArgumentException);
 
   std::string too_long_3_byte_encode;
   too_long_3_byte_encode.push_back(static_cast<int8_t>(0xE0));
   too_long_3_byte_encode.push_back(static_cast<int8_t>(0x80));
   too_long_3_byte_encode.push_back(static_cast<int8_t>(0x80));
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_long_3_byte_encode),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_long_3_byte_encode),
                IllegalArgumentException);
 
   std::string too_short_3byte;
   too_short_3byte += static_cast<int8_t>(0xE8);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_3byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_3byte),
                IllegalArgumentException);
 
   too_short_3byte += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_3byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_3byte),
                IllegalArgumentException);
 
   std::string bad_3byte_at_end = "foo";
   bad_3byte_at_end += static_cast<int8_t>(0xE8);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_3byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_3byte_at_end),
                IllegalArgumentException);
 
   bad_3byte_at_end += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_3byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_3byte_at_end),
                IllegalArgumentException);
 
   std::string too_short_4byte;
   too_short_4byte += static_cast<int8_t>(0xF7);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_4byte),
                IllegalArgumentException);
 
   too_short_4byte += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_4byte),
                IllegalArgumentException);
 
   too_short_4byte += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(too_short_4byte),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(too_short_4byte),
                IllegalArgumentException);
 
   std::string bad_4byte_at_end = "foo";
   bad_4byte_at_end += static_cast<int8_t>(0xF7);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_4byte_at_end),
                IllegalArgumentException);
 
   bad_4byte_at_end += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_4byte_at_end),
                IllegalArgumentException);
 
   bad_4byte_at_end += static_cast<int8_t>(0x1);
-  EXPECT_THROW(JavaModifiedUtf8::fromString(bad_4byte_at_end),
+  EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_4byte_at_end),
                IllegalArgumentException);
 
   for (auto sequence : impossible_bytes) {
@@ -313,7 +313,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
     for (auto byte_value : sequence) {
       bad_sequence += static_cast<int8_t>(byte_value);
     }
-    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_sequence),
+    EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_sequence),
                  IllegalArgumentException);
   }
 
@@ -322,7 +322,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
     for (auto byte_value : sequence) {
       bad_sequence += static_cast<int8_t>(byte_value);
     }
-    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_sequence),
+    EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_sequence),
                  IllegalArgumentException);
   }
 
@@ -331,7 +331,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
     for (auto byte_value : sequence) {
       bad_sequence += static_cast<int8_t>(byte_value);
     }
-    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_sequence),
+    EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_sequence),
                  IllegalArgumentException);
   }
 
@@ -340,7 +340,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
     for (auto byte_value : sequence) {
       bad_sequence += static_cast<int8_t>(byte_value);
     }
-    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_sequence),
+    EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_sequence),
                  IllegalArgumentException);
   }
 
@@ -349,7 +349,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8BadStrings) {
     for (auto byte_value : sequence) {
       bad_sequence += static_cast<int8_t>(byte_value);
     }
-    EXPECT_THROW(JavaModifiedUtf8::fromString(bad_sequence),
+    EXPECT_THROW(JavaModifiedUtf8::fromStringImproved(bad_sequence),
                  IllegalArgumentException);
   }
 }
@@ -380,7 +380,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
   std::string expected;
   utf8.push_back(0);
 
-  auto jmutf8 = JavaModifiedUtf8::fromString(utf8);
+  auto jmutf8 = JavaModifiedUtf8::fromStringImproved(utf8);
 
   for (decltype(ARRAY_SIZE(lowest_boundary_sequences)) i = 0;
        i < ARRAY_SIZE(lowest_boundary_sequences); i++) {
@@ -392,7 +392,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
     for (auto byte_value : std::get<1>(lowest_boundary_sequences[i])) {
       expected += static_cast<int8_t>(byte_value);
     }
-    jmutf8 = JavaModifiedUtf8::fromString(utf8);
+    jmutf8 = JavaModifiedUtf8::fromStringImproved(utf8);
     EXPECT_EQ(expected.size(), jmutf8.size());
     EXPECT_TRUE(!memcmp(&expected[0], &jmutf8[0], expected.size()));
   }
@@ -407,7 +407,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
     for (auto byte_value : std::get<1>(highest_boundary_sequences[i])) {
       expected += static_cast<int8_t>(byte_value);
     }
-    jmutf8 = JavaModifiedUtf8::fromString(utf8);
+    jmutf8 = JavaModifiedUtf8::fromStringImproved(utf8);
     EXPECT_EQ(expected.size(), jmutf8.size());
     EXPECT_TRUE(!memcmp(&expected[0], &jmutf8[0], expected.size()));
   }
@@ -422,7 +422,7 @@ TEST_F(CacheableStringTests, TestUtf8ToJmUtf8Boundaries) {
     for (auto byte_value : std::get<1>(other_boundary_sequences[i])) {
       expected += static_cast<int8_t>(byte_value);
     }
-    jmutf8 = JavaModifiedUtf8::fromString(utf8);
+    jmutf8 = JavaModifiedUtf8::fromStringImproved(utf8);
     EXPECT_EQ(expected.size(), jmutf8.size());
     EXPECT_TRUE(!memcmp(&expected[0], &jmutf8[0], expected.size()));
   }
