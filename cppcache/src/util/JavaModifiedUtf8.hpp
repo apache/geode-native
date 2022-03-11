@@ -49,7 +49,6 @@ struct JavaModifiedUtf8 {
    * Converts given UTF-8 string to Java Modified UTF-8 string.
    */
   static ju8string fromString(const std::string& utf8);
-  static ju8string fromStringImproved(const std::string& utf8);
 
   /**
    * Converts given UTF-16 string to Java Modified UTF-8 string.
@@ -76,6 +75,9 @@ struct JavaModifiedUtf8 {
 
  private:
   static bool IsValidCodePoint(uint16_t code_point);
+  static ju8string decode2byte(const std::string& utf8char);
+  static ju8string decode3byte(const std::string& utf8char);
+  static ju8string decode4byte(const std::string& utf8char);
 };
 
 }  // namespace internal
