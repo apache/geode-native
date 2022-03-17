@@ -19,7 +19,7 @@
 
 #include <geode/CacheableString.hpp>
 
-#include "util/string.hpp"
+#include "internal/string.hpp"
 
 using apache::geode::client::to_utf16;
 using apache::geode::client::to_utf8;

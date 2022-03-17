@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
+#include <internal/JavaModifiedUtf8.hpp>
 #include <string>
-#include <util/JavaModifiedUtf8.hpp>
 
 #include <gtest/gtest.h>
 

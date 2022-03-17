@@ -22,9 +22,9 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "SerializationRegistry.hpp"
-#include "util/JavaModifiedUtf8.hpp"
+#include "internal/JavaModifiedUtf8.hpp"
+#include "internal/string.hpp"
 #include "util/Log.hpp"
-#include "util/string.hpp"
 
 namespace apache {
 namespace geode {

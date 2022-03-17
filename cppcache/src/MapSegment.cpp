@@ -27,7 +27,7 @@
 #include "TombstoneEntry.hpp"
 #include "TombstoneExpiryTask.hpp"
 #include "Utils.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
+#include "internal/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

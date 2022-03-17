@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include <util/concurrent/binary_semaphore.hpp>
+#include <internal/concurrent/binary_semaphore.hpp>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>

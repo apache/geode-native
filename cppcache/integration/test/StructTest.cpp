@@ -18,7 +18,6 @@
 #include <framework/Cluster.h>
 #include <framework/Framework.h>
 #include <framework/Gfsh.h>
-#include <hacks/range.h>
 
 #include <iostream>
 #include <unordered_map>
@@ -31,6 +30,8 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 #include <geode/Struct.hpp>
+
+#include "internal/range.hpp"
 
 namespace {
 

@@ -39,7 +39,7 @@
 
 #include "EventIdMap.hpp"
 #include "InterestResultPolicy.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {

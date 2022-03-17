@@ -17,36 +17,20 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_STRING_H_
-#define GEODE_UTIL_STRING_H_
+#ifndef GEODE_UTIL_BOUNDS_H_
+#define GEODE_UTIL_BOUNDS_H_
 
-#include <cctype>
-#include <codecvt>
-#include <locale>
-#include <string>
-
-#include "type_traits.hpp"
+#include "internal/chrono/duration_bounds.hpp"
 
 namespace apache {
 namespace geode {
-namespace client {
+namespace util {
 
-std::u16string to_utf16(const std::string& utf8);
+constexpr auto PROTOCOL_OPERATION_TIMEOUT_BOUNDS =
+    chrono::duration::assert_bounds<int32_t, std::milli, 0>{};
 
-std::u16string to_utf16(const std::u32string& ucs4);
-
-std::u16string to_utf16(const char32_t* ucs4, size_t len);
-
-std::u32string to_ucs4(const std::u16string& utf16);
-
-std::string to_utf8(const std::u16string& utf16);
-
-std::string to_utf8(const std::u32string& ucs4);
-
-bool equal_ignore_case(const std::string& str1, const std::string& str2);
-
-}  // namespace client
+}  // namespace util
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTIL_STRING_H_
+#endif  // GEODE_UTIL_BOUNDS_H_

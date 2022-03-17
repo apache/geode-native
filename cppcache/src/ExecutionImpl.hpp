@@ -29,7 +29,7 @@
 #include <geode/Region.hpp>
 #include <geode/ResultCollector.hpp>
 
-#include "ErrType.hpp"
+#include "internal/ErrType.hpp"
 
 namespace apache {
 namespace geode {

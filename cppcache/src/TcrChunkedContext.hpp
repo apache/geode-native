@@ -26,7 +26,7 @@
 #include <ace/Semaphore.h>
 
 #include "Utils.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {

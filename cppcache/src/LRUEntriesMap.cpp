@@ -24,7 +24,7 @@
 #include "ExpiryTaskManager.hpp"
 #include "LRUEntryProperties.hpp"
 #include "MapSegment.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
+#include "internal/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

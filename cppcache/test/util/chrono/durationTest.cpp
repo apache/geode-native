@@ -22,7 +22,7 @@
 
 #include <geode/internal/chrono/duration.hpp>
 
-#include "util/chrono/duration_bounds.hpp"
+#include "internal/chrono/duration_bounds.hpp"
 
 using apache::geode::internal::chrono::duration::_ceil;
 using apache::geode::internal::chrono::duration::from_string;

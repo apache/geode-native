@@ -29,7 +29,7 @@
 #include "TcrConnectionManager.hpp"
 #include "TcrMessage.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "util/queue.hpp"
+#include "internal/queue.hpp"
 
 namespace apache {
 namespace geode {

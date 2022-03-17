@@ -15,16 +15,36 @@
  * limitations under the License.
  */
 
-#ifndef INTEGRATION_TEST_UTILITY_MAKE_UNIQUE_H
-#define INTEGRATION_TEST_UTILITY_MAKE_UNIQUE_H
+#include "internal/concurrent/binary_semaphore.hpp"
 
-#include <memory>
-#include <utility>
+namespace apache {
+namespace geode {
+namespace client {
 
-// Until we get C++14 support...
-template <typename T, typename... Args>
-::std::unique_ptr<T> make_unique(Args &&... args) {
-  return ::std::unique_ptr<T>(new T(::std::forward<Args>(args)...));
+binary_semaphore::binary_semaphore(bool released) : released_(released) {}
+
+void binary_semaphore::release() {
+  std::lock_guard<std::mutex> lock(mutex_);
+  released_ = true;
+  cv_.notify_one();
 }
 
-#endif
+void binary_semaphore::acquire() {
+  std::unique_lock<std::mutex> lock(mutex_);
+  cv_.wait(lock, [this]() { return released_; });
+  released_ = false;
+}
+
+bool binary_semaphore::try_acquire_for(
+    const std::chrono::milliseconds& period) {
+  std::unique_lock<std::mutex> lock(mutex_);
+  if (!cv_.wait_for(lock, period, [this]() { return released_; })) {
+    return false;
+  }
+
+  released_ = false;
+  return true;
+}
+}  // namespace client
+}  // namespace geode
+}  // namespace apache

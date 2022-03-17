@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-#include "JavaModifiedUtf8.hpp"
+#include "internal/JavaModifiedUtf8.hpp"
 
 #include <codecvt>
 #include <locale>
 
-#include "string.hpp"
+#include "internal/string.hpp"
 
 namespace apache {
 namespace geode {

@@ -28,7 +28,7 @@
 #include "DataOutputInternal.hpp"
 #include "SerializationRegistry.hpp"
 #include "Utils.hpp"
-#include "util/string.hpp"
+#include "internal/string.hpp"
 
 namespace apache {
 namespace geode {

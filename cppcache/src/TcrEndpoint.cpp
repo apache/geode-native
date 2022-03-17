@@ -30,7 +30,7 @@
 #include "ThinClientPoolHADM.hpp"
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

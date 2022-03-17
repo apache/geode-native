@@ -31,11 +31,14 @@ target_link_libraries(apache-geode-static
     _apache-geode
   PRIVATE
     _WarningsAsError
-    _CppCodeCoverage)
+    _CppCodeCoverage
+    internal-static)
 
 target_include_directories(apache-geode-static
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  PRIVATE
+    ../internal/include
 )
 
 add_dependencies(client-libraries apache-geode-static)

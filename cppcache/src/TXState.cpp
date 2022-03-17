@@ -24,7 +24,7 @@
 #include "ThinClientPoolDM.hpp"
 #include "TransactionalOperation.hpp"
 #include "TssConnectionWrapper.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

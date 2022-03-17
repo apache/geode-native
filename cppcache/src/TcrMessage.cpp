@@ -42,8 +42,8 @@
 #include "ThinClientRegion.hpp"
 #include "VersionTag.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
-#include "util/JavaModifiedUtf8.hpp"
-#include "util/string.hpp"
+#include "internal/JavaModifiedUtf8.hpp"
+#include "internal/string.hpp"
 
 #ifdef _SOLARIS
 #pragma error_messages(off, SEC_UNINITIALIZED_MEM_READ)

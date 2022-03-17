@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-#include "string.hpp"
+#include "internal/string.hpp"
 
 #include <cctype>
 #include <codecvt>
 #include <locale>
 
-#include "type_traits.hpp"
+#include "internal/type_traits.hpp"
 
 namespace apache {
 namespace geode {

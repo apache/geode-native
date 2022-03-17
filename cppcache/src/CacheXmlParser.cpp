@@ -26,8 +26,8 @@
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
-#include "util/make_unique.hpp"
-#include "util/string.hpp"
+#include "internal/make_unique.hpp"
+#include "internal/string.hpp"
 
 #if defined(_WIN32)
 #include <windows.h>

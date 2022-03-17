@@ -29,7 +29,7 @@
 #include "CqQueryImpl.hpp"
 #include "TcrConnectionManager.hpp"
 #include "ThinClientPoolDM.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

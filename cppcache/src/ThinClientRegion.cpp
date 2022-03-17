@@ -41,8 +41,8 @@
 #include "UserAttributes.hpp"
 #include "Utils.hpp"
 #include "VersionedCacheableObjectPartList.hpp"
-#include "util/bounds.hpp"
-#include "util/exception.hpp"
+#include "internal/bounds.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

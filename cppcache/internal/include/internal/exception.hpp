@@ -15,36 +15,31 @@
  * limitations under the License.
  */
 
-#include "binary_semaphore.hpp"
+#pragma once
+
+#ifndef GEODE_UTIL_EXCEPTION_H_
+#define GEODE_UTIL_EXCEPTION_H_
+
+#include <string>
+
+#include <geode/internal/geode_base.hpp>
+
+#include "internal/ErrType.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-binary_semaphore::binary_semaphore(bool released) : released_(released) {}
+extern void GfErrTypeThrowException(const char* str, GfErrType err);
 
-void binary_semaphore::release() {
-  std::lock_guard<std::mutex> lock(mutex_);
-  released_ = true;
-  cv_.notify_one();
-}
-
-void binary_semaphore::acquire() {
-  std::unique_lock<std::mutex> lock(mutex_);
-  cv_.wait(lock, [this]() { return released_; });
-  released_ = false;
-}
-
-bool binary_semaphore::try_acquire_for(
-    const std::chrono::milliseconds& period) {
-  std::unique_lock<std::mutex> lock(mutex_);
-  if (!cv_.wait_for(lock, period, [this]() { return released_; })) {
-    return false;
+inline void throwExceptionIfError(const char* str, GfErrType err) {
+  if (err != GF_NOERR) {
+    GfErrTypeThrowException(str, err);
   }
-
-  released_ = false;
-  return true;
 }
+
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_UTIL_EXCEPTION_H_

@@ -31,11 +31,11 @@
 
 #include "CqServiceVsdStats.hpp"
 #include "DistributedSystem.hpp"
-#include "ErrType.hpp"
 #include "Queue.hpp"
 #include "TcrMessage.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
-#include "util/synchronized_map.hpp"
+#include "internal/ErrType.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
+#include "internal/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {

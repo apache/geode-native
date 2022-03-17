@@ -116,7 +116,7 @@ foreach(FILE ${SOURCES})
       test-cppcache-utils
       _WarningsAsError
       _CppCodeCoverage
-      internal
+      internal-shared
     PUBLIC
       apache-geode
       testobject

@@ -34,7 +34,7 @@
 #include "ThinClientRegion.hpp"
 #include "Utils.hpp"
 #include "Version.hpp"
-#include "util/make_unique.hpp"
+#include "internal/make_unique.hpp"
 
 #define throwException(ex)                            \
   do {                                                \

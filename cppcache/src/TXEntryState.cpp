@@ -19,7 +19,7 @@
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

@@ -105,7 +105,7 @@ target_link_libraries(cpp-integration-test
     Boost::chrono
   PRIVATE
     _WarningsAsError
-    internal
+    internal-shared
 )
 
 if(WIN32)

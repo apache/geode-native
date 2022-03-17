@@ -27,7 +27,7 @@
 #include "TcrConnectionManager.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThinClientRegion.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

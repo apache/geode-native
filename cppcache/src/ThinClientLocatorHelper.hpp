@@ -29,10 +29,10 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "ClientProxyMembershipID.hpp"
-#include "ErrType.hpp"
 #include "GetAllServersRequest.hpp"
 #include "GetAllServersResponse.hpp"
 #include "ServerLocation.hpp"
+#include "internal/ErrType.hpp"
 
 namespace apache {
 namespace geode {

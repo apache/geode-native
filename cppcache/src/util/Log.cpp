@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "util/Log.hpp"
+#include "Log.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -39,7 +39,7 @@
 #include <geode/util/LogLevel.hpp>
 
 #include "geodeBanner.hpp"
-#include "util/chrono/time_point.hpp"
+#include "internal/chrono/time_point.hpp"
 
 namespace {
 

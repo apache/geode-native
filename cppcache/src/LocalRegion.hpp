@@ -45,7 +45,7 @@
 #include "RegionStats.hpp"
 #include "TSSTXStateWrapper.hpp"
 #include "TombstoneList.hpp"
-#include "util/synchronized_map.hpp"
+#include "internal/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {

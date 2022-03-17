@@ -20,6 +20,7 @@
 #ifndef GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
 #define GEODE_STATISTICS_GEODESTATISTICSFACTORY_H_
 
+#include <internal/synchronized_map.hpp>
 #include <mutex>
 #include <unordered_map>
 #include <vector>
@@ -27,7 +28,6 @@
 #include <geode/ExceptionTypes.hpp>
 #include <geode/internal/geode_globals.hpp>
 
-#include "../util/synchronized_map.hpp"
 #include "StatisticsFactory.hpp"
 #include "StatisticsManager.hpp"
 #include "StatisticsTypeImpl.hpp"

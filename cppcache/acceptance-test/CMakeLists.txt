@@ -42,7 +42,6 @@ target_link_libraries(cpp-acceptance-test
     Boost::chrono
   PRIVATE
     _WarningsAsError
-    internal
 )
 
 if(WIN32)

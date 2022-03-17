@@ -24,8 +24,8 @@
 #include <geode/CacheableString.hpp>
 
 #include "geode/util/LogLevel.hpp"
+#include "internal/string.hpp"
 #include "util/Log.hpp"
-#include "util/string.hpp"
 
 using apache::geode::client::Log;
 using apache::geode::client::LogLevel;

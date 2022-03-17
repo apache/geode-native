@@ -31,10 +31,10 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "ConnectionQueue.hpp"
-#include "ErrType.hpp"
 #include "Task.hpp"
 #include "TcrConnection.hpp"
-#include "util/synchronized_set.hpp"
+#include "internal/ErrType.hpp"
+#include "internal/synchronized_set.hpp"
 
 namespace apache {
 namespace geode {

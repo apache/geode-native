@@ -28,9 +28,9 @@
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientRegion.hpp"
 #include "UserAttributes.hpp"
+#include "internal/bounds.hpp"
+#include "internal/exception.hpp"
 #include "util/Log.hpp"
-#include "util/bounds.hpp"
-#include "util/exception.hpp"
 
 namespace apache {
 namespace geode {

@@ -29,7 +29,7 @@
 #include "ThinClientBaseDM.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "TssConnectionWrapper.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {
@@ -160,9 +160,7 @@ GfErrType CacheTransactionManagerImpl::rollback(TXState*, bool) {
       case TcrMessage::EXCEPTION: {
         break;
       }
-      default: {
-        break;
-      }
+      default: { break; }
     }
   }
 

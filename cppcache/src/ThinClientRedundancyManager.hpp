@@ -28,14 +28,14 @@
 #include <set>
 #include <string>
 
-#include "ErrType.hpp"
 #include "EventIdMap.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "ServerLocation.hpp"
 #include "Task.hpp"
 #include "TcrMessage.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
-#include "util/synchronized_map.hpp"
+#include "internal/ErrType.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
+#include "internal/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {

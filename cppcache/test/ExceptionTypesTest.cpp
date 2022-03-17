@@ -19,7 +19,7 @@
 
 #include <geode/ExceptionTypes.hpp>
 
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 using apache::geode::client::AssertionException;
 using apache::geode::client::GfErrTypeThrowException;

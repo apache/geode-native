@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "time_point.hpp"
+#include "internal/chrono/time_point.hpp"
 
 namespace apache {
 namespace geode {

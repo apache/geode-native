@@ -17,29 +17,36 @@
 
 #pragma once
 
-#ifndef GEODE_UTIL_EXCEPTION_H_
-#define GEODE_UTIL_EXCEPTION_H_
+#ifndef GEODE_UTIL_STRING_H_
+#define GEODE_UTIL_STRING_H_
 
+#include <cctype>
+#include <codecvt>
+#include <locale>
 #include <string>
 
-#include <geode/internal/geode_base.hpp>
-
-#include "../ErrType.hpp"
+#include "internal/type_traits.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-extern void GfErrTypeThrowException(const char* str, GfErrType err);
+std::u16string to_utf16(const std::string& utf8);
 
-inline void throwExceptionIfError(const char* str, GfErrType err) {
-  if (err != GF_NOERR) {
-    GfErrTypeThrowException(str, err);
-  }
-}
+std::u16string to_utf16(const std::u32string& ucs4);
+
+std::u16string to_utf16(const char32_t* ucs4, size_t len);
+
+std::u32string to_ucs4(const std::u16string& utf16);
+
+std::string to_utf8(const std::u16string& utf16);
+
+std::string to_utf8(const std::u32string& ucs4);
+
+bool equal_ignore_case(const std::string& str1, const std::string& str2);
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
 
-#endif  // GEODE_UTIL_EXCEPTION_H_
+#endif  // GEODE_UTIL_STRING_H_

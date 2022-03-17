@@ -18,6 +18,7 @@
 #include <chrono>
 #include <ctime>
 #include <cwchar>
+#include <internal/chrono/time_point.hpp>
 
 #include <geode/CacheableDate.hpp>
 #include <geode/DataInput.hpp>
@@ -26,7 +27,6 @@
 #include <geode/internal/CacheableKeys.hpp>
 
 #include "config.h"
-#include "util/chrono/time_point.hpp"
 
 namespace apache {
 namespace geode {

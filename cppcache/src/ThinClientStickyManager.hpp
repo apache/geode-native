@@ -25,8 +25,8 @@
 #include <set>
 #include <vector>
 
-#include "ErrType.hpp"
 #include "TssConnectionWrapper.hpp"
+#include "internal/ErrType.hpp"
 
 namespace apache {
 namespace geode {

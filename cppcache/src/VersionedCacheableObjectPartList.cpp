@@ -234,9 +234,7 @@ void VersionedCacheableObjectPartList::fromData(DataInput& input) {
           versionTag->setInternalMemID(ids.at(idNumber));
           break;
         }
-        default: {
-          break;
-        }
+        default: { break; }
       }
       m_versionTags[index] = versionTag;
     }

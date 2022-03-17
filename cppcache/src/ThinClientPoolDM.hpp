@@ -47,7 +47,7 @@
 #include "ThinClientStickyManager.hpp"
 #include "ThreadPool.hpp"
 #include "UserAttributes.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
 
 namespace apache {
 namespace geode {

@@ -25,9 +25,9 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "ErrType.hpp"
 #include "Queue.hpp"
 #include "Task.hpp"
+#include "internal/ErrType.hpp"
 #include "util/Log.hpp"
 
 namespace apache {

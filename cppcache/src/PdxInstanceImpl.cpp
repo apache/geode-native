@@ -28,7 +28,7 @@
 #include "DataInputInternal.hpp"
 #include "PdxHelper.hpp"
 #include "Utils.hpp"
-#include "util/string.hpp"
+#include "internal/string.hpp"
 
 namespace {
 

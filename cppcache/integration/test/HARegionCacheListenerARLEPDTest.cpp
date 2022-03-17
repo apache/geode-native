@@ -38,8 +38,8 @@
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
 
+#include "internal/make_unique.hpp"
 #include "mock/CacheListenerMock.hpp"
-#include "utility/make_unique.hpp"
 
 namespace {
 class HARegionCacheListenerARLEPDTest : public ::testing::Test {

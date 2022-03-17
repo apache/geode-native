@@ -38,7 +38,7 @@
 #include "RemoteQueryService.hpp"
 #include "TcrEndpoint.hpp"
 #include "ThreadPool.hpp"
-#include "util/synchronized_map.hpp"
+#include "internal/synchronized_map.hpp"
 
 #define DEFAULT_LRU_MAXIMUM_ENTRIES 100000
 /** @todo period '.' consistency */

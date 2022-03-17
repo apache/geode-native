@@ -27,7 +27,7 @@
 
 #include <geode/Serializable.hpp>
 
-#include "ErrType.hpp"
+#include "internal/ErrType.hpp"
 namespace apache {
 namespace geode {
 

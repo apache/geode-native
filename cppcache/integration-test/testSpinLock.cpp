@@ -19,8 +19,8 @@
 
 #include <mutex>
 
-#include "util/concurrent/binary_semaphore.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
+#include "internal/concurrent/spinlock_mutex.hpp"
 
 namespace {  // NOLINT(google-build-namespaces)
 

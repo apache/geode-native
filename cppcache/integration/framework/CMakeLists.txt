@@ -54,7 +54,6 @@ target_link_libraries(integration-framework
     Boost::regex
   PRIVATE
     _WarningsAsError
-    internal
 )
 
 add_clangformat(integration-framework)

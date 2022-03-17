@@ -31,7 +31,7 @@
 
 #include "CacheHelper.hpp"
 
-#include "util/concurrent/binary_semaphore.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
 
 namespace {  // NOLINT(google-build-namespaces)
 

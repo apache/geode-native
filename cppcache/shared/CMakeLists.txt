@@ -42,6 +42,7 @@ target_link_libraries(apache-geode
     _apache-geode
     _WarningsAsError
     _CppCodeCoverage
+    internal-shared
   PUBLIC
     c++11)
 
@@ -49,6 +50,8 @@ target_include_directories(apache-geode
   PUBLIC
     $<TARGET_PROPERTY:_apache-geode,INTERFACE_INCLUDE_DIRECTORIES>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+  PRIVATE:
+    ../internal/include
 )
 
 set_target_properties(apache-geode PROPERTIES

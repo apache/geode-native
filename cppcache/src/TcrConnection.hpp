@@ -29,8 +29,8 @@
 
 #include "Connector.hpp"
 #include "TcrMessage.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
-#include "util/synchronized_set.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
+#include "internal/synchronized_set.hpp"
 
 #define DEFAULT_TIMEOUT_RETRIES 12
 #define PRIMARY_SERVER_TO_CLIENT 101

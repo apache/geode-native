@@ -22,7 +22,7 @@
 #include "CacheImpl.hpp"
 #include "FunctionExpiryTask.hpp"
 #include "TcrConnectionManager.hpp"
-#include "util/exception.hpp"
+#include "internal/exception.hpp"
 
 namespace apache {
 namespace geode {

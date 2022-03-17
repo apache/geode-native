@@ -48,7 +48,6 @@ target_link_libraries(${PROJECT_NAME}
     Boost::chrono
   PRIVATE
     _WarningsAsError
-    internal
 )
 
 if(WIN32)

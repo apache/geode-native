@@ -69,6 +69,8 @@ add_executable(apache-geode_unittests
   util/TestableRecursiveMutex.hpp
   util/chrono/durationTest.cpp)
 
+  set_property(TARGET apache-geode_unittests PROPERTY CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 target_compile_definitions(apache-geode_unittests
   PUBLIC
     GTEST_ELLIPSIS_NEEDS_POD_
@@ -86,6 +88,7 @@ target_link_libraries(apache-geode_unittests
     GTest::gmock
     _WarningsAsError
     _CppCodeCoverage
+    internal-shared
 )
 
 target_include_directories(apache-geode_unittests

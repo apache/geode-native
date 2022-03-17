@@ -24,9 +24,9 @@
 #include <memory>
 #include <thread>
 
+#include "./util/Log.hpp"
 #include "AppDomainContext.hpp"
 #include "DistributedSystemImpl.hpp"
-#include "./util/Log.hpp"
 
 namespace apache {
 namespace geode {

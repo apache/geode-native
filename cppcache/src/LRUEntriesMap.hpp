@@ -30,7 +30,7 @@
 #include "LRUMapEntry.hpp"
 #include "LRUQueue.hpp"
 #include "MapEntryT.hpp"
-#include "util/concurrent/spinlock_mutex.hpp"
+#include "internal/concurrent/spinlock_mutex.hpp"
 
 namespace apache {
 namespace geode {

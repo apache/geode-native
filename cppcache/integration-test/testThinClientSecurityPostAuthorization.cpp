@@ -89,9 +89,7 @@ void initClientAuth(char userType, int clientNum = 1) {
       config->insert("security-password", "geode1");
       break;
     }
-    default: {
-      break;
-    }
+    default: { break; }
   }
   initClient(true, config);
 }

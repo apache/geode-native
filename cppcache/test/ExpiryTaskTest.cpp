@@ -21,8 +21,8 @@
 
 #include "ExpiryTaskManager.hpp"
 #include "gmock_extensions.h"
+#include "internal/concurrent/binary_semaphore.hpp"
 #include "mock/MockExpiryTask.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
 
 using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;

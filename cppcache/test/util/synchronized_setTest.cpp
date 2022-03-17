@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 
 #include "TestableRecursiveMutex.hpp"
-#include "util/synchronized_set.hpp"
+#include "internal/synchronized_set.hpp"
 
 using apache::geode::client::synchronized_set;
 

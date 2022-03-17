@@ -19,7 +19,7 @@
 
 #include <gtest/gtest.h>
 
-#include "util/queue.hpp"
+#include "internal/queue.hpp"
 
 using apache::geode::client::queue::coalesce;
 

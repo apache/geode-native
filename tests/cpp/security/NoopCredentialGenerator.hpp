@@ -32,9 +32,7 @@ class NoopCredentialGenerator : public CredentialGenerator {
  public:
   NoopCredentialGenerator() : CredentialGenerator(ID_NOOP, "NOOP") {}
 
-  std::string getInitArgs(std::string, bool) override {
-    return " ";
-  }
+  std::string getInitArgs(std::string, bool) override { return " "; }
 
   std::string getClientAuthInitLoaderFactory() override {
     return "createNoopAuthInitInstance";

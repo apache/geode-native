@@ -13,28 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_executable(cpp-benchmark
-  main.cpp
-  ConnectionQueueBM.cpp
-  GeodeHashBM.cpp
-  GeodeLoggingBM.cpp
-  NoopBM.cpp
-  SerializationRegistryBM.cpp
-  )
+add_library(internal-static STATIC ${INTERNAL_SRC_FILES})
 
-target_link_libraries(cpp-benchmark
-  PUBLIC
-    apache-geode-static
-    benchmark::benchmark
-    integration-framework
-  PRIVATE
-    _WarningsAsError
-    internal-shared
-  )
+target_link_libraries(internal-static INTERFACE internal_)
 
-target_include_directories(cpp-benchmark
-  PRIVATE
-  $<TARGET_PROPERTY:apache-geode-static,SOURCE_DIR>/../src
-  )
-
-add_clangformat(cpp-benchmark)
+target_include_directories(internal-static PUBLIC ${INTERNAL_INCLUDE_DIR} PRIVATE $<TARGET_PROPERTY:apache-geode-static,INTERFACE_INCLUDE_DIRECTORIES> $<BUILD_INTERFACE:${COMMON_INCLUDE_DIR}>)

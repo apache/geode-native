@@ -32,7 +32,7 @@
 #include "Queue.hpp"
 #include "Task.hpp"
 #include "ThinClientRedundancyManager.hpp"
-#include "util/synchronized_map.hpp"
+#include "internal/synchronized_map.hpp"
 
 namespace apache {
 namespace geode {

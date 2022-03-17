@@ -34,8 +34,8 @@
 #include "framework/Framework.h"
 #include "framework/Gfsh.h"
 #include "gmock_actions.hpp"
+#include "internal/concurrent/binary_semaphore.hpp"
 #include "mock/CacheListenerMock.hpp"
-#include "util/concurrent/binary_semaphore.hpp"
 
 namespace {
 

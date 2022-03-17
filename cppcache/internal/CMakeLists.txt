@@ -13,5 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-add_library(internal INTERFACE)
-target_include_directories(internal INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMAKE_CXX_STANDARD 11)
+
+add_library(internal_ INTERFACE)
+
+add_clangformat(internal_)
+
+set(INTERNAL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(INTERNAL_SRC_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/string.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/JavaModifiedUtf8.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/chrono/time_point.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/concurrent/binary_semaphore.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/concurrent/spinlock_mutex.cpp)
+
+add_subdirectory(shared)

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-#include <geodeBanner.hpp>
-
 #include <gtest/gtest.h>
+
+#include "util/geodeBanner.hpp"
 
 using apache::geode::client::geodeBanner;
 

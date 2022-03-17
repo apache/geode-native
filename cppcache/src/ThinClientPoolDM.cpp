@@ -34,8 +34,8 @@
 #include "ThinClientRegion.hpp"
 #include "ThinClientStickyManager.hpp"
 #include "UserAttributes.hpp"
+#include "internal/exception.hpp"
 #include "statistics/PoolStatsSampler.hpp"
-#include "util/exception.hpp"
 
 /** Closes and Deletes connection only if it exists */
 #define GF_SAFE_DELETE_CON(x) \

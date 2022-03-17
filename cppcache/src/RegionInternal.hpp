@@ -26,10 +26,10 @@
 
 #include <geode/Region.hpp>
 
-#include "ErrType.hpp"
 #include "EventId.hpp"
 #include "HashMapOfException.hpp"
 #include "RegionStats.hpp"
+#include "internal/ErrType.hpp"
 
 namespace apache {
 namespace geode {

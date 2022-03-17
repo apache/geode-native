@@ -170,8 +170,6 @@ class HostStatSampler {
 
   boost::filesystem::path initStatFileWithExt();
 
-
-
   /**
    * This function rolls the existing archive file.
    * Create new file only if current file has some data, otherwise reuse it.
@@ -191,7 +189,6 @@ class HostStatSampler {
   void putStatsInAdminRegion();
 
   void initStatDiskSpaceEnabled();
-
 
   friend TestableHostStatSampler;
   void initRollIndex();

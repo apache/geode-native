@@ -26,10 +26,10 @@
 #include <geode/internal/geode_globals.hpp>
 
 #include "../CacheImpl.hpp"
-#include "../util/chrono/time_point.hpp"
 #include "GeodeStatisticsFactory.hpp"
 #include "HostStatSampler.hpp"
 #include "config.h"
+#include "internal/chrono/time_point.hpp"
 
 namespace apache {
 namespace geode {
