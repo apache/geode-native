@@ -124,6 +124,7 @@ using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
+using AllowAttach = NamedType<bool, struct AllowAttachParameter>;
 using ConserveSockets = NamedType<bool, struct ConserveSocketsParameter>;
 using InitialLocators =
     NamedType<std::vector<LocatorAddress>, struct InitialLocatorsParameter>;
@@ -140,6 +141,9 @@ class Cluster {
 
   Cluster(InitialLocators initialLocators, InitialServers initialServers,
           UseIpv6 useIpv6 = UseIpv6{false});
+
+  Cluster(InitialLocators initialLocators, InitialServers initialServers,
+          AllowAttach allowAttach);
 
   Cluster(InitialLocators initialLocators, InitialServers initialServers,
           RemoteLocators remoteLocators,
@@ -238,6 +242,8 @@ class Cluster {
 
   bool getUseIPv6();
 
+  bool getAllowAttach();
+
   bool getConserveSockets();
 
  private:
@@ -274,6 +280,7 @@ class Cluster {
   std::string hostName_;
 
   bool useIPv6_ = false;
+  bool allowAttach_ = false;
   bool conserveSockets_ = false;
 
   int16_t distributedSystemId_ = 0;

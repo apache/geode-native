@@ -93,23 +93,25 @@ void Locator::start(bool startJmxManager) {
                                     std::to_string(locatorAddress.port) + "]";
                  });
 
-  auto locator = cluster_.getGfsh()
-                     .start()
-                     .locator()
-                     .withLogLevel("INFO")
-                     .withDir(name_)
-                     .withName(safeName)
-                     .withBindAddress(locatorAddress_.address)
-                     .withPort(locatorAddress_.port)
-                     .withRemoteLocators(remoteLocators)
-                     .withDistributedSystemId(distributedSystemId_)
-                     .withMaxHeap("256m")
-                     .withJmxManagerPort(jmxManagerPort_)
-                     .withHttpServicePort(0)
-                     .withClasspath(cluster_.getClasspath())
-                     .withSecurityManager(cluster_.getSecurityManager())
-                     .withPreferIPv6(cluster_.getUseIPv6())
-                     .withJmxManagerStart(startJmxManager);
+  auto locator =
+      cluster_.getGfsh()
+          .start()
+          .locator()
+          .withLogLevel("INFO")
+          .withDir(name_)
+          .withName(safeName)
+          .withBindAddress(locatorAddress_.address)
+          .withPort(locatorAddress_.port)
+          .withRemoteLocators(remoteLocators)
+          .withDistributedSystemId(distributedSystemId_)
+          .withMaxHeap("256m")
+          .withJmxManagerPort(jmxManagerPort_)
+          .withHttpServicePort(0)
+          .withClasspath(cluster_.getClasspath())
+          .withSecurityManager(cluster_.getSecurityManager())
+          .withPreferIPv6(cluster_.getUseIPv6())
+          .withAllowAttach(cluster_.getAllowAttach(), locatorAddress_.address)
+          .withJmxManagerStart(startJmxManager);
 
   if (cluster_.useSsl()) {
     locator.withConnect(false)
@@ -207,7 +209,8 @@ void Server::start() {
           .withSecurityManager(cluster_.getSecurityManager())
           .withCacheXMLFile(getCacheXMLFile())
           .withConserveSockets(cluster_.getConserveSockets())
-          .withPreferIPv6(cluster_.getUseIPv6());
+          .withPreferIPv6(cluster_.getUseIPv6())
+          .withAllowAttach(cluster_.getAllowAttach(), serverAddress_.address);
 
   if (!cluster_.getUser().empty()) {
     server.withUser(cluster_.getUser()).withPassword(cluster_.getPassword());
@@ -276,6 +279,20 @@ Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,
       initialServers_(initialServers.get()),
       jmxManagerPort_(Framework::getAvailablePort()),
       useIPv6_(useIpv6.get()) {
+  removeServerDirectory();
+}
+
+Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,
+                 AllowAttach allowAttach)
+    : name_(std::string(::testing::UnitTest::GetInstance()
+                            ->current_test_info()
+                            ->test_suite_name()) +
+            "/" +
+            ::testing::UnitTest::GetInstance()->current_test_info()->name()),
+      initialLocators_(initialLocators.get()),
+      initialServers_(initialServers.get()),
+      jmxManagerPort_(Framework::getAvailablePort()),
+      allowAttach_(allowAttach.get()) {
   removeServerDirectory();
 }
 
@@ -424,6 +441,8 @@ std::string &Cluster::getPassword() { return password_; }
 std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
+
+bool Cluster::getAllowAttach() { return allowAttach_; }
 
 bool Cluster::getConserveSockets() { return conserveSockets_; }
 

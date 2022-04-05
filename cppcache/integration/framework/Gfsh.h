@@ -1,4 +1,5 @@
 /*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -111,6 +112,9 @@ class Gfsh {
       Locator &withRemoteLocators(
           const std::vector<std::string> &remoteLocators);
 
+      Locator &withAllowAttach(const bool allowAttach,
+                               const std::string &bindAddress);
+
       Locator &withDistributedSystemId(const uint16_t &dsId);
 
       Locator &withJmxManagerPort(const uint16_t &jmxManagerPort);
@@ -179,6 +183,9 @@ class Gfsh {
       Server &withCacheXMLFile(const std::string file);
 
       Server &withPreferIPv6(bool useIPv6);
+
+      Server &withAllowAttach(const bool allowAttach,
+                              const std::string &bindAddress);
 
       Server &withSslEnabledComponents(const std::string &components);
 
