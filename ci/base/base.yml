@@ -96,13 +96,15 @@ builds:
   - _: #@ template.replace(new_build("ubuntu-18.04"))
     image_family: build-ubuntu-18-04
     source_image_family: ubuntu-1804-lts
+    #@yaml/map-key-override
     params:
-      CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/"
+      CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/home/build"
 
   - _: #@ template.replace(new_build("ubuntu-20.04"))
     image_family: build-ubuntu-20-04
     source_image_family: ubuntu-2004-lts
+    #@yaml/map-key-override
     params:
-      CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/"
+      CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/home/build"
 
 configs: [ ]
