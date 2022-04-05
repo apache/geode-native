@@ -99,6 +99,8 @@ builds:
     #@yaml/map-key-override
     params:
       CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/home/build"
+      CMAKE_BUILD_FLAGS: "-j16"
+      CPACK_GENERATORS: "TGZ"
 
   - _: #@ template.replace(new_build("ubuntu-20.04"))
     image_family: build-ubuntu-20-04
@@ -106,5 +108,7 @@ builds:
     #@yaml/map-key-override
     params:
       CMAKE_CONFIGURE_FLAGS: "-DCMAKE_INSTALL_PREFIX=/home/build"
+      CMAKE_BUILD_FLAGS: "-j16"
+      CPACK_GENERATORS: "TGZ"
 
 configs: [ ]
