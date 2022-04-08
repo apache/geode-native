@@ -754,42 +754,36 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
   // TcrMessage * req = const_cast<TcrMessage *>(&request);
   LOGDEBUG("TcrEndpoint::sendRequestConn  = %p", m_baseDM);
   if (m_baseDM != nullptr) m_baseDM->beforeSendingRequest(request, conn);
-  if (((type == TcrMessage::EXECUTE_FUNCTION ||
-        type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
-       (request.hasResult() & 2))) {
-    conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
-                                        request.getTimeout(),
-                                        reply.getTimeout());
-  } else if (type == TcrMessage::REGISTER_INTEREST_LIST ||
-             type == TcrMessage::REGISTER_INTEREST ||
-             type == TcrMessage::QUERY ||
-             type == TcrMessage::QUERY_WITH_PARAMETERS ||
-             type == TcrMessage::GET_ALL_70 ||
-             type == TcrMessage::GET_ALL_WITH_CALLBACK ||
-             type == TcrMessage::PUTALL ||
-             type == TcrMessage::PUT_ALL_WITH_CALLBACK ||
-             type == TcrMessage::REMOVE_ALL ||
-             ((type == TcrMessage::EXECUTE_FUNCTION ||
-               type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
-              (request.hasResult() & 2)) ||
-             type ==
-                 TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||  // This is
-                                                                    // kept
-                                                                    // aside as
-                                                                    // server
-                                                                    // always
-                                                                    // sends
-                                                                    // chunked
-                                                                    // response.
-             type == TcrMessage::EXECUTECQ_MSG_TYPE ||
-             type == TcrMessage::STOPCQ_MSG_TYPE ||
-             type == TcrMessage::CLOSECQ_MSG_TYPE ||
-             type == TcrMessage::KEY_SET ||
-             type == TcrMessage::CLOSECLIENTCQS_MSG_TYPE ||
-             type == TcrMessage::GETCQSTATS_MSG_TYPE ||
-             type == TcrMessage::MONITORCQ_MSG_TYPE ||
-             type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
-             type == TcrMessage::GETDURABLECQS_MSG_TYPE) {
+  if (type == TcrMessage::REGISTER_INTEREST_LIST ||
+    type == TcrMessage::REGISTER_INTEREST ||
+    type == TcrMessage::QUERY ||
+    type == TcrMessage::QUERY_WITH_PARAMETERS ||
+    type == TcrMessage::GET_ALL_70 ||
+    type == TcrMessage::GET_ALL_WITH_CALLBACK ||
+    type == TcrMessage::PUTALL ||
+    type == TcrMessage::PUT_ALL_WITH_CALLBACK ||
+    type == TcrMessage::REMOVE_ALL ||
+    ((type == TcrMessage::EXECUTE_FUNCTION ||
+      type == TcrMessage::EXECUTE_REGION_FUNCTION) &&
+     (request.hasResult() & 2)) ||
+    type ==
+        TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||  // This is
+                                                           // kept
+                                                           // aside as
+                                                           // server
+                                                           // always
+                                                           // sends
+                                                           // chunked
+                                                           // response.
+    type == TcrMessage::EXECUTECQ_MSG_TYPE ||
+    type == TcrMessage::STOPCQ_MSG_TYPE ||
+    type == TcrMessage::CLOSECQ_MSG_TYPE ||
+    type == TcrMessage::KEY_SET ||
+    type == TcrMessage::CLOSECLIENTCQS_MSG_TYPE ||
+    type == TcrMessage::GETCQSTATS_MSG_TYPE ||
+    type == TcrMessage::MONITORCQ_MSG_TYPE ||
+    type == TcrMessage::EXECUTECQ_WITH_IR_MSG_TYPE ||
+    type == TcrMessage::GETDURABLECQS_MSG_TYPE) {
     conn->sendRequestForChunkedResponse(request, request.getMsgLength(), reply,
                                         request.getTimeout(),
                                         reply.getTimeout());
