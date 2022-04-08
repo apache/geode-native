@@ -10,7 +10,7 @@ extraction:
         - "curl -o cmake.tgz -L $(curl -s https://api.github.com/repos/Kitware/CMake/releases | grep -P -i 'browser_download_url.*cmake-\\d+\\.\\d+\\.\\d+-linux-x86_64\\.sh' | head -n 1 | cut -d: -f 2,3 | tr -d \\\")"
         - bash cmake.tgz --skip-license --prefix=`pwd`
         - PATH="`pwd`/bin":$PATH
-        - cmake -DGEODE_ROOT="`pwd`/apache-geode-${GEODE_VERSION}" ..
+        - cmake -DGEODE_ROOT="`pwd`/apache-geode-${GEODE_VERSION}" -DCMAKE_INSTALL_PREFIX=/home/build ..
         - cd dependencies && cmake --build . -- -j2
     index:
       build_command:
