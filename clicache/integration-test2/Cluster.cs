@@ -72,7 +72,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < locatorCount_; i++)
             {
-                var locator = new Locator(this, new List<Locator>(),
+                var locator = new Locator(this, locators_,
                     name_ + "/locator/" + i.ToString(), i == 0, allowAttach_);
                 locators_.Add(locator);
                 if (locator.Start() != 0 ) {
