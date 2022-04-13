@@ -47,9 +47,9 @@ When you register the reflection-based serializer, <%=vars.product_name%> uses i
 
         See [Extending the Autoserializer](extending-pdx-autoserializer.html#concept_87701FF3FAE74F3193BE3FB349CE0086) for sample usage.
 
-    2.  If you are writing a Java application, you can use the `IPdxType` Mapper to map Java types to .NET types. Note that you only need to use the `IPdxTypeMapper` if you are writing Java applications.
+    2.  If you are writing a Java application, you can use the `IPdxType` Mapper to map Java types to .NET Framework types. Note that you only need to use the `IPdxTypeMapper` if you are writing Java applications.
 
-        See [Map .NET Domain Type Names to PDX Type Names with IPdxTypeMapper](mapping-dotnet-domain-type-names.html#concept_63F4164F1AE242A9BA309738F484182D) for sample usage.
+        See [Map .NET Framework Domain Type Names to PDX Type Names with IPdxTypeMapper](mapping-dotnet-domain-type-names.html#concept_63F4164F1AE242A9BA309738F484182D) for sample usage.
 
     3.  To specify an identifier field in your domain object, add the attribute `PdxIdentityField` to the field.
 
@@ -59,7 +59,7 @@ When you register the reflection-based serializer, <%=vars.product_name%> uses i
         [PdxIdentityField] private int id;
         ```
 
-    4.  To exclude a field from serialization, add the .NET attribute `NonSerialized` to the field.
+    4.  To exclude a field from serialization, add the .NET Framework attribute `NonSerialized` to the field.
 
         For example:
 
@@ -67,4 +67,4 @@ When you register the reflection-based serializer, <%=vars.product_name%> uses i
         [NonSerialized] private int myLocalData;
         ```
 
-For each domain class <%=vars.product_name%> serializes using the autoserializer, all fields are considered for serialization except those defined as `static`, `literal` or `readonly` and those you explicitly exclude using the .NET `NonSerialized` attribute.
+For each domain class <%=vars.product_name%> serializes using the autoserializer, all fields are considered for serialization except those defined as `static`, `literal` or `readonly` and those you explicitly exclude using the .NET Framework `NonSerialized` attribute.
