@@ -29,7 +29,7 @@ For complete information about how transactions are conducted on the <%=vars.pro
 The API for distributed transactions has the familiar relational database methods, `Begin`,
 `Commit`, and `Rollback`. There are also APIs available to suspend and resume transactions.
 
-The .NET classes for executing transactions are:
+The .NET Framework classes for executing transactions are:
 
 -   `Apache.Geode.Client.CacheTransactionManager`
 -   `Apache.Geode.Client.TransactionId`
@@ -80,12 +80,12 @@ treated as unsuccessful. The transaction is retried until it succeeds.
   - In case the transaction repeatedly fails, the retry loop uses a counter to set a limit of 5 retries.
 
 
-### <a id="dotnet-example"></a>.NET Example
+### <a id="dotnet-example"></a>.NET Framework Example
 
-This section contains code snippets showing highlights of the .NET transaction example. They are not intended for cut-and-paste execution.
+This section contains code snippets showing highlights of the .NET Framework transaction example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
-The .NET example creates a cache, then uses it to create a connection pool.
+The .NET Framework example creates a cache, then uses it to create a connection pool.
 
 ```csharp
   var cache = new CacheFactory()

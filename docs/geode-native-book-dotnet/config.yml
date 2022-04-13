@@ -31,11 +31,11 @@ template_variables:
   product_version: "1.14"
   product_version_nodot: 114
   product_language: dotnet
-  client_name: Geode Native Client for .NET
+  client_name: Geode Native Client for .NET Framework
   min_java_update: 121
   support_url: http://geode.apache.org/community
   product_url: http://geode.apache.org
-  book_title: Apache Geode Native .NET Documentation
+  book_title: Apache Geode Native .NET Framework Documentation
   book_header_img: /images/Apache_Geode_logo_symbol_white.png
   support_link: <a href="http://geode.apache.org/community" target="_blank">Community</a>
   support_call_to_action: <a href="http://geode.apache.org/community" target="_blank">Need Help?</a>
@@ -43,7 +43,7 @@ template_variables:
   product_link: <div class="header-item"><a href="http://geode.apache.org">Back to Product Page</a></div>
   domain_name: apache.org
   book_title_short: Geode Native .NET Docs
-  local_header_title: Apache Geode Native .NET
+  local_header_title: Apache Geode Native .NET Framework
   local_header_img: /images/Apache_Geode_logo_symbol.png
   serverman: https://geode.apache.org/docs/guide/latest
   geodeman: https://geode.apache.org/docs/guide/latest
