@@ -216,7 +216,7 @@ TEST(CqPlusAuthInitializeTest, putInALoopWhileSubscribedAndAuthenticated) {
   EXPECT_GT(authInitialize->getGetCredentialsCallCount(), 0);
 }
 
-TEST(CqPlusAuthInitializeTest, reAuthenticateWithDurable) {
+TEST(CqPlusAuthInitializeTest, DISABLED_reAuthenticateWithDurable) {
   // Start a cluster with user expiration support
 
   Cluster cluster(
