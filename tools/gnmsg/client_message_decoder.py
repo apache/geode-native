@@ -17,6 +17,7 @@ import re
 import struct
 import sys
 
+from collections import OrderedDict
 from dateutil import parser
 
 from client_messages import parse_client_message
@@ -113,18 +114,18 @@ class ClientMessageDecoder(DecoderBase):
             parts.append(parser.parse(match.group(1)))
             parts.append(match.group(2))
             parts.append(match.group(3))
-            parts.append(match.group(4)) 
-            parts.append(match.group(5)) 
+            parts.append(match.group(4))
+            parts.append(match.group(5))
             result = True
         else:
-          match = self.send_trace_expression_base_.search(line)
-          if match:
-              parts.append(parser.parse(match.group(1)))
-              parts.append(match.group(2))
-              parts.append("")
-              parts.append(match.group(3))
-              parts.append(match.group(4))
-              result = True
+            match = self.send_trace_expression_base_.search(line)
+            if match:
+                parts.append(parser.parse(match.group(1)))
+                parts.append(match.group(2))
+                parts.append("")
+                parts.append(match.group(3))
+                parts.append(match.group(4))
+                result = True
 
         return result
 
@@ -217,7 +218,7 @@ class ClientMessageDecoder(DecoderBase):
         connection = None
         is_send_trace = False
         is_add_security_trace = False
-        send_trace = {}
+        send_trace = OrderedDict()
 
         if not self.is_candidate_line(line):
             return
@@ -232,7 +233,7 @@ class ClientMessageDecoder(DecoderBase):
                 message_bytes,
             ) = parts
             if send_trace["ThreadName"] == "":
-              del(send_trace["ThreadName"])
+                del send_trace["ThreadName"]
             is_send_trace = True
         elif self.get_add_security_trace_parts(line, parts):
             timestamp, tid, connection, security_footer_length, message_bytes = parts

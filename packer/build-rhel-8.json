@@ -121,8 +121,7 @@
       "scripts": [
         "rhel/disable-selinux.sh",
         "rhel/install-jdk-11.sh",
-        "linux/install-cmake.sh",
-        "linux/install-dotnet.sh"
+        "linux/install-cmake.sh"
       ]
     },
     {

@@ -43,6 +43,8 @@ enum class DSFid : int32_t {
   CacheableUndefined = 31,
   Struct = 32,
   EventId = 36,
+  InterestResultPolicy = 37,
+  ClientProxyMembershipId = 38,
   InternalDistributedMember = 92,
   TXCommitMessage = 110,
   DiskVersionTag = 2131,

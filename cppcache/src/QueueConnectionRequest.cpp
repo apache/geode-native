@@ -27,7 +27,7 @@ namespace client {
 void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_serverGp);
   output.write(static_cast<int8_t>(DSCode::FixedIDByte));
-  output.write(static_cast<int8_t>(DSCode::ClientProxyMembershipId));
+  output.write(static_cast<int8_t>(DSFid::ClientProxyMembershipId));
   const auto& dsMemberId = m_membershipID.getDSMemberId();
   output.writeBytes(reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
                     static_cast<int32_t>(dsMemberId.size()));

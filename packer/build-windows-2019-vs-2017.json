@@ -92,8 +92,7 @@
         "choco install doxygen.install -confirm",
         "choco install openssl -confirm",
         "choco install strawberryperl -confirm",
-        "choco install nuget.commandline -confirm",
-        "choco install dotnetcore-sdk -confirm"
+        "choco install nuget.commandline -confirm"
       ]
     },
     {

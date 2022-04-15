@@ -16,7 +16,6 @@
 # limitations under the License.
 import re
 import struct
-import sys
 
 from dateutil import parser
 
@@ -51,27 +50,27 @@ class ServerMessageDecoder(DecoderBase):
         self.threads_connections_ = {}
 
         self.connection_to_tid_expression_ = re.compile(
-            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
+            r"(\d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::send:\s*\[([\d|a-f|A-F|x|X]+).*sending request to endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_with_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*(.+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).+:\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::readMessage\(([\d|a-f|A-F|x|X]+)\):.*received header from endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_without_pointer_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*(.+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::readMessage:\s*received header from endpoint.*bytes:\s*(.+)"
         )
 
         self.trace_header_v911_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrConnection::readMessage: received header from endpoint.*bytes:\s*([\d| ]+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+).*\]\s*TcrConnection::readMessage: received header from endpoint.*bytes:\s*([\d| ]+)"
         )
 
         self.receive_trace_body_expression_ = re.compile(
-            ":\d+\s+([\d|a-f|A-F|x|X]+)\]\s*TcrConnection::readMessage: received message body from endpoint.*bytes:\s*(.+)"
+            ":\d+\s+([\d|a-f|A-F|x|X]+).*\]\s*TcrConnection::readMessage: received message body from endpoint.*bytes:\s*(.+)"
         )
 
         self.security_trace_expression_ = re.compile(
-            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+)\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*(.+)"
+            r"(\d\d\d\d\/\d\d\/\d\d \d\d:\d\d:\d\d\.\d+).*:\d+\s+(\d+).*\]\s*TcrMessage::addSecurityPart\s*\[(0x[\d|a-f|A-F]*).*length\s*=\s*(\d+)\s*,\s*encrypted\s+ID\s*=\s*(.+)"
         )
 
         self.response_header_with_pointer_expression_ = re.compile(
@@ -383,9 +382,7 @@ class ServerMessageDecoder(DecoderBase):
                 self.chunk_decoders_[tid].add_header(parts[2], parts[4])
 
             if self.chunk_decoders_[tid].is_complete_message():
-                receive_trace = self.chunk_decoders_[tid].get_decoded_message(
-                    parts[0]
-                )
+                receive_trace = self.chunk_decoders_[tid].get_decoded_message(parts[0])
                 receive_trace["tid"] = str(tid)
                 self.output_queue_.put({"message": receive_trace})
                 self.chunk_decoders_[tid].reset()

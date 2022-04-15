@@ -14,20 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #pragma once
+#ifndef __INC_FUNCTIONMACROS__
+#define __INC_FUNCTIONMACROS__
 
-#include "geode/PoolManager.hpp"
+#define INIT_GNFN(this_class)                     \
+  namespace {                                     \
+  const auto classname = std::string(this_class); \
+  }
 
-class PoolFactoryWrapper;
-class CacheWrapper;
+#define __GNFN__ (classname + "::" + __func__).c_str()
 
-class PoolManagerWrapper: public ClientKeeper {
-  apache::geode::client::PoolManager& poolManager_;
-
- public:
-  PoolManagerWrapper(CacheWrapper *cache, apache::geode::client::PoolManager& poolManager);
-  ~PoolManagerWrapper();
-
-  PoolFactoryWrapper* CreatePoolFactory();
-};
+#endif  // __INC_FUNCTIONMACROS__

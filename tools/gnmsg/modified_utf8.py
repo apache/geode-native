@@ -129,4 +129,4 @@ def utf8m_to_utf8s(string):
             new_string.append(byte2)
             new_string.append(byte3)
         i += 1
-    return bytes(new_string)
+    return bytes(new_string).decode("utf-8")

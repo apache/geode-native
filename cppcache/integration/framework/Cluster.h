@@ -56,7 +56,7 @@ class Locator {
 
   const LocatorAddress &getAddress() const;
 
-  void start();
+  void start(bool startJmxManager);
 
   void stop();
 
