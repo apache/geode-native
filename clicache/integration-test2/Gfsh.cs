@@ -80,7 +80,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Server withBindAddress(string bindAddress)
+                public Server withGroups(string groups)
+                {
+                  command_ += " --group=" + groups;
+                  return this;
+                }
+
+        public Server withBindAddress(string bindAddress)
                 {
                     command_ += " --bind-address=" + bindAddress;
                     return this;

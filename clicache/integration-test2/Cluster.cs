@@ -33,6 +33,7 @@ namespace Apache.Geode.Client.IntegrationTests
         private bool started_;
         private List<Locator> locators_;
         private string name_;
+        private string groups_;
         internal int jmxManagerPort = Framework.FreeTcpPort();
         internal string keyStore_ = Config.SslServerKeyPath + "/server_keystore_chained.jks";
         internal string keyStorePassword_ = "apachegeode";
@@ -53,12 +54,13 @@ namespace Apache.Geode.Client.IntegrationTests
             return poolFactory;
         }
 
-        public Cluster(ITestOutputHelper output, string name, int locatorCount, int serverCount)
+        public Cluster(ITestOutputHelper output, string name, int locatorCount, int serverCount, string groups = "")
         {
             started_ = false;
             Gfsh = new GfshExecute(output);
             UseSSL = false;
             name_ = name;
+            groups_ = groups;
             locatorCount_ = locatorCount;
             serverCount_ = serverCount;
             locators_ = new List<Locator>();
@@ -88,7 +90,7 @@ namespace Apache.Geode.Client.IntegrationTests
             for (var i = 0; i < serverCount_; i++)
             {
                 var server = new Server(this, locators_,
-                    name_ + "/server/" + i.ToString());
+                    name_ + "/server/" + i.ToString(), groups_);
                 var localResult = server.Start();
                 if (localResult != 0)
                 {
@@ -130,7 +132,7 @@ namespace Apache.Geode.Client.IntegrationTests
             }
         }
 
-        public Cache CreateCache(IDictionary<string, string> properties)
+        public Cache CreateCache(IDictionary<string, string> properties, string serverGroup = "")
         {
             var cacheFactory = new CacheFactory();
 
@@ -145,7 +147,9 @@ namespace Apache.Geode.Client.IntegrationTests
 
             var cache = cacheFactory.Create();
 
-            ApplyLocators(cache.GetPoolFactory()).Create("default");
+            ApplyLocators(cache.GetPoolFactory())
+              .SetServerGroup(serverGroup)
+              .Create("default");
 
             return cache;
         }
@@ -249,12 +253,14 @@ namespace Apache.Geode.Client.IntegrationTests
         private string name_;
         private List<Locator> locators_;
         private bool started_;
+        private string groups_;
 
-        public Server(Cluster cluster, List<Locator> locators, string name)
+    public Server(Cluster cluster, List<Locator> locators, string name, string groups)
         {
             cluster_ = cluster;
             locators_ = locators;
             name_ = name;
+            groups_ = groups;
             var address = new Address();
             address.address = "localhost";
             address.port = 0;
@@ -275,6 +281,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withName(name_.Replace('/', '_'))
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
+                    .withGroups(groups_)
                     .withMaxHeap("1g");
                 if (cluster_.UseSSL)
                 {

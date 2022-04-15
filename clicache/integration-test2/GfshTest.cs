@@ -113,13 +113,15 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslKeyStore("some/path/keystore.jks")
                 .withSslKeyStorePassword("password1")
                 .withSslTrustStore("some/path/truststore.jks")
-                .withSslTrustStorePassword("password2");
+                .withSslTrustStorePassword("password2")
+                .withGroups("GroupA,GroupB");
             s = server.ToString();
             Assert.Equal("start server --name=server " +
                 "--dir=someDir --bind-address=someAddress --server-port=1234 --locators=someLocator --log-level=debug " +
                 "--max-heap=1.21gigabytes --J=-Dgemfire.ssl-enabled-components=server,locator,jmx " +
                 "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
-                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2", s);
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2 " +
+                "--groups=GroupA,GroupB", s);
         }
 
         [Fact]
