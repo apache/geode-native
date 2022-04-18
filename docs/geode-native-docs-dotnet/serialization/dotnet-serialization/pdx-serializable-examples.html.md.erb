@@ -19,8 +19,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The native client release contain an example showing how a client application
-can register for serialization of domain objects using the .NET IPdxSerializable interface.
+The native client release contain an example showing how a client application can register for
+serialization of domain objects using the .NET Framework IPdxSerializable interface.
 
 The example is located in `examples\dotnet\pdxserializable`.
 
@@ -48,12 +48,12 @@ The example performs a sequence of operations, displaying simple log entries as 
 
 
 <a id="pdsxbl_dotnet_example"></a>
-## .NET Example
+## .NET Framework Example
 
-This section contains code snippets showing highlights of the .NET PdxSerializable example. They are not intended for cut-and-paste execution.
+This section contains code snippets showing highlights of the .NET Framework PdxSerializable example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
-The .NET example defines a PdxSerializable class called `Order` that inherits from the `IPdxSerializable` interface.
+The .NET Framework example defines a PdxSerializable class called `Order` that inherits from the `IPdxSerializable` interface.
 An `Order` object contains three fields:
 
 - an integer `order_id`
@@ -102,7 +102,7 @@ From Order.cs:
     }
 ```
 
-The .NET example mainline creates a cache, then uses it to register the PdxSerializable class that was created in Orders.cs:
+The .NET Framework example mainline creates a cache, then uses it to register the PdxSerializable class that was created in Orders.cs:
 
 ```csharp
 var cache = new CacheFactory()

@@ -17,8 +17,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-It's extremely easy for .NET applications to store and retrieve data from Geode. All that's required
-is a single line of code to set the `PdxSerializer` to the .NET client's `ReflectionBasedAutoSerializer`:
+It's extremely easy for .NET Framework applications to store and retrieve data from Geode. All
+that's required is a single line of code to set the `PdxSerializer` to the .NET Framework client's
+`ReflectionBasedAutoSerializer`:
 
 ```csharp
 cache.TypeRegistry.PdxSerializer = new ReflectionBasedAutoSerializer();
@@ -34,30 +35,31 @@ the region.
 region.Put(key, value);
 ```
     
-The .NET client's `ReflectionBasedAutoSerializer` supports the full list of .NET primitives and other common
-built-in types.
+The .NET Framework client's `ReflectionBasedAutoSerializer` supports the full list of .NET
+Framework primitives and other common built-in types.
 
 Types without a no-arg constructor are not supported by the `ReflectionBasedAutoSerializer`. This
 includes all user defined structs. `System.Data.Datatable` is an example of a system class that is not
 supported due to lack of a no-arg constructor.
 
-## <a id="auto-ser-java-interop"></a>Java Interoperability with .NET Specific Types
+## <a id="auto-ser-java-interop"></a>Java Interoperability with .NET Framework Specific Types
 
 Java does not have unsigned data types or exact equivalents of `Guid` and `Decimal`. Care should be
-taken when passing these types between .NET and Java applications using the .NET
-`ReflectionBasedAutoSerializer`. For example, if storing `UInt16` data (that is, 16-bit unsigned values),
-be aware that values greater than `UInt16.MaxValue/2 - 1` will show up as negative numbers in
-Java. Using that data in a Java application may have unexpected behavior. If you expect to exceed
+taken when passing these types between .NET Framework and Java applications using the .NET
+Framework `ReflectionBasedAutoSerializer`. For example, if storing `UInt16` data (that is, 16-bit
+unsigned values), be aware that values greater than `UInt16.MaxValue/2 - 1` will show up as
+negative numbers in Java.
+Using that data in a Java application may have unexpected behavior. If you expect to exceed
 half the range for the given type (`Byte.MaxValue/2`, `UInt16.MaxValue/2`, `UInt32.MaxValue/2`, or
 `UInt64.MaxValue/2`) you should use the next larger type. This obviously breaks down for
-`UInt64`, which has no next larger type. However, if your range exceeds `UIn64.MaxValue/2`, you likely
-have a much more complex set of issues to deal with, such as heavy paging due to such a large data
-set.
+`UInt64`, which has no next larger type. However, if your range exceeds `UIn64.MaxValue/2`, you
+likely have a much more complex set of issues to deal with, such as heavy paging due to such a
+large data set.
 
-## <a id="auto-ser-remote-queries"></a>Remote Queries of .NET Only Types
+## <a id="auto-ser-remote-queries"></a>Remote Queries of .NET Framework Only Types
 
-At this time the .NET Client does not support queries against user classes that have been stored on
-the server using the `ReflectionBasedAutoSerializer`.
+At this time the .NET Framework Client does not support queries against user classes that have been
+stored on the server using the `ReflectionBasedAutoSerializer`.
 
 When you register the reflection-based serializer, <%=vars.product_name%> uses it to serialize all
 objects that do not implement `IPdxSerializable`. You can customize the
@@ -87,7 +89,7 @@ For example:
 [PdxIdentityField] private int id;
 ```
 
-To exclude a field from serialization, add the .NET attribute `NonSerialized` to the field.
+To exclude a field from serialization, add the .NET Framework attribute `NonSerialized` to the field.
 
 For example:
 
@@ -97,7 +99,7 @@ For example:
 
 For each domain class <%=vars.product_name%> serializes using the autoserializer, all fields are
 considered for serialization except those defined as `static`, `literal` or `readonly` and those you
-explicitly exclude using the .NET `NonSerialized` attribute.
+explicitly exclude using the .NET Framework `NonSerialized` attribute.
 
 This example code demonstrates how to extend the autoserializer to customize serialization.
 
