@@ -19,9 +19,6 @@
 
 #include <iostream>
 
-#include <ace/ACE.h>
-#include <ace/Init_ACE.h>
-
 #include "Utils.hpp"
 
 void initLibDllEntry(void) {
@@ -36,18 +33,15 @@ namespace apache {
 namespace geode {
 namespace client {
 
-void CppCacheLibrary::initLib(void) { ACE::init(); }
+void CppCacheLibrary::initLib(void) {}
 
-void CppCacheLibrary::closeLib(void) {
-  // DO NOT CALL ACE::fini() HERE!
-  // Things might be using ace beyond the life of Geode.
-}
+void CppCacheLibrary::closeLib(void) {}
 
 std::string CppCacheLibrary::initProductLibDir() {
   // otherwise... get the DLL path, and work backwards from it.
-  char buffer[PATH_MAX + 1];
+  char buffer[4097];
   buffer[0] = '\0';
-  DllMainGetPath(buffer, PATH_MAX);
+  DllMainGetPath(buffer, 4096);
 
   std::string path(buffer);
 

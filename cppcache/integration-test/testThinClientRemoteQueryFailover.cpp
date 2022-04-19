@@ -16,9 +16,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-#include <ace/Task.h>
+
 #include <string>
 
 #define ROOT_NAME "testThinClientRemoteQueryFailover"

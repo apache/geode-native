@@ -24,10 +24,6 @@
 #include <chrono>
 #include <cstdlib>
 
-#include <ace/OS.h>
-#include <ace/INET_Addr.h>
-#include <ace/SOCK_Acceptor.h>
-
 #include <geode/SystemProperties.hpp>
 #include <geode/PoolManager.hpp>
 

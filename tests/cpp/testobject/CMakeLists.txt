@@ -95,7 +95,6 @@ target_link_libraries(testobject
     apache-geode
     framework
   PRIVATE
-    ACE::ACE
     Boost::boost
     _WarningsAsError
 )

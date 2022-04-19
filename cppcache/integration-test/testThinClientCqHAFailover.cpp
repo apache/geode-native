@@ -19,9 +19,7 @@
 #include <geode/CqAttributes.hpp>
 #include <geode/CqListener.hpp>
 #include <geode/CqQuery.hpp>
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-#include <ace/Task.h>
+
 #include <string>
 
 #define ROOT_NAME "TestThinClientCqHAFailover"

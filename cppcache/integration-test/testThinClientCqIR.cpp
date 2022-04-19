@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include <string>
 #include <geode/CqAttributesFactory.hpp>
 #include <geode/CqAttributes.hpp>

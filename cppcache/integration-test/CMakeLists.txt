@@ -27,7 +27,6 @@ add_library(test-cppcache-utils STATIC
 target_link_libraries(test-cppcache-utils
   PRIVATE
     integration-framework
-    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
@@ -52,7 +51,6 @@ add_clangformat(test-cppcache-utils)
 add_library(unit_test_callbacks SHARED LibraryCallbacks.cpp)
 target_link_libraries(unit_test_callbacks
   PRIVATE
-    ACE::ACE
     _WarningsAsError
   PUBLIC
     apache-geode
@@ -68,6 +66,10 @@ add_clangformat(unit_test_callbacks)
 
 
 enable_testing()
+
+if(UNIX AND NOT APPLE)
+  set(PLATFORM_SPECIFIC_LIBS "rt")
+endif()
 
 set(LIBRARY_PATH_ENVIRONMENT_VARIABLE LD_LIBRARY_PATH)
 if (APPLE)
@@ -109,11 +111,11 @@ foreach(FILE ${SOURCES})
 
   target_link_libraries(${TEST}
     PRIVATE
-      ACE::ACE
       Boost::boost
       Boost::iostreams
       Boost::program_options
       test-cppcache-utils
+      ${PLATFORM_SPECIFIC_LIBS}
       _WarningsAsError
       _CppCodeCoverage
       internal

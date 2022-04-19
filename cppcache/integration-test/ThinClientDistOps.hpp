@@ -21,8 +21,6 @@
 #define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS_H_
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include "testobject/PdxType.hpp"
 #include <string>
 #include <limits>

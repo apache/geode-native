@@ -32,9 +32,6 @@ END_MAIN*/
 
 #include "fw_dunit.hpp"
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <geode/PdxInstance.hpp>
 #include <geode/UserFunctionExecutionException.hpp>
 #include <geode/FunctionService.hpp>
