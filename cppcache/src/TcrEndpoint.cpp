@@ -755,12 +755,10 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
   LOGDEBUG("TcrEndpoint::sendRequestConn  = %p", m_baseDM);
   if (m_baseDM != nullptr) m_baseDM->beforeSendingRequest(request, conn);
   if (type == TcrMessage::REGISTER_INTEREST_LIST ||
-      type == TcrMessage::REGISTER_INTEREST ||
-      type == TcrMessage::QUERY ||
+      type == TcrMessage::REGISTER_INTEREST || type == TcrMessage::QUERY ||
       type == TcrMessage::QUERY_WITH_PARAMETERS ||
       type == TcrMessage::GET_ALL_70 ||
-      type == TcrMessage::GET_ALL_WITH_CALLBACK ||
-      type == TcrMessage::PUTALL ||
+      type == TcrMessage::GET_ALL_WITH_CALLBACK || type == TcrMessage::PUTALL ||
       type == TcrMessage::PUT_ALL_WITH_CALLBACK ||
       type == TcrMessage::REMOVE_ALL ||
       ((type == TcrMessage::EXECUTE_FUNCTION ||
@@ -769,8 +767,7 @@ GfErrType TcrEndpoint::sendRequestConn(const TcrMessage& request,
       type == TcrMessage::EXECUTE_REGION_FUNCTION_SINGLE_HOP ||
       type == TcrMessage::EXECUTECQ_MSG_TYPE ||
       type == TcrMessage::STOPCQ_MSG_TYPE ||
-      type == TcrMessage::CLOSECQ_MSG_TYPE ||
-      type == TcrMessage::KEY_SET ||
+      type == TcrMessage::CLOSECQ_MSG_TYPE || type == TcrMessage::KEY_SET ||
       type == TcrMessage::CLOSECLIENTCQS_MSG_TYPE ||
       type == TcrMessage::GETCQSTATS_MSG_TYPE ||
       type == TcrMessage::MONITORCQ_MSG_TYPE ||
