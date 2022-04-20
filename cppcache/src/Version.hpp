@@ -34,7 +34,7 @@ class Version {
   inline int16_t getOrdinal() const noexcept { return ordinal_; }
 
   static const Version& current() noexcept {
-    static const auto version = Version{80};  // Geode 1.5.0
+    static const auto version = Version{90};  // Geode 1.7.0
     return version;
   }
 
