@@ -412,7 +412,6 @@ bool TcrConnection::initTcrConnection(
         if (isClientNotification) {
           readHandshakeInstantiatorMsg(connectTimeout);
         }
-
         break;
       case REPLY_AUTHENTICATION_FAILED: {
         AuthenticationFailedException ex(
@@ -1041,6 +1040,9 @@ void TcrConnection::readHandshakeInstantiatorMsg(
       readHandshakeString(connectTimeout);
     }
   }
+
+  // Geode 1.5+ - Ignore client ping task interval
+  readHandShakeBytes(4, connectTimeout);
 }
 void TcrConnection::readHandShakeBytes(
     int numberOfBytes, std::chrono::microseconds connectTimeout) {
