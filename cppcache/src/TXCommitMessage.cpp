@@ -65,6 +65,7 @@ void TXCommitMessage::fromData(DataInput& input) {
   input.readInt64();  // ignore seqId
 
   input.readBoolean();  // ignore needsLargeModCount
+  input.readBoolean();  // ignore shadow keys flag
 
   auto regionSize = input.readInt32();
   for (int32_t i = 0; i < regionSize; i++) {
