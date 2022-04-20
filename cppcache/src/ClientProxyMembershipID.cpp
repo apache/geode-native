@@ -261,7 +261,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   }
 
   delete[] hostAddress;
-  readAdditionalData(input);
+  // readAdditionalData(input);
 
   return this;
 }
