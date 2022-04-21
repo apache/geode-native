@@ -25,6 +25,7 @@
 #include <geode/DataOutput.hpp>
 
 #include "ByteArrayFixture.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "DataOutputInternal.hpp"
 
 namespace apache {

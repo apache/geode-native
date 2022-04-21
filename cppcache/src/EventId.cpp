@@ -22,7 +22,6 @@
 
 #include <geode/DataInput.hpp>
 
-#include "ClientProxyMembershipID.hpp"
 #include "Utils.hpp"
 #include "util/Log.hpp"
 

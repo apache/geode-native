@@ -22,6 +22,7 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ClientProxyMembershipID.hpp"
 #include "../ThinClientPoolDM.hpp"
 #include "GeodeStatisticsFactory.hpp"
 

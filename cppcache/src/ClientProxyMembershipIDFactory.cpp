@@ -23,6 +23,7 @@
 #include <boost/asio.hpp>
 #include <boost/process/environment.hpp>
 
+#include "ClientProxyMembershipID.hpp"
 #include "util/Log.hpp"
 
 namespace bip = boost::asio::ip;

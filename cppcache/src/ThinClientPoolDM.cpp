@@ -26,6 +26,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "ExecutionImpl.hpp"
 #include "FunctionExpiryTask.hpp"

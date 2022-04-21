@@ -35,6 +35,7 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ClientProxyMembershipID.hpp"
 #include "../CppCacheLibrary.hpp"
 #include "../TcrConnectionManager.hpp"
 #include "GeodeStatisticsFactory.hpp"
