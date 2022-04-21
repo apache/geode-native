@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ClientHealthStats.hpp"
 
 #include "CacheImpl.hpp"
@@ -23,9 +24,9 @@ namespace geode {
 namespace client {
 
 void ClientHealthStats::toData(DataOutput& output) const {
-  output.writeInt(static_cast<int32_t>(m_numGets));
-  output.writeInt(static_cast<int32_t>(m_numPuts));
-  output.writeInt(static_cast<int32_t>(m_numMisses));
+  output.writeInt(static_cast<int64_t>(m_numGets));
+  output.writeInt(static_cast<int64_t>(m_numPuts));
+  output.writeInt(static_cast<int64_t>(m_numMisses));
   output.writeInt(static_cast<int32_t>(m_numCacheListenerCalls));
   output.writeInt(static_cast<int32_t>(m_numThread));
   output.writeInt(static_cast<int32_t>(m_cpus));
@@ -34,9 +35,9 @@ void ClientHealthStats::toData(DataOutput& output) const {
 }
 
 void ClientHealthStats::fromData(DataInput& input) {
-  m_numGets = input.readInt32();
-  m_numPuts = input.readInt32();
-  m_numMisses = input.readInt32();
+  m_numGets = input.readInt64();
+  m_numPuts = input.readInt64();
+  m_numMisses = input.readInt64();
   m_numCacheListenerCalls = input.readInt32();
   m_numThread = input.readInt32();
   m_processCpuTime = input.readInt64();
@@ -59,9 +60,9 @@ ClientHealthStats::ClientHealthStats()
   m_updateTime = CacheableDate::create();
 }
 
-ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
-                                     int listCalls, int numThreads,
-                                     int64_t cpuTime, int cpus)
+ClientHealthStats::ClientHealthStats(int64_t gets, int64_t puts, int64_t misses,
+                                     int32_t listCalls, int32_t numThreads,
+                                     int64_t cpuTime, int32_t cpus)
     : m_numGets(gets),
       m_numPuts(puts),
       m_numMisses(misses),

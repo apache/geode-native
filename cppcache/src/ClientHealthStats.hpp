@@ -44,32 +44,34 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
 
   /** @return the size of the object in bytes */
   size_t objectSize() const override { return sizeof(ClientHealthStats); }
+
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
-  static std::shared_ptr<ClientHealthStats> create(int gets, int puts,
-                                                   int misses, int listCalls,
-                                                   int numThreads,
-                                                   int64_t cpuTime = 0,
-                                                   int cpus = 0) {
+  static std::shared_ptr<ClientHealthStats> create(
+      int64_t gets, int64_t puts, int64_t misses, int32_t listCalls,
+      int32_t numThreads, int64_t cpuTime = 0, int32_t cpus = 0) {
     return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
         gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
   }
+
   ~ClientHealthStats() override = default;
 
   ClientHealthStats();
 
  private:
-  ClientHealthStats(int gets, int puts, int misses, int listCalls,
-                    int numThreads, int64_t cpuTime, int cpus);
+  ClientHealthStats(int64_t gets, int64_t puts, int64_t misses,
+                    int32_t listCalls, int32_t numThreads, int64_t cpuTime,
+                    int32_t cpus);
 
-  int m_numGets;                // CachePerfStats.gets
-  int m_numPuts;                // CachePerfStats.puts
-  int m_numMisses;              // CachePerfStats.misses
-  int m_numCacheListenerCalls;  // CachePerfStats.cacheListenerCallsCompleted
-  int m_numThread;              // ProcessStats.threads;
-  int64_t m_processCpuTime;     //
-  int m_cpus;
+  int64_t m_numGets;    // CachePerfStats.gets
+  int64_t m_numPuts;    // CachePerfStats.puts
+  int64_t m_numMisses;  // CachePerfStats.misses
+  int32_t
+      m_numCacheListenerCalls;  // CachePerfStats.cacheListenerCallsCompleted
+  int32_t m_numThread;          // ProcessStats.threads;
+  int64_t m_processCpuTime;
+  int32_t m_cpus;
   std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
 };
 
