@@ -1,5 +1,5 @@
 ---
-title:  .NET Application Development Walkthrough
+title:  .NET Framework Application Development Walkthrough
 ---
 
 <!--
@@ -19,7 +19,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-This section describes how to set up a .NET native client development environment using C# and CMake.
+This section describes how to set up a .NET Framework native client development environment using C# and CMake.
 
 ## <a id="prerequisites_dotnet"></a>Prerequisites
 This walkthrough assumes that certain components are in place:
@@ -32,9 +32,9 @@ This walkthrough assumes that certain components are in place:
 
 - **Geode**: Install and configure Geode. See the [_Geode User's Guide_](http://geode.apache.org/docs/) for instructions and system requirements.
 
-- **Visual Studio 2015** or higher and **.NET 4.5.2**.
+- **Visual Studio 2015** or higher and **.NET Framework 4.5.2**.
 
-To develop a Native Client application using .NET and CMake:
+To develop a Native Client application using .NET Framework and CMake:
 
   - Create a project directory structure
   - Populate the project directories with C# source code
@@ -103,7 +103,7 @@ should contain the following CMake instructions:
 Combined, the above elements comprise the following CMakeLists.txt:
 
 ```
-# CMakeLists.txt for .NET Native Client App
+# CMakeLists.txt for .NET Framework Native Client App
 cmake_minimum_required(VERSION 3.10)
 
 project(MyProject LANGUAGES CSharp)
@@ -138,7 +138,7 @@ set_target_properties(MyProject PROPERTIES
     $ cmake ..
     ```
 
-This creates a Visual Studio solution for your .NET application. For example, `MyProject.sln`.
+This creates a Visual Studio solution for your .NET Framework application. For example, `MyProject.sln`.
 
 ## <a id="building_and_running_dotnet"></a>Building and Running the App
 

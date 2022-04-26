@@ -1,5 +1,5 @@
 ---
-title:  Serializing Data
+title:  IPdxSerializable Example
 ---
 
 <!--
@@ -19,57 +19,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-Data in your client application's <%=vars.product_name%> cache must be serializable to be shared with <%=vars.product_name%> servers and other
-<%=vars.product_name%> clients.
-<%=vars.product_name%> provides multiple data serialization options for storage and transmittal
-between processes, of which **<%=vars.product_name%> Portable Data eXchange (PDX) serialization** offers
-the best combination of versatility and ease-of-use for most applications.
+The native client release contain an example showing how a client application can register for
+serialization of domain objects using the .NET Framework IPdxSerializable interface.
 
-To learn more about other serialization options, see the [Data Serialization section in the _<%=vars.product_name_long%> User Guide_](serverman/developing/data_serialization/chapter_overview.html).
+The example is located in `examples\dotnet\pdxserializable`.
 
-<a id="implementing_pdxsbl_class"></a>
-## Implementing a PdxSerializable Custom Class
-
-Pdx serialization provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
-
-The type of serialization and its implementation can be specified entirely in the client
-application, with no need to create corresponding code on the <%=product_name%> server.
-
-<a id="setup_pdxsbl_class"></a>
-### Setup
-
-Pdx serialization provides custom serialization to an individual class. Fields within an object can be serialized separately from the rest of the class.
-
-Setting up a custom class for PdxSerializable treatment requires some preparatory steps:
-
-- The custom class must inherit from the .NET Framework IPdxSerializable interface.
-
-- You must provide serialization instructions for objects of the custom class. Specifically:
-
-  -  You must implement the `ToData()` and `FromData()` methods.
-  -  You must provide a "factory method" that returns an instance of the custom object.
-
-- Your application must register your custom class with the cache, which takes care of informing the server of your
-  serialization scheme. With registration, you provide the name of the "factory method" you created for instantiating
-  objects of the custom class.
-
-<a id="pdxsbl_examples"></a>
-## PdxSerializable Examples
-
-The native client release contains examples showing how a client application
-can register for serialization of custom objects using the .NET Framework IPdxSerializable interface.
-
-The examples are located in `examples\dotnet\pdxserializable`.
-
-The examples define the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
-Once these pieces are in place, execution is simple: the main routine of the example registers the serializable class then performs some put and get operations.
+The example defines the serializable class, `Orders`, including its serialization and deserialization methods and its factory method.
+Once these pieces are in place, execution is simple: the main routine of the example registers the serializable class then performs some Put and Get operations.
 
 <a id="pdxsbl_execution"></a>
-### Execution
+## Execution
 
 The example performs a sequence of operations, displaying simple log entries as they run.
 
-- To run an example, follow the instructions in the README.md file in the example directory.
+- To run the example, follow the instructions in the README.md file in the example directory.
+
 - Review the source code in the example directory to see exactly how it operates.
 
 - Begin by running a script that sets up the server-side environment by invoking `gfsh` commands to create a region, a locator, and a server.
@@ -84,7 +48,7 @@ The example performs a sequence of operations, displaying simple log entries as 
 
 
 <a id="pdsxbl_dotnet_example"></a>
-### .NET Framework Example
+## .NET Framework Example
 
 This section contains code snippets showing highlights of the .NET Framework PdxSerializable example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
@@ -141,9 +105,9 @@ From Order.cs:
 The .NET Framework example mainline creates a cache, then uses it to register the PdxSerializable class that was created in Orders.cs:
 
 ```csharp
-   var cacheFactory = new CacheFactory()
-       .Set("log-level", "none");
-   var cache = cacheFactory.Create();
+var cache = new CacheFactory()
+    .Set("log-level", "none")
+    .Create();
 
    cache.TypeRegistry.RegisterPdxType(Order.CreateDeserializable);
 ```
@@ -151,9 +115,10 @@ The .NET Framework example mainline creates a cache, then uses it to register th
 The client creates a connection pool and a region named "example_orderobject":
 
 ```csharp
-   var poolFactory = cache.GetPoolFactory()
-       .AddLocator("localhost", 10334);
-   poolFactory.Create("pool");
+cache.GetPoolManager()
+    .CreateFactory()
+    .AddLocator("localhost", 10334)
+    .Create("pool");
 
    var regionFactory = cache.CreateRegionFactory(RegionShortcut.PROXY)
         .SetPoolName("pool");

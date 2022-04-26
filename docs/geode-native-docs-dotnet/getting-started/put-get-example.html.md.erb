@@ -19,9 +19,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-The native client release contains an example written for .NET showing how a client application
-can establish a connection to a cluster and then use that connection to perform basic operations on a remote server. 
-The example is located in `../examples/dotnet/putgetremove`. 
+The native client release contains an example written for .NET Framework showing how a client
+application can establish a connection to a cluster and then use that connection to perform basic
+operations on a remote server. The example is located in `../examples/dotnet/putgetremove`. 
 
 The example performs a sequence of operations, displaying simple log entries as they run.
 
@@ -39,10 +39,11 @@ The example performs a sequence of operations, displaying simple log entries as 
 
 ## <a id="put-get-remove-example-code"></a>Put/Get/Remove Example Code
 
-This section contains code snippets showing highlights of the .NET put/get/remove example. They are not intended for cut-and-paste execution.
+This section contains code snippets showing highlights of the .NET Framework put/get/remove
+example. They are not intended for cut-and-paste execution.
 For the complete source, see the example source directory.
 
-The .NET example creates a cache, then uses it to create a connection pool and a region object (of class `IRegion`).
+The .NET Framework example creates a cache, then uses it to create a connection pool and a region object (of class `IRegion`).
 
 ```csharp
    var cacheFactory = new CacheFactory()
