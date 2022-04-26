@@ -23,7 +23,7 @@ Conflation of entry update messages can reduce the number of update messages a c
 
 Conflation is enabled for a cache server region, so all clients receiving updates for a particular region benefit from the conflation. To enable conflation, set the cache server’s `enable-subscription-conflation` region attribute to `true`. This region attribute is `false` by default.
 
-The queue managment code conflates entry updates as part of the enqueue operation. If the previous enqueued item for that key is also an `update` operation, the queue management code removes that previously enqueued update, leaving only the latest update to be sent when event distribution occurs. For high availability, conflation also occurs for any secondary queues.
+The queue management code conflates entry updates as part of the enqueue operation. If the previous enqueued item for that key is also an `update` operation, the queue management code removes that previously enqueued update, leaving only the latest update to be sent when event distribution occurs. For high availability, conflation also occurs for any secondary queues.
 
 Only entry `update` messages in a cache server region with `distributed-no-ack` scope are conflated. Region operations and entry operations other than updates are not conflated.
 

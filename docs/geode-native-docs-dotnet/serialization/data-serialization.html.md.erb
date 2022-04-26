@@ -20,15 +20,16 @@ limitations under the License.
 -->
 
 Data in your client application's <%=vars.product_name%> cache must be serializable to be shared
-with <%=vars.product_name%> servers and other <%=vars.product_name%> clients.  Built-in .NET types
-are serialized automatically into the cache and can be retrieved by Java servers and other
-<%=vars.product_name%> clients.
+with <%=vars.product_name%> servers and other <%=vars.product_name%> clients. Built-in .NET
+Framework types are serialized automatically into the cache and can be retrieved by Java servers
+and other <%=vars.product_name%> clients.
 
-For domain objects that are not simple types, <%=vars.product_name%> provides multiple serialization options
-for storage and transmittal between processes, of which [**<%=vars.product_name%> Portable Data eXchange (PDX) serialization**](dotnet-serialization/dotnet-pdx-serialization.html) offers
-the best combination of versatility and ease-of-use for most applications.
+For domain objects that are not simple types, <%=vars.product_name%> provides multiple
+serialization options for storage and transmittal between processes, of which
+[**<%=vars.product_name%> Portable Data eXchange (PDX) serialization**](dotnet-serialization/dotnet-pdx-serialization.html) offers the best combination of
+versatility and ease-of-use for most applications.
 
-Many .NET clients can take advantage of **PDX reflection-based autoserialization**.
+Many .NET Framework clients can take advantage of **PDX reflection-based autoserialization**.
 
 To learn more about other serialization options, see the [Data Serialization section in the
 _<%=vars.product_name_long%> User
