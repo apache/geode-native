@@ -160,7 +160,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_primaryServerQueueSize(PRIMARY_QUEUE_NOT_AVAILABLE) {
   static bool firstGuard = false;
   if (firstGuard) {
-    ClientProxyMembershipID::increaseSynchCounter();
+    ClientProxyMembershipID::increaseSyncCounter();
   }
   firstGuard = true;
 

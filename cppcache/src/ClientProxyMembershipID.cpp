@@ -28,12 +28,12 @@
 
 namespace {
 constexpr int32_t kVersionMask = 0x8;
-constexpr int8_t kVmKindLoaner = 13;
+constexpr int8_t kVmKindLoner = 13;
 constexpr int32_t kDcPort = 12334;
-constexpr int8_t kVmKind = kVmKindLoaner;
+constexpr int8_t kVmKind = kVmKindLoner;
 constexpr int32_t kRoleArrayLength = 0;
 
-static int32_t synchCounter = 2;
+static int32_t syncCounter = 2;
 }  // namespace
 
 namespace apache {
@@ -112,7 +112,7 @@ void ClientProxyMembershipID::initObjectVars(
   m_memID.write(
       static_cast<int8_t>(internal::DSFid::InternalDistributedMember));
   m_memID.writeBytes(hostAddr_.data(), static_cast<int32_t>(hostAddr_.size()));
-  m_memID.writeInt(static_cast<int32_t>(synchCounter));
+  m_memID.writeInt(static_cast<int32_t>(syncCounter));
   m_memID.writeString(hostname);
   m_memID.write(splitBrainFlag);
 
@@ -141,7 +141,7 @@ void ClientProxyMembershipID::initObjectVars(
   clientId_.append("(");
   clientId_.append(std::to_string(vPID));
   clientId_.append(":loner):");
-  clientId_.append(std::to_string(synchCounter));
+  clientId_.append(std::to_string(syncCounter));
   clientId_.append(":");
   clientId_.append(getUniqueTag());
   clientId_.append(":");
@@ -169,9 +169,7 @@ const std::string& ClientProxyMembershipID::getDSMemberId() const {
   return memIdStr_;
 }
 
-const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
-  return clientId_;
-}
+const std::string& ClientProxyMembershipID::getClientId() { return clientId_; }
 
 std::string ClientProxyMembershipID::getHashKey() { return hashKey_; }
 
@@ -205,7 +203,7 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
 
   initHostAddressVector(hostAddress.data(), length);
 
-  if (vmKind != kVmKindLoaner) {
+  if (vmKind != kVmKindLoner) {
     auto vmViewId = std::stoi(uniqueTag->value());
     initObjectVars(hostname->value().c_str(), hostPort,
                    durableClientId->value().c_str(), durableClientTimeOut,
@@ -233,7 +231,7 @@ void ClientProxyMembershipID::readEssentialData(DataInput& input) {
   const auto vmKind = input.read();
   int32_t vmViewId = 0;
   std::shared_ptr<CacheableString> uniqueTag, vmViewIdstr;
-  if (vmKind == kVmKindLoaner) {
+  if (vmKind == kVmKindLoner) {
     uniqueTag = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   } else {
     vmViewIdstr =
@@ -245,7 +243,7 @@ void ClientProxyMembershipID::readEssentialData(DataInput& input) {
 
   initHostAddressVector(hostAddress.data(), length);
 
-  if (vmKind != kVmKindLoaner) {
+  if (vmKind != kVmKindLoner) {
     // initialize the object with the values read and some dummy values
     initObjectVars("", hostPort, "", std::chrono::seconds::zero(), kDcPort, 0,
                    vmKind, 0, dsName->value().c_str(), nullptr, vmViewId);
@@ -262,7 +260,7 @@ void ClientProxyMembershipID::readAdditionalData(DataInput& input) {
   input.advanceCursor(17);
 }
 
-void ClientProxyMembershipID::increaseSynchCounter() { ++synchCounter; }
+void ClientProxyMembershipID::increaseSyncCounter() { ++syncCounter; }
 
 // Compares two membershipIds. This is based on the compareTo function
 // of InternalDistributedMember class of Java.

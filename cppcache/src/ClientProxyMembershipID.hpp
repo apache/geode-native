@@ -58,16 +58,13 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
 
   ~ClientProxyMembershipID() noexcept override;
 
-  static void increaseSynchCounter();
+  static void increaseSyncCounter();
 
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<ClientProxyMembershipID>();
   }
 
-  /**
-   * Do an empty check on the returned value. Only use after handshake is done.
-   */
-  const std::string& getDSMemberIdForThinClientUse();
+  const std::string& getClientId();
 
   void toData(DataOutput& output) const override;
 
