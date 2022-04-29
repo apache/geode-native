@@ -50,7 +50,7 @@ TEST(ClientProxyMembershipIDTest, testCreate) {
       apache::geode::client::internal::geode_hash<std::string>{}(":0:0:0:1") +
           static_cast<int32_t>(cpmID.getHostPort()));
   EXPECT_TRUE(boost::regex_search(
-      cpmID.getDSMemberIdForThinClientUse(),
+      cpmID.getClientId(),
       boost::regex(
           std::string("localhost(.*):2:").append(uniqueTag).append(":myDs"))));
 }

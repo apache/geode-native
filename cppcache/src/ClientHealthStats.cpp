@@ -14,34 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 #include "ClientHealthStats.hpp"
 
-#include "CacheImpl.hpp"
+#include <geode/CacheableDate.hpp>
+#include <geode/DataInput.hpp>
+#include <geode/DataOutput.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
 void ClientHealthStats::toData(DataOutput& output) const {
-  output.writeInt(static_cast<int32_t>(m_numGets));
-  output.writeInt(static_cast<int32_t>(m_numPuts));
-  output.writeInt(static_cast<int32_t>(m_numMisses));
-  output.writeInt(static_cast<int32_t>(m_numCacheListenerCalls));
-  output.writeInt(static_cast<int32_t>(m_numThread));
-  output.writeInt(static_cast<int32_t>(m_cpus));
-  output.writeInt(static_cast<int64_t>(m_processCpuTime));
-  m_updateTime->toData(output);
+  output.writeInt(static_cast<int64_t>(gets_));
+  output.writeInt(static_cast<int64_t>(puts_));
+  output.writeInt(static_cast<int64_t>(misses_));
+  output.writeInt(static_cast<int32_t>(cacheListenerCallsCompleted_));
+  output.writeInt(static_cast<int32_t>(threads_));
+  output.writeInt(static_cast<int32_t>(cpus_));
+  output.writeInt(static_cast<int64_t>(processCpuTime_));
+  updateTime_->toData(output);
 }
 
 void ClientHealthStats::fromData(DataInput& input) {
-  m_numGets = input.readInt32();
-  m_numPuts = input.readInt32();
-  m_numMisses = input.readInt32();
-  m_numCacheListenerCalls = input.readInt32();
-  m_numThread = input.readInt32();
-  m_processCpuTime = input.readInt64();
-  m_cpus = input.readInt32();
-  m_updateTime->fromData(input);
+  gets_ = input.readInt64();
+  puts_ = input.readInt64();
+  misses_ = input.readInt64();
+  cacheListenerCallsCompleted_ = input.readInt32();
+  threads_ = input.readInt32();
+  processCpuTime_ = input.readInt64();
+  cpus_ = input.readInt32();
+  updateTime_->fromData(input);
 }
 
 std::shared_ptr<Serializable> ClientHealthStats::createDeserializable() {
@@ -49,27 +52,20 @@ std::shared_ptr<Serializable> ClientHealthStats::createDeserializable() {
 }
 
 ClientHealthStats::ClientHealthStats()
-    : m_numGets(0),
-      m_numPuts(0),
-      m_numMisses(0),
-      m_numCacheListenerCalls(0),
-      m_numThread(0),
-      m_processCpuTime(0),
-      m_cpus(0) {
-  m_updateTime = CacheableDate::create();
-}
+    : ClientHealthStats(0, 0, 0, 0, 0, 0, 0) {}
 
-ClientHealthStats::ClientHealthStats(int gets, int puts, int misses,
-                                     int listCalls, int numThreads,
-                                     int64_t cpuTime, int cpus)
-    : m_numGets(gets),
-      m_numPuts(puts),
-      m_numMisses(misses),
-      m_numCacheListenerCalls(listCalls),
-      m_numThread(numThreads),
-      m_processCpuTime(cpuTime),
-      m_cpus(cpus) {
-  m_updateTime = CacheableDate::create();
+ClientHealthStats::ClientHealthStats(int64_t gets, int64_t puts, int64_t misses,
+                                     int32_t cacheListenerCallsCompleted,
+                                     int32_t threads, int64_t processCpuTime,
+                                     int32_t cpus)
+    : gets_(gets),
+      puts_(puts),
+      misses_(misses),
+      cacheListenerCallsCompleted_(cacheListenerCallsCompleted),
+      threads_(threads),
+      processCpuTime_(processCpuTime),
+      cpus_(cpus) {
+  updateTime_ = CacheableDate::create();
 }
 
 }  // namespace client

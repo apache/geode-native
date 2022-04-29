@@ -24,7 +24,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "ClientProxyMembershipID.hpp"
 #include "ErrType.hpp"
 #include "VersionTag.hpp"
 

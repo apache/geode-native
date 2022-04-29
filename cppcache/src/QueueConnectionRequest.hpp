@@ -23,13 +23,15 @@
 #include <set>
 #include <string>
 
-#include "ClientProxyMembershipID.hpp"
 #include "ServerLocation.hpp"
 #include "ServerLocationRequest.hpp"
+#include "geode/internal/DSFixedId.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class ClientProxyMembershipID;
 
 class QueueConnectionRequest : public ServerLocationRequest {
  public:
@@ -45,7 +47,7 @@ class QueueConnectionRequest : public ServerLocationRequest {
         m_serverGp(serverGp) {}  // No need for default constructor as creating
                                  // request with it does not make sense.
   void toData(DataOutput& output) const override;
-  DSFid getDSFID() const override;
+  internal::DSFid getDSFID() const override;
 
   virtual std::set<ServerLocation> getExcludedServer() const;
   virtual const ClientProxyMembershipID& getProxyMemberShipId() const;

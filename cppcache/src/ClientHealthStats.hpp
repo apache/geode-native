@@ -20,15 +20,13 @@
 #ifndef GEODE_CLIENTHEALTHSTATS_H_
 #define GEODE_CLIENTHEALTHSTATS_H_
 
-#include <geode/CacheableDate.hpp>
-#include <geode/Serializable.hpp>
 #include <geode/internal/DataSerializableFixedId.hpp>
-
-#include "util/Log.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class CacheableDate;
 
 class ClientHealthStats : public internal::DataSerializableFixedId_t<
                               internal::DSFid::ClientHealthStats> {
@@ -37,40 +35,39 @@ class ClientHealthStats : public internal::DataSerializableFixedId_t<
 
   void fromData(DataInput& input) override;
 
-  /**
-   * @brief creation function for dates.
-   */
   static std::shared_ptr<Serializable> createDeserializable();
 
-  /** @return the size of the object in bytes */
   size_t objectSize() const override { return sizeof(ClientHealthStats); }
+
   /**
    * Factory method for creating an instance of ClientHealthStats
    */
-  static std::shared_ptr<ClientHealthStats> create(int gets, int puts,
-                                                   int misses, int listCalls,
-                                                   int numThreads,
-                                                   int64_t cpuTime = 0,
-                                                   int cpus = 0) {
-    return std::shared_ptr<ClientHealthStats>(new ClientHealthStats(
-        gets, puts, misses, listCalls, numThreads, cpuTime, cpus));
+  static std::shared_ptr<ClientHealthStats> create(
+      int64_t gets, int64_t puts, int64_t misses,
+      int32_t cacheListenerCallsCompleted, int32_t threads,
+      int64_t processCpuTime = 0, int32_t cpus = 0) {
+    return std::make_shared<ClientHealthStats>(gets, puts, misses,
+                                               cacheListenerCallsCompleted,
+                                               threads, processCpuTime, cpus);
   }
-  ~ClientHealthStats() override = default;
+
+  ~ClientHealthStats() noexcept override = default;
 
   ClientHealthStats();
 
- private:
-  ClientHealthStats(int gets, int puts, int misses, int listCalls,
-                    int numThreads, int64_t cpuTime, int cpus);
+  ClientHealthStats(int64_t gets, int64_t puts, int64_t misses,
+                    int32_t cacheListenerCallsCompleted, int32_t threads,
+                    int64_t processCpuTime, int32_t cpus);
 
-  int m_numGets;                // CachePerfStats.gets
-  int m_numPuts;                // CachePerfStats.puts
-  int m_numMisses;              // CachePerfStats.misses
-  int m_numCacheListenerCalls;  // CachePerfStats.cacheListenerCallsCompleted
-  int m_numThread;              // ProcessStats.threads;
-  int64_t m_processCpuTime;     //
-  int m_cpus;
-  std::shared_ptr<CacheableDate> m_updateTime;  // Last updateTime
+ private:
+  int64_t gets_;
+  int64_t puts_;
+  int64_t misses_;
+  int32_t cacheListenerCallsCompleted_;
+  int32_t threads_;
+  int64_t processCpuTime_;
+  int32_t cpus_;
+  std::shared_ptr<CacheableDate> updateTime_;
 };
 
 }  // namespace client

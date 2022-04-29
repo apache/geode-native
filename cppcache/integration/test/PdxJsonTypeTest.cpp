@@ -101,8 +101,7 @@ TEST(PdxJsonTypeTest, testGfshQueryJsonInstances) {
               cache.createPdxInstanceFactory(gemfireJsonClassName)
                   .writeString("entryName", "java-domain-class-entry")
                   .create());
-  ASSERT_THROW(execution.withArgs(query).execute("QueryFunction"),
-               CacheServerException);
+  ASSERT_NO_THROW(execution.withArgs(query).execute("QueryFunction"));
 }
 
 TEST(PdxJsonTypeTest, testCreateTwoJsonInstances) {
