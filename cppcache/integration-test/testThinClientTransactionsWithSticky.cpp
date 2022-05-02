@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include "ThinClientTransactionsWithSticky.hpp"
+#include "ThinClientTransactions.hpp"
 
 DUNIT_MAIN
   {
