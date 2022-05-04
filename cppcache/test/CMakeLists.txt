@@ -48,7 +48,6 @@ add_executable(apache-geode_unittests
   LoggingTest.cpp
   LRUQueueTest.cpp
   PartitionTest.cpp
-  PdxInstanceImplTest.cpp
   PdxTypeTest.cpp
   QueueConnectionRequestTest.cpp
   RegionAttributesFactoryTest.cpp
