@@ -26,35 +26,91 @@
 #include <boost/thread/shared_mutex.hpp>
 
 #include <geode/Cache.hpp>
-#include <geode/PdxSerializable.hpp>
 #include <geode/internal/functional.hpp>
 
 #include "EnumInfo.hpp"
 #include "ExpiryTaskManager.hpp"
-#include "PdxRemotePreservedData.hpp"
-#include "PdxType.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
+class PdxSerializable;
+class PdxType;
+class PdxUnreadData;
+
 typedef std::map<int32_t, std::shared_ptr<PdxType>> TypeIdVsPdxType;
 typedef std::map<std::string, std::shared_ptr<PdxType>> TypeNameVsPdxType;
-typedef std::unordered_map<std::shared_ptr<PdxSerializable>,
-                           std::shared_ptr<PdxRemotePreservedData>,
-                           dereference_hash<std::shared_ptr<CacheableKey>>,
-                           dereference_equal_to<std::shared_ptr<CacheableKey>>>
-    PreservedHashMap;
 
 typedef std::unordered_map<std::shared_ptr<PdxType>, int32_t,
                            dereference_hash<std::shared_ptr<PdxType>>,
                            dereference_equal_to<std::shared_ptr<PdxType>>>
     PdxTypeToTypeIdMap;
 
-class PreservedDataExpiryTask;
+class PdxUnreadDataExpiryTask;
 
 class APACHE_GEODE_EXPORT PdxTypeRegistry
     : public std::enable_shared_from_this<PdxTypeRegistry> {
+ private:
+  using UnreadDataMap =
+      std::unordered_map<std::shared_ptr<PdxSerializable>,
+                         std::shared_ptr<PdxUnreadData>,
+                         dereference_hash<std::shared_ptr<CacheableKey>>,
+                         dereference_equal_to<std::shared_ptr<CacheableKey>>>;
+
+ public:
+  explicit PdxTypeRegistry(CacheImpl* cache);
+  PdxTypeRegistry(const PdxTypeRegistry& other) = delete;
+
+  virtual ~PdxTypeRegistry();
+
+  // test hook
+  size_t testNumberOfPreservedData() const;
+
+  void setUnreadData(ExpiryTaskManager& expiryTaskManager,
+                     std::shared_ptr<PdxSerializable> obj,
+                     std::shared_ptr<PdxUnreadData> data);
+
+  void removeUnreadData(std::shared_ptr<PdxSerializable> obj);
+
+  std::shared_ptr<PdxUnreadData> getUnreadData(
+      std::shared_ptr<PdxSerializable> obj) const;
+
+  void clear();
+
+  /**
+   * Returns the PdxType corresponding the given ID.
+   * If not present on the cache, it fetches it
+   * from the cluster and add it to the cache
+   * @param typeId PdxType ID to get
+   * @param pool Pointer to the pool to be used when
+   * fetching the PdxType from the cluster, if needed.
+   * @return PdxType corresponding to the given ID
+   */
+  std::shared_ptr<PdxType> getPdxType(int32_t typeId, Pool* pool);
+
+  /**
+   * Registers a PdxType if not present on the registry
+   * @param pdxType PdxType to verify
+   * @param pool Pointer to the pool to use while registering the PdxType, if
+   * needed
+   * @return true if the PdxType needed to be registered or if PdxType ID was
+   * needed to be updated, and false if it was already present
+   */
+  bool registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType, Pool* pool);
+
+  bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields_; }
+
+  void setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields_ = value; }
+
+  void setPdxReadSerialized(bool value) { pdxReadSerialized_ = value; }
+
+  bool getPdxReadSerialized() const { return pdxReadSerialized_; }
+
+  int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
+
+  std::shared_ptr<EnumInfo> getEnum(int32_t enumVal);
+
  private:
   CacheImpl* cache_;
 
@@ -66,12 +122,11 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
 
   PdxTypeToTypeIdMap pdxTypeToTypeIdMap_;
 
-  // TODO:: preserveData need to be of type WeakHashMap
-  PreservedHashMap preserved_data_;
+  UnreadDataMap unreadData_;
 
-  mutable boost::shared_mutex types_mutex_;
+  mutable boost::shared_mutex typesMutex_;
 
-  mutable boost::shared_mutex preserved_data_mutex_;
+  mutable boost::shared_mutex unreadDataMutex_;
 
   bool pdxIgnoreUnreadFields_;
 
@@ -80,66 +135,6 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
   std::shared_ptr<CacheableHashMap> enumToInt_;
 
   std::shared_ptr<CacheableHashMap> intToEnum_;
-
- public:
-  explicit PdxTypeRegistry(CacheImpl* cache);
-  PdxTypeRegistry(const PdxTypeRegistry& other) = delete;
-
-  virtual ~PdxTypeRegistry();
-
-  // test hook
-  size_t testNumberOfPreservedData() const;
-
-  void addPdxType(int32_t typeId, std::shared_ptr<PdxType> pdxType);
-
-  std::shared_ptr<PdxType> getPdxType(int32_t typeId) const;
-
-  void addLocalPdxType(const std::string& localType,
-                       std::shared_ptr<PdxType> pdxType);
-
-  // newly added
-  std::shared_ptr<PdxType> getLocalPdxType(const std::string& localType) const;
-
-  void setMergedType(int32_t remoteTypeId, std::shared_ptr<PdxType> mergedType);
-
-  std::shared_ptr<PdxType> getMergedType(int32_t remoteTypeId) const;
-
-  void setPreserveData(std::shared_ptr<PdxSerializable> obj,
-                       std::shared_ptr<PdxRemotePreservedData> data,
-                       ExpiryTaskManager& expiryTaskManager);
-
-  std::shared_ptr<PdxRemotePreservedData> getPreserveData(
-      std::shared_ptr<PdxSerializable> obj) const;
-
-  void clear();
-
-  int32_t getPDXIdForType(const std::string& type, Pool* pool,
-                          std::shared_ptr<PdxType> nType, bool checkIfThere);
-
-  bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields_; }
-
-  void setPdxIgnoreUnreadFields(bool value) { pdxIgnoreUnreadFields_ = value; }
-
-  void setPdxReadSerialized(bool value) { pdxReadSerialized_ = value; }
-
-  bool getPdxReadSerialized() const { return pdxReadSerialized_; }
-
-  const PreservedHashMap& getPreserveDataMap() const { return preserved_data_; }
-
-  int32_t getEnumValue(std::shared_ptr<EnumInfo> ei);
-
-  std::shared_ptr<EnumInfo> getEnum(int32_t enumVal);
-
-  int32_t getPDXIdForType(std::shared_ptr<PdxType> nType, Pool* pool);
-
-  boost::shared_mutex& getPreservedDataMutex() const {
-    return preserved_data_mutex_;
-  }
-
- protected:
-  friend class PreservedDataExpiryTask;
-
-  PreservedHashMap& preserved_data_map() { return preserved_data_; }
 };
 
 }  // namespace client

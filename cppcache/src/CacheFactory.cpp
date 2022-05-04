@@ -99,9 +99,7 @@ Cache CacheFactory::create() const {
       std::bind(TXCommitMessage::create, memberListForVersionStamp));
 
   serializationRegistry->setDataSerializablePrimitiveType(
-      // TODO: This looks like the only thing to do here, but I'm not sure
-      std::bind(PdxType::CreateDeserializable, std::ref(*pdxTypeRegistry)),
-      DSCode::PdxType);
+      PdxType::createDeserializable, DSCode::PdxType);
 
   serializationRegistry->addDataSerializableFixedIdType(
       std::bind(VersionTag::createDeserializable, memberListForVersionStamp));

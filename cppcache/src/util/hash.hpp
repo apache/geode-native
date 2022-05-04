@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
+#pragma once
 
-#include <geode/PdxSerializable.hpp>
-#include <geode/internal/CacheableKeys.hpp>
+#ifndef GEODE_UTIL_HASH_H_
+#define GEODE_UTIL_HASH_H_
 
-#include "PdxHelper.hpp"
+#include <vector>
 
-namespace apache {
-namespace geode {
-namespace client {
+namespace std {
+template <typename _Tp, typename _Alloc>
+struct hash<std::vector<_Tp, _Alloc>> {
+  typedef std::vector<_Tp, _Alloc> argument_type;
+  typedef size_t result_type;
+  size_t operator()(const std::vector<_Tp, _Alloc>& array) const {
+    std::hash<_Tp> hasher;
+    auto result = array.size();
+    for (const auto& entry : array) {
+      result = 31 * result + hasher(entry);
+    }
 
-std::string PdxSerializable::toString() const { return getClassName(); }
+    return result;
+  }
+};
+}  // namespace std
 
-bool PdxSerializable::operator==(const CacheableKey& other) const {
-  return (this == &other);
-}
-
-int32_t PdxSerializable::hashcode() const {
-  return internal::hashcode(
-      static_cast<int64_t>(reinterpret_cast<uintptr_t>(this)));
-}
-
-}  // namespace client
-}  // namespace geode
-}  // namespace apache
+#endif  // GEODE_UTIL_HASH_H_

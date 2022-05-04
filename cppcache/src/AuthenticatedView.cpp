@@ -165,12 +165,7 @@ AuthenticatedView::~AuthenticatedView() = default;
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(
     const std::string& className, bool expectDomainClass) const {
-  return PdxInstanceFactory(className, expectDomainClass,
-                            m_cacheImpl->getCachePerfStats(),
-                            *m_cacheImpl->getPdxTypeRegistry(), *m_cacheImpl,
-                            m_cacheImpl->getDistributedSystem()
-                                .getSystemProperties()
-                                .getEnableTimeStatistics());
+  return PdxInstanceFactory(className, expectDomainClass, *m_cacheImpl);
 }
 
 PdxInstanceFactory AuthenticatedView::createPdxInstanceFactory(

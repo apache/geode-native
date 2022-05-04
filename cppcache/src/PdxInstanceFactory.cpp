@@ -20,7 +20,7 @@
 #include "PdxHelper.hpp"
 #include "PdxInstanceImpl.hpp"
 #include "PdxType.hpp"
-#include "PdxTypes.hpp"
+#include "PdxWriterImpl.hpp"
 
 namespace apache {
 namespace geode {
@@ -28,261 +28,260 @@ namespace client {
 
 PdxInstanceFactory::PdxInstanceFactory(const std::string& className,
                                        bool expectDomainClass,
-                                       CachePerfStats& cachePerfStats,
-                                       PdxTypeRegistry& pdxTypeRegistry,
-                                       const CacheImpl& cache,
-                                       bool enableTimeStatistics)
-    : m_created(false),
-      m_pdxType(std::make_shared<PdxType>(pdxTypeRegistry, className, false,
-                                          expectDomainClass)),
-      m_cachePerfStats(cachePerfStats),
-      m_pdxTypeRegistry(pdxTypeRegistry),
-      m_cacheImpl(cache),
-      m_enableTimeStatistics(enableTimeStatistics) {}
+                                       const CacheImpl& cache)
+    : created_(false),
+      pdxType_(std::make_shared<PdxType>(className, expectDomainClass)),
+      cacheImpl_{cache} {}
 
 std::shared_ptr<PdxInstance> PdxInstanceFactory::create() {
-  if (m_created) {
+  if (created_) {
     throw IllegalStateException(
         "The PdxInstanceFactory.Create() method can only be called once.");
   }
 
-  m_created = true;
-  return std::make_shared<PdxInstanceImpl>(m_FieldVsValues, m_pdxType,
-                                           m_cachePerfStats, m_pdxTypeRegistry,
-                                           m_cacheImpl, m_enableTimeStatistics);
+  created_ = true;
+  std::vector<std::shared_ptr<Cacheable>> fields;
+
+  fields.resize(fields_.size());
+  for (const auto& entry : fields_) {
+    const auto& name = entry.first;
+    auto type = entry.second.first;
+    auto value = entry.second.second;
+    auto fieldType = pdxType_->addField(name, type);
+    fields[fieldType->getIndex()] = std::move(value);
+  }
+
+  for (const auto& name : identityFields_) {
+    pdxType_->getField(name)->setIdentity(true);
+  }
+
+  pdxType_->initialize();
+  return std::make_shared<PdxInstanceImpl>(std::move(fields), pdxType_,
+                                           cacheImpl_);
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char16_t value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
-                                     PdxTypes::kPdxCharSize);
-  auto cacheableObject = CacheableCharacter::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::CHAR, PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeChar(const std::string& fieldName,
                                                   char value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "char", PdxFieldTypes::CHAR,
-                                     PdxTypes::kPdxCharSize);
-  auto cacheableObject = CacheableCharacter::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::CHAR, PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeBoolean(
     const std::string& fieldName, bool value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "bool", PdxFieldTypes::BOOLEAN,
-                                     PdxTypes::kPdxBooleanSize);
-  auto cacheableObject = CacheableBoolean::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::BOOLEAN,
+                            PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeByte(const std::string& fieldName,
                                                   int8_t value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "byte", PdxFieldTypes::BYTE,
-                                     PdxTypes::kPdxByteSize);
-  auto cacheableObject = CacheableByte::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::BYTE, PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeShort(const std::string& fieldName,
                                                    int16_t value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "short", PdxFieldTypes::SHORT,
-                                     PdxTypes::kPdxShortSize);
-  auto cacheableObject = CacheableInt16::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::SHORT,
+                            PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeInt(const std::string& fieldName,
                                                  int32_t value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "int", PdxFieldTypes::INT,
-                                     PdxTypes::kPdxIntegerSize);
-  auto cacheableObject = CacheableInt32::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::INT, PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeLong(const std::string& fieldName,
                                                   int64_t value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "long", PdxFieldTypes::LONG,
-                                     PdxTypes::kPdxLongSize);
-  auto cacheableObject = CacheableInt64::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::LONG, PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeFloat(const std::string& fieldName,
                                                    float value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "float", PdxFieldTypes::FLOAT,
-                                     PdxTypes::kPdxFloatSize);
-  auto cacheableObject = CacheableFloat::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::FLOAT,
+                            PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeDouble(
     const std::string& fieldName, double value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "double", PdxFieldTypes::DOUBLE,
-                                     PdxTypes::kPdxDoubleSize);
-  auto cacheableObject = CacheableDouble::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::DOUBLE,
+                            PdxInstanceImpl::toCacheableField(value)));
 
-PdxInstanceFactory& PdxInstanceFactory::writeString(
-    const std::string& fieldName, const std::string& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "string",
-                                        PdxFieldTypes::STRING);
-  auto cacheableObject = CacheableString::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeString(
-    const std::string& fieldName, std::string&& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "string",
-                                        PdxFieldTypes::STRING);
-  auto cacheableObject = CacheableString::create(std::move(value));
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeObject(
-    const std::string& fieldName, std::shared_ptr<Cacheable> value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "Object",
-                                        PdxFieldTypes::OBJECT);
-  m_FieldVsValues.emplace(fieldName, value);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeObjectArray(
-    const std::string& fieldName, std::shared_ptr<CacheableObjectArray> value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "Object[]",
-                                        PdxFieldTypes::OBJECT_ARRAY);
-  m_FieldVsValues.emplace(fieldName, value);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeBooleanArray(
-    const std::string& fieldName, const std::vector<bool>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "bool[]",
-                                        PdxFieldTypes::BOOLEAN_ARRAY);
-  auto cacheableObject = BooleanArray::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeCharArray(
-    const std::string& fieldName, const std::vector<char16_t>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "char[]",
-                                        PdxFieldTypes::CHAR_ARRAY);
-  auto cacheableObject = CharArray::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeByteArray(
-    const std::string& fieldName, const std::vector<int8_t>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "byte[]",
-                                        PdxFieldTypes::BYTE_ARRAY);
-  auto cacheableObject = CacheableBytes::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeShortArray(
-    const std::string& fieldName, const std::vector<int16_t>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "short[]",
-                                        PdxFieldTypes::SHORT_ARRAY);
-  auto cacheableObject = CacheableInt16Array::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeIntArray(
-    const std::string& fieldName, const std::vector<int32_t>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "int32[]",
-                                        PdxFieldTypes::INT_ARRAY);
-  auto cacheableObject = CacheableInt32Array::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeLongArray(
-    const std::string& fieldName, const std::vector<int64_t>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "int64[]",
-                                        PdxFieldTypes::LONG_ARRAY);
-  auto cacheableObject = CacheableInt64Array::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeFloatArray(
-    const std::string& fieldName, const std::vector<float>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "float[]",
-                                        PdxFieldTypes::FLOAT_ARRAY);
-  auto cacheableObject = CacheableFloatArray::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeDoubleArray(
-    const std::string& fieldName, const std::vector<double>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "double[]",
-                                        PdxFieldTypes::DOUBLE_ARRAY);
-  auto cacheableObject = CacheableDoubleArray::create(value);
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
-  return *this;
-}
-
-PdxInstanceFactory& PdxInstanceFactory::writeStringArray(
-    const std::string& fieldName, const std::vector<std::string>& value) {
-  isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "string[]",
-                                        PdxFieldTypes::STRING_ARRAY);
-  if (!value.empty()) {
-    std::vector<std::shared_ptr<CacheableString>> ptrArr;
-    ptrArr.reserve(value.size());
-    for (auto&& v : value) {
-      ptrArr.push_back(CacheableString::create(v));
-    }
-    auto cacheableObject = CacheableStringArray::create(ptrArr);
-    m_FieldVsValues.emplace(fieldName, cacheableObject);
-  }
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::writeDate(
     const std::string& fieldName, std::shared_ptr<CacheableDate> value) {
   isFieldAdded(fieldName);
-  m_pdxType->addFixedLengthTypeField(fieldName, "Date", PdxFieldTypes::DATE,
-                                     PdxTypes::kPdxDateSize /*+ 1*/);
-  m_FieldVsValues.emplace(fieldName, value);
+  fields_.emplace(fieldName, FieldInfo(PdxFieldTypes::DATE, value));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeString(
+    const std::string& fieldName, const std::string& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::STRING,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeString(
+    const std::string& fieldName, std::string&& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(
+      fieldName,
+      FieldInfo(PdxFieldTypes::STRING,
+                PdxInstanceImpl::toCacheableField(std::move(value))));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeObject(
+    const std::string& fieldName, std::shared_ptr<Cacheable> value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName, FieldInfo(PdxFieldTypes::OBJECT, value));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeObjectArray(
+    const std::string& fieldName, std::shared_ptr<CacheableObjectArray> value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName, FieldInfo(PdxFieldTypes::OBJECT_ARRAY, value));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeBooleanArray(
+    const std::string& fieldName, const std::vector<bool>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::BOOLEAN_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeCharArray(
+    const std::string& fieldName, const std::vector<char16_t>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::CHAR_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeByteArray(
+    const std::string& fieldName, const std::vector<int8_t>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::BYTE_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeShortArray(
+    const std::string& fieldName, const std::vector<int16_t>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::SHORT_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeIntArray(
+    const std::string& fieldName, const std::vector<int32_t>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::INT_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeLongArray(
+    const std::string& fieldName, const std::vector<int64_t>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::LONG_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeFloatArray(
+    const std::string& fieldName, const std::vector<float>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::FLOAT_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeDoubleArray(
+    const std::string& fieldName, const std::vector<double>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::DOUBLE_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
+  return *this;
+}
+
+PdxInstanceFactory& PdxInstanceFactory::writeStringArray(
+    const std::string& fieldName, const std::vector<std::string>& value) {
+  isFieldAdded(fieldName);
+  fields_.emplace(fieldName,
+                  FieldInfo(PdxFieldTypes::STRING_ARRAY,
+                            PdxInstanceImpl::toCacheableField(value)));
+
   return *this;
 }
 
@@ -290,32 +289,26 @@ PdxInstanceFactory& PdxInstanceFactory::writeArrayOfByteArrays(
     const std::string& fieldName, int8_t** value, int32_t arrayLength,
     int32_t* elementLength) {
   isFieldAdded(fieldName);
-  m_pdxType->addVariableLengthTypeField(fieldName, "byte[][]",
-                                        PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS);
-  auto cacheableObject = CacheableVector::create();
-  for (int i = 0; i < arrayLength; i++) {
-    auto ptr = CacheableBytes::create(
-        std::vector<int8_t>(value[i], value[i] + elementLength[i]));
-    cacheableObject->push_back(ptr);
-  }
-  m_FieldVsValues.emplace(fieldName, cacheableObject);
+  fields_.emplace(fieldName, FieldInfo(PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS,
+                                       PdxInstanceImpl::toCacheableField(
+                                           value, arrayLength, elementLength)));
   return *this;
 }
 
 PdxInstanceFactory& PdxInstanceFactory::markIdentityField(
-    const std::string& fieldName) {
-  auto pfType = m_pdxType->getPdxField(fieldName);
-  if (pfType == nullptr) {
+    const std::string& name) {
+  if (fields_.find(name) == fields_.end()) {
     throw IllegalStateException(
         "Field must be added before calling MarkIdentityField ");
   }
-  pfType->setIdentityField(true);
+
+  identityFields_.insert(name);
   return *this;
 }
 
-void PdxInstanceFactory::isFieldAdded(const std::string& fieldName) {
-  if (m_FieldVsValues.find(fieldName) != m_FieldVsValues.end()) {
-    throw IllegalStateException("Field: " + fieldName +
+void PdxInstanceFactory::isFieldAdded(const std::string& name) {
+  if (fields_.find(name) != fields_.end()) {
+    throw IllegalStateException("Field: " + name +
                                 " is either already added into "
                                 "PdxInstanceFactory or it is null");
   }

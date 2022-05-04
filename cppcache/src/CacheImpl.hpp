@@ -135,6 +135,12 @@ class APACHE_GEODE_EXPORT CacheImpl {
   DistributedSystem& getDistributedSystem();
 
   /**
+   * Returns the distributed system that this cache was
+   * {@link CacheFactory::create created} with.
+   */
+  const DistributedSystem& getDistributedSystem() const;
+
+  /**
    * Returns the type registry that this cache was
    * {@link CacheFactory::create created} with.
    */
@@ -269,7 +275,10 @@ class APACHE_GEODE_EXPORT CacheImpl {
   std::shared_ptr<PdxTypeRegistry> getPdxTypeRegistry() const;
 
   std::shared_ptr<SerializationRegistry> getSerializationRegistry() const;
-  inline CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
+
+  CachePerfStats& getCachePerfStats() { return *m_cacheStats; }
+
+  const CachePerfStats& getCachePerfStats() const { return *m_cacheStats; }
 
   PoolManager& getPoolManager() const {
     this->throwIfClosed();

@@ -221,6 +221,10 @@ DistributedSystem& CacheImpl::getDistributedSystem() {
   return m_distributedSystem;
 }
 
+const DistributedSystem& CacheImpl::getDistributedSystem() const {
+  return m_distributedSystem;
+}
+
 TypeRegistry& CacheImpl::getTypeRegistry() {
   this->throwIfClosed();
   return *m_typeRegistry;
@@ -830,9 +834,7 @@ PdxInstanceFactory CacheImpl::createPdxInstanceFactory(
     const std::string& className, bool expectDomainClass) const {
   this->throwIfClosed();
 
-  return PdxInstanceFactory(
-      className, expectDomainClass, *m_cacheStats, *m_pdxTypeRegistry, *this,
-      m_distributedSystem.getSystemProperties().getEnableTimeStatistics());
+  return PdxInstanceFactory{className, expectDomainClass, *this};
 }
 
 AuthenticatedView CacheImpl::createAuthenticatedView(

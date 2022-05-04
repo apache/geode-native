@@ -18,38 +18,261 @@
 #include "PdxInstanceImpl.hpp"
 
 #include <algorithm>
+#include <iomanip>
 
 #include <geode/Cache.hpp>
+#include <geode/DataOutput.hpp>
 #include <geode/PdxFieldTypes.hpp>
 #include <geode/PdxReader.hpp>
 #include <geode/internal/DataSerializablePrimitive.hpp>
 
+#include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
 #include "PdxHelper.hpp"
+#include "PdxReaderImpl.hpp"
+#include "PdxType.hpp"
+#include "PdxWriterImpl.hpp"
 #include "Utils.hpp"
+#include "WritablePdxInstanceImpl.hpp"
+
+#include "util/hash.hpp"
 #include "util/string.hpp"
 
 namespace {
 
-int8_t BOOLEAN_DEFAULT_BYTES[] = {0};
-int8_t BYTE_DEFAULT_BYTES[] = {0};
-int8_t SHORT_DEFAULT_BYTES[] = {0, 0};
-int8_t CHAR_DEFAULT_BYTES[] = {0, 0};
-int8_t INT_DEFAULT_BYTES[] = {0, 0, 0, 0};
-int8_t LONG_DEFAULT_BYTES[] = {0, 0, 0, 0, 0, 0, 0, 0};
-int8_t FLOAT_DEFAULT_BYTES[] = {0, 0, 0, 0};
-int8_t DOUBLE_DEFAULT_BYTES[] = {0, 0, 0, 0, 0, 0, 0, 0};
-int8_t DATE_DEFAULT_BYTES[] = {-1, -1, -1, -1, -1, -1, -1, -1};
-int8_t STRING_DEFAULT_BYTES[] = {
-    static_cast<int8_t>(apache::geode::client::DSCode::CacheableNullString)};
-int8_t OBJECT_DEFAULT_BYTES[] = {
-    static_cast<int8_t>(apache::geode::client::DSCode::NullObj)};
-int8_t NULL_ARRAY_DEFAULT_BYTES[] = {-1};
-std::shared_ptr<apache::geode::client::PdxFieldType> DEFAULT_PDX_FIELD_TYPE(
-    new apache::geode::client::PdxFieldType(
-        "default", "default", apache::geode::client::PdxFieldTypes::UNKNOWN,
-        -1 /*field index*/, false, 1, -1 /*var len field idx*/));
+using apache::geode::client::Cacheable;
+using apache::geode::client::CharArray;
+using apache::geode::client::BooleanArray;
+using apache::geode::client::CacheableDate;
+using apache::geode::client::CacheableByte;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableFloat;
+using apache::geode::client::CacheableDouble;
+using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableCharacter;
+using apache::geode::client::CacheableInt16Array;
+using apache::geode::client::CacheableInt32Array;
+using apache::geode::client::CacheableInt64Array;
+using apache::geode::client::CacheableFloatArray;
+using apache::geode::client::CacheableDoubleArray;
+using apache::geode::client::CacheableStringArray;
+using apache::geode::client::CacheableObjectArray;
+
+template <typename T>
+T fromCacheableField(std::shared_ptr<Cacheable> field);
+
+template <>
+bool fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableBoolean*>(field.get());
+  return value->value();
+}
+
+template <>
+int8_t fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableByte*>(field.get());
+  return value->value();
+}
+
+template <>
+int16_t fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt16*>(field.get());
+  return value->value();
+}
+
+template <>
+int32_t fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt32*>(field.get());
+  return value->value();
+}
+
+template <>
+int64_t fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt64*>(field.get());
+  return value->value();
+}
+
+template <>
+float fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableFloat*>(field.get());
+  return value->value();
+}
+
+template <>
+double fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableDouble*>(field.get());
+  return value->value();
+}
+
+template <>
+char16_t fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableCharacter*>(field.get());
+  return value->value();
+}
+
+template <>
+std::shared_ptr<CacheableDate> fromCacheableField(
+    std::shared_ptr<Cacheable> field) {
+  return std::dynamic_pointer_cast<CacheableDate>(field);
+}
+
+template <>
+std::string fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableString*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<bool> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<BooleanArray*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<int8_t> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableBytes*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<int16_t> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt16Array*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<int32_t> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt32Array*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<int64_t> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableInt64Array*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<float> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableFloatArray*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<double> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CacheableDoubleArray*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<char16_t> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  auto value = dynamic_cast<CharArray*>(field.get());
+  return value->value();
+}
+
+template <>
+std::vector<std::vector<int8_t>> fromCacheableField(
+    std::shared_ptr<Cacheable> field) {
+  std::vector<std::vector<int8_t>> result;
+  auto vector = dynamic_cast<CacheableVector*>(field.get());
+
+  result.reserve(vector->size());
+  for (const auto& entry : *vector) {
+    auto&& val = dynamic_cast<CacheableBytes*>(entry.get());
+    result.emplace_back(val->value());
+  }
+
+  return result;
+}
+
+template <>
+std::shared_ptr<CacheableObjectArray> fromCacheableField(
+    std::shared_ptr<Cacheable> field) {
+  return std::dynamic_pointer_cast<CacheableObjectArray>(field);
+}
+
+template <>
+std::vector<std::string> fromCacheableField(std::shared_ptr<Cacheable> field) {
+  std::vector<std::string> result;
+  auto array = dynamic_cast<CacheableStringArray*>(field.get());
+  result.reserve(array->length());
+  for (const auto& entry : array->value()) {
+    result.emplace_back(entry->value());
+  }
+
+  return result;
+}
+
+int8_t** fromCacheableField(std::shared_ptr<Cacheable> field,
+                            int32_t& arrayLength, int32_t*& elementLength) {
+  auto vector = dynamic_cast<CacheableVector*>(field.get());
+  if(vector->empty()) {
+    arrayLength = 0;
+    elementLength = nullptr;
+
+    return nullptr;
+  }
+
+  const auto size = vector->size();
+  int8_t** values = new int8_t*[size];
+  auto lengths = new int32_t[size];
+
+  size_t i = 0;
+  for (auto&& entry : *vector) {
+    int32_t len;
+    int8_t *buffer;
+    auto&& val = std::dynamic_pointer_cast<CacheableBytes>(entry);
+
+    if(val) {
+      len = val->length();
+      if(len > 0) {
+        buffer = new int8_t[len];
+        std::memcpy(buffer, val->value().data(), len);
+      } else {
+        buffer = nullptr;
+      }
+
+      values[i] = buffer;
+      lengths[i] = len;
+    } else {
+      len = 0;
+      buffer = nullptr;
+    }
+
+    values[i] = buffer;
+    lengths[i++] = len;
+  }
+
+  arrayLength = static_cast<int32_t>(size);
+  elementLength = lengths;
+  return values;
+}
+
+template <typename T>
+bool compareArray(std::shared_ptr<Cacheable> value,
+                  std::shared_ptr<Cacheable> otherValue) {
+  using VectorType = std::vector<T>;
+  auto vector = fromCacheableField<VectorType>(value);
+  auto otherVector = fromCacheableField<VectorType>(otherValue);
+
+  if (vector.size() != otherVector.size()) {
+    return false;
+  }
+
+  return std::equal(vector.begin(), vector.end(), otherVector.begin());
+}
+
+template <typename T>
+bool arrayHashCode(std::shared_ptr<Cacheable> value) {
+  using VectorType = std::vector<T>;
+  return std::hash<VectorType>{}(fromCacheableField<VectorType>(value));
+}
+
 }  // namespace
 
 namespace apache {
@@ -58,166 +281,781 @@ namespace client {
 
 using internal::DataSerializablePrimitive;
 
-PdxInstanceImpl::~PdxInstanceImpl() noexcept {}
-
-PdxInstanceImpl::PdxInstanceImpl(const uint8_t* buffer, size_t length,
+PdxInstanceImpl::PdxInstanceImpl(Fields fields,
                                  std::shared_ptr<PdxType> pdxType,
-                                 CachePerfStats& cacheStats,
-                                 PdxTypeRegistry& pdxTypeRegistry,
-                                 const CacheImpl& cacheImpl,
-                                 bool enableTimeStatistics)
-    : buffer_(buffer, buffer + length),
-      typeId_(pdxType->getTypeId()),
-      pdxType_(pdxType),
-      cacheStats_(cacheStats),
-      pdxTypeRegistry_(pdxTypeRegistry),
-      cacheImpl_(cacheImpl),
-      enableTimeStatistics_(enableTimeStatistics) {
-  cacheStats.incPdxInstanceCreations();
-  LOGDEBUG("PdxInstanceImpl::m_bufferLength = %zu ", buffer_.size());
+                                 const CacheImpl& cache)
+    : PdxInstanceImpl{fields, FieldsBuffer{}, pdxType, cache} {}
+
+PdxInstanceImpl::PdxInstanceImpl(FieldsBuffer buffer,
+                                 std::shared_ptr<PdxType> pdxType,
+                                 const CacheImpl& cache)
+    : PdxInstanceImpl{Fields{}, buffer, pdxType, cache} {
+  deserialize();
 }
 
-PdxInstanceImpl::PdxInstanceImpl(FieldVsValues fieldVsValue,
+PdxInstanceImpl::PdxInstanceImpl(Fields fields, FieldsBuffer buffer,
                                  std::shared_ptr<PdxType> pdxType,
-                                 CachePerfStats& cacheStats,
-                                 PdxTypeRegistry& pdxTypeRegistry,
-                                 const CacheImpl& cacheImpl,
-                                 bool enableTimeStatistics)
-    : typeId_(0),
-      pdxType_(pdxType),
-      m_updatedFields(fieldVsValue),
-      cacheStats_(cacheStats),
-      pdxTypeRegistry_(pdxTypeRegistry),
-      cacheImpl_(cacheImpl),
-      enableTimeStatistics_(enableTimeStatistics) {
-  cacheStats.incPdxInstanceCreations();
-  pdxType_->InitializeType();  // to generate static position map
+                                 const CacheImpl& cache)
+    : fields_{std::move(fields)},
+      pdxType_{pdxType},
+      buffer_{std::move(buffer)},
+      cacheStats_(const_cast<CacheImpl&>(cache).getCachePerfStats()),
+      cache_(cache),
+      enableTimeStatistics_(cache.getDistributedSystem()
+                                .getSystemProperties()
+                                .getEnableTimeStatistics()) {
+  cacheStats_.incPdxInstanceCreations();
 }
 
-void PdxInstanceImpl::writeField(PdxWriter& writer, const std::string& name,
-                                 PdxFieldTypes typeId,
-                                 std::shared_ptr<Cacheable> value) {
-  switch (typeId) {
-    case PdxFieldTypes::INT: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt32>(value)) {
-        writer.writeInt(name, val->value());
-      }
-      break;
+PdxInstanceImpl::~PdxInstanceImpl() noexcept = default;
+
+std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
+  auto buffer = getFieldsBuffer();
+  auto input = cache_.createDataInput(buffer.data(), buffer.size());
+
+  int64_t sampleStartNanos =
+      enableTimeStatistics_ ? Utils::startStatOpTime() : 0;
+
+  auto object =
+      PdxHelper::deserializePdxSerializable(input, pdxType_, buffer.size());
+
+  if (enableTimeStatistics_) {
+    Utils::updateStatOpTime(cacheStats_.getStat(),
+                            cacheStats_.getPdxInstanceDeserializationTimeId(),
+                            sampleStartNanos);
+  }
+
+  cacheStats_.incPdxInstanceDeserializations();
+  return object;
+}
+
+bool PdxInstanceImpl::hasField(const std::string& name) {
+  return pdxType_->getField(name) != nullptr;
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(
+    const std::string& name) const {
+  return getField(name, PdxFieldTypes::OBJECT);
+}
+
+bool PdxInstanceImpl::getBooleanField(const std::string& name) const {
+  auto field = dynamic_cast<CacheableBoolean*>(
+      getField(name, PdxFieldTypes::BOOLEAN).get());
+  return field->value();
+}
+
+int8_t PdxInstanceImpl::getByteField(const std::string& name) const {
+  auto field =
+      dynamic_cast<CacheableByte*>(getField(name, PdxFieldTypes::BYTE).get());
+  return field->value();
+}
+
+int16_t PdxInstanceImpl::getShortField(const std::string& name) const {
+  return fromCacheableField<int16_t>(getField(name, PdxFieldTypes::SHORT));
+}
+
+int32_t PdxInstanceImpl::getIntField(const std::string& name) const {
+  return fromCacheableField<int32_t>(getField(name, PdxFieldTypes::INT));
+}
+
+int64_t PdxInstanceImpl::getLongField(const std::string& name) const {
+  return fromCacheableField<int64_t>(getField(name, PdxFieldTypes::LONG));
+}
+
+float PdxInstanceImpl::getFloatField(const std::string& name) const {
+  return fromCacheableField<float>(getField(name, PdxFieldTypes::FLOAT));
+}
+
+double PdxInstanceImpl::getDoubleField(const std::string& name) const {
+  return fromCacheableField<double>(getField(name, PdxFieldTypes::DOUBLE));
+}
+
+char16_t PdxInstanceImpl::getCharField(const std::string& name) const {
+  return fromCacheableField<char16_t>(getField(name, PdxFieldTypes::CHAR));
+}
+
+std::string PdxInstanceImpl::getStringField(const std::string& name) const {
+  return fromCacheableField<std::string>(getField(name, PdxFieldTypes::STRING));
+}
+
+std::vector<bool> PdxInstanceImpl::getBooleanArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<bool>>(
+      getField(name, PdxFieldTypes::BOOLEAN_ARRAY));
+}
+
+std::vector<int8_t> PdxInstanceImpl::getByteArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<int8_t>>(
+      getField(name, PdxFieldTypes::BYTE_ARRAY));
+}
+
+std::vector<int16_t> PdxInstanceImpl::getShortArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<int16_t>>(
+      getField(name, PdxFieldTypes::SHORT_ARRAY));
+}
+
+std::vector<int32_t> PdxInstanceImpl::getIntArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<int32_t>>(
+      getField(name, PdxFieldTypes::INT_ARRAY));
+}
+
+std::vector<int64_t> PdxInstanceImpl::getLongArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<int64_t>>(
+      getField(name, PdxFieldTypes::LONG_ARRAY));
+}
+
+std::vector<float> PdxInstanceImpl::getFloatArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<float>>(
+      getField(name, PdxFieldTypes::FLOAT_ARRAY));
+}
+
+std::vector<double> PdxInstanceImpl::getDoubleArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<double>>(
+      getField(name, PdxFieldTypes::DOUBLE_ARRAY));
+}
+
+std::vector<char16_t> PdxInstanceImpl::getCharArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<char16_t>>(
+      getField(name, PdxFieldTypes::CHAR_ARRAY));
+}
+
+std::vector<std::string> PdxInstanceImpl::getStringArrayField(
+    const std::string& name) const {
+  return fromCacheableField<std::vector<std::string>>(
+      getField(name, PdxFieldTypes::STRING_ARRAY));
+}
+
+std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
+    const std::string& name) const {
+  return fromCacheableField<std::shared_ptr<CacheableDate>>(
+      getField(name, PdxFieldTypes::DATE));
+}
+
+void PdxInstanceImpl::getField(const std::string& name, int8_t*** value,
+                               int32_t& arrayLength,
+                               int32_t*& elementLength) const {
+  *value =
+      fromCacheableField(getField(name, PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS),
+                         arrayLength, elementLength);
+}
+
+std::shared_ptr<CacheableObjectArray>
+PdxInstanceImpl::getCacheableObjectArrayField(const std::string& name) const {
+  return fromCacheableField<std::shared_ptr<CacheableObjectArray>>(
+      getField(name, PdxFieldTypes::OBJECT_ARRAY));
+}
+
+bool PdxInstanceImpl::isIdentityField(const std::string& name) {
+  auto field = pdxType_->getField(name);
+  return field != nullptr && field->isIdentity();
+}
+
+std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
+  LOGDEBUG("PdxInstanceImpl::createWriter fields_.size() = %zu type_ = %d ",
+           fields_.size(), pdxType_->getTypeId());
+  return std::make_shared<WritablePdxInstanceImpl>(fields_, buffer_, pdxType_,
+                                                   cache_);
+}
+
+int32_t PdxInstanceImpl::hashcode() const {
+  int hashCode = 1;
+  auto input = cache_.createDataInput(buffer_.data(), buffer_.size());
+
+  for (const auto& entry : pdxType_->getFieldMap()) {
+    const auto& field = entry.second;
+    if (!field->isIdentity()) {
+      continue;
     }
-    case PdxFieldTypes::STRING: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableString>(value)) {
-        writer.writeString(name, val->value());
+
+    auto value = fields_.at(field->getIndex());
+    switch (field->getType()) {
+      case PdxFieldTypes::CHAR:
+      case PdxFieldTypes::BOOLEAN:
+      case PdxFieldTypes::BYTE:
+      case PdxFieldTypes::SHORT:
+      case PdxFieldTypes::INT:
+      case PdxFieldTypes::LONG:
+      case PdxFieldTypes::DATE:
+      case PdxFieldTypes::FLOAT:
+      case PdxFieldTypes::DOUBLE:
+      case PdxFieldTypes::STRING: {
+        hashCode = 31 * hashCode +
+                   dynamic_cast<CacheableKey*>(value.get())->hashcode();
+        break;
       }
-      break;
-    }
-    case PdxFieldTypes::BOOLEAN: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableBoolean>(value)) {
-        writer.writeBoolean(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::FLOAT: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableFloat>(value)) {
-        writer.writeFloat(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::DOUBLE: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableDouble>(value)) {
-        writer.writeDouble(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::CHAR: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableCharacter>(value)) {
-        writer.writeChar(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::BYTE: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableByte>(value)) {
-        writer.writeByte(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::SHORT: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt16>(value)) {
-        writer.writeShort(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::LONG: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt64>(value)) {
-        writer.writeLong(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::BYTE_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableBytes>(value)) {
-        writer.writeByteArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::DOUBLE_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableDoubleArray>(value)) {
-        writer.writeDoubleArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::FLOAT_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableFloatArray>(value)) {
-        writer.writeFloatArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::SHORT_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt16Array>(value)) {
-        writer.writeShortArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::INT_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt32Array>(value)) {
-        writer.writeIntArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::LONG_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableInt64Array>(value)) {
-        writer.writeLongArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::BOOLEAN_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<BooleanArray>(value)) {
-        writer.writeBooleanArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::CHAR_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CharArray>(value)) {
-        writer.writeCharArray(name, val->value());
-      }
-      break;
-    }
-    case PdxFieldTypes::STRING_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableStringArray>(value)) {
-        auto size = val->length();
-        std::vector<std::string> strings;
-        strings.reserve(size);
-        for (int item = 0; item < size; item++) {
-          strings.push_back((*val)[item]->value());
+      case PdxFieldTypes::BOOLEAN_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<bool>(value);
+        break;
+      case PdxFieldTypes::CHAR_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<char16_t>(value);
+        break;
+      case PdxFieldTypes::BYTE_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<int8_t>(value);
+        break;
+      case PdxFieldTypes::SHORT_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<int16_t>(value);
+        break;
+      case PdxFieldTypes::INT_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<int32_t>(value);
+        break;
+      case PdxFieldTypes::LONG_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<int64_t>(value);
+        break;
+      case PdxFieldTypes::FLOAT_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<float>(value);
+        break;
+      case PdxFieldTypes::DOUBLE_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<double>(value);
+        break;
+      case PdxFieldTypes::STRING_ARRAY:
+        hashCode = 31 * hashCode + arrayHashCode<std::string>(value);
+        break;
+      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
+        hashCode = 31 * hashCode + arrayHashCode<std::vector<int8_t>>(value);
+        break;
+      case PdxFieldTypes::OBJECT:
+      case PdxFieldTypes::OBJECT_ARRAY: {
+        if (value != nullptr) {
+          hashCode = 31 * hashCode + deepHashCode(value);
         }
-        writer.writeStringArray(name, strings);
+        break;
       }
-      break;
-    }
-    case PdxFieldTypes::DATE: {
-      if (auto&& date = std::dynamic_pointer_cast<CacheableDate>(value)) {
-        writer.writeDate(name, date);
+      case PdxFieldTypes::UNKNOWN: {
+        throw IllegalStateException(
+            "PdxInstance not found typeid " +
+            std::to_string(static_cast<int>(field->getType())));
       }
-      break;
     }
+  }
+
+  return hashCode;
+}
+
+std::string PdxInstanceImpl::toString() const {
+  std::string result = "PDX[" + std::to_string(pdxType_->getTypeId()) + "," +
+                       pdxType_->getPdxClassName() + "]{";
+
+  bool firstElement = true;
+  for (const auto& entry : pdxType_->getFieldMap()) {
+    const auto& field = entry.second;
+    if (!field->isIdentity()) {
+      continue;
+    }
+
+    if (firstElement) {
+      firstElement = false;
+    } else {
+      result += ",";
+    }
+    result += field->getName();
+    result += "=";
+
+    auto fieldValue = fields_.at(field->getIndex());
+    switch (field->getType()) {
+      case PdxFieldTypes::BOOLEAN: {
+        auto&& value = fromCacheableField<bool>(fieldValue);
+        result += value ? "true" : "false";
+        break;
+      }
+      case PdxFieldTypes::BYTE: {
+        auto&& value = fromCacheableField<int8_t>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::SHORT: {
+        int16_t value = fromCacheableField<int16_t>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::INT: {
+        int32_t value = fromCacheableField<int32_t>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::LONG: {
+        int64_t value = fromCacheableField<int64_t>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::FLOAT: {
+        float value = fromCacheableField<float>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::DOUBLE: {
+        double value = fromCacheableField<double>(fieldValue);
+        result += std::to_string(value);
+        break;
+      }
+      case PdxFieldTypes::CHAR: {
+        auto value = fromCacheableField<char16_t>(fieldValue);
+        result += to_utf8(std::u16string{value});
+        break;
+      }
+      case PdxFieldTypes::DATE: {
+        auto value =
+            fromCacheableField<std::shared_ptr<CacheableDate>>(fieldValue);
+        if (value != nullptr) {
+          result += value->toString();
+        }
+        break;
+      }
+      case PdxFieldTypes::STRING: {
+        auto value = fromCacheableField<std::string>(fieldValue);
+        result += value;
+        break;
+      }
+      case PdxFieldTypes::BOOLEAN_ARRAY: {
+        auto value = fromCacheableField<std::vector<bool>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += v ? "true" : "false";
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::BYTE_ARRAY: {
+        auto value = fromCacheableField<std::vector<int8_t>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::SHORT_ARRAY: {
+        auto value = fromCacheableField<std::vector<int16_t>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::INT_ARRAY: {
+        auto value = fromCacheableField<std::vector<int32_t>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::LONG_ARRAY: {
+        auto value = fromCacheableField<std::vector<int64_t>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::FLOAT_ARRAY: {
+        auto value = fromCacheableField<std::vector<float>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::DOUBLE_ARRAY: {
+        auto value = fromCacheableField<std::vector<double>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          for (auto&& v : value) {
+            result += std::to_string(v);
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::CHAR_ARRAY: {
+        auto value = fromCacheableField<std::vector<char16_t>>(fieldValue);
+        auto length = value.size();
+        if (length > 0) {
+          result += to_utf8(std::u16string(value.data(), length));
+        }
+        break;
+      }
+      case PdxFieldTypes::STRING_ARRAY: {
+        auto value = fromCacheableField<std::vector<std::string>>(fieldValue);
+        for (auto&& v : value) {
+          result += v;
+        }
+        break;
+      }
+      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
+        auto value =
+            fromCacheableField<std::vector<std::vector<int8_t>>>(fieldValue);
+        auto len = value.size();
+        if (len > 0) {
+          for (const auto& row : value) {
+            for (auto x : row) {
+              result += std::to_string(x);
+            }
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::OBJECT_ARRAY: {
+        auto value = getCacheableObjectArrayField(field->getName());
+        if (value != nullptr) {
+          result += value->toString();
+        }
+        break;
+      }
+      case PdxFieldTypes::OBJECT:
+      case PdxFieldTypes::UNKNOWN: {
+        auto value = getCacheableField(field->getName());
+        if (value != nullptr) {
+          result += value->toString();
+        }
+      }
+    }
+  }
+  result += "}";
+
+  return result;
+}
+
+bool PdxInstanceImpl::operator==(const CacheableKey& o) const {
+  PdxInstanceImpl* other =
+      dynamic_cast<PdxInstanceImpl*>(const_cast<CacheableKey*>(&o));
+
+  if (other == nullptr) {
+    return false;
+  }
+
+  if (this == other) {
+    return true;
+  }
+
+  auto otherType = other->pdxType_;
+  if (pdxType_->getPdxClassName() != otherType->getPdxClassName()) {
+    return false;
+  }
+
+  std::vector<std::shared_ptr<PdxFieldType>> identityFields;
+  for (const auto& entry : pdxType_->getFieldMap()) {
+    const auto& field = entry.second;
+    if (field->isIdentity()) {
+      identityFields.emplace_back(field);
+    }
+  }
+
+  std::vector<std::shared_ptr<PdxFieldType>> otherIdentityFields;
+  for (const auto& entry : otherType->getFieldMap()) {
+    const auto& field = entry.second;
+    if (field->isIdentity()) {
+      otherIdentityFields.emplace_back(field);
+    }
+  }
+
+  if (identityFields.size() != otherIdentityFields.size()) {
+    return false;
+  }
+
+  for (auto iter = identityFields.begin(),
+            otherIter = otherIdentityFields.begin(), end = identityFields.end();
+       iter != end;) {
+    const auto& field = **iter++;
+    const auto& otherField = **otherIter++;
+    if (field != otherField) {
+      return false;
+    }
+
+    auto value = fields_.at(field.getIndex());
+    auto otherValue = other->fields_.at(field.getIndex());
+    switch (field.getType()) {
+      case PdxFieldTypes::CHAR:
+      case PdxFieldTypes::BOOLEAN:
+      case PdxFieldTypes::BYTE:
+      case PdxFieldTypes::SHORT:
+      case PdxFieldTypes::INT:
+      case PdxFieldTypes::LONG:
+      case PdxFieldTypes::DATE:
+      case PdxFieldTypes::FLOAT:
+      case PdxFieldTypes::DOUBLE:
+      case PdxFieldTypes::STRING: {
+        if (!(dynamic_cast<CacheableKey&>(*value) ==
+              dynamic_cast<CacheableKey&>(*otherValue))) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::BOOLEAN_ARRAY: {
+        if (!compareArray<bool>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::CHAR_ARRAY: {
+        if (!compareArray<char16_t>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::BYTE_ARRAY: {
+        if (!compareArray<int8_t>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::SHORT_ARRAY: {
+        if (!compareArray<int16_t>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::INT_ARRAY: {
+        if (!compareArray<int32_t>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::LONG_ARRAY: {
+        if (!compareArray<int64_t>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::FLOAT_ARRAY: {
+        if (!compareArray<float>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::DOUBLE_ARRAY: {
+        if (!compareArray<double>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::STRING_ARRAY: {
+        if (!compareArray<std::string>(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
+        using VectorType = std::vector<std::vector<int8_t>>;
+
+        auto vector = fromCacheableField<VectorType>(value);
+        auto otherVector = fromCacheableField<VectorType>(otherValue);
+
+        if (vector.size() != otherVector.size()) {
+          return false;
+        }
+
+        for (auto vectorIter = vector.begin(),
+                  otherVectorIter = otherVector.begin(),
+                  vectorEnd = vector.end();
+             vectorIter != vectorEnd;) {
+          const auto& row = *vectorIter++;
+          const auto& otherRow = *otherVectorIter++;
+          if (row.size() != otherRow.size() ||
+              !std::equal(row.begin(), row.end(), otherRow.begin())) {
+            return false;
+          }
+        }
+        break;
+      }
+      case PdxFieldTypes::OBJECT:
+      case PdxFieldTypes::OBJECT_ARRAY: {
+        if (!deepArrayEquals(value, otherValue)) {
+          return false;
+        }
+        break;
+      }
+      case PdxFieldTypes::UNKNOWN: {
+        throw IllegalStateException(
+            std::string{"Field \""} + field.getName() +
+            std::string{"\" has an unknown type ("} +
+            std::to_string(static_cast<int32_t>(field.getType())) + ')');
+      }
+    }
+  }
+
+  return true;
+}
+
+size_t PdxInstanceImpl::objectSize() const {
+  auto size = sizeof(PdxInstanceImpl);
+  size += buffer_.size();
+  size += pdxType_->objectSize();
+
+  for (const auto& field : fields_) {
+    size += field->objectSize();
+  }
+
+  return size;
+}
+
+std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
+  const auto& fields = pdxType_->getFields();
+
+  if (fields.empty()) {
+    return nullptr;
+  }
+
+  std::vector<std::shared_ptr<CacheableString>> result;
+  result.reserve(fields.size());
+  for (auto&& field : fields) {
+    result.emplace_back(CacheableString::create(field->getName()));
+  }
+  return CacheableStringArray::create(std::move(result));
+}
+
+void PdxInstanceImpl::toData(PdxWriter& writer) const {
+  auto& writerImpl = dynamic_cast<PdxWriterImpl&>(writer);
+  serialize(writerImpl);
+
+  boost::unique_lock<decltype(serializationMutex_)> guard{serializationMutex_};
+  buffer_ = writerImpl.getFieldsBuffer();
+}
+
+void PdxInstanceImpl::fromData(PdxReader&) {
+  throw IllegalStateException(
+      "PdxInstance::fromData( .. ) shouldn't have called");
+}
+
+const std::string& PdxInstanceImpl::getClassName() const {
+  return pdxType_->getPdxClassName();
+}
+
+PdxFieldTypes PdxInstanceImpl::getFieldType(const std::string& name) const {
+  auto field = pdxType_->getField(name);
+
+  if (!field) {
+    throw IllegalStateException("PdxInstance doesn't have field " + name);
+  }
+
+  return field->getType();
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::getField(const std::string& name,
+                                                     PdxFieldTypes type) const {
+  auto field = pdxType_->getField(name);
+  if (!field) {
+    throw IllegalStateException("PdxInstance doesn't have field \"" + name +
+                                "\"");
+  }
+
+  if (field->getType() != type) {
+    throw IllegalStateException(
+        "PdxInstance field \"" + name + "\" type mismatch. Expected is " +
+        std::to_string(static_cast<int32_t>(type)) + " but got " +
+        std::to_string(static_cast<int32_t>(field->getType())));
+  }
+
+  return fields_.at(field->getIndex());
+}
+
+std::vector<uint8_t> PdxInstanceImpl::getFieldsBuffer() const {
+  boost::upgrade_lock<decltype(serializationMutex_)> lock{serializationMutex_};
+
+  if (!buffer_.empty()) {
+    return buffer_;
+  }
+
+  auto buffer = serialize();
+  boost::upgrade_to_unique_lock<decltype(serializationMutex_)> uniqueLock{lock};
+  return buffer_ = buffer;
+}
+
+std::vector<uint8_t> PdxInstanceImpl::serialize() const {
+  auto output = cache_.createDataOutput();
+  PdxWriterImpl writer{output};
+  serialize(writer);
+
+  return writer.getFieldsBuffer();
+}
+
+void PdxInstanceImpl::serialize(PdxWriterImpl& writer) const {
+  int32_t idx = 0;
+  for (const auto& value : fields_) {
+    auto&& field = pdxType_->getField(idx++);
+    writeField(writer, field->getType(), value);
+  }
+
+  writer.completeSerialization();
+}
+
+void PdxInstanceImpl::writeField(PdxWriterImpl& writer, PdxFieldTypes type,
+                                 std::shared_ptr<Cacheable> value) {
+  switch (type) {
+    case PdxFieldTypes::BOOLEAN:
+      writer.writeBoolean(fromCacheableField<bool>(value));
+      break;
+    case PdxFieldTypes::BYTE:
+      writer.writeByte(fromCacheableField<int8_t>(value));
+      break;
+    case PdxFieldTypes::SHORT:
+      writer.writeShort(fromCacheableField<int16_t>(value));
+      break;
+    case PdxFieldTypes::INT:
+      writer.writeInt(fromCacheableField<int32_t>(value));
+      break;
+    case PdxFieldTypes::LONG:
+      writer.writeLong(fromCacheableField<int64_t>(value));
+      break;
+    case PdxFieldTypes::FLOAT:
+      writer.writeFloat(fromCacheableField<float>(value));
+      break;
+    case PdxFieldTypes::DOUBLE:
+      writer.writeDouble(fromCacheableField<double>(value));
+      break;
+    case PdxFieldTypes::CHAR:
+      writer.writeChar(fromCacheableField<char16_t>(value));
+      break;
+    case PdxFieldTypes::DATE:
+      writer.writeDate(
+          fromCacheableField<std::shared_ptr<CacheableDate>>(value));
+      break;
+    case PdxFieldTypes::STRING:
+      writer.writeString(fromCacheableField<std::string>(value));
+      break;
+    case PdxFieldTypes::BOOLEAN_ARRAY:
+      writer.writeBooleanArray(fromCacheableField<std::vector<bool>>(value));
+      break;
+    case PdxFieldTypes::BYTE_ARRAY:
+      writer.writeByteArray(fromCacheableField<std::vector<int8_t>>(value));
+      break;
+    case PdxFieldTypes::SHORT_ARRAY:
+      writer.writeShortArray(fromCacheableField<std::vector<int16_t>>(value));
+      break;
+    case PdxFieldTypes::INT_ARRAY:
+      writer.writeIntArray(fromCacheableField<std::vector<int32_t>>(value));
+      break;
+    case PdxFieldTypes::LONG_ARRAY:
+      writer.writeLongArray(fromCacheableField<std::vector<int64_t>>(value));
+      break;
+    case PdxFieldTypes::FLOAT_ARRAY:
+      writer.writeFloatArray(fromCacheableField<std::vector<float>>(value));
+      break;
+    case PdxFieldTypes::DOUBLE_ARRAY:
+      writer.writeDoubleArray(fromCacheableField<std::vector<double>>(value));
+      break;
+    case PdxFieldTypes::CHAR_ARRAY:
+      writer.writeCharArray(fromCacheableField<std::vector<char16_t>>(value));
+      break;
+    case PdxFieldTypes::STRING_ARRAY:
+      writer.writeStringArray(
+          fromCacheableField<std::vector<std::string>>(value));
+      break;
     case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
       if (auto&& vector = std::dynamic_pointer_cast<CacheableVector>(value)) {
         const auto size = vector->size();
@@ -232,33 +1070,411 @@ void PdxInstanceImpl::writeField(PdxWriter& writer, const std::string& name,
           }
           i++;
         }
-        writer.writeArrayOfByteArrays(name, values, static_cast<int>(size),
-                                      lengths);
+        writer.writeArrayOfByteArrays(values, static_cast<int>(size), lengths);
         delete[] values;
         delete[] lengths;
       }
       break;
     }
-    case PdxFieldTypes::OBJECT_ARRAY: {
-      if (auto&& val = std::dynamic_pointer_cast<CacheableObjectArray>(value)) {
-        writer.writeObjectArray(name, val);
-      }
+    case PdxFieldTypes::OBJECT_ARRAY:
+      writer.writeObjectArray(
+          fromCacheableField<std::shared_ptr<CacheableObjectArray>>(value));
       break;
-    }
     case PdxFieldTypes::UNKNOWN:
     case PdxFieldTypes::OBJECT: {
-      writer.writeObject(name, value);
+      writer.writeObject(value);
     }
   }
 }
-std::shared_ptr<WritablePdxInstance> PdxInstanceImpl::createWriter() {
-  LOGDEBUG("PdxInstanceImpl::createWriter m_bufferLength = %zu m_typeId = %d ",
-           buffer_.size(), typeId_);
-  const auto& stream = getPdxStream();
-  return std::make_shared<PdxInstanceImpl>(
-      stream.data(), stream.size(), pdxType_, cacheStats_, pdxTypeRegistry_,
-      cacheImpl_,
-      enableTimeStatistics_);  // need to create duplicate byte stream);
+
+void PdxInstanceImpl::deserialize() {
+  auto input = cache_.createDataInput(buffer_.data(), buffer_.size());
+  PdxReaderImpl reader{input, pdxType_, static_cast<int32_t>(buffer_.size())};
+
+  fields_.resize(pdxType_->getFieldsCount());
+  for (const auto& field : pdxType_->getFields()) {
+    auto& fieldRef = fields_[field->getIndex()];
+    switch (field->getType()) {
+      case PdxFieldTypes::BOOLEAN:
+        fieldRef = toCacheableField(reader.readBoolean(field));
+        break;
+      case PdxFieldTypes::BYTE:
+        fieldRef = toCacheableField(reader.readByte(field));
+        break;
+      case PdxFieldTypes::CHAR:
+        fieldRef = toCacheableField(reader.readChar(field));
+        break;
+      case PdxFieldTypes::SHORT:
+        fieldRef = toCacheableField(reader.readShort(field));
+        break;
+      case PdxFieldTypes::INT:
+        fieldRef = toCacheableField(reader.readInt(field));
+        break;
+      case PdxFieldTypes::LONG:
+        fieldRef = toCacheableField(reader.readLong(field));
+        break;
+      case PdxFieldTypes::FLOAT:
+        fieldRef = toCacheableField(reader.readFloat(field));
+        break;
+      case PdxFieldTypes::DOUBLE:
+        fieldRef = toCacheableField(reader.readDouble(field));
+        break;
+      case PdxFieldTypes::DATE:
+        fieldRef = reader.readDate(field);
+        break;
+      case PdxFieldTypes::STRING:
+        fieldRef = toCacheableField(reader.readString(field));
+        break;
+      case PdxFieldTypes::OBJECT:
+        fieldRef = reader.readObject(field);
+        break;
+      case PdxFieldTypes::BOOLEAN_ARRAY:
+        fieldRef = toCacheableField(reader.readBooleanArray(field));
+        break;
+      case PdxFieldTypes::CHAR_ARRAY:
+        fieldRef = toCacheableField(reader.readCharArray(field));
+        break;
+      case PdxFieldTypes::BYTE_ARRAY:
+        fieldRef = toCacheableField(reader.readByteArray(field));
+        break;
+      case PdxFieldTypes::SHORT_ARRAY:
+        fieldRef = toCacheableField(reader.readShortArray(field));
+        break;
+      case PdxFieldTypes::INT_ARRAY:
+        fieldRef = toCacheableField(reader.readIntArray(field));
+        break;
+      case PdxFieldTypes::LONG_ARRAY:
+        fieldRef = toCacheableField(reader.readLongArray(field));
+        break;
+      case PdxFieldTypes::FLOAT_ARRAY:
+        fieldRef = toCacheableField(reader.readFloatArray(field));
+        break;
+      case PdxFieldTypes::DOUBLE_ARRAY:
+        fieldRef = toCacheableField(reader.readDoubleArray(field));
+        break;
+      case PdxFieldTypes::STRING_ARRAY:
+        fieldRef = toCacheableField(reader.readStringArray(field));
+        break;
+      case PdxFieldTypes::OBJECT_ARRAY:
+        fieldRef = reader.readObjectArray(field);
+        break;
+      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
+        int32_t length;
+        int32_t* elementsLength;
+        auto array =
+            reader.readArrayOfByteArrays(field, length, &elementsLength);
+        fieldRef = toCacheableField(array, length, elementsLength);
+        for (auto i = 0; i < length;) {
+          delete array[i++];
+        }
+
+        delete elementsLength;
+        delete array;
+        break;
+      }
+      default:
+      case PdxFieldTypes::UNKNOWN:
+        throw IllegalStateException(
+            "Field \"" + field->getName() + "\" has an invalid type " +
+            std::to_string(static_cast<int32_t>(field->getType())));
+        break;
+    }
+  }
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(bool value) {
+  return CacheableBoolean::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(int8_t value) {
+  return CacheableByte::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(uint8_t value) {
+  return CacheableByte::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(int16_t value) {
+  return CacheableInt16::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(int32_t value) {
+  return CacheableInt32::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(int64_t value) {
+  return CacheableInt64::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(float value) {
+  return CacheableFloat::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(double value) {
+  return CacheableDouble::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(char value) {
+  return CacheableCharacter::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(char16_t value) {
+  return CacheableCharacter::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<bool>& value) {
+  return BooleanArray::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<int8_t>& value) {
+  return CacheableBytes::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<int16_t>& value) {
+  return CacheableInt16Array::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<int32_t>& value) {
+  return CacheableInt32Array::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<int64_t>& value) {
+  return CacheableInt64Array::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<float>& value) {
+  return CacheableFloatArray::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<double>& value) {
+  return CacheableDoubleArray::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<char16_t>& value) {
+  return CharArray::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::string& value) {
+  return CacheableString::create(value);
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    int8_t** value, int32_t arrayLength, int32_t* elementLength) {
+  auto vector = CacheableVector::create();
+  for (int i = 0; i < arrayLength; i++) {
+    vector->emplace_back(CacheableBytes::create(
+        std::vector<int8_t>(value[i], value[i] + elementLength[i])));
+  }
+
+  return vector;
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
+    const std::vector<std::string>& value) {
+  std::vector<std::shared_ptr<CacheableString>> array;
+
+  array.reserve(value.size());
+  for (const auto& entry : value) {
+    array.emplace_back(CacheableString::create(entry));
+  }
+
+  return CacheableStringArray::create(std::move(array));
+}
+
+std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(std::string* value,
+                                                             int32_t length) {
+  std::vector<std::shared_ptr<CacheableString>> array;
+
+  array.reserve(length);
+  for (int32_t i = 0; i < length;) {
+    array.emplace_back(CacheableString::create(value[i++]));
+  }
+
+  return CacheableStringArray::create(std::move(array));
+}
+
+int PdxInstanceImpl::enumerateMapHashCode(
+    std::shared_ptr<CacheableHashMap> map) {
+  int h = 0;
+  for (const auto& itr : *map) {
+    h = h + ((deepHashCode(itr.first)) ^
+             ((itr.second) ? deepHashCode(itr.second) : 0));
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateSetHashCode(
+    std::shared_ptr<CacheableHashSet> set) {
+  int h = 0;
+  for (const auto& itr : *set) {
+    h = h + deepHashCode(itr);
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateLinkedSetHashCode(
+    std::shared_ptr<CacheableLinkedHashSet> set) {
+  int h = 0;
+  for (const auto& itr : *set) {
+    h = h + deepHashCode(itr);
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateHashTableCode(
+    std::shared_ptr<CacheableHashTable> hashTable) {
+  int h = 0;
+  for (const auto& itr : *hashTable) {
+    h = h + ((deepHashCode(itr.first)) ^
+             ((itr.second) ? deepHashCode(itr.second) : 0));
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateObjectArrayHashCode(
+    std::shared_ptr<CacheableObjectArray> objArray) {
+  int h = 1;
+  for (const auto& obj : *objArray) {
+    h = h * 31 + deepHashCode(obj);
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateVectorHashCode(
+    std::shared_ptr<CacheableVector> vec) {
+  int h = 1;
+  for (const auto& obj : *vec) {
+    h = h * 31 + deepHashCode(obj);
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateArrayListHashCode(
+    std::shared_ptr<CacheableArrayList> arrList) {
+  int h = 1;
+  for (const auto& obj : *arrList) {
+    h = h * 31 + deepHashCode(obj);
+  }
+  return h;
+}
+
+int PdxInstanceImpl::enumerateLinkedListHashCode(
+    std::shared_ptr<CacheableLinkedList> linkedList) {
+  int h = 1;
+  for (const auto& obj : *linkedList) {
+    h = h * 31 + deepHashCode(obj);
+  }
+  return h;
+}
+
+int32_t PdxInstanceImpl::deepHashCode(std::shared_ptr<Cacheable> obj) {
+  if (obj == nullptr) {
+    return 0;
+  }
+
+  if (auto primitive =
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+    switch (primitive->getDsCode()) {
+      case DSCode::CacheableObjectArray: {
+        return enumerateObjectArrayHashCode(
+            std::dynamic_pointer_cast<CacheableObjectArray>(obj));
+      }
+      case DSCode::CacheableVector: {
+        return enumerateVectorHashCode(
+            std::dynamic_pointer_cast<CacheableVector>(obj));
+      }
+      case DSCode::CacheableArrayList: {
+        return enumerateArrayListHashCode(
+            std::dynamic_pointer_cast<CacheableArrayList>(obj));
+      }
+      case DSCode::CacheableLinkedList: {
+        return enumerateLinkedListHashCode(
+            std::dynamic_pointer_cast<CacheableLinkedList>(obj));
+      }
+      case DSCode::CacheableHashMap: {
+        return enumerateMapHashCode(
+            std::dynamic_pointer_cast<CacheableHashMap>(obj));
+      }
+      case DSCode::CacheableHashSet: {
+        return enumerateSetHashCode(
+            std::dynamic_pointer_cast<CacheableHashSet>(obj));
+      }
+      case DSCode::CacheableLinkedHashSet: {
+        auto linkedHashSet =
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
+        return enumerateLinkedSetHashCode(linkedHashSet);
+      }
+      case DSCode::CacheableHashTable: {
+        return enumerateHashTableCode(
+            std::dynamic_pointer_cast<CacheableHashTable>(obj));
+      }
+      case DSCode::FixedIDDefault:
+      case DSCode::FixedIDByte:
+      case DSCode::FixedIDInt:
+      case DSCode::FixedIDNone:
+      case DSCode::FixedIDShort:
+      case DSCode::Properties:
+      case DSCode::PdxType:
+      case DSCode::BooleanArray:
+      case DSCode::CharArray:
+      case DSCode::NullObj:
+      case DSCode::CacheableString:
+      case DSCode::Class:
+      case DSCode::JavaSerializable:
+      case DSCode::DataSerializable:
+      case DSCode::CacheableBytes:
+      case DSCode::CacheableInt16Array:
+      case DSCode::CacheableInt32Array:
+      case DSCode::CacheableInt64Array:
+      case DSCode::CacheableFloatArray:
+      case DSCode::CacheableDoubleArray:
+      case DSCode::CacheableBoolean:
+      case DSCode::CacheableCharacter:
+      case DSCode::CacheableByte:
+      case DSCode::CacheableInt16:
+      case DSCode::CacheableInt32:
+      case DSCode::CacheableInt64:
+      case DSCode::CacheableFloat:
+      case DSCode::CacheableDouble:
+      case DSCode::CacheableDate:
+      case DSCode::CacheableFileName:
+      case DSCode::CacheableStringArray:
+      case DSCode::CacheableTimeUnit:
+      case DSCode::CacheableNullString:
+      case DSCode::CacheableIdentityHashMap:
+      case DSCode::CacheableStack:
+      case DSCode::CacheableASCIIString:
+      case DSCode::CacheableASCIIStringHuge:
+      case DSCode::CacheableStringHuge:
+      case DSCode::CacheableUserData:
+      case DSCode::CacheableUserData2:
+      case DSCode::CacheableUserData4:
+      case DSCode::PDX:
+      case DSCode::PDX_ENUM:
+        break;
+    }
+  }
+
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+    return pdxInstance->hashcode();
+  }
+
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
+    return keyType->hashcode();
+  }
+
+  throw IllegalStateException(
+      "PdxInstance cannot calculate hashcode of the field " + obj->toString() +
+      " since equals is only supported for CacheableKey derived types.");
 }
 
 bool PdxInstanceImpl::enumerateObjectArrayEquals(
@@ -387,101 +1603,110 @@ bool PdxInstanceImpl::enumerateHashTableEquals(
 }
 
 bool PdxInstanceImpl::enumerateSetEquals(
-    std::shared_ptr<CacheableHashSet> Obj,
-    std::shared_ptr<CacheableHashSet> OtherObj) {
-  if (Obj == nullptr && OtherObj == nullptr) {
+    std::shared_ptr<CacheableHashSet> object,
+    std::shared_ptr<CacheableHashSet> otherObject) {
+  auto null = object == nullptr;
+  auto otherNull = otherObject == nullptr;
+
+  if (null && otherNull) {
     return true;
-  } else if (Obj == nullptr && OtherObj != nullptr) {
-    return false;
-  } else if (Obj != nullptr && OtherObj == nullptr) {
+  } else if (null != otherNull) {
     return false;
   }
 
-  if (Obj->size() != OtherObj->size()) {
+  if (object->size() != otherObject->size()) {
     return false;
   }
-  for (const auto& iter : *Obj) {
-    if (OtherObj->find(iter) == OtherObj->end()) {
+
+  for (const auto& iter : *object) {
+    if (otherObject->find(iter) == otherObject->end()) {
       return false;
     }
   }
+
   return true;
 }
 
 bool PdxInstanceImpl::enumerateLinkedSetEquals(
-    std::shared_ptr<CacheableLinkedHashSet> Obj,
-    std::shared_ptr<CacheableLinkedHashSet> OtherObj) {
-  if (Obj == nullptr && OtherObj == nullptr) {
+    std::shared_ptr<CacheableLinkedHashSet> object,
+    std::shared_ptr<CacheableLinkedHashSet> otherObject) {
+  auto null = object == nullptr;
+  auto otherNull = otherObject == nullptr;
+
+  if (null && otherNull) {
     return true;
-  } else if (Obj == nullptr && OtherObj != nullptr) {
-    return false;
-  } else if (Obj != nullptr && OtherObj == nullptr) {
+  } else if (null != otherNull) {
     return false;
   }
 
-  if (Obj->size() != OtherObj->size()) {
+  if (object->size() != otherObject->size()) {
     return false;
   }
-  for (const auto& iter : *Obj) {
-    if (OtherObj->find(iter) == OtherObj->end()) {
+
+  for (const auto& iter : *object) {
+    if (otherObject->find(iter) == otherObject->end()) {
       return false;
     }
   }
+
   return true;
 }
 
-bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
-                                      std::shared_ptr<Cacheable> otherObj) {
-  if (obj == nullptr && otherObj == nullptr) {
+bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> object,
+                                      std::shared_ptr<Cacheable> otherObject) {
+  auto null = object == nullptr;
+  auto otherNull = otherObject == nullptr;
+
+  if (null && otherNull) {
     return true;
-  } else if (obj == nullptr && otherObj != nullptr) {
-    return false;
-  } else if (obj != nullptr && otherObj == nullptr) {
+  } else if (null != otherNull) {
     return false;
   }
 
   if (auto primitive =
-          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
+          std::dynamic_pointer_cast<DataSerializablePrimitive>(object)) {
     switch (primitive->getDsCode()) {
       case DSCode::CacheableObjectArray: {
-        auto objArrayPtr = std::dynamic_pointer_cast<CacheableObjectArray>(obj);
+        auto objArrayPtr =
+            std::dynamic_pointer_cast<CacheableObjectArray>(object);
         auto otherObjArrayPtr =
-            std::dynamic_pointer_cast<CacheableObjectArray>(otherObj);
+            std::dynamic_pointer_cast<CacheableObjectArray>(otherObject);
         return enumerateObjectArrayEquals(objArrayPtr, otherObjArrayPtr);
       }
       case DSCode::CacheableVector: {
-        auto vec = std::dynamic_pointer_cast<CacheableVector>(obj);
-        auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObj);
+        auto vec = std::dynamic_pointer_cast<CacheableVector>(object);
+        auto otherVec = std::dynamic_pointer_cast<CacheableVector>(otherObject);
         return enumerateVectorEquals(vec, otherVec);
       }
       case DSCode::CacheableArrayList: {
-        auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(obj);
+        auto arrList = std::dynamic_pointer_cast<CacheableArrayList>(object);
         auto otherArrList =
-            std::dynamic_pointer_cast<CacheableArrayList>(otherObj);
+            std::dynamic_pointer_cast<CacheableArrayList>(otherObject);
         return enumerateArrayListEquals(arrList, otherArrList);
       }
       case DSCode::CacheableHashMap: {
-        auto map = std::dynamic_pointer_cast<CacheableHashMap>(obj);
-        auto otherMap = std::dynamic_pointer_cast<CacheableHashMap>(otherObj);
+        auto map = std::dynamic_pointer_cast<CacheableHashMap>(object);
+        auto otherMap =
+            std::dynamic_pointer_cast<CacheableHashMap>(otherObject);
         return enumerateMapEquals(map, otherMap);
       }
       case DSCode::CacheableHashSet: {
-        auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(obj);
+        auto hashset = std::dynamic_pointer_cast<CacheableHashSet>(object);
         auto otherHashset =
-            std::dynamic_pointer_cast<CacheableHashSet>(otherObj);
+            std::dynamic_pointer_cast<CacheableHashSet>(otherObject);
         return enumerateSetEquals(hashset, otherHashset);
       }
       case DSCode::CacheableLinkedHashSet: {
         auto linkedHashset =
-            std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(object);
         auto otherLinkedHashset =
-            std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObj);
+            std::dynamic_pointer_cast<CacheableLinkedHashSet>(otherObject);
         return enumerateLinkedSetEquals(linkedHashset, otherLinkedHashset);
       }
       case DSCode::CacheableHashTable: {
-        auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(obj);
+        auto hashTable = std::dynamic_pointer_cast<CacheableHashTable>(object);
         auto otherhashTable =
-            std::dynamic_pointer_cast<CacheableHashTable>(otherObj);
+            std::dynamic_pointer_cast<CacheableHashTable>(otherObject);
         return enumerateHashTableEquals(hashTable, otherhashTable);
       }
       case DSCode::FixedIDDefault:
@@ -532,1453 +1757,23 @@ bool PdxInstanceImpl::deepArrayEquals(std::shared_ptr<Cacheable> obj,
     }
   }
 
-  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
+  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(object)) {
     if (auto otherPdxInstance =
-            std::dynamic_pointer_cast<PdxInstance>(otherObj)) {
+            std::dynamic_pointer_cast<PdxInstance>(otherObject)) {
       return *pdxInstance == *otherPdxInstance;
     }
   }
 
-  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
-    if (auto otherKeyType = std::dynamic_pointer_cast<CacheableKey>(otherObj)) {
+  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(object)) {
+    if (auto otherKeyType =
+            std::dynamic_pointer_cast<CacheableKey>(otherObject)) {
       return *keyType == *otherKeyType;
     }
   }
 
   throw IllegalStateException(
-      "PdxInstance cannot calculate equals of the field " + obj->toString() +
+      "PdxInstance cannot calculate equals of the field " + object->toString() +
       " since equals is only supported for CacheableKey derived types.");
-}
-
-int PdxInstanceImpl::enumerateMapHashCode(
-    std::shared_ptr<CacheableHashMap> map) {
-  int h = 0;
-  for (const auto& itr : *map) {
-    h = h + ((deepArrayHashCode(itr.first)) ^
-             ((itr.second) ? deepArrayHashCode(itr.second) : 0));
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateSetHashCode(
-    std::shared_ptr<CacheableHashSet> set) {
-  int h = 0;
-  for (const auto& itr : *set) {
-    h = h + deepArrayHashCode(itr);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateLinkedSetHashCode(
-    std::shared_ptr<CacheableLinkedHashSet> set) {
-  int h = 0;
-  for (const auto& itr : *set) {
-    h = h + deepArrayHashCode(itr);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateHashTableCode(
-    std::shared_ptr<CacheableHashTable> hashTable) {
-  int h = 0;
-  for (const auto& itr : *hashTable) {
-    h = h + ((deepArrayHashCode(itr.first)) ^
-             ((itr.second) ? deepArrayHashCode(itr.second) : 0));
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateObjectArrayHashCode(
-    std::shared_ptr<CacheableObjectArray> objArray) {
-  int h = 1;
-  for (const auto& obj : *objArray) {
-    h = h * 31 + deepArrayHashCode(obj);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateVectorHashCode(
-    std::shared_ptr<CacheableVector> vec) {
-  int h = 1;
-  for (const auto& obj : *vec) {
-    h = h * 31 + deepArrayHashCode(obj);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateArrayListHashCode(
-    std::shared_ptr<CacheableArrayList> arrList) {
-  int h = 1;
-  for (const auto& obj : *arrList) {
-    h = h * 31 + deepArrayHashCode(obj);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::enumerateLinkedListHashCode(
-    std::shared_ptr<CacheableLinkedList> linkedList) {
-  int h = 1;
-  for (const auto& obj : *linkedList) {
-    h = h * 31 + deepArrayHashCode(obj);
-  }
-  return h;
-}
-
-int PdxInstanceImpl::deepArrayHashCode(std::shared_ptr<Cacheable> obj) {
-  if (obj == nullptr) {
-    return 0;
-  }
-
-  if (auto primitive =
-          std::dynamic_pointer_cast<DataSerializablePrimitive>(obj)) {
-    switch (primitive->getDsCode()) {
-      case DSCode::CacheableObjectArray: {
-        return enumerateObjectArrayHashCode(
-            std::dynamic_pointer_cast<CacheableObjectArray>(obj));
-      }
-      case DSCode::CacheableVector: {
-        return enumerateVectorHashCode(
-            std::dynamic_pointer_cast<CacheableVector>(obj));
-      }
-      case DSCode::CacheableArrayList: {
-        return enumerateArrayListHashCode(
-            std::dynamic_pointer_cast<CacheableArrayList>(obj));
-      }
-      case DSCode::CacheableLinkedList: {
-        return enumerateLinkedListHashCode(
-            std::dynamic_pointer_cast<CacheableLinkedList>(obj));
-      }
-      case DSCode::CacheableHashMap: {
-        return enumerateMapHashCode(
-            std::dynamic_pointer_cast<CacheableHashMap>(obj));
-      }
-      case DSCode::CacheableHashSet: {
-        return enumerateSetHashCode(
-            std::dynamic_pointer_cast<CacheableHashSet>(obj));
-      }
-      case DSCode::CacheableLinkedHashSet: {
-        auto linkedHashSet =
-            std::dynamic_pointer_cast<CacheableLinkedHashSet>(obj);
-        return enumerateLinkedSetHashCode(linkedHashSet);
-      }
-      case DSCode::CacheableHashTable: {
-        return enumerateHashTableCode(
-            std::dynamic_pointer_cast<CacheableHashTable>(obj));
-      }
-      case DSCode::FixedIDDefault:
-      case DSCode::FixedIDByte:
-      case DSCode::FixedIDInt:
-      case DSCode::FixedIDNone:
-      case DSCode::FixedIDShort:
-      case DSCode::Properties:
-      case DSCode::PdxType:
-      case DSCode::BooleanArray:
-      case DSCode::CharArray:
-      case DSCode::NullObj:
-      case DSCode::CacheableString:
-      case DSCode::Class:
-      case DSCode::JavaSerializable:
-      case DSCode::DataSerializable:
-      case DSCode::CacheableBytes:
-      case DSCode::CacheableInt16Array:
-      case DSCode::CacheableInt32Array:
-      case DSCode::CacheableInt64Array:
-      case DSCode::CacheableFloatArray:
-      case DSCode::CacheableDoubleArray:
-      case DSCode::CacheableBoolean:
-      case DSCode::CacheableCharacter:
-      case DSCode::CacheableByte:
-      case DSCode::CacheableInt16:
-      case DSCode::CacheableInt32:
-      case DSCode::CacheableInt64:
-      case DSCode::CacheableFloat:
-      case DSCode::CacheableDouble:
-      case DSCode::CacheableDate:
-      case DSCode::CacheableFileName:
-      case DSCode::CacheableStringArray:
-      case DSCode::CacheableTimeUnit:
-      case DSCode::CacheableNullString:
-      case DSCode::CacheableIdentityHashMap:
-      case DSCode::CacheableStack:
-      case DSCode::CacheableASCIIString:
-      case DSCode::CacheableASCIIStringHuge:
-      case DSCode::CacheableStringHuge:
-      case DSCode::CacheableUserData:
-      case DSCode::CacheableUserData2:
-      case DSCode::CacheableUserData4:
-      case DSCode::PDX:
-      case DSCode::PDX_ENUM:
-        break;
-    }
-  }
-
-  if (auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(obj)) {
-    return pdxInstance->hashcode();
-  }
-
-  if (auto keyType = std::dynamic_pointer_cast<CacheableKey>(obj)) {
-    return keyType->hashcode();
-  }
-
-  throw IllegalStateException(
-      "PdxInstance cannot calculate hashcode of the field " + obj->toString() +
-      " since equals is only supported for CacheableKey derived types.");
-}
-
-int32_t PdxInstanceImpl::hashcode() const {
-  const auto& stream = getPdxStream();
-  auto input = cacheImpl_.createDataInput(stream.data(), stream.size());
-
-  int hashCode = 1;
-  for (const auto& field : getIdentityPdxFields()) {
-    LOGDEBUG("hashcode for pdxfield %s  hashcode is %d ",
-             field->getFieldName().c_str(), hashCode);
-    switch (field->getTypeId()) {
-      case PdxFieldTypes::CHAR:
-      case PdxFieldTypes::BOOLEAN:
-      case PdxFieldTypes::BYTE:
-      case PdxFieldTypes::SHORT:
-      case PdxFieldTypes::INT:
-      case PdxFieldTypes::LONG:
-      case PdxFieldTypes::DATE:
-      case PdxFieldTypes::FLOAT:
-      case PdxFieldTypes::DOUBLE:
-      case PdxFieldTypes::STRING:
-      case PdxFieldTypes::BOOLEAN_ARRAY:
-      case PdxFieldTypes::CHAR_ARRAY:
-      case PdxFieldTypes::BYTE_ARRAY:
-      case PdxFieldTypes::SHORT_ARRAY:
-      case PdxFieldTypes::INT_ARRAY:
-      case PdxFieldTypes::LONG_ARRAY:
-      case PdxFieldTypes::FLOAT_ARRAY:
-      case PdxFieldTypes::DOUBLE_ARRAY:
-      case PdxFieldTypes::STRING_ARRAY:
-      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        int retH = getRawHashCode(input, field);
-        if (retH != 0) {
-          hashCode = 31 * hashCode + retH;
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT: {
-        setOffsetForObject(input, field->getSequenceId());
-        std::shared_ptr<Cacheable> object = nullptr;
-        input.readObject(object);
-        if (object != nullptr) {
-          hashCode = 31 * hashCode + deepArrayHashCode(object);
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT_ARRAY: {
-        setOffsetForObject(input, field->getSequenceId());
-        auto objectArray = CacheableObjectArray::create();
-        objectArray->fromData(input);
-        hashCode =
-            31 * hashCode +
-            ((objectArray != nullptr) ? deepArrayHashCode(objectArray) : 0);
-        break;
-      }
-      case PdxFieldTypes::UNKNOWN: {
-        throw IllegalStateException(
-            "PdxInstance not found typeid " +
-            std::to_string(static_cast<int>(field->getTypeId())));
-      }
-    }
-  }
-
-  return hashCode;
-}
-
-int PdxInstanceImpl::getTypeId() const { return typeId_; }
-
-std::shared_ptr<PdxType> PdxInstanceImpl::getPdxType(Pool* pool) const {
-  auto registry = cacheImpl_.getPdxTypeRegistry();
-  auto type = registry->getPdxType(typeId_);
-  if (type != nullptr) {
-    return type;
-  }
-
-  auto id = registry->getPDXIdForType(pdxType_, pool);
-  pdxType_->setTypeId(id);
-  typeId_ = id;
-
-  return pdxType_;
-}
-
-void PdxInstanceImpl::updatePdxStream(std::vector<uint8_t> stream) {
-  buffer_ = std::move(stream);
-}
-
-const std::vector<uint8_t>& PdxInstanceImpl::getPdxStream() const {
-  if (buffer_.empty()) {
-    auto output = cacheImpl_.createDataOutput();
-    PdxLocalWriter plw{output, pdxType_, cacheImpl_.getPdxTypeRegistry()};
-
-    toData(plw);
-    plw.endObjectWriting();
-    buffer_ = plw.getPdxStream();
-  }
-
-  return buffer_;
-}
-
-bool PdxInstanceImpl::isIdentityField(const std::string& name) {
-  auto field = pdxType_->getPdxField(name);
-  return field != nullptr && field->getIdentityField();
-}
-
-bool PdxInstanceImpl::hasField(const std::string& name) {
-  return pdxType_->getPdxField(name) != nullptr;
-}
-
-bool PdxInstanceImpl::getBooleanField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readBoolean();
-}
-
-int8_t PdxInstanceImpl::getByteField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.read();
-}
-
-int16_t PdxInstanceImpl::getShortField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readInt16();
-}
-
-int32_t PdxInstanceImpl::getIntField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readInt32();
-}
-
-int64_t PdxInstanceImpl::getLongField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readInt64();
-}
-
-float PdxInstanceImpl::getFloatField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readFloat();
-}
-
-double PdxInstanceImpl::getDoubleField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readDouble();
-}
-
-char16_t PdxInstanceImpl::getCharField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readInt16();
-}
-
-std::string PdxInstanceImpl::getStringField(const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readString();
-}
-
-std::vector<bool> PdxInstanceImpl::getBooleanArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readBooleanArray();
-}
-
-std::vector<int8_t> PdxInstanceImpl::getByteArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readByteArray();
-}
-
-std::vector<int16_t> PdxInstanceImpl::getShortArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readShortArray();
-}
-
-std::vector<int32_t> PdxInstanceImpl::getIntArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readIntArray();
-}
-
-std::vector<int64_t> PdxInstanceImpl::getLongArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readLongArray();
-}
-
-std::vector<float> PdxInstanceImpl::getFloatArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readFloatArray();
-}
-
-std::vector<double> PdxInstanceImpl::getDoubleArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readDoubleArray();
-}
-
-std::vector<char16_t> PdxInstanceImpl::getCharArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readCharArray();
-}
-
-std::vector<std::string> PdxInstanceImpl::getStringArrayField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  return input.readStringArray();
-}
-
-std::shared_ptr<CacheableDate> PdxInstanceImpl::getCacheableDateField(
-    const std::string& name) const {
-  auto input = getDataInputForField(name);
-  auto value = CacheableDate::create();
-  value->fromData(input);
-  return value;
-}
-
-std::shared_ptr<Cacheable> PdxInstanceImpl::getCacheableField(
-    const std::string& name) const {
-  auto dataInput = getDataInputForField(name);
-  std::shared_ptr<Cacheable> value;
-  dataInput.readObject(value);
-  return value;
-}
-std::shared_ptr<CacheableObjectArray>
-PdxInstanceImpl::getCacheableObjectArrayField(const std::string& name) const {
-  auto dataInput = getDataInputForField(name);
-  auto value = CacheableObjectArray::create();
-  value->fromData(dataInput);
-  return value;
-}
-
-void PdxInstanceImpl::getField(const std::string& name, int8_t*** value,
-                               int32_t& arrayLength,
-                               int32_t*& elementLength) const {
-  auto dataInput = getDataInputForField(name);
-  dataInput.readArrayOfByteArrays(value, arrayLength, &elementLength);
-}
-
-std::string PdxInstanceImpl::toString() const {
-  std::string result = "PDX[" + std::to_string(pdxType_->getTypeId()) + "," +
-                       pdxType_->getPdxClassName() + "]{";
-  bool firstElement = true;
-  auto identityFields = getIdentityPdxFields();
-  for (size_t i = 0; i < identityFields.size(); i++) {
-    if (firstElement) {
-      firstElement = false;
-    } else {
-      result += ",";
-    }
-    result += identityFields.at(i)->getFieldName();
-    result += "=";
-
-    switch (identityFields.at(i)->getTypeId()) {
-      case PdxFieldTypes::BOOLEAN: {
-        auto&& value = getBooleanField(identityFields.at(i)->getFieldName());
-        result += value ? "true" : "false";
-        break;
-      }
-      case PdxFieldTypes::BYTE: {
-        auto&& value = getByteField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::SHORT: {
-        int16_t value = getShortField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::INT: {
-        int32_t value = getIntField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::LONG: {
-        int64_t value = getLongField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::FLOAT: {
-        float value = getFloatField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::DOUBLE: {
-        double value = getDoubleField(identityFields.at(i)->getFieldName());
-        result += std::to_string(value);
-        break;
-      }
-      case PdxFieldTypes::CHAR: {
-        auto value = getCharField(identityFields.at(i)->getFieldName());
-        result += to_utf8(std::u16string{value});
-        break;
-      }
-      case PdxFieldTypes::STRING: {
-        auto value = getStringField(identityFields.at(i)->getFieldName());
-        result += value;
-        break;
-      }
-      case PdxFieldTypes::CHAR_ARRAY: {
-        auto value = getCharArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          result += to_utf8(std::u16string(value.data(), length));
-        }
-        break;
-      }
-      case PdxFieldTypes::STRING_ARRAY: {
-        auto value = getStringArrayField(identityFields.at(i)->getFieldName());
-        for (auto&& v : value) {
-          result += v;
-        }
-        break;
-      }
-      case PdxFieldTypes::BYTE_ARRAY: {
-        auto value = getByteArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::SHORT_ARRAY: {
-        auto value = getShortArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::INT_ARRAY: {
-        auto value = getIntArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::LONG_ARRAY: {
-        auto value = getLongArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::FLOAT_ARRAY: {
-        auto value = getFloatArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::DOUBLE_ARRAY: {
-        auto value = getDoubleArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += std::to_string(v);
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::DATE: {
-        auto value =
-            getCacheableDateField(identityFields.at(i)->getFieldName());
-        if (value != nullptr) {
-          result += value->toString().c_str();
-        }
-        break;
-      }
-      case PdxFieldTypes::BOOLEAN_ARRAY: {
-        auto value = getBooleanArrayField(identityFields.at(i)->getFieldName());
-        auto length = value.size();
-        if (length > 0) {
-          for (auto&& v : value) {
-            result += v ? "true" : "false";
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        int8_t** value = nullptr;
-        int32_t arrayLength;
-        int32_t* elementLength;
-        getField(identityFields.at(i)->getFieldName(), &value, arrayLength,
-                 elementLength);
-        if (arrayLength > 0) {
-          for (int j = 0; j < arrayLength; j++) {
-            for (int k = 0; k < elementLength[j]; k++) {
-              result += std::to_string(value[j][k]);
-            }
-          }
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT_ARRAY: {
-        auto value =
-            getCacheableObjectArrayField(identityFields.at(i)->getFieldName());
-        if (value != nullptr) {
-          result += value->toString().c_str();
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT:
-      case PdxFieldTypes::UNKNOWN: {
-        auto value = getCacheableField(identityFields.at(i)->getFieldName());
-        if (value != nullptr) {
-          result += value->toString().c_str();
-        }
-      }
-    }
-  }
-  result += "}";
-
-  return result;
-}
-
-std::shared_ptr<PdxSerializable> PdxInstanceImpl::getObject() {
-  const auto& stream = getPdxStream();
-  auto len = stream.size();
-
-  auto input = cacheImpl_.createDataInput(stream.data(), len);
-  getPdxType(DataInputInternal::getPool(input));
-
-  int64_t sampleStartNanos =
-      enableTimeStatistics_ ? Utils::startStatOpTime() : 0;
-
-  //[ToDo] do we have to call incPdxDeSerialization here?
-  auto ret =
-      PdxHelper::deserializePdx(input, typeId_, static_cast<int32_t>(len));
-
-  if (enableTimeStatistics_) {
-    Utils::updateStatOpTime(cacheStats_.getStat(),
-                            cacheStats_.getPdxInstanceDeserializationTimeId(),
-                            sampleStartNanos);
-  }
-
-  cacheStats_.incPdxInstanceDeserializations();
-  return ret;
-}
-
-void PdxInstanceImpl::equatePdxFields(
-    std::vector<std::shared_ptr<PdxFieldType>>& my,
-    std::vector<std::shared_ptr<PdxFieldType>>& other) const {
-  int otherIdx = -1;
-  for (int32_t i = 0; i < static_cast<int32_t>(my.size()); i++) {
-    auto myF = my.at(i);
-    if (!myF->equals(DEFAULT_PDX_FIELD_TYPE)) {
-      for (int32_t j = 0; j < static_cast<int32_t>(other.size()); j++) {
-        if (myF->equals(other[j])) {
-          otherIdx = j;
-          break;
-        } else {
-          otherIdx = -1;
-        }
-      }
-
-      if (otherIdx == -1)  // field not there
-      {
-        if (i < static_cast<int32_t>(other.size())) {
-          auto tmp = other.at(i);
-          other.at(i) = DEFAULT_PDX_FIELD_TYPE;
-          other.push_back(tmp);
-        } else {
-          other.push_back(DEFAULT_PDX_FIELD_TYPE);
-        }
-      } else if (otherIdx != i) {
-        auto tmp = other.at(i);
-        other.at(i) = other.at(otherIdx);
-        other.at(otherIdx) = tmp;
-      }
-    }
-  }
-}
-
-bool PdxInstanceImpl::operator==(const CacheableKey& o) const {
-  PdxInstanceImpl* other =
-      dynamic_cast<PdxInstanceImpl*>(const_cast<CacheableKey*>(&o));
-
-  if (other == nullptr) {
-    return false;
-  }
-
-  auto otherType = other->pdxType_;
-  if (pdxType_->getPdxClassName() != otherType->getPdxClassName()) {
-    return false;
-  }
-
-  auto identityFields = getIdentityPdxFields();
-  auto otherIdentityFields = other->getIdentityPdxFields();
-
-  equatePdxFields(identityFields, otherIdentityFields);
-  equatePdxFields(otherIdentityFields, identityFields);
-
-  auto stream = getPdxStream();
-  auto otherStream = other->getPdxStream();
-
-  auto input = cacheImpl_.createDataInput(stream.data(), stream.size());
-  auto otherInput =
-      cacheImpl_.createDataInput(otherStream.data(), otherStream.size());
-
-  PdxFieldTypes fieldTypeId;
-  for (size_t i = 0; i < identityFields.size(); i++) {
-    auto myPFT = identityFields.at(i);
-    auto otherPFT = otherIdentityFields.at(i);
-
-    LOGDEBUG("pdxfield %s ",
-             ((myPFT != DEFAULT_PDX_FIELD_TYPE) ? myPFT->getFieldName()
-                                                : otherPFT->getFieldName())
-                 .c_str());
-    if (myPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-      fieldTypeId = otherPFT->getTypeId();
-    } else if (otherPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-      fieldTypeId = myPFT->getTypeId();
-    } else {
-      fieldTypeId = myPFT->getTypeId();
-    }
-
-    switch (fieldTypeId) {
-      case PdxFieldTypes::CHAR:
-      case PdxFieldTypes::BOOLEAN:
-      case PdxFieldTypes::BYTE:
-      case PdxFieldTypes::SHORT:
-      case PdxFieldTypes::INT:
-      case PdxFieldTypes::LONG:
-      case PdxFieldTypes::DATE:
-      case PdxFieldTypes::FLOAT:
-      case PdxFieldTypes::DOUBLE:
-      case PdxFieldTypes::STRING:
-      case PdxFieldTypes::BOOLEAN_ARRAY:
-      case PdxFieldTypes::CHAR_ARRAY:
-      case PdxFieldTypes::BYTE_ARRAY:
-      case PdxFieldTypes::SHORT_ARRAY:
-      case PdxFieldTypes::INT_ARRAY:
-      case PdxFieldTypes::LONG_ARRAY:
-      case PdxFieldTypes::FLOAT_ARRAY:
-      case PdxFieldTypes::DOUBLE_ARRAY:
-      case PdxFieldTypes::STRING_ARRAY:
-      case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS: {
-        if (!compareRawBytes(input, otherInput, *other, myPFT, otherPFT)) {
-          return false;
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT: {
-        std::shared_ptr<Cacheable> object = nullptr;
-        std::shared_ptr<Cacheable> otherObject = nullptr;
-        if (!myPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-          setOffsetForObject(input, myPFT->getSequenceId());
-          input.readObject(object);
-        }
-
-        if (!otherPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-          other->setOffsetForObject(otherInput, otherPFT->getSequenceId());
-          otherInput.readObject(otherObject);
-        }
-
-        if (object != nullptr) {
-          if (!deepArrayEquals(object, otherObject)) {
-            return false;
-          }
-        } else if (otherObject != nullptr) {
-          return false;
-        }
-        break;
-      }
-      case PdxFieldTypes::OBJECT_ARRAY: {
-        auto otherObjectArray = CacheableObjectArray::create();
-        auto objectArray = CacheableObjectArray::create();
-
-        if (!myPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-          setOffsetForObject(input, myPFT->getSequenceId());
-          objectArray->fromData(input);
-        }
-
-        if (!otherPFT->equals(DEFAULT_PDX_FIELD_TYPE)) {
-          other->setOffsetForObject(otherInput, otherPFT->getSequenceId());
-          otherObjectArray->fromData(otherInput);
-        }
-        if (!deepArrayEquals(objectArray, otherObjectArray)) {
-          return false;
-        }
-        break;
-      }
-      case PdxFieldTypes::UNKNOWN: {
-        throw IllegalStateException(
-            std::string("PdxInstance not found typeid ") +
-            std::to_string(static_cast<int>(myPFT->getTypeId())));
-      }
-    }
-  }
-
-  return true;
-}
-
-bool PdxInstanceImpl::compareRawBytes(
-    DataInput& input, DataInput& otherInput, PdxInstanceImpl& other,
-    std::shared_ptr<PdxFieldType> field,
-    std::shared_ptr<PdxFieldType> otherField) const {
-  auto otherType = other.pdxType_;
-  if (!field->equals(DEFAULT_PDX_FIELD_TYPE) &&
-      !otherField->equals(DEFAULT_PDX_FIELD_TYPE)) {
-    auto pos = getOffset(input, field->getSequenceId());
-    auto nextpos = getNextFieldPosition(input, field->getSequenceId() + 1);
-    input.reset();
-    input.advanceCursor(pos);
-
-    auto otherPos = other.getOffset(otherInput, otherField->getSequenceId());
-    int otherNextpos =
-        other.getNextFieldPosition(otherInput, otherField->getSequenceId() + 1);
-    otherInput.reset();
-    otherInput.advanceCursor(otherPos);
-
-    if ((nextpos - pos) != (otherNextpos - otherPos)) {
-      return false;
-    }
-
-    for (int i = pos; i < nextpos; i++) {
-      if (input.read() != otherInput.read()) {
-        return false;
-      }
-    }
-
-    return true;
-  } else {
-    if (field->equals(DEFAULT_PDX_FIELD_TYPE)) {
-      int otherPos = other.getOffset(otherInput, otherField->getSequenceId());
-      int otherNextpos = other.getNextFieldPosition(
-          otherInput, otherField->getSequenceId() + 1);
-      return hasDefaultBytes(otherField, otherInput, otherPos, otherNextpos);
-    } else {
-      int pos = getOffset(input, field->getSequenceId());
-      int nextpos = getNextFieldPosition(input, field->getSequenceId() + 1);
-      return hasDefaultBytes(field, input, pos, nextpos);
-    }
-  }
-}
-
-std::shared_ptr<CacheableStringArray> PdxInstanceImpl::getFieldNames() {
-  std::vector<std::shared_ptr<PdxFieldType>>* vectorOfFieldTypes =
-      pdxType_->getPdxFieldTypes();
-  auto size = vectorOfFieldTypes->size();
-  if (size == 0) {
-    return nullptr;
-  }
-
-  std::vector<std::shared_ptr<CacheableString>> tmpFieldNames;
-  tmpFieldNames.reserve(size);
-  for (auto&& fieldType : *vectorOfFieldTypes) {
-    tmpFieldNames.emplace_back(
-        CacheableString::create(fieldType->getFieldName()));
-  }
-  return CacheableStringArray::create(std::move(tmpFieldNames));
-}
-
-PdxFieldTypes PdxInstanceImpl::getFieldType(const std::string& name) const {
-  auto field = pdxType_->getPdxField(name);
-
-  if (!field) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name);
-  }
-
-  return field->getTypeId();
-}
-
-void PdxInstanceImpl::writeUnmodifieldField(DataInput& dataInput, int startPos,
-                                            int endPos,
-                                            PdxLocalWriter& localWriter) {
-  dataInput.reset(startPos);
-  for (; startPos < endPos; startPos++) {
-    localWriter.writeByte(dataInput.read());
-  }
-}
-
-void PdxInstanceImpl::toData(PdxWriter& writer) const {
-  const_cast<PdxInstanceImpl*>(this)->toDataMutable(writer);
-}
-
-void PdxInstanceImpl::toDataMutable(PdxWriter& writer) {
-  std::vector<std::shared_ptr<PdxFieldType>>* pdxFieldList =
-      pdxType_->getPdxFieldTypes();
-  int position = 0;  // ignore typeid and length
-  int nextFieldPosition = 0;
-  if (buffer_.size() != 0) {
-    auto dataInput = cacheImpl_.createDataInput(buffer_.data(), buffer_.size());
-    for (size_t i = 0; i < pdxFieldList->size(); i++) {
-      auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData fieldName = %s , isVarLengthType = %d ",
-               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
-      std::shared_ptr<Cacheable> value = nullptr;
-
-      auto&& iter = m_updatedFields.find(currPf->getFieldName());
-      if (iter != m_updatedFields.end()) {
-        value = iter->second;
-      } else {
-        value = nullptr;
-      }
-      if (value != nullptr) {
-        writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
-        position = getNextFieldPosition(dataInput, static_cast<int>(i) + 1);
-      } else {
-        if (currPf->IsVariableLengthType()) {
-          // need to add offset
-          (static_cast<PdxLocalWriter&>(writer)).addOffset();
-        }
-        // write raw byte array...
-        nextFieldPosition =
-            getNextFieldPosition(dataInput, static_cast<int>(i) + 1);
-        writeUnmodifieldField(dataInput, position, nextFieldPosition,
-                              static_cast<PdxLocalWriter&>(writer));
-        position = nextFieldPosition;  // mark next field;
-      }
-    }
-  } else {
-    for (size_t i = 0; i < pdxFieldList->size(); i++) {
-      auto currPf = pdxFieldList->at(i);
-      LOGDEBUG("toData1 fieldName = %s , isVarLengthType = %d ",
-               currPf->getFieldName().c_str(), currPf->IsVariableLengthType());
-      auto value = m_updatedFields[currPf->getFieldName()];
-      writeField(writer, currPf->getFieldName(), currPf->getTypeId(), value);
-    }
-  }
-  m_updatedFields.clear();
-}
-
-void PdxInstanceImpl::fromData(PdxReader&) {
-  throw IllegalStateException(
-      "PdxInstance::FromData( .. ) shouldn't have called");
-}
-
-const std::string& PdxInstanceImpl::getClassName() const {
-  return pdxType_->getPdxClassName();
-}
-
-std::vector<std::shared_ptr<PdxFieldType>>
-PdxInstanceImpl::getIdentityPdxFields() const {
-  std::vector<std::shared_ptr<PdxFieldType>> result;
-  const auto& fields = *pdxType_->getPdxFieldTypes();
-
-  for (const auto& field : fields) {
-    if (field->getIdentityField()) {
-      result.push_back(field);
-    }
-  }
-
-  if (result.empty()) {
-    result = fields;
-  }
-
-  std::sort(result.begin(), result.end(),
-            [](std::shared_ptr<PdxFieldType> first,
-               std::shared_ptr<PdxFieldType> second) {
-              return first->getFieldName() < second->getFieldName();
-            });
-
-  return result;
-}
-
-int PdxInstanceImpl::getOffset(DataInput& input, int sequenceId) const {
-  input.resetPdx(0);
-
-  int offsetSize = 0;
-  int serializedLength = 0;
-  int pdxSerializedLength = static_cast<int32_t>(input.getPdxBytes());
-
-  LOGDEBUG("getOffset pdxSerializedLength = %d ", pdxSerializedLength);
-
-  if (pdxSerializedLength <= 0xff) {
-    offsetSize = 1;
-  } else if (pdxSerializedLength <= 0xffff) {
-    offsetSize = 2;
-  } else {
-    offsetSize = 4;
-  }
-
-  if (pdxType_->getNumberOfVarLenFields() > 0) {
-    serializedLength = pdxSerializedLength -
-                       ((pdxType_->getNumberOfVarLenFields() - 1) * offsetSize);
-  } else {
-    serializedLength = pdxSerializedLength;
-  }
-
-  //[ToDo see if currentBufferPosition can correctly replace GetCursor]
-  uint8_t* offsetsBuffer =
-      const_cast<uint8_t*>(input.currentBufferPosition()) + serializedLength;
-  return pdxType_->getFieldPosition(sequenceId, offsetsBuffer, offsetSize,
-                                    serializedLength);
-}
-
-int PdxInstanceImpl::getRawHashCode(DataInput& input,
-                                    std::shared_ptr<PdxFieldType> field) const {
-  auto pos = getOffset(input, field->getSequenceId());
-  auto nextpos = getNextFieldPosition(input, field->getSequenceId() + 1);
-
-  LOGDEBUG("pos = %d nextpos = %d ", pos, nextpos);
-
-  if (hasDefaultBytes(field, input, pos, nextpos)) {
-    return 0;  // matched default bytes
-  }
-
-  input.reset();
-  input.advanceCursor(nextpos - 1);
-
-  int h = 1;
-  for (int i = nextpos - 1; i >= pos; i--) {
-    h = 31 * h + static_cast<int>(input.read());
-    input.reset();
-    input.advanceCursor(i - 1);
-  }
-  LOGDEBUG("getRawHashCode nbytes = %d, final hashcode = %d ", (nextpos - pos),
-           h);
-  return h;
-}
-
-int PdxInstanceImpl::getNextFieldPosition(DataInput& input, int fieldId) const {
-  LOGDEBUG("fieldId = %d pt->getTotalFields() = %d ", fieldId,
-           pdxType_->getTotalFields());
-
-  return fieldId == pdxType_->getTotalFields() ? getSerializedLength(input)
-                                               : getOffset(input, fieldId);
-}
-
-int PdxInstanceImpl::getSerializedLength(DataInput& input) const {
-  input.resetPdx(0);
-
-  int offsetSize = 0;
-  int serializedLength = 0;
-  int pdxSerializedLength = static_cast<int32_t>(input.getPdxBytes());
-
-  LOGDEBUG("pdxSerializedLength = %d ", pdxSerializedLength);
-
-  if (pdxSerializedLength <= 0xff) {
-    offsetSize = 1;
-  } else if (pdxSerializedLength <= 0xffff) {
-    offsetSize = 2;
-  } else {
-    offsetSize = 4;
-  }
-
-  if (pdxType_->getNumberOfVarLenFields() > 0) {
-    serializedLength = pdxSerializedLength -
-                       ((pdxType_->getNumberOfVarLenFields() - 1) * offsetSize);
-  } else {
-    serializedLength = pdxSerializedLength;
-  }
-
-  return serializedLength;
-}
-
-bool PdxInstanceImpl::compareDefaultBytes(DataInput& dataInput, int start,
-                                          int end, int8_t* defaultBytes,
-                                          int32_t length) const {
-  if ((end - start) != length) return false;
-
-  dataInput.reset();
-  dataInput.advanceCursor(start);
-  int j = 0;
-  for (int i = start; i < end; i++) {
-    if (defaultBytes[j++] != dataInput.read()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-bool PdxInstanceImpl::hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
-                                      DataInput& dataInput, int start,
-                                      int end) const {
-  switch (pField->getTypeId()) {
-    case PdxFieldTypes::INT: {
-      return compareDefaultBytes(dataInput, start, end, INT_DEFAULT_BYTES, 4);
-    }
-    case PdxFieldTypes::STRING: {
-      return compareDefaultBytes(dataInput, start, end, STRING_DEFAULT_BYTES,
-                                 1);
-    }
-    case PdxFieldTypes::BOOLEAN: {
-      return compareDefaultBytes(dataInput, start, end, BOOLEAN_DEFAULT_BYTES,
-                                 1);
-    }
-    case PdxFieldTypes::FLOAT: {
-      return compareDefaultBytes(dataInput, start, end, FLOAT_DEFAULT_BYTES, 4);
-    }
-    case PdxFieldTypes::DOUBLE: {
-      return compareDefaultBytes(dataInput, start, end, DOUBLE_DEFAULT_BYTES,
-                                 8);
-    }
-    case PdxFieldTypes::CHAR: {
-      return compareDefaultBytes(dataInput, start, end, CHAR_DEFAULT_BYTES, 2);
-    }
-    case PdxFieldTypes::BYTE: {
-      return compareDefaultBytes(dataInput, start, end, BYTE_DEFAULT_BYTES, 1);
-    }
-    case PdxFieldTypes::SHORT: {
-      return compareDefaultBytes(dataInput, start, end, SHORT_DEFAULT_BYTES, 2);
-    }
-    case PdxFieldTypes::LONG: {
-      return compareDefaultBytes(dataInput, start, end, LONG_DEFAULT_BYTES, 8);
-    }
-    case PdxFieldTypes::BYTE_ARRAY:
-    case PdxFieldTypes::DOUBLE_ARRAY:
-    case PdxFieldTypes::FLOAT_ARRAY:
-    case PdxFieldTypes::SHORT_ARRAY:
-    case PdxFieldTypes::INT_ARRAY:
-    case PdxFieldTypes::LONG_ARRAY:
-    case PdxFieldTypes::BOOLEAN_ARRAY:
-    case PdxFieldTypes::CHAR_ARRAY:
-    case PdxFieldTypes::STRING_ARRAY:
-    case PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS:
-    case PdxFieldTypes::OBJECT_ARRAY: {
-      return compareDefaultBytes(dataInput, start, end,
-                                 NULL_ARRAY_DEFAULT_BYTES, 1);
-    }
-    case PdxFieldTypes::DATE: {
-      return compareDefaultBytes(dataInput, start, end, DATE_DEFAULT_BYTES, 8);
-    }
-    case PdxFieldTypes::OBJECT: {
-      return compareDefaultBytes(dataInput, start, end, OBJECT_DEFAULT_BYTES,
-                                 1);
-    }
-    case PdxFieldTypes::UNKNOWN: {
-      throw IllegalStateException("hasDefaultBytes unable to find typeID ");
-    }
-  }
-  throw IllegalStateException("hasDefaultBytes unable to find typeID ");
-}
-
-void PdxInstanceImpl::setField(const std::string& name, bool value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::BOOLEAN) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableBoolean::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, signed char value) {
-  auto field = pdxType_->getPdxField(name);
-
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::BYTE) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableByte::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, unsigned char value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::BYTE) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-  auto cacheableObject = CacheableByte::create(value);
-  m_updatedFields[name] = cacheableObject;
-}
-
-void PdxInstanceImpl::setField(const std::string& name, int16_t value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::SHORT) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt16::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, int32_t value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::INT) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt32::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, int64_t value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::LONG) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt64::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, float value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::FLOAT) {
-    throw IllegalStateException(
-        "PdxInstance doesn't have field " + name +
-        " or type of field not matched " +
-        (field != nullptr ? field->toString().c_str() : ""));
-  }
-
-  m_updatedFields[name] = CacheableFloat::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, double value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::DOUBLE) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableDouble::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, char16_t value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::CHAR) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableCharacter::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               std::shared_ptr<CacheableDate> value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::DATE) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = value;
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               std::shared_ptr<Cacheable> value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::OBJECT) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-  m_updatedFields[name] = value;
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               std::shared_ptr<CacheableObjectArray> value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::OBJECT_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-  m_updatedFields[name] = value;
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<bool>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::BOOLEAN_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = BooleanArray::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<int8_t>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::BYTE_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableBytes::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<int16_t>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::SHORT_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt16Array::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<int32_t>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::INT_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt32Array::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<int64_t>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::LONG_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableInt64Array::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<float>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::FLOAT_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableFloatArray::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<double>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::DOUBLE_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableDoubleArray::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::vector<char16_t>& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::CHAR_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CharArray::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name,
-                               const std::string& value) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::STRING) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  m_updatedFields[name] = CacheableString::create(value);
-}
-
-void PdxInstanceImpl::setField(const std::string& name, int8_t** value,
-                               int32_t arrayLength, int32_t* elementLength) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr &&
-      field->getTypeId() != PdxFieldTypes::ARRAY_OF_BYTE_ARRAYS) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-  auto cacheableObject = CacheableVector::create();
-  for (int i = 0; i < arrayLength; i++) {
-    auto ptr = CacheableBytes::create(
-        std::vector<int8_t>(value[i], value[i] + elementLength[i]));
-    cacheableObject->push_back(ptr);
-  }
-
-  m_updatedFields[name] = cacheableObject;
-}
-
-void PdxInstanceImpl::setField(const std::string& name, std::string* value,
-                               int32_t length) {
-  auto field = pdxType_->getPdxField(name);
-  if (field != nullptr && field->getTypeId() != PdxFieldTypes::STRING_ARRAY) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name +
-                                " or type of field not matched " +
-                                (field != nullptr ? field->toString() : ""));
-  }
-
-  if (length > 0) {
-    std::vector<std::shared_ptr<CacheableString>> tmpValues;
-    tmpValues.reserve(length);
-    for (int32_t i = 0; i < length; ++i) {
-      tmpValues.emplace_back(CacheableString::create(value[i]));
-    }
-    m_updatedFields[name] = CacheableStringArray::create(std::move(tmpValues));
-  }
-}
-
-void PdxInstanceImpl::setOffsetForObject(DataInput& input,
-                                         int sequenceId) const {
-  int pos = getOffset(input, sequenceId);
-
-  input.reset();
-  input.advanceCursor(pos);
-}
-
-size_t PdxInstanceImpl::objectSize() const {
-  auto size = sizeof(PdxInstanceImpl);
-  size += buffer_.size();
-  size += pdxType_->objectSize();
-  for (FieldVsValues::const_iterator iter = m_updatedFields.begin();
-       iter != m_updatedFields.end(); ++iter) {
-    size += iter->first.length();
-    size += iter->second->objectSize();
-  }
-  return size;
-}
-
-PdxTypeRegistry& PdxInstanceImpl::getPdxTypeRegistry() const {
-  return pdxTypeRegistry_;
-}
-
-DataInput PdxInstanceImpl::getDataInputForField(const std::string& name) const {
-  auto field = pdxType_->getPdxField(name);
-
-  if (!field) {
-    throw IllegalStateException("PdxInstance doesn't have field " + name);
-  }
-
-  auto dataInput = cacheImpl_.createDataInput(buffer_.data(), buffer_.size());
-  auto pos = getOffset(dataInput, field->getSequenceId());
-
-  dataInput.reset();
-  dataInput.advanceCursor(pos);
-
-  return dataInput;
 }
 
 }  // namespace client

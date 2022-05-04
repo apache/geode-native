@@ -32,23 +32,23 @@ namespace geode {
 namespace client {
 
 /**
- * @class PreservedDataExpiryTask
+ * @class PdxUnreadDataExpiryTask
  *
  * The expiry task which gets triggered when a preserved data expires.
  */
-class PreservedDataExpiryTask : public ExpiryTask {
+class PdxUnreadDataExpiryTask : public ExpiryTask {
  public:
   /**
    * Constructor
    */
-  PreservedDataExpiryTask(ExpiryTaskManager& manager,
+  PdxUnreadDataExpiryTask(ExpiryTaskManager& manager,
                           std::shared_ptr<PdxTypeRegistry> type_registry,
                           std::shared_ptr<PdxSerializable> object);
 
   bool on_expire() override;
 
  private:
-  std::shared_ptr<PdxTypeRegistry> type_registry_;
+  std::shared_ptr<PdxTypeRegistry> registry_;
   std::shared_ptr<PdxSerializable> object_;
 };
 }  // namespace client

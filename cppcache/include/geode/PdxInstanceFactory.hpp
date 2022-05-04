@@ -33,7 +33,6 @@ namespace geode {
 namespace client {
 
 class PdxType;
-typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
 class CachePerfStats;
 class PdxTypeRegistry;
 class AuthenticatedView;
@@ -393,26 +392,29 @@ class APACHE_GEODE_EXPORT PdxInstanceFactory {
    * The identity fields should make marked after they are written using a
    * write* method.
    *
-   * @param fieldName the name of the field to mark as an identity field.
+   * @param name the name of the field to mark as an identity field.
    * @return this PdxInstanceFactory
    * @throws IllegalStateException if the named field does not exist.
    */
-  PdxInstanceFactory& markIdentityField(const std::string& fieldName);
+  PdxInstanceFactory& markIdentityField(const std::string& name);
 
  private:
-  bool m_created;
-  std::shared_ptr<PdxType> m_pdxType;
-  FieldVsValues m_FieldVsValues;
-  CachePerfStats& m_cachePerfStats;
-  PdxTypeRegistry& m_pdxTypeRegistry;
-  const CacheImpl& m_cacheImpl;
-  bool m_enableTimeStatistics;
-  void isFieldAdded(const std::string& fieldName);
+  void isFieldAdded(const std::string& name);
 
   PdxInstanceFactory(const std::string& className, bool expectDomainClass,
-                     CachePerfStats& cachePerfStats,
-                     PdxTypeRegistry& m_pdxTypeRegistry, const CacheImpl& cache,
-                     bool enableTimeStatistics);
+                     const CacheImpl& cache);
+
+ private:
+  using FieldInfo = std::pair<PdxFieldTypes, std::shared_ptr<Cacheable>>;
+  using FieldsMap = std::map<std::string, FieldInfo>;
+
+ private:
+  bool created_;
+  std::shared_ptr<PdxType> pdxType_;
+  FieldsMap fields_;
+  std::unordered_set<std::string> identityFields_;
+
+  const CacheImpl& cacheImpl_;
 
   friend CacheImpl;
   friend AuthenticatedView;

@@ -35,72 +35,18 @@ namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::shared_ptr<PdxFieldType>> NameVsPdxType;
 class PdxType;
-class PdxTypeRegistry;
 
 class PdxType : public internal::DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType> {
-  static const char* m_javaPdxClass;
-
-  std::vector<std::shared_ptr<PdxFieldType>>* m_pdxFieldTypes;
-
-  std::list<std::shared_ptr<PdxType>> m_otherVersions;
-
-  std::string m_className;
-
-  int32_t m_geodeTypeId;
-
-  bool m_isLocal;
-
-  int32_t m_numberOfVarLenFields;
-
-  int32_t m_varLenFieldIdx;
-
-  int32_t m_numberOfFieldsExtra;
-
-  bool m_isVarLenFieldAdded;
-
-  int32_t* m_remoteToLocalFieldMap;
-
-  int32_t* m_localToRemoteFieldMap;
-
-  NameVsPdxType m_fieldNameVsPdxType;
-
-  bool is_java_class_;
-
-  PdxTypeRegistry& m_pdxTypeRegistry;
-
-  void initRemoteToLocal();
-
-  void initLocalToRemote();
-
-  int32_t fixedLengthFieldPosition(std::shared_ptr<PdxFieldType> fixLenField,
-                                   uint8_t* offsetPosition, int32_t offsetSize,
-                                   int32_t pdxStreamlen);
-
-  int32_t variableLengthFieldPosition(std::shared_ptr<PdxFieldType> varLenField,
-                                      uint8_t* offsetPosition,
-                                      int32_t offsetSize);
-
-  std::shared_ptr<PdxType> isContains(std::shared_ptr<PdxType> first,
-                                      std::shared_ptr<PdxType> second);
-  std::shared_ptr<PdxType> clone();
-  void generatePositionMap();
-
-  std::shared_ptr<PdxType> isLocalTypeContains(
-      std::shared_ptr<PdxType> otherType);
-  std::shared_ptr<PdxType> isRemoteTypeContains(
-      std::shared_ptr<PdxType> localType);
+ private:
+  using Fields = std::vector<std::shared_ptr<PdxFieldType>>;
+  using FieldMap = std::map<std::string, std::shared_ptr<PdxFieldType>>;
 
  public:
   PdxType(const PdxType&) = delete;
   PdxType& operator=(const PdxType&) = delete;
-  PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
-          const std::string& pdxDomainClassName, bool isLocal);
-  PdxType(PdxTypeRegistry& pdxTypeRegistryPtr,
-          const std::string& pdxDomainClassName, bool isLocal,
-          bool expectDomainClass);
+  explicit PdxType(const std::string& className, bool expectDomainClass = true);
 
   ~PdxType() noexcept override;
 
@@ -108,101 +54,67 @@ class PdxType : public internal::DataSerializableInternal,
 
   void fromData(DataInput& input) override;
 
-  static std::shared_ptr<Serializable> CreateDeserializable(
-      PdxTypeRegistry& pdxTypeRegistry) {
-    return std::make_shared<PdxType>(pdxTypeRegistry, "", false);
+  static std::shared_ptr<Serializable> createDeserializable();
+
+  size_t objectSize() const override;
+
+  int32_t getTypeId() const { return typeId_; }
+
+  void setTypeId(int32_t typeId) { typeId_ = typeId; }
+
+  int32_t getOffsetsCount() const;
+
+  int32_t getFieldsCount() const {
+    return static_cast<int32_t>(fields_.size());
   }
 
-  size_t objectSize() const override {
-    auto size = sizeof(PdxType);
-    if (m_pdxFieldTypes != nullptr) {
-      for (size_t i = 0; i < m_pdxFieldTypes->size(); i++) {
-        size += m_pdxFieldTypes->at(i)->objectSize();
-      }
-    }
-    size += static_cast<uint32_t>(m_className.length());
-    for (auto&& iter : m_fieldNameVsPdxType) {
-      size += iter.first.length();
-      size += iter.second->objectSize();
-    }
-    if (m_remoteToLocalFieldMap != nullptr) {
-      if (m_pdxFieldTypes != nullptr) {
-        size += sizeof(int32_t) * m_pdxFieldTypes->size();
-      }
-    }
-    if (m_localToRemoteFieldMap != nullptr) {
-      if (m_pdxFieldTypes != nullptr) {
-        size += sizeof(int32_t) * m_pdxFieldTypes->size();
-      }
-    }
-    return size;
-  }
+  const std::string& getPdxClassName() const { return className_; }
 
-  virtual int32_t getTypeId() const { return m_geodeTypeId; }
+  bool isDomainClass() const { return isDomainClass_; }
 
-  virtual void setTypeId(int32_t typeId) { m_geodeTypeId = typeId; }
+  std::shared_ptr<PdxFieldType> getField(int32_t idx) const;
 
-  int32_t getNumberOfVarLenFields() const { return m_numberOfVarLenFields; }
+  std::shared_ptr<PdxFieldType> getField(const std::string& name) const;
 
-  void setNumberOfVarLenFields(int32_t value) {
-    m_numberOfVarLenFields = value;
-  }
+  const Fields& getFields() const { return fields_; }
 
-  int32_t getTotalFields() const {
-    return static_cast<int32_t>(m_pdxFieldTypes->size());
-  }
+  const FieldMap& getFieldMap() const { return fieldMap_; }
 
-  const std::string& getPdxClassName() const { return m_className; }
+  std::shared_ptr<PdxFieldType> addField(const std::string& fieldName,
+                                         PdxFieldTypes typeId);
 
-  void setPdxClassName(std::string className) { m_className = className; }
+  void initialize();
 
-  int32_t getNumberOfExtraFields() const { return m_numberOfFieldsExtra; }
-
-  void setVarLenFieldIdx(int32_t value) { m_varLenFieldIdx = value; }
-
-  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
-
-  std::shared_ptr<PdxFieldType> getPdxField(const std::string& fieldName) {
-    auto&& iter = m_fieldNameVsPdxType.find(fieldName);
-    if (iter != m_fieldNameVsPdxType.end()) {
-      return iter->second;
-    }
-    return nullptr;
-  }
-
-  bool isLocal() const { return m_isLocal; }
-
-  void setLocal(bool local) { m_isLocal = local; }
-
-  std::vector<std::shared_ptr<PdxFieldType>>* getPdxFieldTypes() const {
-    return m_pdxFieldTypes;
-  }
-
-  void addFixedLengthTypeField(const std::string& fieldName,
-                               const std::string& className,
-                               PdxFieldTypes typeId, int32_t size);
-
-  void addVariableLengthTypeField(const std::string& fieldName,
-                                  const std::string& className,
-                                  PdxFieldTypes typeId);
-  void InitializeType();
-
-  std::shared_ptr<PdxType> mergeVersion(std::shared_ptr<PdxType> otherVersion);
-
-  int32_t getFieldPosition(const std::string& fieldName,
+  int32_t getFieldPosition(std::shared_ptr<PdxFieldType> field,
                            uint8_t* offsetPosition, int32_t offsetSize,
                            int32_t pdxStreamlen);
 
   int32_t getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
                            int32_t offsetSize, int32_t pdxStreamlen);
 
-  int32_t* getLocalToRemoteMap();
-
-  int32_t* getRemoteToLocalMap();
-
   bool operator==(const PdxType& other) const;
 
-  NameVsPdxType getFieldNameVsPdxType() const { return m_fieldNameVsPdxType; }
+ protected:
+
+ private:
+  int32_t getFixedFieldPos(std::shared_ptr<PdxFieldType> fixLenField,
+                           uint8_t* offsetPosition, int32_t offsetSize,
+                           int32_t pdxStreamlen);
+
+  int32_t getVarFieldPos(std::shared_ptr<PdxFieldType> varLenField,
+                         uint8_t* offsetPosition, int32_t offsetSize);
+
+ private:
+  bool initialized_;
+
+  Fields fields_;
+  std::string className_;
+  bool isDomainClass_;
+
+  int32_t typeId_;
+  int32_t lastVarFieldId_;
+
+  FieldMap fieldMap_;
 };
 }  // namespace client
 }  // namespace geode
@@ -218,10 +130,9 @@ struct hash<apache::geode::client::PdxType> {
     std::hash<std::string> strHash;
     auto result = strHash(val.getPdxClassName());
 
-    for (auto entry : val.getFieldNameVsPdxType()) {
-      auto pdxPtr = entry.second;
-      result = result ^ (strHash(pdxPtr->getClassName()) << 1);
-      result = result ^ (strHash(pdxPtr->getFieldName()) << 1);
+    for (const auto& field : val.getFields()) {
+      result = result ^ (static_cast<uint32_t>(field->getType()) << 1);
+      result = result ^ (strHash(field->getName()) << 1);
     }
 
     return result;

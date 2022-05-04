@@ -24,37 +24,41 @@
 
 #include "CacheImpl.hpp"
 #include "EnumInfo.hpp"
-#include "PdxType.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
 class PdxInstanceImpl;
+class PdxType;
 
 class PdxHelper {
- private:
-  static void createMergedType(std::shared_ptr<PdxType> localType,
-                               std::shared_ptr<PdxType> remoteType,
-                               DataInput& dataInput);
-
  public:
-  static uint8_t PdxHeader;
+  static constexpr auto HeaderSize = sizeof(uint32_t) + sizeof(uint32_t);
 
-  PdxHelper();
+  // Serialize
+  static std::shared_ptr<PdxType> serializePdxInstance(
+      DataOutput& output, const std::shared_ptr<PdxInstanceImpl>& instance);
 
-  virtual ~PdxHelper();
-
-  static void serializePdx(DataOutput& output, PdxInstanceImpl* instance);
+  static std::shared_ptr<PdxType> serializePdxSerializable(
+      DataOutput& output, const std::shared_ptr<PdxSerializable>& pdxObject);
 
   static void serializePdx(DataOutput& output,
                            const std::shared_ptr<PdxSerializable>& pdxObject);
 
-  static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput);
+  // Deserialize
+  static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& input);
 
-  static std::shared_ptr<PdxSerializable> deserializePdx(DataInput& dataInput,
-                                                         int32_t typeId,
-                                                         int32_t length);
+  static std::shared_ptr<PdxSerializable> deserializePdx(
+      DataInput& input, std::shared_ptr<PdxType> pdxType, int32_t length);
+
+  static std::shared_ptr<PdxSerializable> deserializePdxInstance(
+      DataInput& input, std::shared_ptr<PdxType> pdxType, int32_t length);
+
+  static std::shared_ptr<PdxSerializable> deserializePdxSerializable(
+      DataInput& input, std::shared_ptr<PdxType> pdxType, int32_t length);
+
+  static int32_t getOffsetSize(int32_t payloadLength);
 
   static int32_t readInt16(uint8_t* offsetPosition);
 
@@ -63,10 +67,6 @@ class PdxHelper {
   static int32_t readByte(uint8_t* offsetPosition);
 
   static int32_t readInt32(uint8_t* offsetPosition);
-
-  static void writeInt32(uint8_t* offsetPosition, int32_t value);
-
-  static void writeInt16(uint8_t* offsetPosition, int32_t value);
 
   static void writeByte(uint8_t* offsetPosition, int32_t value);
 

@@ -14,53 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/*
- * PreservedDataExpiryTask.cpp
- *
- *  Created on: Apr 5, 2012
- *      Author: npatel
- */
-#include "PreservedDataExpiryTask.hpp"
 
-#include <boost/thread/lock_types.hpp>
+#include "PdxUnreadDataExpiryTask.hpp"
 
 #include "ExpiryTaskManager.hpp"
 #include "PdxTypeRegistry.hpp"
+#include "PdxUnreadData.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-PreservedDataExpiryTask::PreservedDataExpiryTask(
-    ExpiryTaskManager& manager, decltype(type_registry_) type_registry,
+PdxUnreadDataExpiryTask::PdxUnreadDataExpiryTask(
+    ExpiryTaskManager& manager, decltype(registry_) type_registry,
     decltype(object_) object)
-    : ExpiryTask(manager), type_registry_(type_registry), object_(object) {}
+    : ExpiryTask(manager), registry_(type_registry), object_(object) {}
 
-bool PreservedDataExpiryTask::on_expire() {
-  auto& mutex = type_registry_->getPreservedDataMutex();
-  boost::unique_lock<std::remove_reference<decltype(mutex)>::type> guard{mutex};
+bool PdxUnreadDataExpiryTask::on_expire() {
 
-  auto& map = type_registry_->preserved_data_map();
+  LOGDEBUG("Entered PdxUnreadDataExpiryTask::on_expire");
 
-  LOGDEBUG(
-      "Entered PreservedDataExpiryTask "
-      "PdxTypeRegistry::getPreserveDataMap().size() = %zu",
-      map.size());
-
-  auto&& iter = map.find(object_);
-  if (iter == map.end()) {
-    return true;
-  }
-
-  auto expires_at = iter->second->expires_at();
-  if (expires_at < ExpiryTask::clock_t::now()) {
-    LOGDEBUG("Re-scheduling PreservedDataExpiryTask with ID %zu", id());
-
-    reset(expires_at);
+  auto ud = registry_->getUnreadData(object_);
+  auto expiresAt = ud->expiresAt();
+  if (expiresAt < ExpiryTask::clock_t::now()) {
+    LOGDEBUG("Re-scheduling PdxUnreadDataExpiryTask with ID %zu", id());
+    reset(expiresAt);
     return false;
   }
 
-  map.erase(iter);
+  registry_->removeUnreadData(object_);
   return true;
 }
 

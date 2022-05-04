@@ -147,7 +147,7 @@ class PdxTypeHandler {
   virtual ~PdxTypeHandler() noexcept = default;
   virtual void serialize(
       const std::shared_ptr<PdxSerializable>& pdxSerializable,
-      DataOutput& dataOutput) const;
+      DataOutput& output) const;
   virtual std::shared_ptr<PdxSerializable> deserialize(
       DataInput& dataInput) const;
 };

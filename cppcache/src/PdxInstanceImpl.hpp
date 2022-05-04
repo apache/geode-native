@@ -23,150 +23,104 @@
 #include <map>
 #include <vector>
 
-#include <geode/PdxFieldTypes.hpp>
-#include <geode/PdxInstance.hpp>
-#include <geode/PdxSerializable.hpp>
-#include <geode/WritablePdxInstance.hpp>
+#include <boost/thread.hpp>
 
-#include "PdxLocalWriter.hpp"
-#include "PdxType.hpp"
-#include "PdxTypeRegistry.hpp"
+#include <geode/PdxInstance.hpp>
 
 namespace apache {
 namespace geode {
 namespace client {
 
-typedef std::map<std::string, std::shared_ptr<Cacheable>> FieldVsValues;
+class CachePerfStats;
+class DataOutput;
+class PdxFieldType;
+class PdxType;
+class PdxWriterImpl;
+class PdxInstanceFactory;
 
-class PdxInstanceImpl : public WritablePdxInstance {
+class PdxInstanceImpl : public PdxInstance {
+ protected:
+  using FieldsBuffer = std::vector<uint8_t>;
+  using Fields = std::vector<std::shared_ptr<Cacheable>>;
+
  public:
+  PdxInstanceImpl(FieldsBuffer buffer, std::shared_ptr<PdxType> pdxType,
+                  const CacheImpl& cacheImpl);
+
+  PdxInstanceImpl(Fields fields, std::shared_ptr<PdxType> pdxType,
+                  const CacheImpl& cacheImpl);
+
+  PdxInstanceImpl(Fields fields, FieldsBuffer buffer,
+                  std::shared_ptr<PdxType> pdxType, const CacheImpl& cacheImpl);
+
+  PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
+
+  void operator=(const PdxInstanceImpl& other) = delete;
+
   ~PdxInstanceImpl() noexcept override;
 
   virtual std::shared_ptr<PdxSerializable> getObject() override;
 
   virtual bool hasField(const std::string& name) override;
 
-  virtual bool getBooleanField(const std::string& fieldname) const override;
+  virtual bool getBooleanField(const std::string& name) const override;
 
-  virtual int8_t getByteField(const std::string& fieldname) const override;
+  virtual int8_t getByteField(const std::string& name) const override;
 
-  virtual int16_t getShortField(const std::string& fieldname) const override;
+  virtual int16_t getShortField(const std::string& name) const override;
 
-  virtual int32_t getIntField(const std::string& fieldname) const override;
+  virtual int32_t getIntField(const std::string& name) const override;
 
-  virtual int64_t getLongField(const std::string& fieldname) const override;
+  virtual int64_t getLongField(const std::string& name) const override;
 
-  virtual float getFloatField(const std::string& fieldname) const override;
+  virtual float getFloatField(const std::string& name) const override;
 
-  virtual double getDoubleField(const std::string& fieldname) const override;
+  virtual double getDoubleField(const std::string& name) const override;
 
-  virtual char16_t getCharField(const std::string& fieldName) const override;
+  virtual char16_t getCharField(const std::string& name) const override;
 
-  virtual std::string getStringField(
-      const std::string& fieldName) const override;
+  virtual std::string getStringField(const std::string& name) const override;
 
   virtual std::vector<bool> getBooleanArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<int8_t> getByteArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<int16_t> getShortArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<int32_t> getIntArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<int64_t> getLongArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<float> getFloatArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::vector<double> getDoubleArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   // charArray
   virtual std::vector<char16_t> getCharArrayField(
-      const std::string& fieldName) const override;
+      const std::string& name) const override;
 
   virtual std::vector<std::string> getStringArrayField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::shared_ptr<CacheableDate> getCacheableDateField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
-  virtual void getField(const std::string& fieldName, int8_t*** value,
+  virtual void getField(const std::string& name, int8_t*** value,
                         int32_t& arrayLength,
                         int32_t*& elementLength) const override;
 
   virtual std::shared_ptr<Cacheable> getCacheableField(
-      const std::string& fieldname) const override;
+      const std::string& name) const override;
 
   virtual std::shared_ptr<CacheableObjectArray> getCacheableObjectArrayField(
-      const std::string& fieldname) const override;
-
-  virtual void setField(const std::string& fieldName, bool value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        signed char value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        unsigned char value) override;
-
-  virtual void setField(const std::string& fieldName, int16_t value) override;
-
-  virtual void setField(const std::string& fieldName, int32_t value) override;
-
-  virtual void setField(const std::string& fieldName, int64_t value) override;
-
-  virtual void setField(const std::string& fieldName, float value) override;
-
-  virtual void setField(const std::string& fieldName, double value) override;
-
-  virtual void setField(const std::string& fieldName, char16_t value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        std::shared_ptr<CacheableDate> value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<bool>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<int8_t>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<int16_t>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<int32_t>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<int64_t>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<float>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<double>& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::string& value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        const std::vector<char16_t>& value) override;
-
-  virtual void setField(const std::string& fieldName, std::string* value,
-                        int32_t length) override;
-
-  virtual void setField(const std::string& fieldName, int8_t** value,
-                        int32_t arrayLength, int32_t* elementLength) override;
-
-  virtual void setField(const std::string& fieldName,
-                        std::shared_ptr<Cacheable> value) override;
-
-  virtual void setField(const std::string& fieldName,
-                        std::shared_ptr<CacheableObjectArray> value) override;
+      const std::string& name) const override;
 
   virtual bool isIdentityField(const std::string& name) override;
 
@@ -192,133 +146,145 @@ class PdxInstanceImpl : public WritablePdxInstance {
   virtual PdxFieldTypes getFieldType(
       const std::string& fieldname) const override;
 
- public:
-  /**
-   * @brief constructors
-   */
-
-  PdxInstanceImpl(const uint8_t* buffer, size_t length,
-                  std::shared_ptr<PdxType> pdxType, CachePerfStats& cacheStats,
-                  PdxTypeRegistry& pdxTypeRegistry, const CacheImpl& cacheImpl,
-                  bool enableTimeStatistics);
-
-  PdxInstanceImpl(FieldVsValues fieldVsValue, std::shared_ptr<PdxType> pdxType,
-                  CachePerfStats& cacheStats, PdxTypeRegistry& pdxTypeRegistry,
-                  const CacheImpl& cacheImpl, bool enableTimeStatistics);
-
-  PdxInstanceImpl(const PdxInstanceImpl& other) = delete;
-
-  void operator=(const PdxInstanceImpl& other) = delete;
-
-  std::shared_ptr<PdxType> getPdxType(Pool* pool) const;
-
-  int32_t getTypeId() const;
-
-  void updatePdxStream(std::vector<uint8_t> stream);
-
- protected:
-  const std::vector<uint8_t>& getPdxStream() const;
+  std::shared_ptr<PdxType> getPdxType() const { return pdxType_; }
 
  private:
-  mutable std::vector<uint8_t> buffer_;
-  mutable int32_t typeId_;
+  std::shared_ptr<Cacheable> getField(const std::string& name,
+                                      PdxFieldTypes type) const;
 
-  std::shared_ptr<PdxType> pdxType_;
-  FieldVsValues m_updatedFields;
-  CachePerfStats& cacheStats_;
-  PdxTypeRegistry& pdxTypeRegistry_;
-  const CacheImpl& cacheImpl_;
-  bool enableTimeStatistics_;
+  std::vector<uint8_t> getFieldsBuffer() const;
 
-  std::vector<std::shared_ptr<PdxFieldType>> getIdentityPdxFields() const;
+  std::vector<uint8_t> serialize() const;
 
-  int getOffset(DataInput& input, int sequenceId) const;
+  void serialize(PdxWriterImpl& writer) const;
 
-  int getRawHashCode(DataInput& input,
-                     std::shared_ptr<PdxFieldType> field) const;
+  void deserialize();
 
-  int getNextFieldPosition(DataInput& input, int fieldId) const;
+ protected:
+  friend class PdxInstanceFactory;
 
-  int getSerializedLength(DataInput& dataInput) const;
+  static std::shared_ptr<Cacheable> toCacheableField(bool value);
 
-  bool hasDefaultBytes(std::shared_ptr<PdxFieldType> pField,
-                       DataInput& dataInput, int start, int end) const;
+  static std::shared_ptr<Cacheable> toCacheableField(int8_t value);
 
-  bool compareDefaultBytes(DataInput& dataInput, int start, int end,
-                           int8_t* defaultBytes, int32_t length) const;
+  static std::shared_ptr<Cacheable> toCacheableField(uint8_t value);
 
-  void writeField(PdxWriter& writer, const std::string& fieldName,
-                  PdxFieldTypes typeId, std::shared_ptr<Cacheable> value);
+  static std::shared_ptr<Cacheable> toCacheableField(int16_t value);
 
-  void writeUnmodifieldField(DataInput& dataInput, int startPos, int endPos,
-                             PdxLocalWriter& localWriter);
+  static std::shared_ptr<Cacheable> toCacheableField(int32_t value);
 
-  void setOffsetForObject(DataInput& input, int sequenceId) const;
+  static std::shared_ptr<Cacheable> toCacheableField(int64_t value);
 
-  bool compareRawBytes(DataInput& input, DataInput& otherInput,
-                       PdxInstanceImpl& other,
-                       std::shared_ptr<PdxFieldType> field,
-                       std::shared_ptr<PdxFieldType> otherField) const;
+  static std::shared_ptr<Cacheable> toCacheableField(float value);
 
-  void equatePdxFields(std::vector<std::shared_ptr<PdxFieldType>>& my,
-                       std::vector<std::shared_ptr<PdxFieldType>>& other) const;
+  static std::shared_ptr<Cacheable> toCacheableField(double value);
 
-  PdxTypeRegistry& getPdxTypeRegistry() const;
+  static std::shared_ptr<Cacheable> toCacheableField(char value);
 
-  void toDataMutable(PdxWriter& output);
+  static std::shared_ptr<Cacheable> toCacheableField(char16_t value);
 
-  static int deepArrayHashCode(std::shared_ptr<Cacheable> obj);
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<bool>& value);
 
-  static int enumerateMapHashCode(std::shared_ptr<CacheableHashMap> map);
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<int8_t>& value);
 
-  static int enumerateVectorHashCode(std::shared_ptr<CacheableVector> vec);
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<int16_t>& value);
 
-  static int enumerateArrayListHashCode(
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<int32_t>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<int64_t>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<float>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<double>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<char16_t>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(const std::string& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(int8_t** value,
+                                                     int32_t arrayLength,
+                                                     int32_t* elementLength);
+
+  static std::shared_ptr<Cacheable> toCacheableField(
+      const std::vector<std::string>& value);
+
+  static std::shared_ptr<Cacheable> toCacheableField(std::string* value,
+                                                     int32_t length);
+
+ private:
+  static void writeField(PdxWriterImpl& writer, PdxFieldTypes type,
+                         std::shared_ptr<Cacheable> value);
+
+  static int32_t enumerateMapHashCode(std::shared_ptr<CacheableHashMap> map);
+
+  static int32_t enumerateVectorHashCode(std::shared_ptr<CacheableVector> vec);
+
+  static int32_t enumerateArrayListHashCode(
       std::shared_ptr<CacheableArrayList> arrList);
 
-  static int enumerateLinkedListHashCode(
+  static int32_t enumerateLinkedListHashCode(
       std::shared_ptr<CacheableLinkedList> linkedList);
 
-  static int enumerateObjectArrayHashCode(
+  static int32_t enumerateObjectArrayHashCode(
       std::shared_ptr<CacheableObjectArray> objArray);
 
-  static int enumerateSetHashCode(std::shared_ptr<CacheableHashSet> set);
+  static int32_t enumerateSetHashCode(std::shared_ptr<CacheableHashSet> set);
 
-  static int enumerateLinkedSetHashCode(
-      std::shared_ptr<CacheableLinkedHashSet> linkedset);
+  static int32_t enumerateLinkedSetHashCode(
+      std::shared_ptr<CacheableLinkedHashSet> linkedSet);
 
-  static int enumerateHashTableCode(
+  static int32_t enumerateHashTableCode(
       std::shared_ptr<CacheableHashTable> hashTable);
 
-  static bool deepArrayEquals(std::shared_ptr<Cacheable> obj,
-                              std::shared_ptr<Cacheable> otherObj);
+  static int32_t deepHashCode(std::shared_ptr<Cacheable> object);
 
   static bool enumerateObjectArrayEquals(
-      std::shared_ptr<CacheableObjectArray> Obj,
-      std::shared_ptr<CacheableObjectArray> OtherObj);
+      std::shared_ptr<CacheableObjectArray> object,
+      std::shared_ptr<CacheableObjectArray> otherObject);
 
-  static bool enumerateVectorEquals(std::shared_ptr<CacheableVector> Obj,
-                                    std::shared_ptr<CacheableVector> OtherObj);
+  static bool enumerateVectorEquals(
+      std::shared_ptr<CacheableVector> object,
+      std::shared_ptr<CacheableVector> otherObject);
 
   static bool enumerateArrayListEquals(
-      std::shared_ptr<CacheableArrayList> Obj,
-      std::shared_ptr<CacheableArrayList> OtherObj);
+      std::shared_ptr<CacheableArrayList> object,
+      std::shared_ptr<CacheableArrayList> otherObject);
 
-  static bool enumerateMapEquals(std::shared_ptr<CacheableHashMap> Obj,
-                                 std::shared_ptr<CacheableHashMap> OtherObj);
+  static bool enumerateMapEquals(std::shared_ptr<CacheableHashMap> object,
+                                 std::shared_ptr<CacheableHashMap> otherObject);
 
-  static bool enumerateSetEquals(std::shared_ptr<CacheableHashSet> Obj,
-                                 std::shared_ptr<CacheableHashSet> OtherObj);
+  static bool enumerateSetEquals(std::shared_ptr<CacheableHashSet> object,
+                                 std::shared_ptr<CacheableHashSet> otherObject);
 
   static bool enumerateLinkedSetEquals(
-      std::shared_ptr<CacheableLinkedHashSet> Obj,
-      std::shared_ptr<CacheableLinkedHashSet> OtherObj);
+      std::shared_ptr<CacheableLinkedHashSet> object,
+      std::shared_ptr<CacheableLinkedHashSet> otherObject);
 
   static bool enumerateHashTableEquals(
-      std::shared_ptr<CacheableHashTable> Obj,
-      std::shared_ptr<CacheableHashTable> OtherObj);
+      std::shared_ptr<CacheableHashTable> object,
+      std::shared_ptr<CacheableHashTable> otherObject);
 
-  DataInput getDataInputForField(const std::string& fieldname) const;
+  static bool deepArrayEquals(std::shared_ptr<Cacheable> object,
+                              std::shared_ptr<Cacheable> otherObject);
+
+ protected:
+  Fields fields_;
+  std::shared_ptr<PdxType> pdxType_;
+
+  mutable boost::shared_mutex serializationMutex_;
+  mutable FieldsBuffer buffer_;
+
+  CachePerfStats& cacheStats_;
+  const CacheImpl& cache_;
+  bool enableTimeStatistics_;
 };
 }  // namespace client
 }  // namespace geode

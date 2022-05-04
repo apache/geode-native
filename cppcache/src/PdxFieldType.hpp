@@ -35,79 +35,67 @@ namespace geode {
 namespace client {
 
 class PdxFieldType : public internal::DataSerializableInternal {
- private:
-  std::string m_fieldName;
-  std::string m_className;
-  PdxFieldTypes m_typeId;
-  uint32_t m_sequenceId;
-
-  bool m_isVariableLengthType;
-  bool m_isIdentityField;
-  int32_t m_fixedSize;
-  int32_t m_varLenFieldIdx;
-
-  int32_t m_vlOffsetIndex;
-  int32_t m_relativeOffset;
-
-  int32_t getFixedTypeSize() const;
+ public:
+  static constexpr int32_t npos{-1};
 
  public:
-  PdxFieldType(std::string fieldName, std::string className,
-               PdxFieldTypes typeId, int32_t sequenceId,
-               bool isVariableLengthType, int32_t fixedSize,
-               int32_t varLenFieldIdx);
+  PdxFieldType(std::string fieldName, PdxFieldTypes typeId, int32_t sequenceId,
+               int32_t varId);
 
   PdxFieldType();
 
-  inline const std::string& getFieldName() { return m_fieldName; }
+  ~PdxFieldType() override = default;
 
-  inline const std::string& getClassName() { return m_className; }
+  const std::string& getName() const { return name_; }
 
-  inline PdxFieldTypes getTypeId() { return m_typeId; }
+  PdxFieldTypes getType() const { return type_; }
 
-  inline uint8_t getSequenceId() { return m_sequenceId; }
+  bool isVariable() const { return isVariable_; }
 
-  inline bool IsVariableLengthType() { return m_isVariableLengthType; }
+  bool isIdentity() const { return isIdentity_; }
 
-  bool getIdentityField() const { return m_isIdentityField; }
+  int32_t getRelativeOffset() const { return relOffset_; }
 
-  int32_t getVarLenFieldIdx() const { return m_varLenFieldIdx; }
+  uint8_t getIndex() const { return sequenceId_; }
 
-  void setVarLenOffsetIndex(int32_t value) { m_vlOffsetIndex = value; }
+  int32_t getVarId() const { return varId_; }
 
-  void setRelativeOffset(int32_t value) { m_relativeOffset = value; }
+  int32_t getFixedSize() const { return fixedSize_; }
 
-  int32_t getFixedSize() const { return m_fixedSize; }
-  void setIdentityField(bool identityField) {
-    m_isIdentityField = identityField;
-  }
+  int32_t getVarLenOffsetIndex() const { return varOffsetId_; }
 
-  // TODO:add more getters for the remaining members.
+  void setIdentity(bool isIdentity) { isIdentity_ = isIdentity; }
+
+  void setVarOffsetId(int32_t value) { varOffsetId_ = value; }
+
+  void setRelativeOffset(int32_t value) { relOffset_ = value; }
 
   void toData(DataOutput& output) const override;
 
   virtual void fromData(DataInput& input) override;
 
-  virtual size_t objectSize() const override {
-    auto size = sizeof(PdxFieldType);
-    size += m_className.length();
-    size += m_fieldName.length();
-    return size;
-  }
+  virtual size_t objectSize() const override;
 
   std::string toString() const override;
 
-  ~PdxFieldType() override = default;
-
-  bool equals(std::shared_ptr<PdxFieldType> otherObj);
-
-  int32_t getVarLenOffsetIndex() const { return m_vlOffsetIndex; }
-
-  int32_t getRelativeOffset() const { return m_relativeOffset; }
+  bool equals(std::shared_ptr<PdxFieldType> other);
 
   bool operator==(const PdxFieldType& other) const;
 
   bool operator!=(const PdxFieldType& other) const;
+
+ private:
+  std::string name_;
+  PdxFieldTypes type_;
+
+  bool isVariable_;
+  bool isIdentity_;
+  int32_t fixedSize_;
+
+  int32_t relOffset_;
+  int32_t sequenceId_;
+  int32_t varId_;
+  int32_t varOffsetId_;
 };
 
 }  // namespace client

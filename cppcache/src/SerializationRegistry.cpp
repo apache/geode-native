@@ -738,15 +738,9 @@ void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
 }
 
 void PdxTypeHandler::serialize(
-    const std::shared_ptr<PdxSerializable>& serializable,
-    DataOutput& dataOutput) const {
-  auto instance = std::dynamic_pointer_cast<PdxInstanceImpl>(serializable);
-
-  if (instance != nullptr) {
-    PdxHelper::serializePdx(dataOutput, instance.get());
-  } else {
-    PdxHelper::serializePdx(dataOutput, serializable);
-  }
+    const std::shared_ptr<PdxSerializable>& object,
+    DataOutput& output) const {
+  PdxHelper::serializePdx(output, object);
 }
 
 std::shared_ptr<PdxSerializable> PdxTypeHandler::deserialize(

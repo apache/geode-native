@@ -17,7 +17,7 @@
 #include <geode/CacheableObjectArray.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
-#include <geode/ExceptionTypes.hpp>
+#include <geode/PdxSerializable.hpp>
 
 namespace apache {
 namespace geode {
@@ -27,7 +27,8 @@ void CacheableObjectArray::toData(DataOutput& output) const {
   int32_t len = static_cast<int32_t>(size());
   output.writeArrayLen(len);
   output.write(static_cast<int8_t>(DSCode::Class));
-  output.writeString("java.lang.Object");
+  output.writeString(getClassName());
+
   for (const auto& iter : *this) {
     output.writeObject(iter);
   }
@@ -52,6 +53,18 @@ size_t CacheableObjectArray::objectSize() const {
     size += iter->objectSize();
   }
   return size;
+}
+
+std::string CacheableObjectArray::getClassName() const {
+  if (!empty()) {
+    auto&& item = *begin();
+
+    if (auto pdx = dynamic_cast<PdxSerializable*>(item.get())) {
+      return pdx->getClassName();
+    }
+  }
+
+  return "java.lang.Object";
 }
 }  // namespace client
 }  // namespace geode

@@ -1,8 +1,3 @@
-#pragma once
-
-#ifndef GEODE_PDXTYPES_H_
-#define GEODE_PDXTYPES_H_
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -20,35 +15,37 @@
  * limitations under the License.
  */
 
-#include <geode/internal/geode_globals.hpp>
+#include "PdxUnreadData.hpp"
+
+#include "PdxReaderImpl.hpp"
+#include "PdxType.hpp"
+#include "PdxWriterImpl.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-class PdxTypes {
- public:
-  static const int8_t kPdxByteSize = 1;
+PdxUnreadData::PdxUnreadData()
+    : expiryTaskId_{ExpiryTask::invalid()} {}
 
-  static const int8_t kPdxBooleanSize = 1;
+PdxUnreadData::PdxUnreadData(std::shared_ptr<PdxType> pdxType,
+                             std::vector<int32_t> indexes,
+                             std::vector<std::vector<uint8_t>> data)
+    : pdxType_{pdxType},
+      indexes_{std::move(indexes)},
+      data_{std::move(data)},
+      expiryTaskId_{ExpiryTask::invalid()} {}
 
-  static const int8_t kPdxCharSize = 2;
+void PdxUnreadData::write(PdxWriterImpl &writer) {
+  if (data_.empty()) {
+    return;
+  }
 
-  static const int8_t kPdxShortSize = 2;
-
-  static const int8_t kPdxIntegerSize = 4;
-
-  static const int8_t kPdxFloatSize = 4;
-
-  static const int8_t kPdxLongSize = 8;
-
-  static const int8_t kPdxDoubleSize = 8;
-
-  static const int8_t kPdxDateSize = 8;
-};
+  for (size_t i = 0, n = data_.size(); i < n; ++i) {
+    writer.writeRawField(pdxType_->getField(indexes_[i]), data_[i]);
+  }
+}
 
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
-
-#endif  // GEODE_PDXTYPES_H_

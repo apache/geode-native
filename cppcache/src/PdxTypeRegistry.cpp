@@ -23,7 +23,9 @@
 
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
-#include "PreservedDataExpiryTask.hpp"
+#include "PdxType.hpp"
+#include "PdxUnreadData.hpp"
+#include "PdxUnreadDataExpiryTask.hpp"
 #include "SerializationRegistry.hpp"
 #include "ThinClientPoolDM.hpp"
 
@@ -43,170 +45,146 @@ PdxTypeRegistry::PdxTypeRegistry(CacheImpl* cache)
 PdxTypeRegistry::~PdxTypeRegistry() {}
 
 size_t PdxTypeRegistry::testNumberOfPreservedData() const {
-  return preserved_data_.size();
+  return unreadData_.size();
 }
 
-int32_t PdxTypeRegistry::getPDXIdForType(const std::string& type, Pool* pool,
-                                         std::shared_ptr<PdxType> nType,
-                                         bool checkIfThere) {
-  if (checkIfThere) {
-    auto lpdx = getLocalPdxType(type);
-    if (lpdx != nullptr) {
-      int id = lpdx->getTypeId();
-      if (id != 0) {
-        return id;
-      }
+std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId,
+                                                     Pool* pool) {
+  // Check if PdxType ID is already present in the registry
+  if (typeId != 0) {
+    boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
+    auto&& iter = typeIdToPdxType_.find(typeId);
+    if (iter != typeIdToPdxType_.end()) {
+      return iter->second;
     }
   }
 
-  int typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
-  nType->setTypeId(typeId);
+  // This is not within exclusive access to avoid inter-locks due to I/O
+  auto type = cache_->getSerializationRegistry()->GetPDXTypeById(pool, typeId);
 
-  addPdxType(typeId, nType);
-  return typeId;
-}
+  boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
 
-int32_t PdxTypeRegistry::getPDXIdForType(std::shared_ptr<PdxType> nType,
-                                         Pool* pool) {
-  int32_t typeId = 0;
-  {
-    boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
-    auto&& iter = pdxTypeToTypeIdMap_.find(nType);
-    if (iter != pdxTypeToTypeIdMap_.end()) {
-      typeId = iter->second;
-      if (typeId != 0) {
-        return typeId;
-      }
-    }
-  }
-
-  {
-    boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
-    auto&& iter = pdxTypeToTypeIdMap_.find(nType);
-    if (iter != pdxTypeToTypeIdMap_.end()) {
-      typeId = iter->second;
-      if (typeId != 0) {
-        return typeId;
-      }
-    }
-
-    typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, nType);
-    nType->setTypeId(typeId);
-    pdxTypeToTypeIdMap_.emplace(nType, typeId);
-    typeIdToPdxType_.emplace(typeId, nType);
-  }
-  return typeId;
-}
-
-void PdxTypeRegistry::clear() {
-  {
-    boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
-    typeIdToPdxType_.clear();
-
-    remoteTypeIdToMergedPdxType_.clear();
-
-    localTypeToPdxType_.clear();
-
-    if (intToEnum_) intToEnum_->clear();
-
-    if (enumToInt_) enumToInt_->clear();
-
-    pdxTypeToTypeIdMap_.clear();
-  }
-  {
-    boost::unique_lock<decltype(preserved_data_mutex_)> guard{
-        preserved_data_mutex_};
-    preserved_data_.clear();
-  }
-}
-
-void PdxTypeRegistry::addPdxType(int32_t typeId,
-                                 std::shared_ptr<PdxType> pdxType) {
-  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
-  typeIdToPdxType_.emplace(typeId, pdxType);
-}
-
-std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId) const {
-  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
+  // Check if the PdxType was already added while fetcthing it to the cluster
   auto&& iter = typeIdToPdxType_.find(typeId);
   if (iter != typeIdToPdxType_.end()) {
     return iter->second;
   }
-  return nullptr;
-}
 
-void PdxTypeRegistry::addLocalPdxType(const std::string& localType,
-                                      std::shared_ptr<PdxType> pdxType) {
-  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
-  localTypeToPdxType_.emplace(localType, pdxType);
-}
-
-std::shared_ptr<PdxType> PdxTypeRegistry::getLocalPdxType(
-    const std::string& localType) const {
-  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
-  auto&& it = localTypeToPdxType_.find(localType);
-  if (it != localTypeToPdxType_.end()) {
-    return it->second;
+  auto pdxType = std::dynamic_pointer_cast<PdxType>(type);
+  if (!pdxType) {
+    throw IllegalStateException("Fetched PdxType=" + std::to_string(typeId) +
+                                " is not of the right type");
   }
-  return nullptr;
+
+  pdxTypeToTypeIdMap_.emplace(pdxType, typeId);
+  typeIdToPdxType_.emplace(typeId, pdxType);
+  return pdxType;
 }
 
-void PdxTypeRegistry::setMergedType(int32_t remoteTypeId,
-                                    std::shared_ptr<PdxType> mergedType) {
-  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
-  remoteTypeIdToMergedPdxType_.emplace(remoteTypeId, mergedType);
-}
+bool PdxTypeRegistry::registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType,
+                                              Pool* pool) {
+  auto typeId = pdxType->getTypeId();
 
-std::shared_ptr<PdxType> PdxTypeRegistry::getMergedType(
-    int32_t remoteTypeId) const {
-  auto&& it = remoteTypeIdToMergedPdxType_.find(remoteTypeId);
-  if (it != remoteTypeIdToMergedPdxType_.end()) {
-    return it->second;
+  // Check if PdxType ID is already present in the registry
+  if (typeId != 0) {
+    boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
+    auto&& iter = typeIdToPdxType_.find(typeId);
+    if (iter != typeIdToPdxType_.end()) {
+      return false;
+    }
   }
-  return nullptr;
+
+  // Check if PdxType is already present in the registry but its ID was not
+  // assigned
+  {
+    boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
+    auto&& iter = pdxTypeToTypeIdMap_.find(pdxType);
+    if (iter != pdxTypeToTypeIdMap_.end() && (typeId = iter->second) != 0) {
+      pdxType->setTypeId(typeId);
+      return true;
+    }
+  }
+
+  // Re-run the previous check, with exclusive-access to save reaching the
+  // traffic due to a race-condition
+  boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
+  auto&& iter = pdxTypeToTypeIdMap_.find(pdxType);
+  if (iter != pdxTypeToTypeIdMap_.end() && (typeId = iter->second) != 0) {
+    pdxType->setTypeId(typeId);
+    return true;
+  }
+
+  // Fetch the PdxType ID from the cluster and add it to the registry
+  typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, pdxType);
+  pdxType->setTypeId(typeId);
+
+  pdxTypeToTypeIdMap_.emplace(pdxType, typeId);
+  typeIdToPdxType_.emplace(typeId, pdxType);
+  return true;
 }
 
-void PdxTypeRegistry::setPreserveData(
-    std::shared_ptr<PdxSerializable> obj,
-    std::shared_ptr<PdxRemotePreservedData> data,
-    ExpiryTaskManager& expiryTaskManager) {
-  boost::unique_lock<decltype(preserved_data_mutex_)> guard{
-      preserved_data_mutex_};
-  data->setOwner(obj);
+void PdxTypeRegistry::clear() {
+  {
+    boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
+    typeIdToPdxType_.clear();
+    pdxTypeToTypeIdMap_.clear();
 
-  auto&& iter = preserved_data_.find(obj);
-  if (iter != preserved_data_.end()) {
-    auto expires_at =
-        std::chrono::steady_clock::now() + std::chrono::seconds(5);
-    data->task_id(iter->second->task_id());
-    data->expires_at(expires_at);
+    if (intToEnum_) {
+      intToEnum_->clear();
+    }
+
+    if (enumToInt_) {
+      enumToInt_->clear();
+    }
+  }
+  {
+    boost::unique_lock<decltype(unreadDataMutex_)> guard{unreadDataMutex_};
+    unreadData_.clear();
+  }
+}
+
+void PdxTypeRegistry::setUnreadData(ExpiryTaskManager& expiryTaskManager,
+                                    std::shared_ptr<PdxSerializable> obj,
+                                    std::shared_ptr<PdxUnreadData> data) {
+  boost::unique_lock<decltype(unreadDataMutex_)> guard{unreadDataMutex_};
+
+  auto&& iter = unreadData_.find(obj);
+  if (iter != unreadData_.end()) {
+    // TODO. Verify if hardcoding this to 5 seconds is acceptable
+    auto expireAt = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    data->taskId(iter->second->taskId());
+    data->expiresAt(expireAt);
     iter->second = data;
   } else {
-    auto task = std::make_shared<PreservedDataExpiryTask>(
+    auto task = std::make_shared<PdxUnreadDataExpiryTask>(
         expiryTaskManager, shared_from_this(), obj);
     auto id =
         expiryTaskManager.schedule(std::move(task), std::chrono::seconds(20));
-    data->task_id(id);
+    data->taskId(id);
 
     LOGDEBUG(
-        "PdxTypeRegistry::setPreserveData Schedule new expiry task with id=%zu",
+        "PdxTypeRegistry::setUnreadData Schedule new expiry task with id=%zu",
         id);
-    preserved_data_.emplace_hint(iter, std::move(obj), std::move(data));
+    unreadData_.emplace_hint(iter, std::move(obj), std::move(data));
   }
 
   LOGDEBUG(
-      "PdxTypeRegistry::setPreserveData Successfully inserted new entry in "
+      "PdxTypeRegistry::setUnreadData Successfully inserted new entry in "
       "preservedData");
 }
 
-std::shared_ptr<PdxRemotePreservedData> PdxTypeRegistry::getPreserveData(
-    std::shared_ptr<PdxSerializable> pdxobj) const {
-  boost::shared_lock<decltype(types_mutex_)> guard{types_mutex_};
-  const auto& iter = preserved_data_.find((pdxobj));
-  if (iter != preserved_data_.end()) {
-    return iter->second;
-  }
-  return nullptr;
+void PdxTypeRegistry::removeUnreadData(
+    std::shared_ptr<PdxSerializable> object) {
+  boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
+  unreadData_.erase(object);
+}
+
+std::shared_ptr<PdxUnreadData> PdxTypeRegistry::getUnreadData(
+    std::shared_ptr<PdxSerializable> object) const {
+  boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
+
+  auto&& iter = unreadData_.find(object);
+  return iter != unreadData_.end() ? iter->second : nullptr;
 }
 
 int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
@@ -219,7 +197,7 @@ int32_t PdxTypeRegistry::getEnumValue(std::shared_ptr<EnumInfo> ei) {
     return val->value();
   }
 
-  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
+  boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
   tmp = enumToInt_;
   const auto& entry2 = tmp->find(ei);
   if (entry2 != tmp->end()) {
@@ -252,7 +230,7 @@ std::shared_ptr<EnumInfo> PdxTypeRegistry::getEnum(int32_t enumVal) {
     }
   }
 
-  boost::unique_lock<decltype(types_mutex_)> guard{types_mutex_};
+  boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
   tmp = intToEnum_;
   {
     auto&& entry = tmp->find(enumValPtr);
