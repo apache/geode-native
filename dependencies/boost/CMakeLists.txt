@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(boost VERSION 1.76.0 LANGUAGES NONE)
+project(boost VERSION 1.79.0 LANGUAGES NONE)
 
-set(SHA256 7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca)
+set(SHA256 273f1be93238a068aba4f9735a4a2b003019af067b9c183ed227780b8f36062c)
 
 if (WIN32)
   set(BOOTSTRAP_COMMAND bootstrap.bat)
