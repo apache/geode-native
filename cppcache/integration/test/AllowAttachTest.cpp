@@ -54,7 +54,7 @@ std::shared_ptr<Region> setupRegion(Cache& cache) {
  */
 TEST(AllowAttach, attachToLocatorAndServer) {
   Cluster cluster{InitialLocators{{{"localhost", 0}}},
-                  InitialServers{{{"localhost", 0}}}, AllowAttach(true)};
+                  InitialServers{{{"localhost", 0}}}, UseDebugAgent(true)};
   cluster.start();
   cluster.getGfsh()
       .create()

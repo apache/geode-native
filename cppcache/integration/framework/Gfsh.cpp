@@ -85,7 +85,7 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(
   return *this;
 }
 
-Gfsh::Start::Locator &Gfsh::Start::Locator::withAllowAttach(
+Gfsh::Start::Locator &Gfsh::Start::Locator::withDebugAgent(
     bool allowAttach, const std::string &bindAddress) {
   if (allowAttach) {
     command_ +=
@@ -306,7 +306,7 @@ Gfsh::Start::Server &Gfsh::Start::Server::withPreferIPv6(bool useIPv6) {
   return *this;
 }
 
-Gfsh::Start::Server &Gfsh::Start::Server::withAllowAttach(
+Gfsh::Start::Server &Gfsh::Start::Server::withDebugAgent(
     bool allowAttach, const std::string &bindAddress) {
   if (allowAttach) {
     command_ +=

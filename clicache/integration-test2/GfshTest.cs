@@ -78,7 +78,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslKeyStorePassword("password1")
                 .withSslTrustStore("some/path/truststore.jks")
                 .withSslTrustStorePassword("password2")
-                .withAllowAttach(true, "address");
+                .withDebugAgent(true, "address");
             s = locator.ToString();
             var withAttachPortRemoved = s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
             Assert.Equal("start locator --name=name --dir=dir --bind-address=address --port=420 " +
@@ -117,7 +117,7 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslKeyStorePassword("password1")
                 .withSslTrustStore("some/path/truststore.jks")
                 .withSslTrustStorePassword("password2")
-                .withAllowAttach(true, "someAddress");
+                .withDebugAgent(true, "someAddress");
             s = server.ToString();
             var withAttachPortRemoved = s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
             Assert.Equal("start server --name=server " +

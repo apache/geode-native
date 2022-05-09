@@ -112,8 +112,8 @@ class Gfsh {
       Locator &withRemoteLocators(
           const std::vector<std::string> &remoteLocators);
 
-      Locator &withAllowAttach(const bool allowAttach,
-                               const std::string &bindAddress);
+      Locator &withDebugAgent(const bool allowAttach,
+                              const std::string &bindAddress);
 
       Locator &withDistributedSystemId(const uint16_t &dsId);
 
@@ -184,8 +184,8 @@ class Gfsh {
 
       Server &withPreferIPv6(bool useIPv6);
 
-      Server &withAllowAttach(const bool allowAttach,
-                              const std::string &bindAddress);
+      Server &withDebugAgent(const bool allowAttach,
+                             const std::string &bindAddress);
 
       Server &withSslEnabledComponents(const std::string &components);
 

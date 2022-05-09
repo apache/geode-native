@@ -38,7 +38,7 @@ namespace Apache.Geode.Client.IntegrationTests
         internal string keyStorePassword_ = "apachegeode";
         internal string trustStore_ = Config.SslServerKeyPath + "/server_truststore_chained_root.jks";
         internal string trustStorePassword_ = "apachegeode";
-        internal bool allowAttach_ = false;
+        internal bool useDebugAgent_ = false;
 
         public Gfsh Gfsh { get; private set; }
 
@@ -54,7 +54,7 @@ namespace Apache.Geode.Client.IntegrationTests
             return poolFactory;
         }
 
-        public Cluster(ITestOutputHelper output, string name, int locatorCount, int serverCount, bool allowAttach = false)
+        public Cluster(ITestOutputHelper output, string name, int locatorCount, int serverCount, bool useDebugAgent = false)
         {
             started_ = false;
             Gfsh = new GfshExecute(output);
@@ -63,7 +63,7 @@ namespace Apache.Geode.Client.IntegrationTests
             locatorCount_ = locatorCount;
             serverCount_ = serverCount;
             locators_ = new List<Locator>();
-            allowAttach_ = allowAttach;
+            useDebugAgent_ = useDebugAgent;
         }
 
         private bool StartLocators()
@@ -73,7 +73,11 @@ namespace Apache.Geode.Client.IntegrationTests
             for (var i = 0; i < locatorCount_; i++)
             {
                 var locator = new Locator(this, locators_,
-                    name_ + "/locator/" + i.ToString(), i == 0, allowAttach_);
+                    name_ + "/locator/" + i.ToString(), i == 0);
+                if (useDebugAgent_)
+                {
+                    locator.UseDebugAgent = true;
+                }
                 locators_.Add(locator);
                 if (locator.Start() != 0 ) {
                     success = false;
@@ -90,7 +94,11 @@ namespace Apache.Geode.Client.IntegrationTests
             for (var i = 0; i < serverCount_; i++)
             {
                 var server = new Server(this, locators_,
-                    name_ + "/server/" + i.ToString(), allowAttach_);
+                    name_ + "/server/" + i.ToString());
+                if (useDebugAgent_)
+                {
+                  server.UseDebugAgent = true;
+                }
                 var localResult = server.Start();
                 if (localResult != 0)
                 {
@@ -172,9 +180,8 @@ namespace Apache.Geode.Client.IntegrationTests
         private List<Locator> locators_;
         private bool started_;
         private bool startJmxManager_;
-        private bool allowAttach_;
 
-    public Locator(Cluster cluster, List<Locator> locators, string name, bool startJmxManager, bool allowAttach = false)
+        public Locator(Cluster cluster, List<Locator> locators, string name, bool startJmxManager)
         {
             cluster_ = cluster;
             locators_ = locators;
@@ -184,12 +191,13 @@ namespace Apache.Geode.Client.IntegrationTests
             address.address = "localhost";
             address.port = Framework.FreeTcpPort();
             Address = address;
-            allowAttach_ = allowAttach;
+            UseDebugAgent = false;
         }
 
         public Address Address { get; private set; }
+        public bool UseDebugAgent { get; set; }
 
-        public int Start()
+    public int Start()
         {
             var result = -1;
             if (!started_)
@@ -204,7 +212,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withMaxHeap("256m")
                     .withJmxManagerPort(cluster_.jmxManagerPort)
                     .withJmxManagerStart(startJmxManager_)
-                    .withAllowAttach(allowAttach_, Address.address)
+                    .withDebugAgent(UseDebugAgent, Address.address)
                     .withHttpServicePort(0);
                 if (cluster_.UseSSL)
                 {
@@ -254,9 +262,8 @@ namespace Apache.Geode.Client.IntegrationTests
         private string name_;
         private List<Locator> locators_;
         private bool started_;
-        private bool allowAttach_;
 
-    public Server(Cluster cluster, List<Locator> locators, string name, bool allowAttach = false)
+    public Server(Cluster cluster, List<Locator> locators, string name)
         {
             cluster_ = cluster;
             locators_ = locators;
@@ -265,12 +272,13 @@ namespace Apache.Geode.Client.IntegrationTests
             address.address = "localhost";
             address.port = 0;
             Address = address;
-            allowAttach_ = allowAttach;
-        }
+            UseDebugAgent = false;
+    }
 
     public Address Address { get; private set; }
+    public bool UseDebugAgent { get; set; }
 
-        public int Start()
+    public int Start()
         {
             var result = -1;
             if (!started_)
@@ -282,7 +290,7 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withName(name_.Replace('/', '_'))
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
-                    .withAllowAttach(allowAttach_, Address.address)
+                    .withDebugAgent(UseDebugAgent, Address.address)
                     .withMaxHeap("1g");
                 if (cluster_.UseSSL)
                 {

@@ -110,7 +110,7 @@ void Locator::start(bool startJmxManager) {
           .withClasspath(cluster_.getClasspath())
           .withSecurityManager(cluster_.getSecurityManager())
           .withPreferIPv6(cluster_.getUseIPv6())
-          .withAllowAttach(cluster_.getAllowAttach(), locatorAddress_.address)
+          .withDebugAgent(cluster_.getUseDebugAgent(), locatorAddress_.address)
           .withJmxManagerStart(startJmxManager);
 
   if (cluster_.useSsl()) {
@@ -210,7 +210,7 @@ void Server::start() {
           .withCacheXMLFile(getCacheXMLFile())
           .withConserveSockets(cluster_.getConserveSockets())
           .withPreferIPv6(cluster_.getUseIPv6())
-          .withAllowAttach(cluster_.getAllowAttach(), serverAddress_.address);
+          .withDebugAgent(cluster_.getUseDebugAgent(), serverAddress_.address);
 
   if (!cluster_.getUser().empty()) {
     server.withUser(cluster_.getUser()).withPassword(cluster_.getPassword());
@@ -283,7 +283,7 @@ Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,
 }
 
 Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,
-                 AllowAttach allowAttach)
+                 UseDebugAgent useDebugAgent)
     : name_(std::string(::testing::UnitTest::GetInstance()
                             ->current_test_info()
                             ->test_suite_name()) +
@@ -292,7 +292,7 @@ Cluster::Cluster(InitialLocators initialLocators, InitialServers initialServers,
       initialLocators_(initialLocators.get()),
       initialServers_(initialServers.get()),
       jmxManagerPort_(Framework::getAvailablePort()),
-      allowAttach_(allowAttach.get()) {
+      useDebugAgent_(useDebugAgent.get()) {
   removeServerDirectory();
 }
 
@@ -442,7 +442,7 @@ std::vector<std::string> &Cluster::getCacheXMLFiles() { return cacheXMLFiles_; }
 
 bool Cluster::getUseIPv6() { return useIPv6_; }
 
-bool Cluster::getAllowAttach() { return allowAttach_; }
+bool Cluster::getUseDebugAgent() { return useDebugAgent_; }
 
 bool Cluster::getConserveSockets() { return conserveSockets_; }
 
