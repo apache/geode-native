@@ -171,7 +171,7 @@ public class ComparePdxTypes extends FunctionAdapter implements Declarable{
     Region r = CacheFactory.getAnyInstance().getRegion("PdxTypes");
     
     if(r.keySet().size() != 11) {
-      throw new IllegalStateException("compareDotNETPdxTypes Java pdx types should have PdxTypes enteries " + r.keySet().size());
+      throw new IllegalStateException("compareDotNETPdxTypes Java pdx types should have 11 PdxTypes entries but actually has " + r.keySet().size());
     }
     for(Object k : r.keySet()) {
       Object obj = r.get(k);
