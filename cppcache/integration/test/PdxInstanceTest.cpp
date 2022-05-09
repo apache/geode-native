@@ -268,7 +268,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
       pdxTypeFromPdxTypeInstance->equals(*pdxTypeFromPdxTypeInstanceGet, false))
       << "PdxObjects should be equal.";
 
-  EXPECT_EQ(-960665662, pdxTypeInstance->hashcode())
+  EXPECT_EQ(514863279, pdxTypeInstance->hashcode())
       << "Pdxhashcode hashcode not matched with java pdx hash code.";
 }
 
@@ -372,6 +372,8 @@ TEST(PdxInstanceTest, testInstancePutAfterRestart) {
         status = false;
         cv_status.notify_one();
       }));
+  EXPECT_CALL(*listener, afterRegionDestroy(_)).WillRepeatedly(Return());
+  EXPECT_CALL(*listener, close(_)).WillRepeatedly(Return());
 
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
                     .setPoolName("default")
