@@ -38,6 +38,7 @@ add_executable(cpp-integration-test
   PdxInstanceFactoryTest.cpp
   PdxInstanceTest.cpp
   PdxJsonTypeTest.cpp
+  PdxSerializableTest.cpp
   PdxSerializerTest.cpp
   PdxTypeRegistryTest.cpp
   Position.cpp

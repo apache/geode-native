@@ -21,6 +21,7 @@ add_library(testobject SHARED
   ArrayOfByte.hpp
   BatchObject.cpp
   BatchObject.hpp
+  DeliveryAddress.cpp
   DeltaFastAssetAccount.cpp
   DeltaFastAssetAccount.hpp
   DeltaPSTObject.cpp
