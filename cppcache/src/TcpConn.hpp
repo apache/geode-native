@@ -38,6 +38,8 @@ class TcpConn : public Connector {
 
   uint16_t getPort() override final;
 
+  std::string getRemoteEndpoint() override final;
+
  protected:
   boost::asio::io_context io_context_;
   boost::asio::ip::tcp::socket socket_;

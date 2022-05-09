@@ -42,6 +42,10 @@ class GetAllServersResponse : public internal::DataSerializableFixedId_t<
     return std::make_shared<GetAllServersResponse>();
   }
   GetAllServersResponse() : Serializable() {}
+  GetAllServersResponse(std::vector<std::shared_ptr<ServerLocation> > servers)
+      : Serializable() {
+    m_servers = servers;
+  }
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 

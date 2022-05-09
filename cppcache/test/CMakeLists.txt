@@ -53,6 +53,7 @@ add_executable(apache-geode_unittests
   QueueConnectionRequestTest.cpp
   RegionAttributesFactoryTest.cpp
   SerializableCreateTests.cpp
+  StreamDataInputTest.cpp
   StringPrefixPartitionResolverTest.cpp
   StructSetTest.cpp
   TcrConnectionTest.cpp

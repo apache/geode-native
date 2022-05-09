@@ -117,6 +117,11 @@ class Connector {
   virtual uint16_t getPort() = 0;
 
   /**
+   * Returns the remote endpoint for this connection in the form host:port
+   */
+  virtual std::string getRemoteEndpoint() = 0;
+
+  /**
    * Writes an array of a known size to the underlying output stream.
    *
    * @param   array A C-style stack array. Be weary of arrays that have been

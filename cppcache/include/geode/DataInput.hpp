@@ -452,6 +452,12 @@ class APACHE_GEODE_EXPORT DataInput {
   DataInput& operator=(DataInput&&) = default;
 
  protected:
+  const uint8_t* m_buf;
+  const uint8_t* m_bufHead;
+  size_t m_bufLength;
+  Pool* m_pool;
+  const CacheImpl* m_cache;
+
   /** constructor given a pre-allocated byte array with size */
   DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
             Pool* pool);
@@ -459,12 +465,6 @@ class APACHE_GEODE_EXPORT DataInput {
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
-  const uint8_t* m_buf;
-  const uint8_t* m_bufHead;
-  size_t m_bufLength;
-  Pool* m_pool;
-  const CacheImpl* m_cache;
-
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
@@ -502,7 +502,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   inline char readPdxChar() { return static_cast<char>(readInt16()); }
 
-  inline void _checkBufferSize(size_t size, int32_t line) {
+  virtual inline void _checkBufferSize(size_t size, int32_t line) {
     if ((m_bufLength - (m_buf - m_bufHead)) < size) {
       throw OutOfRangeException(
           "DataInput: attempt to read beyond buffer at line " +
