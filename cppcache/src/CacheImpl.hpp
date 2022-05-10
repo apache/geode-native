@@ -132,12 +132,6 @@ class APACHE_GEODE_EXPORT CacheImpl {
    * Returns the distributed system that this cache was
    * {@link CacheFactory::create created} with.
    */
-  DistributedSystem& getDistributedSystem();
-
-  /**
-   * Returns the distributed system that this cache was
-   * {@link CacheFactory::create created} with.
-   */
   const DistributedSystem& getDistributedSystem() const;
 
   /**

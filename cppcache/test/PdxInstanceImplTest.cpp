@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+#include <gmock/gmock.h>
+
 #include <gtest/gtest.h>
 
 #include <geode/AuthenticatedView.hpp>
@@ -28,6 +30,7 @@
 #include "PdxType.hpp"
 #include "statistics/StatisticsFactory.hpp"
 
+namespace {
 using apache::geode::client::BooleanArray;
 using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
@@ -59,6 +62,13 @@ using apache::geode::client::PdxInstanceImpl;
 using apache::geode::client::PdxType;
 using apache::geode::client::Properties;
 using apache::geode::statistics::StatisticsFactory;
+
+using ::testing::ContainerEq;
+using ::testing::UnorderedElementsAreArray;
+using ::testing::Eq;
+using ::testing::IsNull;
+using ::testing::NotNull;
+using ::testing::Ref;
 
 TEST(PdxInstanceImplTest, testGetNonExsitantField) {
   auto properties = std::make_shared<Properties>();
@@ -107,7 +117,7 @@ TEST(PdxInstanceImplTest, testGetBoolean) {
   fields.emplace_back(CacheableBoolean::create(true));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_TRUE(pdxInstanceImpl.getBooleanField("boolean"));
+  EXPECT_THAT(pdxInstanceImpl.getBooleanField("boolean"), Eq(true));
 }
 
 TEST(PdxInstanceImplTest, testGetByte) {
@@ -124,7 +134,8 @@ TEST(PdxInstanceImplTest, testGetByte) {
   fields.emplace_back(CacheableByte::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getByteField("byte"), expectedValue);
+
+  EXPECT_THAT(pdxInstanceImpl.getByteField("byte"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetByteInvalidType) {
@@ -157,7 +168,7 @@ TEST(PdxInstanceImplTest, testGetShort) {
   fields.emplace_back(CacheableInt16::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getShortField("short"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getShortField("short"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetShortInvalidType) {
@@ -190,7 +201,7 @@ TEST(PdxInstanceImplTest, testGetInt) {
   fields.emplace_back(CacheableInt32::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getIntField("int"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getIntField("int"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetIntInvalidType) {
@@ -223,7 +234,7 @@ TEST(PdxInstanceImplTest, testGetLong) {
   fields.emplace_back(CacheableInt64::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getLongField("long"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getLongField("long"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetLongInvalidType) {
@@ -256,7 +267,7 @@ TEST(PdxInstanceImplTest, testGetFloat) {
   fields.emplace_back(CacheableFloat::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getFloatField("float"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getFloatField("float"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetFloatInvalidType) {
@@ -289,7 +300,7 @@ TEST(PdxInstanceImplTest, testGetDouble) {
   fields.emplace_back(CacheableDouble::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getDoubleField("double"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getDoubleField("double"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetDoubleInvalidType) {
@@ -322,7 +333,7 @@ TEST(PdxInstanceImplTest, testGetChar) {
   fields.emplace_back(CacheableCharacter::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getCharField("char"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getCharField("char"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetCharInvalidType) {
@@ -358,7 +369,7 @@ TEST(PdxInstanceImplTest, testGetDate) {
   auto date = pdxInstanceImpl.getCacheableDateField("date");
   EXPECT_TRUE(date);
 
-  EXPECT_EQ(*date, *expectedValue);
+  EXPECT_THAT(*date, Eq(std::ref(*expectedValue)));
 }
 
 TEST(PdxInstanceImplTest, testGetDateInvalidType) {
@@ -392,7 +403,7 @@ TEST(PdxInstanceImplTest, testGetString) {
   fields.emplace_back(CacheableString::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getStringField("string"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getStringField("string"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetStringInvalidType) {
@@ -427,12 +438,12 @@ TEST(PdxInstanceImplTest, testGetObject) {
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
   auto object = pdxInstanceImpl.getCacheableField("object");
-  EXPECT_TRUE(object);
+  EXPECT_THAT(object, NotNull());
 
   auto string = std::dynamic_pointer_cast<CacheableString>(object);
-  EXPECT_TRUE(string);
+  EXPECT_THAT(string, NotNull());
 
-  EXPECT_EQ(*string, *expectedValue);
+  EXPECT_THAT(*string, Eq(std::ref(*expectedValue)));
 }
 
 TEST(PdxInstanceImplTest, testGetObjectInvalidType) {
@@ -466,7 +477,8 @@ TEST(PdxInstanceImplTest, testGetByteArray) {
   fields.emplace_back(CacheableBytes::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getByteArrayField("byteArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getByteArrayField("byteArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetByteArrayInvalidType) {
@@ -500,7 +512,8 @@ TEST(PdxInstanceImplTest, testGetBooleanArray) {
   fields.emplace_back(BooleanArray::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getBooleanArrayField("boolArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getBooleanArrayField("boolArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetBooleanArrayInvalidType) {
@@ -534,7 +547,8 @@ TEST(PdxInstanceImplTest, testGetShortArray) {
   fields.emplace_back(CacheableInt16Array::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getShortArrayField("shortArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getShortArrayField("shortArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetShortArrayInvalidType) {
@@ -569,7 +583,7 @@ TEST(PdxInstanceImplTest, testGetIntArray) {
   fields.emplace_back(CacheableInt32Array::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getIntArrayField("intArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getIntArrayField("intArray"), Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetIntArrayInvalidType) {
@@ -604,7 +618,8 @@ TEST(PdxInstanceImplTest, testGetLongArray) {
   fields.emplace_back(CacheableInt64Array::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getLongArrayField("longArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getLongArrayField("longArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetLongArrayInvalidType) {
@@ -638,7 +653,8 @@ TEST(PdxInstanceImplTest, testGetFloatArray) {
   fields.emplace_back(CacheableFloatArray::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getFloatArrayField("floatArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getFloatArrayField("floatArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetFloatArrayInvalidType) {
@@ -672,7 +688,8 @@ TEST(PdxInstanceImplTest, testGetDoubleArray) {
   fields.emplace_back(CacheableDoubleArray::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  EXPECT_EQ(pdxInstanceImpl.getDoubleArrayField("doubleArray"), expectedValue);
+  EXPECT_THAT(pdxInstanceImpl.getDoubleArrayField("doubleArray"),
+              Eq(expectedValue));
 }
 
 TEST(PdxInstanceImplTest, testGetDoubleArrayInvalidType) {
@@ -709,11 +726,11 @@ TEST(PdxInstanceImplTest, testGetStringArray) {
   fields.emplace_back(CacheableStringArray::create(expectedValue));
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  auto&& array = pdxInstanceImpl.getStringArrayField("stringArray");
+  auto &&array = pdxInstanceImpl.getStringArrayField("stringArray");
 
-  EXPECT_EQ(array.size(), expectedValue.size());
-  for(auto i = 0UL, n = array.size(); i < n; ++i) {
-    EXPECT_EQ(array[i], expectedValue[i]->value());
+  EXPECT_THAT(array.size(), Eq(expectedValue.size()));
+  for (auto i = 0UL, n = array.size(); i < n; ++i) {
+    EXPECT_THAT(array[i], Eq(expectedValue[i]->value()));
   }
 }
 
@@ -742,7 +759,8 @@ TEST(PdxInstanceImplTest, testGetObjectArray) {
 
   auto expectedValue = CacheableObjectArray::create();
   expectedValue->emplace_back(CacheableString::create("Gauss"));
-  expectedValue->emplace_back(CacheableDate::create(std::chrono::system_clock::now()));
+  expectedValue->emplace_back(
+      CacheableDate::create(std::chrono::system_clock::now()));
   expectedValue->emplace_back(CacheableString::create("Hilbert"));
   expectedValue->emplace_back(CacheableString::create("Lorenz"));
   expectedValue->emplace_back(CacheableString::create("Taylor"));
@@ -754,12 +772,12 @@ TEST(PdxInstanceImplTest, testGetObjectArray) {
   fields.emplace_back(expectedValue);
 
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
-  auto&& array = pdxInstanceImpl.getCacheableObjectArrayField("objectArray");
+  auto &&array = pdxInstanceImpl.getCacheableObjectArrayField("objectArray");
   EXPECT_TRUE(array);
 
-  EXPECT_EQ(array->size(), expectedValue->size());
-  for(auto i = 0UL, n = array->size(); i < n; ++i) {
-    EXPECT_EQ((*array)[i], (*expectedValue)[i]);
+  EXPECT_THAT(array->size(), Eq(expectedValue->size()));
+  for (auto i = 0UL, n = array->size(); i < n; ++i) {
+    EXPECT_THAT((*array)[i], Eq((*expectedValue)[i]));
   }
 }
 
@@ -799,9 +817,9 @@ TEST(PdxInstanceImplTest, testGetFieldEmptyArrayOfByteArrays) {
   int32_t *elementLength;
   pdxInstanceImpl.getField("array", &result, length, elementLength);
 
-  EXPECT_EQ(length, 0);
-  EXPECT_FALSE(elementLength);
-  EXPECT_FALSE(result);
+  EXPECT_THAT(length, Eq(0));
+  EXPECT_THAT(elementLength, IsNull());
+  EXPECT_THAT(result, IsNull());
 }
 
 TEST(PdxInstanceImplTest, testGetFieldArrayOfByteArrays) {
@@ -831,20 +849,21 @@ TEST(PdxInstanceImplTest, testGetFieldArrayOfByteArrays) {
   int32_t *elementLength;
   pdxInstanceImpl.getField("array", &result, length, elementLength);
 
-  EXPECT_TRUE(result);
-  EXPECT_TRUE(elementLength);
-  EXPECT_EQ(length, expectedResult.size());
+  EXPECT_THAT(result, NotNull());
+  EXPECT_THAT(elementLength, NotNull());
+  EXPECT_THAT(length, Eq(expectedResult.size()));
 
   for (auto i = 0UL, ni = expectedResult.size(); i < ni; ++i) {
     const auto &expectedRow = expectedResult[i];
 
     auto nj = expectedRow.size();
-    EXPECT_EQ(elementLength[i], nj);
+    EXPECT_THAT(elementLength[i], Eq(nj));
 
     auto row = result[i];
-    EXPECT_TRUE(row);
+    EXPECT_THAT(row, NotNull());
 
-    EXPECT_TRUE(std::equal(expectedRow.begin(), expectedRow.end(), row));
+    std::vector<int8_t> stlRow{row, row + nj};
+    EXPECT_THAT(stlRow, ContainerEq(expectedRow));
 
     delete[] row;
   }
@@ -882,26 +901,27 @@ TEST(PdxInstanceImplTest, testGetFieldArrayOfByteArraysOneNullRow) {
   int32_t *elementLength;
   pdxInstanceImpl.getField("array", &result, length, elementLength);
 
-  EXPECT_TRUE(result);
-  EXPECT_TRUE(elementLength);
-  EXPECT_EQ(length, expectedResult.size() + 1);
+  EXPECT_THAT(result, NotNull());
+  EXPECT_THAT(elementLength, NotNull());
+  EXPECT_THAT(length, Eq(expectedResult.size() + 1));
 
   for (auto i = 0UL, ni = expectedResult.size(); i < ni; ++i) {
     const auto &expectedRow = expectedResult[i];
 
     auto nj = expectedRow.size();
-    EXPECT_EQ(elementLength[i], nj);
+    EXPECT_THAT(elementLength[i], Eq(nj));
 
     auto row = result[i];
-    EXPECT_TRUE(row);
+    EXPECT_THAT(row, NotNull());
 
-    EXPECT_TRUE(std::equal(expectedRow.begin(), expectedRow.end(), row));
+    std::vector<int8_t> stlRow{row, row + nj};
+    EXPECT_THAT(stlRow, ContainerEq(expectedRow));
 
     delete[] row;
   }
 
-  EXPECT_EQ(elementLength[expectedResult.size()], 0);
-  EXPECT_FALSE(result[expectedResult.size()]);
+  EXPECT_THAT(elementLength[expectedResult.size()], Eq(0));
+  EXPECT_THAT(result[expectedResult.size()], IsNull());
 
   delete[] elementLength;
   delete[] result;
@@ -938,24 +958,25 @@ TEST(PdxInstanceImplTest, testGetFieldArrayOfByteArraysOneEmptyRow) {
 
   EXPECT_TRUE(result);
   EXPECT_TRUE(elementLength);
-  EXPECT_EQ(length, expectedResult.size() + 1);
+  EXPECT_THAT(length, expectedResult.size() + 1);
 
   for (auto i = 0UL, ni = expectedResult.size(); i < ni; ++i) {
     const auto &expectedRow = expectedResult[i];
 
     auto nj = expectedRow.size();
-    EXPECT_EQ(elementLength[i], nj);
+    EXPECT_THAT(elementLength[i], Eq(nj));
 
     auto row = result[i];
-    EXPECT_TRUE(row);
+    EXPECT_THAT(row, NotNull());
 
-    EXPECT_TRUE(std::equal(expectedRow.begin(), expectedRow.end(), row));
+    std::vector<int8_t> stlRow{row, row + nj};
+    EXPECT_THAT(stlRow, ContainerEq(expectedRow));
 
     delete[] row;
   }
 
-  EXPECT_EQ(elementLength[expectedResult.size()], 0);
-  EXPECT_FALSE(result[expectedResult.size()]);
+  EXPECT_THAT(elementLength[expectedResult.size()], Eq(0));
+  EXPECT_THAT(result[expectedResult.size()], IsNull());
 
   delete[] elementLength;
   delete[] result;
@@ -992,3 +1013,5 @@ TEST(PdxInstanceImplTest, testDoesntHaveField) {
   PdxInstanceImpl pdxInstanceImpl(fields, pdxType, cacheImpl);
   EXPECT_FALSE(pdxInstanceImpl.hasField("notAField"));
 }
+
+}  // namespace

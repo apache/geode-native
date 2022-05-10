@@ -24,25 +24,25 @@ import org.apache.geode.pdx.PdxWriter;
 
 public class DeliveryAddress implements PdxSerializable
 {
-    String _addressLine;
-    String _city;
-    String _country;
-    String _instructions;
-    Vector _phoneNumbers;
+    private String addressLine;
+    private String city;
+    private String country;
+    private String instructions;
+    private Vector phoneNumbers;
 
     public DeliveryAddress() {}
     public DeliveryAddress(String address, String city, String country, String instructions) {
-      _addressLine = address;
-      _city = city;
-      _country = country;
-      _instructions = instructions;
+      this.addressLine = address;
+      this.city = city;
+      this.country = country;
+      this.instructions = instructions;
     }
 
     @Override
     public String toString() {
-      return "DeliveryAddress[Address=" + _addressLine + "; City=" + _city +
-         "; Country=" + _country + "; Instructions=" + _instructions +
-         "; PhoneNumbers.isNull=" + (_phoneNumbers == null ? "true" : "false") + "]";
+      return "DeliveryAddress[Address=" + addressLine + "; City=" + city +
+         "; Country=" + country + "; Instructions=" + instructions +
+         "; PhoneNumbers.isNull=" + (phoneNumbers == null ? "true" : "false") + "]";
     }
 
     public boolean equals(Object obj)
@@ -54,29 +54,29 @@ public class DeliveryAddress implements PdxSerializable
       DeliveryAddress other = (DeliveryAddress)obj;
       if (other == null)
         return false;
-      return _addressLine.equals(other._addressLine) &&
-             _city.equals(other._city) &&
-             _country.equals(other._country) &&
-             _instructions.equals(other._instructions) &&
-             (_phoneNumbers == null) == (other._phoneNumbers == null);
+      return addressLine.equals(other.addressLine) &&
+             city.equals(other.city) &&
+             country.equals(other.country) &&
+             instructions.equals(other.instructions) &&
+             (phoneNumbers == null) == (other.phoneNumbers == null);
     }
 
     
     public void fromData(PdxReader reader)
     {
-      _addressLine = reader.readString("address");
-      _city = reader.readString("city");
-      _country = reader.readString("country");
-      _instructions = reader.readString("instructions");
-      _phoneNumbers = (Vector)reader.readObject("phoneNumbers");
+      addressLine = reader.readString("address");
+      city = reader.readString("city");
+      country = reader.readString("country");
+      instructions = reader.readString("instructions");
+      phoneNumbers = (Vector)reader.readObject("phoneNumbers");
     }
 
     public void toData(PdxWriter writer)
     {
-      writer.writeString("address", _addressLine);
-      writer.writeString("city", _city);
-      writer.writeString("country", _country);
-      writer.writeString("instructions", _instructions);
-      writer.writeObject("phoneNumbers", _phoneNumbers);
+      writer.writeString("address", addressLine);
+      writer.writeString("city", city);
+      writer.writeString("country", country);
+      writer.writeString("instructions", instructions);
+      writer.writeObject("phoneNumbers", phoneNumbers);
     }
   }

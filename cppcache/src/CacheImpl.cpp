@@ -217,10 +217,6 @@ const std::string& CacheImpl::getName() const {
 
 bool CacheImpl::isClosed() const { return m_closed; }
 
-DistributedSystem& CacheImpl::getDistributedSystem() {
-  return m_distributedSystem;
-}
-
 const DistributedSystem& CacheImpl::getDistributedSystem() const {
   return m_distributedSystem;
 }
@@ -332,7 +328,7 @@ void CacheImpl::close(bool keepAlive) {
   m_threadPool.shutDown();
 
   try {
-    getDistributedSystem().disconnect();
+    m_distributedSystem.disconnect();
   } catch (const apache::geode::client::NotConnectedException&) {
   } catch (const apache::geode::client::Exception&) {
   } catch (...) {

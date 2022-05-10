@@ -19,6 +19,10 @@
 #include <geode/DataOutput.hpp>
 #include <geode/PdxSerializable.hpp>
 
+namespace {
+std::string DefaultClassName = "java.lang.Object";
+}
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -55,7 +59,7 @@ size_t CacheableObjectArray::objectSize() const {
   return size;
 }
 
-std::string CacheableObjectArray::getClassName() const {
+const std::string& CacheableObjectArray::getClassName() const {
   if (!empty()) {
     auto&& item = *begin();
 
@@ -64,7 +68,7 @@ std::string CacheableObjectArray::getClassName() const {
     }
   }
 
-  return "java.lang.Object";
+  return DefaultClassName;
 }
 }  // namespace client
 }  // namespace geode

@@ -16,8 +16,8 @@
  */
 
 #include <framework/Cluster.h>
+#include <gmock/gmock.h>
 
-#include <iostream>
 #include <memory>
 
 #include <gtest/gtest.h>
@@ -46,6 +46,10 @@ using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 
 using PdxTests::DeliveryAddress;
+
+using ::testing::Eq;
+using ::testing::Ref;
+using ::testing::NotNull;
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -108,11 +112,11 @@ TEST(PdxSerializableTest, testRightPdxTypeForDiffPdxVersions) {
 
     DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_1);
     auto entry = region->get("entry.v1");
-    EXPECT_TRUE(entry);
+    EXPECT_THAT(entry, NotNull());
 
     auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
-    EXPECT_TRUE(address);
-    EXPECT_EQ(*entryV1, *address);
+    EXPECT_THAT(address, NotNull());
+    EXPECT_THAT(*entryV1, Eq(std::ref(*address)));
 
     DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
     entryV2 = std::make_shared<DeliveryAddress>(
@@ -128,15 +132,12 @@ TEST(PdxSerializableTest, testRightPdxTypeForDiffPdxVersions) {
     args->push_back(CacheableString::create("Some instructions"));
 
     auto collector = FunctionService::onServer(region->getRegionService())
-                      .withArgs(args)
-                      .execute("PutDeliveryAddress");
-    EXPECT_TRUE(collector);
+                         .withArgs(args)
+                         .execute("PutDeliveryAddress");
+    EXPECT_THAT(collector, NotNull());
 
     auto resultSet = collector->getResult();
-    EXPECT_TRUE(resultSet);
-
-    auto result = std::dynamic_pointer_cast<CacheableString>((*resultSet)[0]);
-    std::cerr << result->toString() << std::endl;
+    EXPECT_THAT(resultSet, NotNull());
   }
 
   {
@@ -146,11 +147,11 @@ TEST(PdxSerializableTest, testRightPdxTypeForDiffPdxVersions) {
         DeliveryAddress::createDeserializable);
 
     auto entry = region->get("entry.v2");
-    EXPECT_TRUE(entry);
+    EXPECT_THAT(entry, NotNull());
 
     auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
-    EXPECT_TRUE(address);
-    EXPECT_EQ(*entryV2, *address);
+    EXPECT_THAT(address, NotNull());
+    EXPECT_THAT(*entryV2, Eq(std::ref(*address)));
   }
 }
 

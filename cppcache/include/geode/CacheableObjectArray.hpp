@@ -93,7 +93,7 @@ class APACHE_GEODE_EXPORT CacheableObjectArray
   virtual size_t objectSize() const override;
 
  private:
-  std::string getClassName() const;
+  const std::string& getClassName() const;
 };
 
 }  // namespace client
