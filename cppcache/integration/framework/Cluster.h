@@ -124,7 +124,7 @@ using Password = NamedType<std::string, struct PasswordParameter>;
 using CacheXMLFiles =
     NamedType<std::vector<std::string>, struct CacheXMLFilesParameter>;
 using UseIpv6 = NamedType<bool, struct UseIpv6Parameter>;
-using UseDebugAgent = NamedType<bool, struct AllowAttachParameter>;
+using UseDebugAgent = NamedType<bool, struct UseDebugAgentParameter>;
 using ConserveSockets = NamedType<bool, struct ConserveSocketsParameter>;
 using InitialLocators =
     NamedType<std::vector<LocatorAddress>, struct InitialLocatorsParameter>;
@@ -143,7 +143,7 @@ class Cluster {
           UseIpv6 useIpv6 = UseIpv6{false});
 
   Cluster(InitialLocators initialLocators, InitialServers initialServers,
-          UseDebugAgent allowAttach);
+          UseDebugAgent useDebugAgent);
 
   Cluster(InitialLocators initialLocators, InitialServers initialServers,
           RemoteLocators remoteLocators,

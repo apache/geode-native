@@ -78,16 +78,19 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslKeyStorePassword("password1")
                 .withSslTrustStore("some/path/truststore.jks")
                 .withSslTrustStorePassword("password2")
-                .withDebugAgent(true, "address");
+                .withDebugAgent("someAddress");
             s = locator.ToString();
             var withAttachPortRemoved = s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
+            var startLocatorCommandWithoutDebugAgentPort =
+                s.Substring(0, s.LastIndexOf(":", s.Length - 1, 6));
             Assert.Equal("start locator --name=name --dir=dir --bind-address=address --port=420 " +
-                "--J=-Dgemfire.jmx-manager-port=1111 --http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
-                "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
-                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
-                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2 " +
-                "--J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=address", withAttachPortRemoved);
-        }
+              "--J=-Dgemfire.jmx-manager-port=1111 --http-service-port=2222 --log-level=fine --max-heap=someHugeAmount " +
+              "--connect=false --J=-Dgemfire.ssl-enabled-components=locator,jmx " +
+              "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
+              "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2 " +
+              "--J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=someAddress",
+              startLocatorCommandWithoutDebugAgentPort);
+    }
 
         [Fact]
         public void StartServerStringsTest()
@@ -117,15 +120,25 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslKeyStorePassword("password1")
                 .withSslTrustStore("some/path/truststore.jks")
                 .withSslTrustStorePassword("password2")
-                .withDebugAgent(true, "someAddress");
+                .withDebugAgent("someAddress");
             s = server.ToString();
-            var withAttachPortRemoved = s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
+            var startServerCommandWithoutDebugAgentPort =
+              s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
             Assert.Equal("start server --name=server " +
-                "--dir=someDir --bind-address=someAddress --server-port=1234 --locators=someLocator --log-level=debug " +
-                "--max-heap=1.21gigabytes --J=-Dgemfire.ssl-enabled-components=server,locator,jmx " +
-                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks --J=-Dgemfire.ssl-keystore-password=password1 " +
-                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks --J=-Dgemfire.ssl-truststore-password=password2 " +
-                "--J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=someAddress", withAttachPortRemoved);
+                "--dir=someDir " +
+                "--bind-address=someAddress " +
+                "--server-port=1234 " +
+                "--locators=someLocator " +
+                "--log-level=debug " +
+                "--max-heap=1.21gigabytes " +
+                "--J=-Dgemfire.ssl-enabled-components=server,locator,jmx " +
+                "--J=-Dgemfire.ssl-keystore=some/path/keystore.jks " +
+                "--J=-Dgemfire.ssl-keystore-password=password1 " +
+                "--J=-Dgemfire.ssl-truststore=some/path/truststore.jks " +
+                "--J=-Dgemfire.ssl-truststore-password=password2 " +
+                "--J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n," +
+                    "address=someAddress",
+                startServerCommandWithoutDebugAgentPort);
         }
 
         [Fact]

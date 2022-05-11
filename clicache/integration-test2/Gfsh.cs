@@ -140,15 +140,12 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Server withDebugAgent(bool useDebugAgent, string bindAddress)
+                public Server withDebugAgent(string bindAddress)
                 {
-                    if (useDebugAgent)
-                    {
-                      command_ += " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + bindAddress + ":" + Framework.FreeTcpPort();
-                    }
+                    command_ += " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + bindAddress + ":" + Framework.FreeTcpPort();
                     return this;
                 }
-      }
+            }
 
             public Server server()
             {
@@ -197,12 +194,10 @@ namespace Apache.Geode.Client.IntegrationTests
                     return this;
                 }
 
-                public Locator withDebugAgent(bool useDebugAgent, string bindAddress)
+                public Locator withDebugAgent(string bindAddress)
                 {
-                  if (useDebugAgent) {
                     command_ += " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + bindAddress + ":" + Framework.FreeTcpPort();
-                  }
-                  return this;
+                    return this;
                 }
 
                 public Locator withHttpServicePort(int httpServicePort)

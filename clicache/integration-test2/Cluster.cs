@@ -239,8 +239,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withMaxHeap("256m")
                     .withJmxManagerPort(cluster_.jmxManagerPort)
                     .withJmxManagerStart(startJmxManager_)
-                    .withDebugAgent(useDebugAgent_, Address.address)
                     .withHttpServicePort(0);
+
+                if (useDebugAgent_)
+                {
+                    locator.withDebugAgent(Address.address);
+                }
+
                 if (cluster_.UseSSL)
                 {
                    locator
@@ -323,8 +328,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withName(name_.Replace('/', '_'))
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
-                    .withDebugAgent(useDebugAgent_, Address.address)
                     .withMaxHeap("1g");
+
+                if (useDebugAgent_)
+                {
+                    server.withDebugAgent(Address.address);
+                }
+
                 if (cluster_.UseSSL)
                 {
                     server
