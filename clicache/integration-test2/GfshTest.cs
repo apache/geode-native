@@ -80,7 +80,6 @@ namespace Apache.Geode.Client.IntegrationTests
                 .withSslTrustStorePassword("password2")
                 .withDebugAgent("someAddress");
             s = locator.ToString();
-            var withAttachPortRemoved = s.Substring(0, s.LastIndexOf(":", s.Length-1, 6));
             var startLocatorCommandWithoutDebugAgentPort =
                 s.Substring(0, s.LastIndexOf(":", s.Length - 1, 6));
             Assert.Equal("start locator --name=name --dir=dir --bind-address=address --port=420 " +
