@@ -26,7 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const size_t BUFF_SIZE = 3000;
+const size_t kBufferSize = 3000;
 
 StreamDataInput::StreamDataInput(std::chrono::milliseconds timeout,
                                  std::unique_ptr<Connector> connector,
@@ -46,12 +46,12 @@ StreamDataInput::~StreamDataInput() {
 }
 
 void StreamDataInput::readDataIfNotAvailable(size_t size) {
-  char buff[BUFF_SIZE];
+  char buff[kBufferSize];
   while ((m_bufLength - (m_buf - m_bufHead)) < size) {
     const auto start = std::chrono::system_clock::now();
 
     const auto receivedLength = m_connector->receive_nothrowiftimeout(
-        buff, BUFF_SIZE,
+        buff, kBufferSize,
         std::chrono::duration_cast<std::chrono::milliseconds>(
             m_remainingTimeBeforeTimeout));
 
@@ -79,8 +79,8 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
                                  .append(m_connector->getRemoteEndpoint())));
     }
 
-    size_t newLength = m_bufLength + receivedLength;
-    size_t currentPosition = m_buf - m_bufHead;
+    auto newLength = m_bufLength + receivedLength;
+    auto currentPosition = m_buf - m_bufHead;
     if ((m_bufHead) == nullptr) {
       m_bufHead = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * newLength));
     } else {

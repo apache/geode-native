@@ -502,7 +502,7 @@ class APACHE_GEODE_EXPORT DataInput {
 
   inline char readPdxChar() { return static_cast<char>(readInt16()); }
 
-  virtual inline void _checkBufferSize(size_t size, int32_t line) {
+  virtual void _checkBufferSize(size_t size, int32_t line) {
     if ((m_bufLength - (m_buf - m_bufHead)) < size) {
       throw OutOfRangeException(
           "DataInput: attempt to read beyond buffer at line " +

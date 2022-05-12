@@ -28,9 +28,6 @@ namespace client {
 class ConnectorMock : public Connector {
  public:
   ConnectorMock(){
-  };
-
-  ConnectorMock(ConnectorMock const &mock) {
   }
 
   MOCK_METHOD3(receive, size_t(char *b, size_t len,

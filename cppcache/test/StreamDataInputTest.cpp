@@ -47,8 +47,8 @@ using ::testing::Return;
 using ::testing::SetArrayArgument;
 using ::testing::SizeIs;
 
-const size_t READ_BUFF_SIZE = 3000;
-const size_t STREAM_BUFF_SIZE = 10000;
+const size_t kReadBuffSize = 3000;
+const size_t kStreamBufferSize = 10000;
 
 ACTION_P(WaitMs, milliseconds) {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
@@ -70,43 +70,43 @@ TEST(StreamDataInputTest, ObjectSizeGreaterThanReadBufferSize) {
 
   GetAllServersResponse getAllServersResponse(servers);
 
-  std::shared_ptr<CacheImpl> cache =
+  auto cache =
       std::make_shared<CacheImpl>(nullptr, nullptr, false, false, nullptr);
 
-  DataOutput dataOutput = cache->createDataOutput();
+  auto dataOutput = cache->createDataOutput();
 
   getAllServersResponse.toData(dataOutput);
 
-  const uint8_t* buffer = dataOutput.getBuffer();
-  const size_t dataOutputBufferLength = dataOutput.getBufferLength();
+  auto buffer = dataOutput.getBuffer();
+  auto dataOutputBufferLength = dataOutput.getBufferLength();
 
   // Gossip header
-  uint8_t streamBuffer[STREAM_BUFF_SIZE];
+  uint8_t streamBuffer[kStreamBufferSize];
   streamBuffer[0] = 1;
   streamBuffer[1] = 0xd6;
   memcpy(streamBuffer + 2, buffer, dataOutputBufferLength);
 
-  const size_t streamBufferLength = dataOutputBufferLength + 2;
+  auto streamBufferLength = dataOutputBufferLength + 2;
 
   auto timeout = std::chrono::milliseconds(1000);
   EXPECT_CALL(*connector, getRemoteEndpoint())
       .WillRepeatedly(Return("locator:9999"));
 
   EXPECT_CALL(*connector, receive_nothrowiftimeout(_, _, _))
-      .WillOnce(DoAll(
-          SetArrayArgument<0>(streamBuffer, streamBuffer + READ_BUFF_SIZE),
-          Return(READ_BUFF_SIZE)))
-      .WillOnce(DoAll(SetArrayArgument<0>(streamBuffer + READ_BUFF_SIZE,
-                                          streamBuffer + 2 * READ_BUFF_SIZE),
-                      Return(READ_BUFF_SIZE)))
-      .WillOnce(DoAll(SetArrayArgument<0>(streamBuffer + 2 * READ_BUFF_SIZE,
+      .WillOnce(
+          DoAll(SetArrayArgument<0>(streamBuffer, streamBuffer + kReadBuffSize),
+                Return(kReadBuffSize)))
+      .WillOnce(DoAll(SetArrayArgument<0>(streamBuffer + kReadBuffSize,
+                                          streamBuffer + 2 * kReadBuffSize),
+                      Return(kReadBuffSize)))
+      .WillOnce(DoAll(SetArrayArgument<0>(streamBuffer + 2 * kReadBuffSize,
                                           &streamBuffer[streamBufferLength]),
-                      Return(streamBufferLength - (2 * READ_BUFF_SIZE))));
+                      Return(streamBufferLength - (2 * kReadBuffSize))));
 
   StreamDataInput streamDataInput(timeout, std::move(connector), cache.get(),
                                   nullptr);
 
-  std::shared_ptr<Serializable> object = streamDataInput.readObject();
+  auto object = streamDataInput.readObject();
 
   auto response = std::dynamic_pointer_cast<GetAllServersResponse>(object);
 
@@ -118,10 +118,9 @@ TEST(StreamDataInputTest, ObjectSizeGreaterThanReadBufferSize) {
 }
 
 TEST(StreamDataInputTest, TimeoutWhenReading) {
-  std::unique_ptr<ConnectorMock> connector =
-      std::unique_ptr<ConnectorMock>(new ConnectorMock());
+  auto connector = std::unique_ptr<ConnectorMock>(new ConnectorMock());
 
-  std::shared_ptr<CacheImpl> cache =
+  auto cache =
       std::make_shared<CacheImpl>(nullptr, nullptr, false, false, nullptr);
 
   EXPECT_CALL(*connector, getRemoteEndpoint())

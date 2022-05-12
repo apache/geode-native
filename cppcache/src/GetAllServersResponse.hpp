@@ -42,7 +42,8 @@ class GetAllServersResponse : public internal::DataSerializableFixedId_t<
     return std::make_shared<GetAllServersResponse>();
   }
   GetAllServersResponse() : Serializable() {}
-  GetAllServersResponse(std::vector<std::shared_ptr<ServerLocation> > servers)
+  explicit GetAllServersResponse(
+      std::vector<std::shared_ptr<ServerLocation> > servers)
       : Serializable() {
     m_servers = servers;
   }

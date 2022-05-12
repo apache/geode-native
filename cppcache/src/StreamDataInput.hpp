@@ -33,8 +33,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-#include "geode/DataInput.hpp"
-
 class Connector;
 
 /**
@@ -49,10 +47,10 @@ class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
                   std::unique_ptr<Connector> connector, const CacheImpl* cache,
                   Pool* pool);
 
-  ~StreamDataInput();
+  ~StreamDataInput() override;
 
  protected:
-  inline void _checkBufferSize(size_t size, int32_t line) {
+  void _checkBufferSize(size_t size, int32_t line) override {
     readDataIfNotAvailable(size);
   }
 
