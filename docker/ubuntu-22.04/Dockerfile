@@ -46,7 +46,7 @@ RUN apt update && apt -yq full-upgrade && apt-get -y install \
         git \
         doxygen \
         graphviz \
-        clang-format-11 && \
+        clang-format-12 && \
     apt-get -y autoremove && \
     apt-get autoclean
 
