@@ -42,7 +42,7 @@ class PdxUnreadDataExpiryTask : public ExpiryTask {
    * Constructor
    */
   PdxUnreadDataExpiryTask(ExpiryTaskManager& manager,
-                          std::shared_ptr<PdxTypeRegistry> type_registry,
+                          std::shared_ptr<PdxTypeRegistry> registry,
                           std::shared_ptr<PdxSerializable> object);
 
   bool on_expire() override;

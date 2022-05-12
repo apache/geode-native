@@ -34,13 +34,14 @@ namespace client {
 class CachePerfStats;
 class DataOutput;
 class PdxFieldType;
+class PdxReaderImpl;
 class PdxType;
 class PdxWriterImpl;
 class PdxInstanceFactory;
 
-class PdxInstanceImpl : public PdxInstance {
+class PdxInstanceImpl : virtual public PdxInstance {
  protected:
-  using FieldsBuffer = std::vector<uint8_t>;
+  using FieldsBuffer = std::vector<int8_t>;
   using Fields = std::vector<std::shared_ptr<Cacheable>>;
 
  public:
@@ -152,9 +153,9 @@ class PdxInstanceImpl : public PdxInstance {
   std::shared_ptr<Cacheable> getField(const std::string& name,
                                       PdxFieldTypes type) const;
 
-  std::vector<uint8_t> getFieldsBuffer() const;
+  std::vector<int8_t> getFieldsBuffer() const;
 
-  std::vector<uint8_t> serialize() const;
+  std::vector<int8_t> serialize() const;
 
   void serialize(PdxWriterImpl& writer) const;
 
@@ -223,6 +224,11 @@ class PdxInstanceImpl : public PdxInstance {
   static void writeField(PdxWriterImpl& writer, PdxFieldTypes type,
                          std::shared_ptr<Cacheable> value);
 
+
+  static bool isDefaultFieldValue(PdxFieldTypes type, Cacheable *value);
+
+  static int32_t getRawFieldHashCode(PdxReaderImpl& reader, int32_t fieldIdx);
+
   static int32_t enumerateMapHashCode(std::shared_ptr<CacheableHashMap> map);
 
   static int32_t enumerateVectorHashCode(std::shared_ptr<CacheableVector> vec);
@@ -246,45 +252,46 @@ class PdxInstanceImpl : public PdxInstance {
 
   static int32_t deepHashCode(std::shared_ptr<Cacheable> object);
 
-  static bool enumerateObjectArrayEquals(
-      std::shared_ptr<CacheableObjectArray> object,
-      std::shared_ptr<CacheableObjectArray> otherObject);
+  static bool enumerateObjectArrayEquals(CacheableObjectArray* array,
+                                         CacheableObjectArray* otherArray);
 
-  static bool enumerateVectorEquals(
-      std::shared_ptr<CacheableVector> object,
-      std::shared_ptr<CacheableVector> otherObject);
+  static bool enumerateVectorEquals(CacheableVector* array,
+                                    CacheableVector* otherArray);
 
-  static bool enumerateArrayListEquals(
-      std::shared_ptr<CacheableArrayList> object,
-      std::shared_ptr<CacheableArrayList> otherObject);
+  static bool enumerateArrayListEquals(CacheableArrayList* array,
+                                       CacheableArrayList* otherArray);
 
-  static bool enumerateMapEquals(std::shared_ptr<CacheableHashMap> object,
-                                 std::shared_ptr<CacheableHashMap> otherObject);
+  static bool enumerateLinkedListEquals(CacheableLinkedList* list,
+                                       CacheableLinkedList* otherList);
 
-  static bool enumerateSetEquals(std::shared_ptr<CacheableHashSet> object,
-                                 std::shared_ptr<CacheableHashSet> otherObject);
+  static bool enumerateMapEquals(CacheableHashMap* map,
+                                 CacheableHashMap* otherMap);
 
-  static bool enumerateLinkedSetEquals(
-      std::shared_ptr<CacheableLinkedHashSet> object,
-      std::shared_ptr<CacheableLinkedHashSet> otherObject);
+  static bool enumerateHashTableEquals(CacheableHashTable* map,
+                                       CacheableHashTable* otherMap);
 
-  static bool enumerateHashTableEquals(
-      std::shared_ptr<CacheableHashTable> object,
-      std::shared_ptr<CacheableHashTable> otherObject);
+  static bool enumerateSetEquals(CacheableHashSet* set,
+                                 CacheableHashSet* otherSet);
 
-  static bool deepArrayEquals(std::shared_ptr<Cacheable> object,
-                              std::shared_ptr<Cacheable> otherObject);
+  static bool enumerateLinkedSetEquals(CacheableLinkedHashSet* set,
+                                       CacheableLinkedHashSet* otherSet);
+
+  static bool deepArrayEquals(Cacheable* object, Cacheable* otherObject);
 
  protected:
   Fields fields_;
-  std::shared_ptr<PdxType> pdxType_;
-
-  mutable boost::shared_mutex serializationMutex_;
   mutable FieldsBuffer buffer_;
+
+  std::shared_ptr<PdxType> pdxType_;
+  mutable boost::shared_mutex mutex_;
 
   CachePerfStats& cacheStats_;
   const CacheImpl& cache_;
   bool enableTimeStatistics_;
+
+ private:
+  // For UT purposes
+  friend class PdxInstanceImplTest;
 };
 }  // namespace client
 }  // namespace geode

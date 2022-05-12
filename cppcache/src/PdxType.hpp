@@ -41,6 +41,7 @@ class PdxType : public internal::DataSerializableInternal,
                 public std::enable_shared_from_this<PdxType> {
  private:
   using Fields = std::vector<std::shared_ptr<PdxFieldType>>;
+  using IdentityFields = std::vector<std::shared_ptr<PdxFieldType>>;
   using FieldMap = std::map<std::string, std::shared_ptr<PdxFieldType>>;
 
  public:
@@ -82,6 +83,8 @@ class PdxType : public internal::DataSerializableInternal,
 
   std::shared_ptr<PdxFieldType> addField(const std::string& fieldName,
                                          PdxFieldTypes typeId);
+
+  IdentityFields getIdentityFields() const;
 
   void initialize();
 

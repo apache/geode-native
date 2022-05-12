@@ -17,10 +17,8 @@
 
 #include "PdxHelper.hpp"
 
-#include <geode/Cache.hpp>
 #include <geode/DataInput.hpp>
 #include <geode/PdxWrapper.hpp>
-#include <geode/PoolManager.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "DataInputInternal.hpp"
@@ -34,7 +32,6 @@
 #include "SerializationRegistry.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "TrackingPdxReaderImpl.hpp"
-#include "Utils.hpp"
 
 namespace apache {
 namespace geode {
@@ -64,14 +61,13 @@ void PdxHelper::serializePdx(DataOutput& output,
   // Register PdxType if needed and update PdxTypeId
   {
     auto registry = cache->getPdxTypeRegistry();
-    if (registry->registerPdxTypeIfNeeded(
-            pdxType, DataOutputInternal::getPool(output))) {
-      // Place the cursor at the PdxType ID position, write it, and set the
-      // cursor back to where it was
-      output.rewindCursor(length - sizeof(uint32_t));
-      output.writeInt(pdxType->getTypeId());
-      output.advanceCursor(length - sizeof(uint32_t) * 2);
-    }
+    registry->registerPdxTypeIfNeeded(pdxType,
+                                      DataOutputInternal::getPool(output));
+    // Place the cursor at the PdxType ID position, write it, and set the
+    // cursor back to where it was
+    output.rewindCursor(length - sizeof(uint32_t));
+    output.writeInt(pdxType->getTypeId());
+    output.advanceCursor(length - sizeof(uint32_t) * 2);
   }
 
   // Update cache serialization statistics
@@ -110,6 +106,12 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdx(DataInput& input) {
   auto length = input.readInt32();
   auto typeId = input.readInt32();
 
+  if (length < 0) {
+    throw IllegalStateException(
+        "Received a PDX object with negative length."
+        " This is most probably due to integer overflow");
+  }
+
   auto cache = CacheRegionHelper::getCacheImpl(input.getCache());
   auto pdxType = cache->getPdxTypeRegistry()->getPdxType(
       typeId, DataInputInternal::getPool(input));
@@ -141,7 +143,7 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdxInstance(
   auto cache = CacheRegionHelper::getCacheImpl(input.getCache());
 
   input.advanceCursor(length);
-  std::vector<uint8_t> buffer{bufferPtr, bufferPtr + length};
+  std::vector<int8_t> buffer{bufferPtr, bufferPtr + length};
   return std::make_shared<PdxInstanceImpl>(std::move(buffer), pdxType, *cache);
 }
 
@@ -186,10 +188,10 @@ std::shared_ptr<PdxSerializable> PdxHelper::deserializePdxSerializable(
   return object;
 }
 
-int32_t PdxHelper::getOffsetSize(int32_t payloadLength) {
-  if (payloadLength <= std::numeric_limits<uint8_t>::max()) {
+size_t PdxHelper::getOffsetSize(size_t length) {
+  if (length <= std::numeric_limits<uint8_t>::max()) {
     return sizeof(uint8_t);
-  } else if (payloadLength <= std::numeric_limits<uint16_t>::max()) {
+  } else if (length <= std::numeric_limits<uint16_t>::max()) {
     return sizeof(uint16_t);
   }
 

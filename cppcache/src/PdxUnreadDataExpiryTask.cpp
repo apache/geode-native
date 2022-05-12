@@ -26,17 +26,16 @@ namespace geode {
 namespace client {
 
 PdxUnreadDataExpiryTask::PdxUnreadDataExpiryTask(
-    ExpiryTaskManager& manager, decltype(registry_) type_registry,
-    decltype(object_) object)
-    : ExpiryTask(manager), registry_(type_registry), object_(object) {}
+    ExpiryTaskManager& manager, std::shared_ptr<PdxTypeRegistry> registry,
+    std::shared_ptr<PdxSerializable> object)
+    : ExpiryTask(manager), registry_(registry), object_(object) {}
 
 bool PdxUnreadDataExpiryTask::on_expire() {
-
   LOGDEBUG("Entered PdxUnreadDataExpiryTask::on_expire");
 
   auto ud = registry_->getUnreadData(object_);
   auto expiresAt = ud->expiresAt();
-  if (expiresAt < ExpiryTask::clock_t::now()) {
+  if (ExpiryTask::clock_t::now() < expiresAt) {
     LOGDEBUG("Re-scheduling PdxUnreadDataExpiryTask with ID %zu", id());
     reset(expiresAt);
     return false;

@@ -58,7 +58,7 @@ class PdxHelper {
   static std::shared_ptr<PdxSerializable> deserializePdxSerializable(
       DataInput& input, std::shared_ptr<PdxType> pdxType, int32_t length);
 
-  static int32_t getOffsetSize(int32_t payloadLength);
+  static size_t getOffsetSize(size_t length);
 
   static int32_t readInt16(uint8_t* offsetPosition);
 

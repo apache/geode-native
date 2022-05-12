@@ -167,14 +167,14 @@ class PdxWriterImpl : public PdxWriter {
                               const int* elementLength);
 
   void writeRawField(std::shared_ptr<PdxFieldType> field,
-                     const std::vector<uint8_t>& data);
+                     const std::vector<int8_t>& data);
 
   void setUnreadData(std::shared_ptr<PdxUnreadData> data);
 
 
   void completeSerialization();
 
-  std::vector<uint8_t> getFieldsBuffer() const;
+  std::vector<int8_t> getFieldsBuffer() const;
 
  private:
   void writeOffsets(int32_t len);

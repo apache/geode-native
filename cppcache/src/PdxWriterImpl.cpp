@@ -99,11 +99,11 @@ void PdxWriterImpl::writeOffsets(int32_t len) {
   }
 }
 
-std::vector<uint8_t> PdxWriterImpl::getFieldsBuffer() const {
+std::vector<int8_t> PdxWriterImpl::getFieldsBuffer() const {
   auto len = dataOutput_->getBufferLength() - startPosition_;
   auto buffer = &dataOutput_->getBuffer()[startPosition_];
 
-  return std::vector<uint8_t>{buffer, buffer + len};
+  return std::vector<int8_t>{buffer, buffer + len};
 }
 
 PdxWriter& PdxWriterImpl::writeUnreadFields(
@@ -415,7 +415,7 @@ void PdxWriterImpl::writeArrayOfByteArrays(int8_t* const* const array,
 }
 
 void PdxWriterImpl::writeRawField(std::shared_ptr<PdxFieldType> field,
-                                  const std::vector<uint8_t>& data) {
+                                  const std::vector<int8_t>& data) {
   if (field->isVariable()) {
     addOffset();
   }

@@ -32,7 +32,7 @@ class TrackingPdxReaderImpl : public PdxReaderImpl {
  public:
   TrackingPdxReaderImpl();
   TrackingPdxReaderImpl(DataInput &input, std::shared_ptr<PdxType> remoteType,
-                        int32_t pdxLen);
+                        size_t length);
 
   virtual ~TrackingPdxReaderImpl() override;
 

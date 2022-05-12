@@ -38,8 +38,8 @@ PdxReaderImpl::PdxReaderImpl()
 
 PdxReaderImpl::PdxReaderImpl(DataInput& input,
                              std::shared_ptr<PdxType> remoteType,
-                             int32_t pdxLen)
-    : pdxType_{remoteType}, dataInput_{&input}, lengthWithOffsets_{pdxLen} {
+                             size_t length)
+    : pdxType_{remoteType}, dataInput_{&input}, lengthWithOffsets_{length} {
   initialize();
 }
 
@@ -54,7 +54,7 @@ void PdxReaderImpl::initialize() {
       const_cast<uint8_t*>(dataInput_->currentBufferPosition()) + length_;
 }
 
-void PdxReaderImpl::moveInputToField(std::shared_ptr<PdxFieldType> field) {
+void PdxReaderImpl::moveInputToField(std::shared_ptr<PdxFieldType> field) const {
   auto position =
       pdxType_->getFieldPosition(field, offsets_, offsetSize_, length_);
   dataInput_->reset(startPosition_ + position);
@@ -64,7 +64,7 @@ void PdxReaderImpl::moveInputToEnd() {
   dataInput_->reset(startPosition_ + lengthWithOffsets_);
 }
 
-char16_t PdxReaderImpl::readChar(std::shared_ptr<PdxFieldType> field) {
+char16_t PdxReaderImpl::readChar(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readInt16();
 }
@@ -78,7 +78,7 @@ char16_t PdxReaderImpl::readChar(const std::string& name) {
   return readChar(field);
 }
 
-bool PdxReaderImpl::readBoolean(std::shared_ptr<PdxFieldType> field) {
+bool PdxReaderImpl::readBoolean(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readBoolean();
 }
@@ -92,7 +92,7 @@ bool PdxReaderImpl::readBoolean(const std::string& name) {
   return readBoolean(field);
 }
 
-int8_t PdxReaderImpl::readByte(std::shared_ptr<PdxFieldType> field) {
+int8_t PdxReaderImpl::readByte(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->read();
 }
@@ -106,7 +106,7 @@ int8_t PdxReaderImpl::readByte(const std::string& name) {
   return readByte(field);
 }
 
-int16_t PdxReaderImpl::readShort(std::shared_ptr<PdxFieldType> field) {
+int16_t PdxReaderImpl::readShort(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readInt16();
 }
@@ -120,7 +120,7 @@ int16_t PdxReaderImpl::readShort(const std::string& name) {
   return readShort(field);
 }
 
-int32_t PdxReaderImpl::readInt(std::shared_ptr<PdxFieldType> field) {
+int32_t PdxReaderImpl::readInt(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readInt32();
 }
@@ -134,7 +134,7 @@ int32_t PdxReaderImpl::readInt(const std::string& name) {
   return readInt(field);
 }
 
-int64_t PdxReaderImpl::readLong(std::shared_ptr<PdxFieldType> field) {
+int64_t PdxReaderImpl::readLong(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readInt64();
 }
@@ -148,7 +148,7 @@ int64_t PdxReaderImpl::readLong(const std::string& name) {
   return readLong(field);
 }
 
-float PdxReaderImpl::readFloat(std::shared_ptr<PdxFieldType> field) {
+float PdxReaderImpl::readFloat(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readFloat();
 }
@@ -162,7 +162,7 @@ float PdxReaderImpl::readFloat(const std::string& name) {
   return readFloat(field);
 }
 
-double PdxReaderImpl::readDouble(std::shared_ptr<PdxFieldType> field) {
+double PdxReaderImpl::readDouble(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readDouble();
 }
@@ -177,7 +177,7 @@ double PdxReaderImpl::readDouble(const std::string& name) {
 }
 
 std::shared_ptr<CacheableDate> PdxReaderImpl::readDate(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   auto result = CacheableDate::create();
 
@@ -195,7 +195,7 @@ std::shared_ptr<CacheableDate> PdxReaderImpl::readDate(
   return readDate(field);
 }
 
-std::string PdxReaderImpl::readString(std::shared_ptr<PdxFieldType> field) {
+std::string PdxReaderImpl::readString(std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readString();
 }
@@ -210,7 +210,7 @@ std::string PdxReaderImpl::readString(const std::string& name) {
 }
 
 std::shared_ptr<Serializable> PdxReaderImpl::readObject(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readObject();
 }
@@ -226,7 +226,7 @@ std::shared_ptr<Serializable> PdxReaderImpl::readObject(
 }
 
 std::vector<char16_t> PdxReaderImpl::readCharArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readCharArray();
 }
@@ -241,7 +241,7 @@ std::vector<char16_t> PdxReaderImpl::readCharArray(const std::string& name) {
 }
 
 std::vector<bool> PdxReaderImpl::readBooleanArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readBooleanArray();
 }
@@ -256,7 +256,7 @@ std::vector<bool> PdxReaderImpl::readBooleanArray(const std::string& name) {
 }
 
 std::vector<int8_t> PdxReaderImpl::readByteArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readByteArray();
 }
@@ -271,7 +271,7 @@ std::vector<int8_t> PdxReaderImpl::readByteArray(const std::string& name) {
 }
 
 std::vector<int16_t> PdxReaderImpl::readShortArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readShortArray();
 }
@@ -286,7 +286,7 @@ std::vector<int16_t> PdxReaderImpl::readShortArray(const std::string& name) {
 }
 
 std::vector<int32_t> PdxReaderImpl::readIntArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readIntArray();
 }
@@ -301,7 +301,7 @@ std::vector<int32_t> PdxReaderImpl::readIntArray(const std::string& name) {
 }
 
 std::vector<int64_t> PdxReaderImpl::readLongArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readLongArray();
 }
@@ -316,7 +316,7 @@ std::vector<int64_t> PdxReaderImpl::readLongArray(const std::string& name) {
 }
 
 std::vector<float> PdxReaderImpl::readFloatArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readFloatArray();
 }
@@ -331,7 +331,7 @@ std::vector<float> PdxReaderImpl::readFloatArray(const std::string& name) {
 }
 
 std::vector<double> PdxReaderImpl::readDoubleArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readDoubleArray();
 }
@@ -346,7 +346,7 @@ std::vector<double> PdxReaderImpl::readDoubleArray(const std::string& name) {
 }
 
 std::vector<std::string> PdxReaderImpl::readStringArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readStringArray();
 }
@@ -362,7 +362,7 @@ std::vector<std::string> PdxReaderImpl::readStringArray(
 }
 
 std::shared_ptr<CacheableObjectArray> PdxReaderImpl::readObjectArray(
-    std::shared_ptr<PdxFieldType> field) {
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   auto result = CacheableObjectArray::create();
 
@@ -382,7 +382,7 @@ std::shared_ptr<CacheableObjectArray> PdxReaderImpl::readObjectArray(
 
 int8_t** PdxReaderImpl::readArrayOfByteArrays(
     std::shared_ptr<PdxFieldType> field, int32_t& arrayLength,
-    int32_t** elementLength) {
+    int32_t** elementLength) const {
   moveInputToField(field);
   int8_t** result = nullptr;
 
@@ -414,9 +414,9 @@ std::shared_ptr<PdxSerializer> PdxReaderImpl::getPdxSerializer() const {
   return dataInput_->getCache()->getTypeRegistry().getPdxSerializer();
 }
 
-std::vector<uint8_t> PdxReaderImpl::getRawFieldData(int32_t idx) const {
+std::vector<int8_t> PdxReaderImpl::getRawFieldData(int32_t idx) const {
   int32_t end;
-  std::vector<uint8_t> result;
+  std::vector<int8_t> result;
 
   auto field = pdxType_->getField(idx++);
   auto start =

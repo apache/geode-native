@@ -48,7 +48,7 @@ class CacheableObjectArray;
  * a PDX is done it will deserialize into a PdxInstance. PdxInstances are
  * immutable. If you want to change one call {@link #createWriter}.
  */
-class APACHE_GEODE_EXPORT PdxInstance : public PdxSerializable {
+class APACHE_GEODE_EXPORT PdxInstance : virtual public PdxSerializable {
  public:
   /**
    * @brief destructor

@@ -33,6 +33,23 @@ namespace client {
 class PdxType;
 class PdxReaderImpl;
 class PdxWriterImpl;
+class Serializable;
+
+class PdxUnreadField {
+ public:
+  PdxUnreadField() {}
+  explicit PdxUnreadField(std::vector<int8_t> field) : raw_{std::move(field)} {}
+  explicit PdxUnreadField(std::shared_ptr<Serializable> field)
+      : object_{std::move(field)} {}
+
+  const std::vector<int8_t>& getRaw() const { return raw_; }
+
+  std::shared_ptr<Serializable> getObject() const { return object_; }
+
+ private:
+  std::vector<int8_t> raw_;
+  std::shared_ptr<Serializable> object_;
+};
 
 class PdxUnreadData : public PdxUnreadFields {
  private:
@@ -41,7 +58,7 @@ class PdxUnreadData : public PdxUnreadFields {
  public:
   PdxUnreadData();
   PdxUnreadData(std::shared_ptr<PdxType> pdxType, std::vector<int32_t> indexes,
-                std::vector<std::vector<uint8_t>> data);
+                std::vector<PdxUnreadField> data);
 
   ~PdxUnreadData() noexcept override = default;
 
@@ -52,17 +69,13 @@ class PdxUnreadData : public PdxUnreadFields {
   time_point_t expiresAt() const { return expiresAt_; }
   void expiresAt(const time_point_t& tp) { expiresAt_ = tp; }
 
-  inline std::vector<uint8_t> getPreservedData(int32_t idx) {
-    return data_[idx];
-  }
-
   void write(PdxWriterImpl& writer);
 
  private:
   std::shared_ptr<PdxType> pdxType_;
 
   std::vector<int32_t> indexes_;
-  std::vector<std::vector<uint8_t>> data_;
+  std::vector<PdxUnreadField> data_;
 
   ExpiryTask::id_t expiryTaskId_;
   time_point_t expiresAt_;

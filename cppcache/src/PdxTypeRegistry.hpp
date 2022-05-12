@@ -94,10 +94,8 @@ class APACHE_GEODE_EXPORT PdxTypeRegistry
    * @param pdxType PdxType to verify
    * @param pool Pointer to the pool to use while registering the PdxType, if
    * needed
-   * @return true if the PdxType needed to be registered or if PdxType ID was
-   * needed to be updated, and false if it was already present
    */
-  bool registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType, Pool* pool);
+  void registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType, Pool* pool);
 
   bool getPdxIgnoreUnreadFields() const { return pdxIgnoreUnreadFields_; }
 

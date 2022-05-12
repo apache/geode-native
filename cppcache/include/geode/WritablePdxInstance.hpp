@@ -37,7 +37,7 @@ class CacheableObjectArray;
  * using the {@link #setField} method.
  * To get a WritablePdxInstance call {@link PdxInstance#createWriter}.
  */
-class APACHE_GEODE_EXPORT WritablePdxInstance : public PdxInstance {
+class APACHE_GEODE_EXPORT WritablePdxInstance : virtual public PdxInstance {
  public:
   ~WritablePdxInstance() noexcept override = default;
 

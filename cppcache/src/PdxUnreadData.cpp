@@ -17,6 +17,8 @@
 
 #include "PdxUnreadData.hpp"
 
+#include <geode/CacheableObjectArray.hpp>
+
 #include "PdxReaderImpl.hpp"
 #include "PdxType.hpp"
 #include "PdxWriterImpl.hpp"
@@ -25,24 +27,38 @@ namespace apache {
 namespace geode {
 namespace client {
 
-PdxUnreadData::PdxUnreadData()
-    : expiryTaskId_{ExpiryTask::invalid()} {}
+PdxUnreadData::PdxUnreadData() : expiryTaskId_{ExpiryTask::invalid()} {}
 
 PdxUnreadData::PdxUnreadData(std::shared_ptr<PdxType> pdxType,
                              std::vector<int32_t> indexes,
-                             std::vector<std::vector<uint8_t>> data)
+                             std::vector<PdxUnreadField> data)
     : pdxType_{pdxType},
       indexes_{std::move(indexes)},
       data_{std::move(data)},
       expiryTaskId_{ExpiryTask::invalid()} {}
 
-void PdxUnreadData::write(PdxWriterImpl &writer) {
+void PdxUnreadData::write(PdxWriterImpl& writer) {
   if (data_.empty()) {
     return;
   }
 
-  for (size_t i = 0, n = data_.size(); i < n; ++i) {
-    writer.writeRawField(pdxType_->getField(indexes_[i]), data_[i]);
+  for (size_t i = 0, n = data_.size(); i < n;) {
+    auto&& field = pdxType_->getField(indexes_[i]);
+    auto fieldType = field->getType();
+    auto&& value = data_[i++];
+
+    // This way we make sure that in case of having an unread PDX field, it
+    // would be serialized again and the PdxType ID is always up-to-date, even
+    // if there was a cluster restart in between read/write
+    if (fieldType == PdxFieldTypes::OBJECT) {
+      writer.writeObject(field->getName(), value.getObject());
+    } else if (fieldType == PdxFieldTypes::OBJECT_ARRAY) {
+      writer.writeObjectArray(
+          field->getName(),
+          std::dynamic_pointer_cast<CacheableObjectArray>(value.getObject()));
+    } else {
+      writer.writeRawField(field, value.getRaw());
+    }
   }
 }
 

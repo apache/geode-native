@@ -81,7 +81,7 @@ std::shared_ptr<PdxType> PdxTypeRegistry::getPdxType(int32_t typeId,
   return pdxType;
 }
 
-bool PdxTypeRegistry::registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType,
+void PdxTypeRegistry::registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType,
                                               Pool* pool) {
   auto typeId = pdxType->getTypeId();
 
@@ -90,37 +90,26 @@ bool PdxTypeRegistry::registerPdxTypeIfNeeded(std::shared_ptr<PdxType> pdxType,
     boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
     auto&& iter = typeIdToPdxType_.find(typeId);
     if (iter != typeIdToPdxType_.end()) {
-      return false;
+      return;
     }
   }
 
   // Check if PdxType is already present in the registry but its ID was not
   // assigned
-  {
-    boost::shared_lock<decltype(typesMutex_)> guard{typesMutex_};
-    auto&& iter = pdxTypeToTypeIdMap_.find(pdxType);
-    if (iter != pdxTypeToTypeIdMap_.end() && (typeId = iter->second) != 0) {
-      pdxType->setTypeId(typeId);
-      return true;
-    }
-  }
-
-  // Re-run the previous check, with exclusive-access to save reaching the
-  // traffic due to a race-condition
-  boost::unique_lock<decltype(typesMutex_)> guard{typesMutex_};
+  boost::upgrade_lock<decltype(typesMutex_)> lock{typesMutex_};
   auto&& iter = pdxTypeToTypeIdMap_.find(pdxType);
   if (iter != pdxTypeToTypeIdMap_.end() && (typeId = iter->second) != 0) {
     pdxType->setTypeId(typeId);
-    return true;
+    return;
   }
 
   // Fetch the PdxType ID from the cluster and add it to the registry
+  boost::upgrade_to_unique_lock<decltype(typesMutex_)> uniqueLock{lock};
   typeId = cache_->getSerializationRegistry()->GetPDXIdForType(pool, pdxType);
   pdxType->setTypeId(typeId);
 
   pdxTypeToTypeIdMap_.emplace(pdxType, typeId);
   typeIdToPdxType_.emplace(typeId, pdxType);
-  return true;
 }
 
 void PdxTypeRegistry::clear() {
@@ -150,17 +139,19 @@ void PdxTypeRegistry::setUnreadData(ExpiryTaskManager& expiryTaskManager,
 
   auto&& iter = unreadData_.find(obj);
   if (iter != unreadData_.end()) {
-    // TODO. Verify if hardcoding this to 5 seconds is acceptable
     auto expireAt = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     data->taskId(iter->second->taskId());
     data->expiresAt(expireAt);
     iter->second = data;
   } else {
+    constexpr auto lifespan = std::chrono::seconds(20);
+    auto expireAt = std::chrono::steady_clock::now() + lifespan;
     auto task = std::make_shared<PdxUnreadDataExpiryTask>(
         expiryTaskManager, shared_from_this(), obj);
     auto id =
-        expiryTaskManager.schedule(std::move(task), std::chrono::seconds(20));
+        expiryTaskManager.schedule(std::move(task), lifespan);
     data->taskId(id);
+    data->expiresAt(expireAt);
 
     LOGDEBUG(
         "PdxTypeRegistry::setUnreadData Schedule new expiry task with id=%zu",

@@ -17,6 +17,8 @@
 
 #include "TrackingPdxReaderImpl.hpp"
 
+#include <geode/CacheableObjectArray.hpp>
+
 #include "PdxType.hpp"
 #include "PdxUnreadData.hpp"
 
@@ -27,8 +29,8 @@ namespace client {
 TrackingPdxReaderImpl::TrackingPdxReaderImpl() : PdxReaderImpl{} {}
 
 TrackingPdxReaderImpl::TrackingPdxReaderImpl(
-    DataInput &input, std::shared_ptr<PdxType> remoteType, int32_t pdxLen)
-    : PdxReaderImpl{input, remoteType, pdxLen} {
+    DataInput &input, std::shared_ptr<PdxType> remoteType, size_t length)
+    : PdxReaderImpl{input, remoteType, length} {
   auto n = pdxType_->getFieldsCount();
   unreadIndexes_.reserve(n);
 
@@ -279,16 +281,25 @@ std::shared_ptr<PdxUnreadFields> TrackingPdxReaderImpl::readUnreadFields() {
 }
 
 std::shared_ptr<PdxUnreadData> TrackingPdxReaderImpl::getUnreadData() const {
-  if(unreadIndexes_.empty()) {
+  if (unreadIndexes_.empty()) {
     return std::shared_ptr<PdxUnreadData>{};
   }
 
-  std::vector<std::vector<uint8_t>> data;
+  std::vector<PdxUnreadField> data;
   std::vector<int32_t> indexes{unreadIndexes_.begin(), unreadIndexes_.end()};
 
   data.reserve(indexes.size());
   for (auto idx : indexes) {
-    data.emplace_back(PdxReaderImpl::getRawFieldData(idx));
+    auto &&field = pdxType_->getField(idx);
+    auto fieldType = field->getType();
+
+    if (fieldType == PdxFieldTypes::OBJECT) {
+      data.emplace_back(PdxUnreadField{PdxReaderImpl::readObject(field)});
+    } else if (fieldType == PdxFieldTypes::OBJECT_ARRAY) {
+      data.emplace_back(PdxUnreadField{PdxReaderImpl::readObjectArray(field)});
+    } else {
+      data.emplace_back(PdxUnreadField{PdxReaderImpl::getRawFieldData(idx)});
+    }
   }
 
   return std::make_shared<PdxUnreadData>(pdxType_, indexes, data);

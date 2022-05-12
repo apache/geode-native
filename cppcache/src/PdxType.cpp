@@ -122,6 +122,28 @@ std::shared_ptr<PdxFieldType> PdxType::addField(const std::string& fieldName,
   return field;
 }
 
+std::vector<std::shared_ptr<PdxFieldType>> PdxType::getIdentityFields() const {
+  std::vector<std::shared_ptr<PdxFieldType>> result;
+
+  for (const auto& entry : fieldMap_) {
+    const auto& field = entry.second;
+    if (field->isIdentity()) {
+      result.push_back(field);
+    }
+  }
+
+  // In order to be aligned with Java code, if there is no field marked as
+  // identity, all fields are considered identity
+  if (result.empty()) {
+    result.reserve(fieldMap_.size());
+    for (const auto& entry : fieldMap_) {
+      result.push_back(entry.second);
+    }
+  }
+
+  return result;
+}
+
 void PdxType::initialize() {
   if(initialized_) {
     return;

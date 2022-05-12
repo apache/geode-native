@@ -37,7 +37,7 @@ class PdxReaderImpl : public PdxReader {
   PdxReaderImpl();
 
   PdxReaderImpl(DataInput &input, std::shared_ptr<PdxType> remoteType,
-                int32_t pdxLen);
+                size_t length);
 
   virtual ~PdxReaderImpl() override;
 
@@ -103,67 +103,67 @@ class PdxReaderImpl : public PdxReader {
 
   std::shared_ptr<PdxSerializer> getPdxSerializer() const override;
 
-  char16_t readChar(std::shared_ptr<PdxFieldType> field);
+  char16_t readChar(std::shared_ptr<PdxFieldType> field) const;
 
-  bool readBoolean(std::shared_ptr<PdxFieldType> field);
+  bool readBoolean(std::shared_ptr<PdxFieldType> field) const;
 
-  int8_t readByte(std::shared_ptr<PdxFieldType> field);
+  int8_t readByte(std::shared_ptr<PdxFieldType> field) const;
 
-  int16_t readShort(std::shared_ptr<PdxFieldType> field);
+  int16_t readShort(std::shared_ptr<PdxFieldType> field) const;
 
-  int32_t readInt(std::shared_ptr<PdxFieldType> field);
+  int32_t readInt(std::shared_ptr<PdxFieldType> field) const;
 
-  int64_t readLong(std::shared_ptr<PdxFieldType> field);
+  int64_t readLong(std::shared_ptr<PdxFieldType> field) const;
 
-  float readFloat(std::shared_ptr<PdxFieldType> field);
+  float readFloat(std::shared_ptr<PdxFieldType> field) const;
 
-  double readDouble(std::shared_ptr<PdxFieldType> field);
+  double readDouble(std::shared_ptr<PdxFieldType> field) const;
 
-  std::shared_ptr<CacheableDate> readDate(std::shared_ptr<PdxFieldType> field);
+  std::shared_ptr<CacheableDate> readDate(std::shared_ptr<PdxFieldType> field) const;
 
-  std::string readString(std::shared_ptr<PdxFieldType> field);
+  std::string readString(std::shared_ptr<PdxFieldType> field) const;
 
-  std::shared_ptr<Serializable> readObject(std::shared_ptr<PdxFieldType> field);
+  std::shared_ptr<Serializable> readObject(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<char16_t> readCharArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<char16_t> readCharArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<bool> readBooleanArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<bool> readBooleanArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<int8_t> readByteArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<int8_t> readByteArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<int16_t> readShortArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<int16_t> readShortArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<int32_t> readIntArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<int32_t> readIntArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<int64_t> readLongArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<int64_t> readLongArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<float> readFloatArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<float> readFloatArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<double> readDoubleArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<double> readDoubleArray(std::shared_ptr<PdxFieldType> field) const;
 
-  std::vector<std::string> readStringArray(std::shared_ptr<PdxFieldType> field);
+  std::vector<std::string> readStringArray(std::shared_ptr<PdxFieldType> field) const;
 
   std::shared_ptr<CacheableObjectArray> readObjectArray(
-      std::shared_ptr<PdxFieldType> field);
+      std::shared_ptr<PdxFieldType> field) const;
 
   int8_t **readArrayOfByteArrays(std::shared_ptr<PdxFieldType> field,
-                                 int32_t &arrayLength, int32_t **elementLength);
+                                 int32_t &arrayLength, int32_t **elementLength) const;
 
-  std::vector<uint8_t> getRawFieldData(int32_t idx) const;
+  std::vector<int8_t> getRawFieldData(int32_t idx) const;
 
  private:
   void initialize();
-  void moveInputToField(std::shared_ptr<PdxFieldType> field);
+  void moveInputToField(std::shared_ptr<PdxFieldType> field) const;
 
  protected:
   std::shared_ptr<PdxType> pdxType_;
 
  private:
   DataInput *dataInput_;
-  int32_t startPosition_;
-  int32_t length_;
-  int32_t lengthWithOffsets_;
-  int32_t offsetSize_;
+  size_t startPosition_;
+  size_t length_;
+  size_t lengthWithOffsets_;
+  size_t offsetSize_;
   uint8_t *offsets_;
 };
 }  // namespace client
