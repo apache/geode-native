@@ -20,6 +20,8 @@
 #include <iterator>
 #include <sstream>
 
+#include "Framework.h"
+
 Gfsh::Start Gfsh::start() { return Start{*this}; }
 
 Gfsh::Stop Gfsh::stop() { return Stop{*this}; }
@@ -79,6 +81,16 @@ Gfsh::Start::Locator &Gfsh::Start::Locator::withRemoteLocators(
               std::ostream_iterator<std::string>(command, ","));
     command << "'";
     command_ += command.str();
+  }
+  return *this;
+}
+
+Gfsh::Start::Locator &Gfsh::Start::Locator::withDebugAgent(
+    bool allowAttach, const std::string &bindAddress) {
+  if (allowAttach) {
+    command_ +=
+        " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" +
+        bindAddress + ":" + std::to_string(Framework::getAvailablePort());
   }
   return *this;
 }
@@ -294,6 +306,15 @@ Gfsh::Start::Server &Gfsh::Start::Server::withPreferIPv6(bool useIPv6) {
   return *this;
 }
 
+Gfsh::Start::Server &Gfsh::Start::Server::withDebugAgent(
+    bool allowAttach, const std::string &bindAddress) {
+  if (allowAttach) {
+    command_ +=
+        " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" +
+        bindAddress + ":" + std::to_string(Framework::getAvailablePort());
+  }
+  return *this;
+}
 Gfsh::Start::Server &Gfsh::Start::Server::withSslEnabledComponents(
     const std::string &components) {
   command_ += " --J=-Dgemfire.ssl-enabled-components=" + components;

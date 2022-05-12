@@ -14,6 +14,7 @@
 # limitations under the License.
 
 add_executable(cpp-integration-test
+  AllowAttachTest.cpp
   AuthInitializeTest.cpp
   BasicIPv6Test.cpp
   CacheWriterTest.cpp

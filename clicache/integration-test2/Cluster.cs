@@ -33,6 +33,7 @@ namespace Apache.Geode.Client.IntegrationTests
         private bool started_;
         private List<Locator> locators_;
         private string name_;
+        private bool useDebugAgent_ = false;
         internal int jmxManagerPort = Framework.FreeTcpPort();
         internal string keyStore_ = Config.SslServerKeyPath + "/server_keystore_chained.jks";
         internal string keyStorePassword_ = "apachegeode";
@@ -62,6 +63,13 @@ namespace Apache.Geode.Client.IntegrationTests
             locatorCount_ = locatorCount;
             serverCount_ = serverCount;
             locators_ = new List<Locator>();
+            useDebugAgent_ = false;
+        }
+
+        public Cluster withDebugAgent()
+        {
+          useDebugAgent_ = true;
+          return this;
         }
 
         private bool StartLocators()
@@ -70,8 +78,19 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < locatorCount_; i++)
             {
-                var locator = new Locator(this, new List<Locator>(),
-                    name_ + "/locator/" + i.ToString(), i == 0);
+                var locator = new Locator(this, locators_,
+                    name_ + "/locator/" + i.ToString());
+
+                if (i == 0)
+                {
+                  locator.withJmxManager();
+                }
+
+                if (useDebugAgent_)
+                {
+                    locator.withDebugAgent();
+                }
+
                 locators_.Add(locator);
                 if (locator.Start() != 0 ) {
                     success = false;
@@ -89,6 +108,12 @@ namespace Apache.Geode.Client.IntegrationTests
             {
                 var server = new Server(this, locators_,
                     name_ + "/server/" + i.ToString());
+
+                if (useDebugAgent_)
+                {
+                  server.withDebugAgent();
+                }
+
                 var localResult = server.Start();
                 if (localResult != 0)
                 {
@@ -170,17 +195,31 @@ namespace Apache.Geode.Client.IntegrationTests
         private List<Locator> locators_;
         private bool started_;
         private bool startJmxManager_;
+        private bool useDebugAgent_;
 
-        public Locator(Cluster cluster, List<Locator> locators, string name, bool startJmxManager)
+        public Locator(Cluster cluster, List<Locator> locators, string name)
         {
             cluster_ = cluster;
             locators_ = locators;
-            name_ = name;
-            startJmxManager_ = startJmxManager;
             var address = new Address();
             address.address = "localhost";
             address.port = Framework.FreeTcpPort();
             Address = address;
+            name_ = name;
+            startJmxManager_ = false;
+            useDebugAgent_ = false;
+        }
+
+        public Locator withJmxManager()
+        {
+            startJmxManager_ = true;
+            return this;
+        }
+
+        public Locator withDebugAgent()
+        {
+            useDebugAgent_ = true;
+            return this;
         }
 
         public Address Address { get; private set; }
@@ -201,6 +240,12 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withJmxManagerPort(cluster_.jmxManagerPort)
                     .withJmxManagerStart(startJmxManager_)
                     .withHttpServicePort(0);
+
+                if (useDebugAgent_)
+                {
+                    locator.withDebugAgent(Address.address);
+                }
+
                 if (cluster_.UseSSL)
                 {
                    locator
@@ -249,6 +294,7 @@ namespace Apache.Geode.Client.IntegrationTests
         private string name_;
         private List<Locator> locators_;
         private bool started_;
+        private bool useDebugAgent_;
 
         public Server(Cluster cluster, List<Locator> locators, string name)
         {
@@ -259,9 +305,16 @@ namespace Apache.Geode.Client.IntegrationTests
             address.address = "localhost";
             address.port = 0;
             Address = address;
+            useDebugAgent_ = false;
         }
 
-        public Address Address { get; private set; }
+        public Server withDebugAgent()
+        {
+            useDebugAgent_ = true;
+            return this;
+        }
+
+          public Address Address { get; private set; }
 
         public int Start()
         {
@@ -276,6 +329,12 @@ namespace Apache.Geode.Client.IntegrationTests
                     .withBindAddress(Address.address)
                     .withPort(Address.port)
                     .withMaxHeap("1g");
+
+                if (useDebugAgent_)
+                {
+                    server.withDebugAgent(Address.address);
+                }
+
                 if (cluster_.UseSSL)
                 {
                     server

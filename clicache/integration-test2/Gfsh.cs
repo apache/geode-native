@@ -139,6 +139,12 @@ namespace Apache.Geode.Client.IntegrationTests
                     command_ += " --J=-Dgemfire.ssl-enabled-components=" + components;
                     return this;
                 }
+
+                public Server withDebugAgent(string bindAddress)
+                {
+                    command_ += " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + bindAddress + ":" + Framework.FreeTcpPort();
+                    return this;
+                }
             }
 
             public Server server()
@@ -187,7 +193,13 @@ namespace Apache.Geode.Client.IntegrationTests
                     command_ += " --J=-Dgemfire.jmx-manager-start=" + (start ? "true" : "false");
                     return this;
                 }
-                
+
+                public Locator withDebugAgent(string bindAddress)
+                {
+                    command_ += " --J=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=" + bindAddress + ":" + Framework.FreeTcpPort();
+                    return this;
+                }
+
                 public Locator withHttpServicePort(int httpServicePort)
                 {
                     command_ += " --http-service-port=" + httpServicePort;
