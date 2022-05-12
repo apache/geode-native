@@ -25,10 +25,6 @@
 #include "Connector.hpp"
 #include "geode/DataInput.hpp"
 
-/**
- * @file
- */
-
 namespace apache {
 namespace geode {
 namespace client {
@@ -36,10 +32,9 @@ namespace client {
 class Connector;
 
 /**
- * Provide operations for reading primitive data values, byte arrays,
- * strings, <code>Serializable</code> objects from a byte stream.
- * The data is retrieved from a socket connection.
- * This class is intentionally not thread safe.
+ * Provides the same functionality as its parent class but
+ * data is retrieved, instead of from a passed buffer,
+ * from a socket connection.
  */
 class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
  public:
@@ -50,7 +45,7 @@ class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
   ~StreamDataInput() override;
 
  protected:
-  void _checkBufferSize(size_t size, int32_t line) override {
+  void _checkBufferSize(size_t size, int32_t /* line */) override {
     readDataIfNotAvailable(size);
   }
 
