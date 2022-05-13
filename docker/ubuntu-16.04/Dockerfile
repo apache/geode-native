@@ -36,7 +36,7 @@ RUN . /etc/os-release && \
     curl -s https://download.bell-sw.com/pki/GPG-KEY-bellsoft | apt-key add - && \
     apt-add-repository "deb http://apt.bell-sw.com/ stable main" && \
     curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - && \
-    apt-add-repository "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-6.0 main"
+    apt-add-repository "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-12 main"
 
 RUN apt update && apt -yq full-upgrade && apt-get -y install \
         build-essential \
@@ -48,13 +48,9 @@ RUN apt update && apt -yq full-upgrade && apt-get -y install \
         git \
         doxygen \
         graphviz \
-        python3-pip \
-        clang-format-6.0 && \
+        clang-format-12 && \
     apt-get -y autoremove && \
     apt-get autoclean
-
-RUN pip3 install --upgrade pip && \
-    pip3 install cpp-coveralls
 
 # Get latest release of CMake ignoring pre-releases
 RUN installer=$(mktemp) \

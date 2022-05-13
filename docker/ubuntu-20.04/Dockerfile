@@ -46,13 +46,9 @@ RUN apt update && apt -yq full-upgrade && apt-get -y install \
         git \
         doxygen \
         graphviz \
-        python3-pip \
-        clang-format-6.0 && \
+        clang-format-12 && \
     apt-get -y autoremove && \
     apt-get autoclean
-
-RUN pip3 install --upgrade pip && \
-    pip3 install cpp-coveralls
 
 # Get latest release of CMake ignoring pre-releases
 RUN installer=$(mktemp) \
