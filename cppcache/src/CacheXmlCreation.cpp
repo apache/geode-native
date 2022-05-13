@@ -50,12 +50,12 @@ void CacheXmlCreation::create(Cache* cache) {
 }
 
 void CacheXmlCreation::setPdxIgnoreUnreadField(bool ignore) {
-  // cache_->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
+  // m_cache->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
   m_pdxIgnoreUnreadFields = ignore;
 }
 
 void CacheXmlCreation::setPdxReadSerialized(bool val) {
-  // cache_->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
+  // m_cache->m_cacheImpl->setPdxIgnoreUnreadFields(ignore);
   m_readPdxSerialized = val;
 }
 

@@ -33,12 +33,7 @@ StreamDataInput::StreamDataInput(std::chrono::milliseconds timeout,
                                  const CacheImpl* cache, Pool* pool)
     : DataInput(nullptr, 0, cache, pool),
       connector_(std::move(connector)),
-      remainingTimeBeforeTimeout_(timeout),
-      streamBuf_(0) {
-  buf_ = nullptr;
-  bufHead_ = buf_;
-  bufLength_ = 0;
-}
+      remainingTimeBeforeTimeout_(timeout) {}
 
 void StreamDataInput::readDataIfNotAvailable(size_t size) {
   char buff[kBufferSize];
@@ -74,14 +69,14 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
                                  .append(connector_->getRemoteEndpoint())));
     }
 
+    auto newLength = bufLength_ + receivedLength;
     auto currentPosition = getBytesRead();
-    streamBuf_.resize(bufLength_ + receivedLength);
-    streamBuf_.insert(streamBuf_.begin() + bufLength_, buff,
-                      buff + receivedLength);
+    streamBuf_.resize(newLength);
+    memcpy(streamBuf_.data() + bufLength_, buff, receivedLength);
 
     bufHead_ = streamBuf_.data();
     buf_ = bufHead_ + currentPosition;
-    bufLength_ += receivedLength;
+    bufLength_ = newLength;
   }
 }
 
