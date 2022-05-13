@@ -32,7 +32,6 @@ target_link_libraries(cpp-acceptance-test
     apache-geode
     integration-framework
     testobject
-    ACE::ACE
     GTest::gtest
     GTest::gtest_main
     Boost::boost

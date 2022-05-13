@@ -18,8 +18,8 @@
 #include "TXCommitMessage.hpp"
 
 #include <algorithm>
-#include <vector>
 
+#include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
 
 #include "ClientProxyMembershipID.hpp"
@@ -32,11 +32,7 @@ namespace client {
 
 TXCommitMessage::TXCommitMessage(
     MemberListForVersionStamp& memberListForVersionStamp)
-    : m_memberListForVersionStamp(memberListForVersionStamp)
-// UNUSED : m_processorId(0)
-{}
-
-bool TXCommitMessage::isAckRequired() { return false; }
+    : memberListForVersionStamp_(memberListForVersionStamp) {}
 
 void TXCommitMessage::fromData(DataInput& input) {
   // read and ignore pId
@@ -56,7 +52,7 @@ void TXCommitMessage::fromData(DataInput& input) {
   input.readInt32();
 
   // ignore farsideBaseMembershipId
-  auto ignoreLength = input.readArrayLength();
+  const auto ignoreLength = input.readArrayLength();
   if (ignoreLength > 0) {
     input.advanceCursor(ignoreLength);
   }
@@ -65,12 +61,13 @@ void TXCommitMessage::fromData(DataInput& input) {
   input.readInt64();  // ignore seqId
 
   input.readBoolean();  // ignore needsLargeModCount
+  input.readBoolean();  // ignore shadow keys flag
 
-  auto regionSize = input.readInt32();
+  const auto regionSize = input.readInt32();
   for (int32_t i = 0; i < regionSize; i++) {
-    auto rc = std::make_shared<RegionCommit>(m_memberListForVersionStamp);
+    auto rc = std::make_shared<RegionCommit>(memberListForVersionStamp_);
     rc->fromData(input);
-    m_regions.push_back(rc);
+    regions_.push_back(rc);
   }
 
   const auto dsCode = static_cast<const DSCode>(input.read());
@@ -99,8 +96,8 @@ void TXCommitMessage::fromData(DataInput& input) {
         GF_CACHE_ILLEGAL_STATE_EXCEPTION);
   }
 
-  int32_t len = input.readArrayLength();
-  for (int j = 0; j < len; j++) {
+  const auto len = input.readArrayLength();
+  for (int32_t j = 0; j < len; j++) {
     std::shared_ptr<Cacheable> tmp;
     input.readObject(tmp);
   }
@@ -114,11 +111,8 @@ std::shared_ptr<Serializable> TXCommitMessage::create(
 }
 
 void TXCommitMessage::apply(Cache* cache) {
-  for (std::vector<std::shared_ptr<RegionCommit>>::iterator iter =
-           m_regions.begin();
-       m_regions.end() != iter; iter++) {
-    auto regionCommit = std::static_pointer_cast<RegionCommit>(*iter);
-    regionCommit->apply(cache);
+  for (const auto& region : regions_) {
+    region->apply(cache);
   }
 }
 

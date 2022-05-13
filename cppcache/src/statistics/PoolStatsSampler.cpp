@@ -22,6 +22,7 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ClientProxyMembershipID.hpp"
 #include "../ThinClientPoolDM.hpp"
 #include "GeodeStatisticsFactory.hpp"
 
@@ -102,7 +103,7 @@ void PoolStatsSampler::putStatsInAdminRegion() {
       auto obj = client::ClientHealthStats::create(
           gets, puts, misses, numListeners, numThreads, cpuTime, numCPU);
       const auto memId = m_distMan->getMembershipId();
-      clientId = memId->getDSMemberIdForThinClientUse();
+      clientId = memId->getClientId();
       auto keyPtr = client::CacheableString::create(clientId.c_str());
       m_adminRegion->put(keyPtr, obj);
     }

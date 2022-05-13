@@ -26,6 +26,7 @@
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "DistributedSystemImpl.hpp"
 #include "ExecutionImpl.hpp"
 #include "FunctionExpiryTask.hpp"
@@ -159,7 +160,7 @@ ThinClientPoolDM::ThinClientPoolDM(const char* name,
       m_primaryServerQueueSize(PRIMARY_QUEUE_NOT_AVAILABLE) {
   static bool firstGuard = false;
   if (firstGuard) {
-    ClientProxyMembershipID::increaseSynchCounter();
+    ClientProxyMembershipID::increaseSyncCounter();
   }
   firstGuard = true;
 

@@ -21,7 +21,6 @@
 #define GEODE_INTEGRATION_TEST_DELTAEX_H_
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
 #include <memory>
 #include <geode/PdxSerializable.hpp>
 #include <geode/PdxWriter.hpp>

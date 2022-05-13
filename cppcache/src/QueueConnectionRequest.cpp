@@ -19,6 +19,9 @@
 
 #include <geode/DataInput.hpp>
 #include <geode/DataOutput.hpp>
+#include <geode/internal/DSFixedId.hpp>
+
+#include "ClientProxyMembershipID.hpp"
 
 namespace apache {
 namespace geode {
@@ -27,7 +30,7 @@ namespace client {
 void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeString(m_serverGp);
   output.write(static_cast<int8_t>(DSCode::FixedIDByte));
-  output.write(static_cast<int8_t>(DSFid::ClientProxyMembershipId));
+  output.write(static_cast<int8_t>(internal::DSFid::ClientProxyMembershipId));
   const auto& dsMemberId = m_membershipID.getDSMemberId();
   output.writeBytes(reinterpret_cast<const uint8_t*>(dsMemberId.c_str()),
                     static_cast<int32_t>(dsMemberId.size()));
@@ -37,8 +40,8 @@ void QueueConnectionRequest::toData(DataOutput& output) const {
   output.writeBoolean(m_findDurable);
 }
 
-DSFid QueueConnectionRequest::getDSFID() const {
-  return DSFid::QueueConnectionRequest;
+internal::DSFid QueueConnectionRequest::getDSFID() const {
+  return internal::DSFid::QueueConnectionRequest;
 }
 
 std::set<ServerLocation> QueueConnectionRequest::getExcludedServer() const {

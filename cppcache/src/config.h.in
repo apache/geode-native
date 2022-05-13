@@ -31,7 +31,6 @@
 
 #cmakedefine HAVE_uname
 #cmakedefine HAVE_SIGSTKFLT
-#cmakedefine HAVE_ACE_Select_Reactor
 
 // TODO replace with better CMake checks
 #cmakedefine _LINUX
@@ -48,16 +47,6 @@
 
 #define GEODE_SYSTEM_PROCESSOR "@CMAKE_SYSTEM_PROCESSOR@"
 #define GEODE_SYSTEM_NAME "@CMAKE_SYSTEM_NAME@"
-
-// TODO relace with CMake checks
-#define WITH_ACE_Select_Reactor 1
-
-// ACE_Thread is a pointer on MacOS *only*
-#if defined(_MACOSX)
-#define ACE_Thread_NULL nullptr
-#else
-#define ACE_Thread_NULL 0
-#endif
 
 #cmakedefine WITH_IPV6
 

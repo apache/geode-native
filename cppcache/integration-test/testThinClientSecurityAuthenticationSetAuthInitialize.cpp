@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <geode/AuthInitialize.hpp>
 
 #include "fw_dunit.hpp"

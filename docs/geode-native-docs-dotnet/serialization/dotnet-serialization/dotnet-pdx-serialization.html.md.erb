@@ -19,7 +19,7 @@ limitations under the License.
 
 <%=vars.product_name%>'s Portable Data eXchange (PDX) is a cross-language data format that can reduce the cost of distributing and serializing your objects.
 
-<%=vars.product_name%> .NET PDX serialization:
+<%=vars.product_name%> .NET Framework PDX serialization:
 
 - Is <a href="#pdx-ser-portability">interoperable with other languages by <%=vars.product_name%></a> -- no need to program a Java-side implementation
 
@@ -30,9 +30,11 @@ limitations under the License.
 
 - <a href="#pdx-ser-delta-prop">Works with <%=vars.product_name%> delta propagation</a>
 
-The simplest option is to use [automatic serialization](dotnet-pdx-autoserializer.html) by registering the <%=vars.product_name%> .NET
-PDX reflection-based autoserializer in your application. When you have an autoserializer,
-<%=vars.product_name%> uses it for all domain objects that are not separately treated under the IPDXSerializable interface.
+The simplest option is to use [automatic serialization](dotnet-pdx-autoserializer.html) by
+registering the <%=vars.product_name%> .NET Framework PDX reflection-based autoserializer in your
+application. When you have an autoserializer,
+<%=vars.product_name%> uses it for all domain objects that are not separately treated under the
+IPDXSerializable interface.
 
 For greater control, you can specify individual treatment for domain objects using the `IPdxSerializable` interface.
 Objects derived from the `IPdxSerializable` interface are not subject to autoserialization.
@@ -43,21 +45,23 @@ When you create an `IPdxSerializable` object, <%=vars.product_name%> stores the 
 information in a central registry. The information is passed between peers, between clients and
 servers, and between distributed systems.
 
-This offers a notable advantage to the .NET client, which shares data with Java cache
-servers. When using PDX serialization, clients automatically pass registry information to servers when they store an
-`IPdxSerializable` object. Clients can run queries and functions against the data in the servers
-without the servers needing to know anything about the stored objects. One client can store data on
-the server to be retrieved by another client, with the server never needing to know the object
-type. This means you can code your .NET clients to manage data using Java servers without having to
-create Java implementations of your .NET domain objects.
+This offers a notable advantage to the .NET Framework client, which shares data with Java cache
+servers. When using PDX serialization, clients automatically pass registry information to servers
+when they store an `IPdxSerializable` object. Clients can run queries and functions against the
+data in the servers without the servers needing to know anything about the stored objects. One
+client can store data on the server to be retrieved by another client, with the server never
+needing to know the object type. This means you can code your .NET Framework clients to manage data
+using Java servers without having to create Java implementations of your .NET Framework domain
+objects.
 
 ## <a id="pdx-ser-reduced-deserialization"></a>Reduced Deserialization of Serialized Objects
 
 The access methods for `IPdxSerializable` objects allow you to examine specific fields of your
 domain object without deserializing the entire object. This can reduce 
-deserialization costs significantly. Client .NET apps can run queries and execute functions against
-the objects in the server caches without deserializing the entire object on the server side. The
-query engine automatically recognizes PDX objects and uses only the fields it needs.
+deserialization costs significantly. Client .NET Framework apps can run queries and execute
+functions against the objects in the server caches without deserializing the entire object on the
+server side. The query engine automatically recognizes PDX objects and uses only the fields it
+needs.
 
 Clients can execute Java functions on server data that only access parts of the domain objects by using `PdxInstance.`
 

@@ -48,7 +48,7 @@ template <DSFid _DSFID>
 class APACHE_GEODE_EXPORT DataSerializableFixedId_t
     : public DataSerializableFixedId {
  public:
-  ~DataSerializableFixedId_t() override = default;
+  ~DataSerializableFixedId_t() noexcept override = default;
 
   DSFid getDSFID() const final { return _DSFID; }
 };

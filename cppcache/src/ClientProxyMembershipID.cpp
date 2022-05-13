@@ -17,11 +17,6 @@
 
 #include "ClientProxyMembershipID.hpp"
 
-#include <ctime>
-#include <iostream>
-#include <memory>
-#include <string>
-
 #include <boost/process/environment.hpp>
 
 #include <geode/CacheableBuiltins.hpp>
@@ -31,18 +26,19 @@
 #include "Version.hpp"
 #include "util/Log.hpp"
 
-#define DCPORT 12334
-#define VMKIND 13
-#define ROLEARRLENGTH 0
+namespace {
+constexpr int32_t kVersionMask = 0x8;
+constexpr int8_t kVmKindLoner = 13;
+constexpr int32_t kDcPort = 12334;
+constexpr int8_t kVmKind = kVmKindLoner;
+constexpr int32_t kRoleArrayLength = 0;
+
+static int32_t syncCounter = 2;
+}  // namespace
 
 namespace apache {
 namespace geode {
 namespace client {
-
-static int synch_counter = 2;
-
-const int ClientProxyMembershipID::VERSION_MASK = 0x8;
-const int8_t ClientProxyMembershipID::TOKEN_ORDINAL = -1;
 
 ClientProxyMembershipID::ClientProxyMembershipID()
     : hostPort_(0), vmViewId_(0) {}
@@ -59,7 +55,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
   initHostAddressVector(address);
 
   initObjectVars(hostname, hostPort, durableClientId, durableClientTimeOut,
-                 DCPORT, vmPID, VMKIND, 0, dsName.c_str(), randString.c_str(),
+                 kDcPort, vmPID, kVmKind, 0, dsName.c_str(), randString.c_str(),
                  0);
 }
 
@@ -73,7 +69,7 @@ ClientProxyMembershipID::ClientProxyMembershipID(
   initHostAddressVector(hostAddr, hostAddrLen);
 
   initObjectVars("localhost", hostPort, "", std::chrono::seconds::zero(),
-                 DCPORT, vmPID, VMKIND, 0, dsname, uniqueTag, vmViewId);
+                 kDcPort, vmPID, kVmKind, 0, dsname, uniqueTag, vmViewId);
 }
 
 void ClientProxyMembershipID::initHostAddressVector(
@@ -113,9 +109,10 @@ void ClientProxyMembershipID::initObjectVars(
 
   vmViewId_ = vmViewId;
   m_memID.write(static_cast<int8_t>(DSCode::FixedIDByte));
-  m_memID.write(static_cast<int8_t>(DSFid::InternalDistributedMember));
+  m_memID.write(
+      static_cast<int8_t>(internal::DSFid::InternalDistributedMember));
   m_memID.writeBytes(hostAddr_.data(), static_cast<int32_t>(hostAddr_.size()));
-  m_memID.writeInt(static_cast<int32_t>(synch_counter));
+  m_memID.writeInt(static_cast<int32_t>(syncCounter));
   m_memID.writeString(hostname);
   m_memID.write(splitBrainFlag);
 
@@ -123,7 +120,7 @@ void ClientProxyMembershipID::initObjectVars(
 
   m_memID.writeInt(vPID);
   m_memID.write(vmkind);
-  m_memID.writeArrayLen(ROLEARRLENGTH);
+  m_memID.writeArrayLen(kRoleArrayLength);
   m_memID.writeString(dsname);
   m_memID.writeString(uniqueTag);
 
@@ -144,7 +141,7 @@ void ClientProxyMembershipID::initObjectVars(
   clientId_.append("(");
   clientId_.append(std::to_string(vPID));
   clientId_.append(":loner):");
-  clientId_.append(std::to_string(synch_counter));
+  clientId_.append(std::to_string(syncCounter));
   clientId_.append(":");
   clientId_.append(getUniqueTag());
   clientId_.append(":");
@@ -172,9 +169,7 @@ const std::string& ClientProxyMembershipID::getDSMemberId() const {
   return memIdStr_;
 }
 
-const std::string& ClientProxyMembershipID::getDSMemberIdForThinClientUse() {
-  return clientId_;
-}
+const std::string& ClientProxyMembershipID::getClientId() { return clientId_; }
 
 std::string ClientProxyMembershipID::getHashKey() { return hashKey_; }
 
@@ -185,31 +180,31 @@ void ClientProxyMembershipID::toData(DataOutput&) const {
 void ClientProxyMembershipID::fromData(DataInput& input) {
   // deserialization for PR FX HA
 
-  auto length = input.readArrayLength();
-  auto hostAddress = new uint8_t[length];
-  input.readBytesOnly(hostAddress, length);
-  auto hostPort = input.readInt32();
-  auto hostname =
+  const auto length = input.readArrayLength();
+  auto hostAddress = std::vector<uint8_t>(length);
+  input.readBytesOnly(hostAddress.data(), length);
+  const auto hostPort = input.readInt32();
+  const auto hostname =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto splitbrain = input.read();
-  auto dcport = input.readInt32();
-  auto vPID = input.readInt32();
-  auto vmKind = input.read();
-  auto aStringArray = CacheableStringArray::create();
+  const auto splitbrain = input.read();
+  const auto dcport = input.readInt32();
+  const auto vPID = input.readInt32();
+  const auto vmKind = input.read();
+  const auto aStringArray = CacheableStringArray::create();
   aStringArray->fromData(input);
-  auto dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto uniqueTag =
+  const auto dsName =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto durableClientId =
+  const auto uniqueTag =
       std::dynamic_pointer_cast<CacheableString>(input.readObject());
-  auto durableClientTimeOut = std::chrono::seconds(input.readInt32());
-  int32_t vmViewId = 0;
+  const auto durableClientId =
+      std::dynamic_pointer_cast<CacheableString>(input.readObject());
+  const auto durableClientTimeOut = std::chrono::seconds(input.readInt32());
   readVersion(splitbrain, input);
 
-  initHostAddressVector(hostAddress, length);
+  initHostAddressVector(hostAddress.data(), length);
 
-  if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
-    vmViewId = std::stoi(uniqueTag->value());
+  if (vmKind != kVmKindLoner) {
+    auto vmViewId = std::stoi(uniqueTag->value());
     initObjectVars(hostname->value().c_str(), hostPort,
                    durableClientId->value().c_str(), durableClientTimeOut,
                    dcport, vPID, vmKind, splitbrain, dsName->value().c_str(),
@@ -221,15 +216,14 @@ void ClientProxyMembershipID::fromData(DataInput& input) {
                    dcport, vPID, vmKind, splitbrain, dsName->value().c_str(),
                    uniqueTag->value().c_str(), 0);
   }
-  delete[] hostAddress;
   readAdditionalData(input);
 }
 
-Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
-  auto length = input.readArrayLength();
-  auto hostAddress = new uint8_t[length];
-  input.readBytesOnly(hostAddress, length);
-  auto hostPort = input.readInt32();
+void ClientProxyMembershipID::readEssentialData(DataInput& input) {
+  const auto length = input.readArrayLength();
+  auto hostAddress = std::vector<uint8_t>(length);
+  input.readBytesOnly(hostAddress.data(), length);
+  const auto hostPort = input.readInt32();
 
   // read and ignore flag
   input.read();
@@ -237,7 +231,7 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
   const auto vmKind = input.read();
   int32_t vmViewId = 0;
   std::shared_ptr<CacheableString> uniqueTag, vmViewIdstr;
-  if (vmKind == ClientProxyMembershipID::LONER_DM_TYPE) {
+  if (vmKind == kVmKindLoner) {
     uniqueTag = std::dynamic_pointer_cast<CacheableString>(input.readObject());
   } else {
     vmViewIdstr =
@@ -247,23 +241,18 @@ Serializable* ClientProxyMembershipID::readEssentialData(DataInput& input) {
 
   auto dsName = std::dynamic_pointer_cast<CacheableString>(input.readObject());
 
-  initHostAddressVector(hostAddress, length);
+  initHostAddressVector(hostAddress.data(), length);
 
-  if (vmKind != ClientProxyMembershipID::LONER_DM_TYPE) {
+  if (vmKind != kVmKindLoner) {
     // initialize the object with the values read and some dummy values
-    initObjectVars("", hostPort, "", std::chrono::seconds::zero(), DCPORT, 0,
+    initObjectVars("", hostPort, "", std::chrono::seconds::zero(), kDcPort, 0,
                    vmKind, 0, dsName->value().c_str(), nullptr, vmViewId);
   } else {
     // initialize the object with the values read and some dummy values
-    initObjectVars("", hostPort, "", std::chrono::seconds::zero(), DCPORT, 0,
+    initObjectVars("", hostPort, "", std::chrono::seconds::zero(), kDcPort, 0,
                    vmKind, 0, dsName->value().c_str(),
                    uniqueTag->value().c_str(), vmViewId);
   }
-
-  delete[] hostAddress;
-  readAdditionalData(input);
-
-  return this;
 }
 
 void ClientProxyMembershipID::readAdditionalData(DataInput& input) {
@@ -271,7 +260,7 @@ void ClientProxyMembershipID::readAdditionalData(DataInput& input) {
   input.advanceCursor(17);
 }
 
-void ClientProxyMembershipID::increaseSynchCounter() { ++synch_counter; }
+void ClientProxyMembershipID::increaseSyncCounter() { ++syncCounter; }
 
 // Compares two membershipIds. This is based on the compareTo function
 // of InternalDistributedMember class of Java.
@@ -331,12 +320,23 @@ int16_t ClientProxyMembershipID::compareTo(
   return 0;
 }
 
-void ClientProxyMembershipID::readVersion(int flags, DataInput& input) {
-  if (flags & ClientProxyMembershipID::VERSION_MASK) {
+void ClientProxyMembershipID::readVersion(int32_t flags, DataInput& input) {
+  if (flags & kVersionMask) {
     const auto version = Version::read(input);
     LOGDEBUG("ClientProxyMembershipID::readVersion ordinal = %d ",
              version.getOrdinal());
   }
+}
+
+int32_t ClientProxyMembershipID::hashcode() const {
+  std::stringstream hostAddressString;
+  hostAddressString << std::hex;
+  for (uint32_t i = 0; i < getHostAddrLen(); i++) {
+    hostAddressString << ":" << static_cast<int>(hostAddr_[i]);
+  }
+  auto result = internal::geode_hash<std::string>{}(hostAddressString.str());
+  result += hostPort_;
+  return result;
 }
 
 }  // namespace client

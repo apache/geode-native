@@ -18,7 +18,6 @@ project( dependencies LANGUAGES NONE )
 
 find_package(Patch REQUIRED)
 
-add_subdirectory(ACE)
 add_subdirectory(boost)
 add_subdirectory(sqlite)
 add_subdirectory(doxygen)

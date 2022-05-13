@@ -21,9 +21,7 @@
  */
 
 #include "fw_dunit.hpp"
-#include <ace/High_Res_Timer.h>
 
-#include <ace/OS.h>
 #include <string>
 #include <geode/CacheTransactionManager.hpp>
 

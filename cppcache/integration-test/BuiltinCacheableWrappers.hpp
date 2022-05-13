@@ -27,8 +27,6 @@
 #include <sstream>
 #include <iomanip>
 
-#include <ace/Date_Time.h>
-
 #include "CacheHelper.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableWrapper.hpp"

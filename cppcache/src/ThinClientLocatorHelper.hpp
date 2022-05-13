@@ -28,7 +28,6 @@
 
 #include <geode/internal/geode_globals.hpp>
 
-#include "ClientProxyMembershipID.hpp"
 #include "ErrType.hpp"
 #include "GetAllServersRequest.hpp"
 #include "GetAllServersResponse.hpp"
@@ -41,6 +40,7 @@ namespace client {
 class ThinClientPoolDM;
 class Connector;
 class TcrConnection;
+class ClientProxyMembershipID;
 
 class ThinClientLocatorHelper {
  public:

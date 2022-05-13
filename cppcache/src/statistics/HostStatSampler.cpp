@@ -35,6 +35,7 @@
 #include "../AdminRegion.hpp"
 #include "../CacheImpl.hpp"
 #include "../ClientHealthStats.hpp"
+#include "../ClientProxyMembershipID.hpp"
 #include "../CppCacheLibrary.hpp"
 #include "../TcrConnectionManager.hpp"
 #include "GeodeStatisticsFactory.hpp"
@@ -306,7 +307,7 @@ void HostStatSampler::putStatsInAdminRegion() {
           auto memId = conn_man->getCacheImpl()
                            ->getClientProxyMembershipIDFactory()
                            .create(durableClientId_, durableTimeout_);
-          clientId = memId->getDSMemberIdForThinClientUse();
+          clientId = memId->getClientId();
         }
 
         auto keyPtr = client::CacheableString::create(clientId.c_str());

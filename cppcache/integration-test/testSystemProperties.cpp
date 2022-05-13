@@ -40,8 +40,8 @@ bool checkSecurityProperties(std::shared_ptr<Properties> securityProperties,
   if (tempValue == nullptr) {
     return (false);
   }
-  flag = strcmp(tempValue->value().c_str(), value);
-  return (!flag);
+
+  return tempValue->value() == value;
 }
 
 BEGIN_TEST(DEFAULT)
@@ -58,7 +58,7 @@ BEGIN_TEST(DEFAULT)
     ASSERT(statisticsArchiveFileName == "statArchive.gfs",
            "Expected statisticsArchiveFileName == \"statArchive.gfs\"");
     auto &&logLevel = Log::levelToChars(systemProperties->logLevel());
-    ASSERT_STREQ("config", logLevel);
+    ASSERT_STREQ(std::string{"config"}, logLevel);
     delete systemProperties;
   }
 END_TEST(DEFAULT)

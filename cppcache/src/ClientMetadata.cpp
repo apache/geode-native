@@ -50,10 +50,8 @@ ClientMetadata::ClientMetadata(
         "%zu ",
         totalNumBuckets, fpaSet->size());
     if (!fpaSet->empty()) {
-      int totalFPABuckets = 0;
       for (int i = 0; i < static_cast<int>(fpaSet->size()); i++) {
         std::vector<int> attList;
-        totalFPABuckets += fpaSet->at(i)->getNumBuckets();
         attList.push_back(fpaSet->at(i)->getNumBuckets());
         attList.push_back(fpaSet->at(i)->getStartingBucketID());
         m_fpaMap[fpaSet->at(i)->getPartitionName()] = attList;

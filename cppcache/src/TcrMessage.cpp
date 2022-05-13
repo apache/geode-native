@@ -25,6 +25,7 @@
 #include "BucketServerLocation.hpp"
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "DataInputInternal.hpp"
 #include "DataOutputInternal.hpp"
 #include "DiskStoreId.hpp"
@@ -3110,8 +3111,7 @@ std::shared_ptr<DSMemberForVersionStamp> TcrMessage::readDSMember(
           "InternalDistributedMember. ");
     }
 
-    auto memId =
-        std::shared_ptr<ClientProxyMembershipID>(new ClientProxyMembershipID());
+    auto memId = std::make_shared<ClientProxyMembershipID>();
     memId->fromData(input);
     return std::shared_ptr<DSMemberForVersionStamp>(memId);
   } else if (typeidLen == 2) {

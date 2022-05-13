@@ -20,8 +20,10 @@
 #ifndef GEODE_TXCOMMITMESSAGE_H_
 #define GEODE_TXCOMMITMESSAGE_H_
 
-#include <geode/DataInput.hpp>
-#include <geode/internal/geode_globals.hpp>
+#include <memory>
+#include <vector>
+
+#include <geode/internal/DataSerializableFixedId.hpp>
 
 #include "RegionCommit.hpp"
 
@@ -29,27 +31,29 @@ namespace apache {
 namespace geode {
 namespace client {
 
-class TXCommitMessage
-    : public internal::DataSerializableFixedId_t<DSFid::TXCommitMessage> {
+class MemberListForVersionStamp;
+class DataInput;
+class DataOutput;
+class Cache;
+
+class TXCommitMessage : public internal::DataSerializableFixedId_t<
+                            internal::DSFid::TXCommitMessage> {
  public:
   explicit TXCommitMessage(
       MemberListForVersionStamp& memberListForVersionStamp);
-  ~TXCommitMessage() override = default;
+  ~TXCommitMessage() noexcept override = default;
 
   void fromData(DataInput& input) override;
   void toData(DataOutput& output) const override;
 
   static std::shared_ptr<Serializable> create(
       MemberListForVersionStamp& memberListForVersionStamp);
-  //	VectorOfEntryEvent getEvents(Cache* cache);
 
   void apply(Cache* cache);
 
  private:
-  // UNUSED int32_t m_processorId;
-  bool isAckRequired();
-  MemberListForVersionStamp& m_memberListForVersionStamp;
-  std::vector<std::shared_ptr<RegionCommit>> m_regions;
+  MemberListForVersionStamp& memberListForVersionStamp_;
+  std::vector<std::shared_ptr<RegionCommit>> regions_;
 };
 
 }  // namespace client

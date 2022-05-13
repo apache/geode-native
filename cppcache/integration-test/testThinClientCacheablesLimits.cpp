@@ -21,9 +21,6 @@
 #include "fw_dunit.hpp"
 #include "BuiltinCacheableWrappers.hpp"
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <cstring>
 
 #include "CacheHelper.hpp"

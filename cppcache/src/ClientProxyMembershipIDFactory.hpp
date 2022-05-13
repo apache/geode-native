@@ -20,13 +20,15 @@
 #ifndef GEODE_CLIENTPROXYMEMBERSHIPIDFACTORY_H_
 #define GEODE_CLIENTPROXYMEMBERSHIPIDFACTORY_H_
 
+#include <chrono>
+#include <memory>
 #include <string>
-
-#include "ClientProxyMembershipID.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
+
+class ClientProxyMembershipID;
 
 class ClientProxyMembershipIDFactory {
  public:

@@ -21,7 +21,6 @@
 #define GEODE_INTEGRATION_TEST_THINCLIENTDISTOPS2_H_
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
 
 #include <string>
 #include <vector>

@@ -19,9 +19,6 @@
 
 #include <string>
 
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
-
 #include <geode/internal/chrono/duration.hpp>
 
 #define ROOT_NAME "testThinClientLRUExpiration"

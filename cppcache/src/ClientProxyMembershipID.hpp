@@ -20,13 +20,12 @@
 #ifndef GEODE_CLIENTPROXYMEMBERSHIPID_H_
 #define GEODE_CLIENTPROXYMEMBERSHIPID_H_
 
-#include <sstream>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include <boost/asio.hpp>
 
-#include <geode/DataOutput.hpp>
 #include <geode/internal/functional.hpp>
 #include <geode/internal/geode_globals.hpp>
 
@@ -35,10 +34,6 @@
 namespace apache {
 namespace geode {
 namespace client {
-
-using internal::DSFid;
-
-class ClientProxyMembershipID;
 
 class ClientProxyMembershipID : public DSMemberForVersionStamp {
  public:
@@ -51,26 +46,34 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
                           const std::chrono::seconds durableClientTimeOut =
                               std::chrono::seconds::zero());
 
-  // This constructor is only for testing and should not be used for any
-  // other purpose. See testEntriesMapForVersioning.cpp for more details
+  /**
+   * This constructor is only for testing and should not be used for any
+   * other purpose. See testEntriesMapForVersioning.cpp for more details
+   */
   ClientProxyMembershipID(const uint8_t* hostAddr, uint32_t hostAddrLen,
                           uint32_t hostPort, const char* dsname,
                           const char* uniqueTag, uint32_t vmViewId);
-  // ClientProxyMembershipID(const char *durableClientId = nullptr, const
-  // uint32_t durableClntTimeOut = 0);
+
   ClientProxyMembershipID();
+
   ~ClientProxyMembershipID() noexcept override;
-  static void increaseSynchCounter();
+
+  static void increaseSyncCounter();
+
   static std::shared_ptr<Serializable> createDeserializable() {
     return std::make_shared<ClientProxyMembershipID>();
   }
-  // Do an empty check on the returned value. Only use after handshake is done.
-  const std::string& getDSMemberIdForThinClientUse();
 
-  // Serializable interface:
+  const std::string& getClientId();
+
   void toData(DataOutput& output) const override;
+
   void fromData(DataInput& input) override;
-  DSFid getDSFID() const override { return DSFid::InternalDistributedMember; }
+
+  internal::DSFid getDSFID() const override {
+    return internal::DSFid::InternalDistributedMember;
+  }
+
   size_t objectSize() const override { return 0; }
 
   void initHostAddressVector(const boost::asio::ip::address& address);
@@ -85,36 +88,29 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
                       const char* uniqueTag, uint32_t vmViewId);
 
   std::string getDSName() const { return dsName_; }
+
   std::string getUniqueTag() const { return uniqueTag_; }
+
   const std::vector<uint8_t>& getHostAddr() const { return hostAddr_; }
+
   uint32_t getHostAddrLen() const {
     return static_cast<uint32_t>(hostAddr_.size());
   }
+
   uint32_t getHostPort() const { return hostPort_; }
+
   std::string getHashKey() override;
+
   int16_t compareTo(const DSMemberForVersionStamp&) const override;
-  int32_t hashcode() const override {
-    uint32_t result = 0;
-    std::stringstream hostAddressString;
-    hostAddressString << std::hex;
-    for (uint32_t i = 0; i < getHostAddrLen(); i++) {
-      hostAddressString << ":" << static_cast<int>(hostAddr_[i]);
-    }
-    result += internal::geode_hash<std::string>{}(hostAddressString.str());
-    result += hostPort_;
-    return result;
-  }
+
+  int32_t hashcode() const override;
 
   bool operator==(const CacheableKey& other) const override {
     return (this->compareTo(
                 dynamic_cast<const DSMemberForVersionStamp&>(other)) == 0);
   }
 
-  Serializable* readEssentialData(DataInput& input);
-
- private:
-  void readVersion(int flags, DataInput& input);
-  void readAdditionalData(DataInput& input);
+  void readEssentialData(DataInput& input);
 
  private:
   std::string memIdStr_;
@@ -128,9 +124,8 @@ class ClientProxyMembershipID : public DSMemberForVersionStamp {
   std::string hashKey_;
   uint32_t vmViewId_;
 
-  static const uint8_t LONER_DM_TYPE = 13;
-  static const int VERSION_MASK;
-  static const int8_t TOKEN_ORDINAL;
+  void readVersion(int32_t flags, DataInput& input);
+  void readAdditionalData(DataInput& input);
 };
 
 }  // namespace client

@@ -21,8 +21,6 @@
 #define GEODE_INTEGRATION_TEST_THINCLIENTHEAPLRU_H_
 
 #include "fw_dunit.hpp"
-#include <ace/OS.h>
-#include <ace/High_Res_Timer.h>
 #include "BuiltinCacheableWrappers.hpp"
 
 #include <string>

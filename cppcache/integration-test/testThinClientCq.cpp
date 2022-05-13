@@ -19,7 +19,6 @@
 #include <geode/CqListener.hpp>
 #include <geode/CqStatusListener.hpp>
 #include <geode/CqServiceStatistics.hpp>
-#include <ace/OS.h>
 #include <string>
 #include <sstream>
 

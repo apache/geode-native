@@ -22,8 +22,6 @@
 
 #include <cstdlib>
 
-#include <ace/OS.h>
-
 #include <geode/Region.hpp>
 #include <geode/ResultSet.hpp>
 #include <geode/StructSet.hpp>

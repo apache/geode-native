@@ -25,6 +25,7 @@
 #include <geode/DataOutput.hpp>
 
 #include "ByteArrayFixture.hpp"
+#include "ClientProxyMembershipID.hpp"
 #include "DataOutputInternal.hpp"
 
 namespace apache {
@@ -55,7 +56,7 @@ TEST_F(QueueConnectionRequestTest, testToData) {
 
   EXPECT_BYTEARRAY_EQ(
       "2A0000012631015C047F000001000000022A00046E616D65000000302E\\h{8}"
-      "0D002A000664734E616D652A000772616E644E756D2D00000001FFFFFFFF000000012A00"
+      "0D002A000664734E616D652A000772616E644E756D7D00000001FFFFFFFF000000012A00"
       "067365727665720000000A00",
       ByteArray(dataOutput.getBuffer(), dataOutput.getBufferLength()));
 }

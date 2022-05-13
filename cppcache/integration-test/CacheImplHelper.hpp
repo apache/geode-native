@@ -22,7 +22,6 @@
 
 #include <cstdlib>
 #include <geode/SystemProperties.hpp>
-#include <ace/OS.h>
 #include "testUtils.hpp"
 
 #ifndef ROOT_NAME

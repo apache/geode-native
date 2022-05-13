@@ -61,7 +61,7 @@ ForEachMacros:
 - BOOST_FOREACH
 IncludeBlocks:   Regroup
 IncludeCategories:
-- Regex:           '^<(ace|boost)/'
+- Regex:           '^<(boost)/'
   Priority:        3
 - Regex:           '^<(gtest)/'
   Priority:        4
