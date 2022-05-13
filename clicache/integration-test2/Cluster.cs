@@ -78,7 +78,7 @@ namespace Apache.Geode.Client.IntegrationTests
 
             for (var i = 0; i < locatorCount_; i++)
             {
-                var locator = new Locator(this, locators_,
+                var locator = new Locator(this,
                     name_ + "/locator/" + i.ToString());
 
                 if (i == 0)
@@ -192,15 +192,13 @@ namespace Apache.Geode.Client.IntegrationTests
     {
         private Cluster cluster_;
         private string name_;
-        private List<Locator> locators_;
         private bool started_;
         private bool startJmxManager_;
         private bool useDebugAgent_;
 
-        public Locator(Cluster cluster, List<Locator> locators, string name)
+        public Locator(Cluster cluster, string name)
         {
             cluster_ = cluster;
-            locators_ = locators;
             var address = new Address();
             address.address = "localhost";
             address.port = Framework.FreeTcpPort();

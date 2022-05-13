@@ -718,7 +718,7 @@ namespace Apache.Geode.Client.IntegrationTests
         {
             using (var cluster = new Cluster(output, CreateTestCaseDirectoryName(), 1, 1))
             {
-                Assert.True(cluster.Start());
+                Assert.True(cluster.withDebugAgent().Start());
                 Assert.Equal(0, cluster.Gfsh.create()
                     .region()
                     .withName("testRegion")
