@@ -35,8 +35,6 @@ namespace client {
 
 class GetAllServersResponse : public internal::DataSerializableFixedId_t<
                                   internal::DSFid::GetAllServersResponse> {
-  std::vector<std::shared_ptr<ServerLocation> > m_servers;
-
  public:
   static std::shared_ptr<Serializable> create() {
     return std::make_shared<GetAllServersResponse>();
@@ -44,19 +42,20 @@ class GetAllServersResponse : public internal::DataSerializableFixedId_t<
   GetAllServersResponse() : Serializable() {}
   explicit GetAllServersResponse(
       std::vector<std::shared_ptr<ServerLocation> > servers)
-      : Serializable() {
-    m_servers = servers;
-  }
+      : Serializable(), servers_(servers) {}
   void toData(DataOutput& output) const override;
   void fromData(DataInput& input) override;
 
   size_t objectSize() const override {
-    return sizeof(GetAllServersResponse) + m_servers.capacity();
+    return sizeof(GetAllServersResponse) + servers_.capacity();
   }
   std::vector<std::shared_ptr<ServerLocation> > getServers() {
-    return m_servers;
+    return servers_;
   }
   ~GetAllServersResponse() override = default;
+
+ private:
+  std::vector<std::shared_ptr<ServerLocation> > servers_;
 };
 
 }  // namespace client

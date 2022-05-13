@@ -31,65 +31,57 @@ const size_t kBufferSize = 3000;
 StreamDataInput::StreamDataInput(std::chrono::milliseconds timeout,
                                  std::unique_ptr<Connector> connector,
                                  const CacheImpl* cache, Pool* pool)
-    : DataInput(nullptr, 0, cache, pool) {
-  m_remainingTimeBeforeTimeout = timeout;
-  m_connector = std::move(connector);
-  m_buf = nullptr;
-  m_bufHead = m_buf;
-  m_bufLength = 0;
-}
-
-StreamDataInput::~StreamDataInput() {
-  if (m_bufHead != nullptr) {
-    free(const_cast<uint8_t*>(m_bufHead));
-  }
+    : DataInput(nullptr, 0, cache, pool),
+      connector_(std::move(connector)),
+      remainingTimeBeforeTimeout_(timeout),
+      streamBuf_(0) {
+  buf_ = nullptr;
+  bufHead_ = buf_;
+  bufLength_ = 0;
 }
 
 void StreamDataInput::readDataIfNotAvailable(size_t size) {
   char buff[kBufferSize];
-  while ((m_bufLength - (m_buf - m_bufHead)) < size) {
+  while (getBytesRemaining() < size) {
     const auto start = std::chrono::system_clock::now();
 
-    const auto receivedLength = m_connector->receive_nothrowiftimeout(
+    const auto receivedLength = connector_->receive_nothrowiftimeout(
         buff, kBufferSize,
         std::chrono::duration_cast<std::chrono::milliseconds>(
-            m_remainingTimeBeforeTimeout));
+            remainingTimeBeforeTimeout_));
 
     const auto timeSpent = std::chrono::system_clock::now() - start;
 
-    m_remainingTimeBeforeTimeout -=
-        std::chrono::duration_cast<decltype(m_remainingTimeBeforeTimeout)>(
+    remainingTimeBeforeTimeout_ -=
+        std::chrono::duration_cast<decltype(remainingTimeBeforeTimeout_)>(
             timeSpent);
 
     LOGDEBUG(
         "received %d bytes from %s: %s, time spent: "
         "%ld microsecs, time remaining before timeout: %ld microsecs",
-        receivedLength, m_connector->getRemoteEndpoint().c_str(),
+        receivedLength, connector_->getRemoteEndpoint().c_str(),
         Utils::convertBytesToString(reinterpret_cast<uint8_t*>(buff),
                                     receivedLength)
             .c_str(),
         std::chrono::duration_cast<std::chrono::microseconds>(timeSpent)
             .count(),
         std::chrono::duration_cast<std::chrono::microseconds>(
-            m_remainingTimeBeforeTimeout)
+            remainingTimeBeforeTimeout_)
             .count());
 
-    if (m_remainingTimeBeforeTimeout <= std::chrono::microseconds ::zero()) {
+    if (remainingTimeBeforeTimeout_ <= std::chrono::microseconds ::zero()) {
       throw(TimeoutException(std::string("Timeout when receiving from ")
-                                 .append(m_connector->getRemoteEndpoint())));
+                                 .append(connector_->getRemoteEndpoint())));
     }
 
-    auto newLength = m_bufLength + receivedLength;
-    auto currentPosition = m_buf - m_bufHead;
-    if ((m_bufHead) == nullptr) {
-      m_bufHead = static_cast<uint8_t*>(malloc(sizeof(uint8_t) * newLength));
-    } else {
-      m_bufHead = static_cast<uint8_t*>(
-          realloc(const_cast<uint8_t*>(m_bufHead), newLength));
-    }
-    memcpy(const_cast<uint8_t*>(m_bufHead + m_bufLength), buff, receivedLength);
-    m_buf = m_bufHead + currentPosition;
-    m_bufLength += receivedLength;
+    auto currentPosition = getBytesRead();
+    streamBuf_.resize(bufLength_ + receivedLength);
+    streamBuf_.insert(streamBuf_.begin() + bufLength_, buff,
+                      buff + receivedLength);
+
+    bufHead_ = streamBuf_.data();
+    buf_ = bufHead_ + currentPosition;
+    bufLength_ += receivedLength;
   }
 }
 

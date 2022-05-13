@@ -42,8 +42,6 @@ class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
                   std::unique_ptr<Connector> connector, const CacheImpl* cache,
                   Pool* pool);
 
-  ~StreamDataInput() override;
-
  protected:
   void _checkBufferSize(size_t size, int32_t /* line */) override {
     readDataIfNotAvailable(size);
@@ -52,8 +50,9 @@ class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
   void readDataIfNotAvailable(size_t size);
 
  private:
-  std::unique_ptr<Connector> m_connector;
-  std::chrono::microseconds m_remainingTimeBeforeTimeout;
+  std::unique_ptr<Connector> connector_;
+  std::chrono::microseconds remainingTimeBeforeTimeout_;
+  std::vector<uint8_t> streamBuf_;
 };
 }  // namespace client
 }  // namespace geode

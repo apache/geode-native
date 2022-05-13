@@ -21,10 +21,10 @@ namespace geode {
 namespace client {
 
 void GetAllServersResponse::toData(DataOutput& output) const {
-  int32_t numServers = static_cast<int32_t>(m_servers.size());
+  int32_t numServers = static_cast<int32_t>(servers_.size());
   output.writeInt(numServers);
   for (int32_t i = 0; i < numServers; i++) {
-    output.writeObject(m_servers.at(i));
+    output.writeObject(servers_.at(i));
   }
 }
 void GetAllServersResponse::fromData(DataInput& input) {
@@ -33,7 +33,7 @@ void GetAllServersResponse::fromData(DataInput& input) {
   for (int i = 0; i < numServers; i++) {
     std::shared_ptr<ServerLocation> sLoc = std::make_shared<ServerLocation>();
     sLoc->fromData(input);
-    m_servers.push_back(sLoc);
+    servers_.push_back(sLoc);
   }
 }
 
