@@ -22,16 +22,24 @@ add_executable(cpp-integration-test
   CleanIdleConnections.cpp
   ClientTransactionXATest.cpp
   CommitConflictExceptionTest.cpp
+  ContainsKeyOnServerExceptionTest.cpp
   CqPlusAuthInitializeTest.cpp
   CqTest.cpp
   DataSerializableTest.cpp
+  DisconnectEndPointAtException.cpp
   EnableChunkHandlerThreadTest.cpp
   ExampleTest.cpp
   ExceptionTranslationTest.cpp
   ExpirationTest.cpp
   FunctionExecutionTest.cpp
+  HARegionCacheListenerTest.cpp
+  HARegionCacheListenerWithClusterRegionTest.cpp
+  HARegionCacheListenerARLEPDTest.cpp
+  HARegionCacheListenerARLTest.cpp
+  HARegionCacheListenerKeyValueTest.cpp
   LRUEvictionTest.cpp
   LocatorRequestsTest.cpp
+  LocalRegionCacheListenerTest.cpp
   Order.cpp
   Order.hpp
   PartitionRegionOpsTest.cpp
@@ -60,14 +68,7 @@ add_executable(cpp-integration-test
   TransactionCleaningTest.cpp
   TransactionsTest.cpp
   WanDeserializationTest.cpp
-  DisconnectEndPointAtException.cpp
-  ContainsKeyOnServerExceptionTest.cpp
-  HARegionCacheListenerTest.cpp
-  HARegionCacheListenerWithClusterRegionTest.cpp
-  HARegionCacheListenerARLEPDTest.cpp
-  HARegionCacheListenerARLTest.cpp
-  HARegionCacheListenerKeyValueTest.cpp
-  LocalRegionCacheListenerTest.cpp
+  WritablePdxInstanceTest.cpp
 )
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(cpp-integration-test

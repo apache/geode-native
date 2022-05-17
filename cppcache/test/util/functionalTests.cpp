@@ -31,6 +31,7 @@ TEST(string, geodeHash) {
   EXPECT_EQ(122, hash("z"));
   EXPECT_EQ(48, hash("0"));
   EXPECT_EQ(57, hash("9"));
+  EXPECT_EQ(0, hash("G0&PI2<"));
   EXPECT_EQ(1077910243, hash("supercalifragilisticexpialidocious"));
 
   EXPECT_EQ(1544552287, hash(u8"You had me at meat tornad\u00F6!\U000F0000"));

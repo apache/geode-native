@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+#include <gmock/gmock.h>
+
 #include <gtest/gtest.h>
 
 #include "ByteArrayFixture.hpp"
@@ -27,9 +29,15 @@ namespace {
 using apache::geode::client::ByteArray;
 using apache::geode::client::DataInputInternal;
 using apache::geode::client::DataOutputInternal;
+using apache::geode::client::PdxFieldType;
 using apache::geode::client::PdxFieldTypes;
 using apache::geode::client::PdxType;
 using apache::geode::client::PdxTypeRegistry;
+
+using ::testing::ContainerEq;
+using ::testing::Eq;
+using ::testing::Ne;
+using ::testing::Not;
 
 const std::string gemfireJsonClassName = "__GEMFIRE_JSON";
 
@@ -44,7 +52,7 @@ TEST_F(PdxTypeTest, testTwoObjectsWithSameClassnameAndSameFieldsAreEquals) {
   pdxType2.addField("bar0", PdxFieldTypes::STRING);
   pdxType2.addField("bar1", PdxFieldTypes::STRING);
 
-  EXPECT_TRUE(pdxType1 == pdxType2);
+  ASSERT_THAT(pdxType1, Eq(std::ref(pdxType2)));
 }
 
 TEST_F(
@@ -58,7 +66,7 @@ TEST_F(
   pdxType2.addField("bar0", PdxFieldTypes::STRING);
   pdxType2.addField("bar1", PdxFieldTypes::STRING);
 
-  EXPECT_FALSE(pdxType1 == pdxType2);
+  ASSERT_THAT(pdxType1, Not(Eq(std::ref(pdxType2))));
 }
 
 TEST_F(PdxTypeTest,
@@ -71,7 +79,7 @@ TEST_F(PdxTypeTest,
   pdxType2.addField("bar0", PdxFieldTypes::STRING);
   pdxType2.addField("bar1", PdxFieldTypes::STRING);
 
-  EXPECT_FALSE(pdxType1 == pdxType2);
+  ASSERT_THAT(pdxType1, Not(Eq(std::ref(pdxType2))));
 }
 
 TEST_F(PdxTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
@@ -87,7 +95,7 @@ TEST_F(PdxTypeTest, testTwoObjectsWithSameFieldsHaveTheSameHash) {
 
   std::hash<PdxType> type1Hash;
   std::hash<PdxType> type2Hash;
-  EXPECT_EQ(type1Hash(pdxType1), type2Hash(pdxType2));
+  ASSERT_THAT(type1Hash(pdxType1), Eq(type2Hash(pdxType2)));
 }
 
 TEST_F(PdxTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
@@ -102,7 +110,7 @@ TEST_F(PdxTypeTest, testTwoObjectsWithDifferentFieldsHaveDifferentHash) {
   std::hash<PdxType> type1Hash;
   std::hash<PdxType> type2Hash;
 
-  EXPECT_NE(type1Hash(pdxType1), type2Hash(pdxType2));
+  ASSERT_THAT(type1Hash(pdxType1), Ne(type2Hash(pdxType2)));
 }
 
 TEST_F(PdxTypeTest,
@@ -120,7 +128,7 @@ TEST_F(PdxTypeTest,
   std::hash<PdxType> type1Hash;
   std::hash<PdxType> type2Hash;
 
-  EXPECT_EQ(type1Hash(pdxType1), type2Hash(pdxType2));
+  ASSERT_THAT(type1Hash(pdxType1), Eq(type2Hash(pdxType2)));
 }
 
 TEST_F(PdxTypeTest,
@@ -137,7 +145,7 @@ TEST_F(PdxTypeTest,
 
   std::hash<PdxType> type1Hash;
   std::hash<PdxType> type2Hash;
-  EXPECT_NE(type1Hash(pdxType1), type2Hash(pdxType2));
+  ASSERT_THAT(type1Hash(pdxType1), Ne(type2Hash(pdxType2)));
 }
 
 TEST_F(PdxTypeTest, testSerializeJavaPdxType) {
@@ -190,7 +198,7 @@ TEST_F(PdxTypeTest, testDeserializeJavaPdxType) {
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   pdxType->fromData(in);
 
-  EXPECT_EQ(pdxExpected, *pdxType);
+  ASSERT_THAT(pdxExpected, Eq(std::ref(*pdxType)));
 }
 
 TEST_F(PdxTypeTest, testDeserializeNoJavaPdxType) {
@@ -207,7 +215,62 @@ TEST_F(PdxTypeTest, testDeserializeNoJavaPdxType) {
   DataInputInternal in(out.getBuffer(), out.getBufferLength());
   pdxType->fromData(in);
 
-  EXPECT_EQ(pdxExpected, *pdxType);
+  ASSERT_THAT(pdxExpected, Eq(std::ref(*pdxType)));
+}
+
+TEST_F(PdxTypeTest, testClassName) {
+  PdxType pdxExpected{gemfireJsonClassName, false};
+  ASSERT_THAT(pdxExpected.getPdxClassName(), Eq(gemfireJsonClassName));
+}
+
+TEST_F(PdxTypeTest, testIdentityFields) {
+  PdxType pdxExpected{gemfireJsonClassName, false};
+  std::vector<std::shared_ptr<PdxFieldType>> expectedIdentityFields;
+
+  {
+    auto field = pdxExpected.addField("alice", PdxFieldTypes::STRING);
+
+    field->setIdentity(true);
+    expectedIdentityFields.emplace_back(std::move(field));
+  }
+  {
+    auto field = pdxExpected.addField("foo", PdxFieldTypes::STRING);
+
+    field->setIdentity(true);
+    expectedIdentityFields.emplace_back(std::move(field));
+  }
+  pdxExpected.addField("bar1", PdxFieldTypes::BOOLEAN);
+
+  ASSERT_THAT(pdxExpected.getIdentityFields(),
+              ContainerEq(expectedIdentityFields));
+}
+
+TEST_F(PdxTypeTest, testIdentityFieldsNotMarked) {
+  PdxType pdxExpected{gemfireJsonClassName, false};
+  std::vector<std::shared_ptr<PdxFieldType>> expectedIdentityFields;
+
+  expectedIdentityFields.emplace_back(
+      pdxExpected.addField("alice", PdxFieldTypes::STRING));
+  expectedIdentityFields.emplace_back(
+      pdxExpected.addField("bar1", PdxFieldTypes::BOOLEAN));
+  expectedIdentityFields.emplace_back(
+      pdxExpected.addField("foo", PdxFieldTypes::STRING));
+
+  ASSERT_THAT(pdxExpected.getIdentityFields(),
+              ContainerEq(expectedIdentityFields));
+}
+
+TEST_F(PdxTypeTest, testIdentityFieldsSorted) {
+  PdxType pdxExpected{gemfireJsonClassName, false};
+
+  auto field1 = pdxExpected.addField("foo", PdxFieldTypes::STRING);
+  auto field2 = pdxExpected.addField("alice", PdxFieldTypes::STRING);
+  auto field3 = pdxExpected.addField("bar1", PdxFieldTypes::BOOLEAN);
+
+  std::vector<std::shared_ptr<PdxFieldType>> expectedIdentityFields{
+      field2, field3, field1};
+  ASSERT_THAT(pdxExpected.getIdentityFields(),
+              ContainerEq(expectedIdentityFields));
 }
 
 }  // namespace

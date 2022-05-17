@@ -30,6 +30,7 @@
 #include <geode/RegionShortcut.hpp>
 
 #include "CacheImpl.hpp"
+#include "DeliveryAddress.hpp"
 #include "LocalRegion.hpp"
 #include "NestedPdxObject.hpp"
 #include "PdxType.hpp"
@@ -37,15 +38,30 @@
 
 namespace {
 
+using apache::geode::client::BooleanArray;
 using apache::geode::client::Cache;
 using apache::geode::client::CacheableBoolean;
+using apache::geode::client::CacheableByte;
+using apache::geode::client::CacheableBytes;
+using apache::geode::client::CacheableCharacter;
+using apache::geode::client::CacheableDouble;
+using apache::geode::client::CacheableDoubleArray;
+using apache::geode::client::CacheableFloat;
+using apache::geode::client::CacheableFloatArray;
+using apache::geode::client::CacheableInt16;
+using apache::geode::client::CacheableInt16Array;
 using apache::geode::client::CacheableInt32;
+using apache::geode::client::CacheableInt32Array;
+using apache::geode::client::CacheableInt64;
+using apache::geode::client::CacheableInt64Array;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
+using apache::geode::client::CacheableStringArray;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheListenerMock;
 using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::CharArray;
 using apache::geode::client::FunctionService;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LocalRegion;
@@ -58,6 +74,7 @@ using apache::geode::client::RegionShortcut;
 using apache::geode::client::SelectResults;
 
 using PdxTests::Address;
+using PdxTests::DeliveryAddress;
 using PdxTests::PdxType;
 
 using testobject::ChildPdx;
@@ -209,7 +226,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
       .withType("REPLICATE")
       .execute();
 
-  auto cache = cluster.createCache({{"log-level", "debug"}});
+  auto cache = cluster.createCache();
   auto region = setupRegion(cache);
   auto&& typeRegistry = cache.getTypeRegistry();
   auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
@@ -352,6 +369,198 @@ TEST(PdxInstanceTest, testHashCode) {
     auto&& factory = cache.createPdxInstanceFactory("Test", false);
 
     clonePdxInstance(serialized, factory);
+    auto&& instance = factory.create();
+
+    auto collector =
+        FunctionService::onRegion(region).withArgs(instance).execute(
+            "HashCodeFunction");
+    ASSERT_THAT(collector, NotNull());
+
+    auto resultSet = collector->getResult();
+    ASSERT_THAT(resultSet, NotNull());
+
+    ASSERT_THAT(resultSet->size(), Eq(1));
+
+    auto hashCode = std::dynamic_pointer_cast<CacheableInt32>((*resultSet)[0]);
+    ASSERT_THAT(hashCode, NotNull());
+
+    auto clientHashCode = instance->hashcode();
+    auto serverHashCode = hashCode->value();
+    ASSERT_THAT(clientHashCode, Eq(serverHashCode));
+  }
+}
+
+TEST(PdxInstanceTest, testHashCodeDefaultBytes) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto&& typeRegistry = cache.getTypeRegistry();
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
+
+  {
+    PdxType serialized;
+    auto&& factory = cache.createPdxInstanceFactory("Test", false);
+
+    factory.writeBoolean("m_defaultBoolean", false);
+    factory.writeByte("m_defaultByte", 0);
+    factory.writeShort("m_defaultShort", 0);
+    factory.writeInt("m_defaultInt", 0);
+    factory.writeLong("m_defaultLong", 0);
+    factory.writeChar("m_defaultChar", u'\0');
+    factory.writeFloat("m_defaultFloat", 0.0f);
+    factory.writeDouble("m_defaultDouble", 0.0);
+    factory.writeString("m_defaultString", std::string{});
+    factory.writeDate("m_defaultDate", nullptr);
+    factory.writeByteArray("m_defaultByteArray", std::vector<int8_t>{});
+    factory.writeShortArray("m_defaultShortArray", std::vector<int16_t>{});
+    factory.writeCharArray("m_defaultCharArray", std::vector<char16_t>{});
+    factory.writeIntArray("m_defaultIntArray", std::vector<int32_t>{});
+    factory.writeLongArray("m_defaultLongArray", std::vector<int64_t>{});
+    factory.writeFloatArray("m_defaultFloatArray", std::vector<float>{});
+    factory.writeDoubleArray("m_defaultDoubleArray", std::vector<double>{});
+    factory.writeStringArray("m_defaultStringArray",
+                             std::vector<std::string>{});
+    factory.writeObjectArray("m_defaultObjectArray", nullptr);
+    factory.writeObject("m_defaultObject", nullptr);
+
+    auto&& instance = factory.create();
+
+    auto collector =
+        FunctionService::onRegion(region).withArgs(instance).execute(
+            "HashCodeFunction");
+    ASSERT_THAT(collector, NotNull());
+
+    auto resultSet = collector->getResult();
+    ASSERT_THAT(resultSet, NotNull());
+
+    ASSERT_THAT(resultSet->size(), Eq(1));
+
+    auto hashCode = std::dynamic_pointer_cast<CacheableInt32>((*resultSet)[0]);
+    ASSERT_THAT(hashCode, NotNull());
+
+    auto clientHashCode = instance->hashcode();
+    auto serverHashCode = hashCode->value();
+    ASSERT_THAT(clientHashCode, Eq(serverHashCode));
+  }
+}
+
+TEST(PdxInstanceTest, testHashCodeObject) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto&& typeRegistry = cache.getTypeRegistry();
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
+
+  {
+    PdxType serialized;
+    auto&& factory = cache.createPdxInstanceFactory("Test", false);
+
+    factory.writeObject("m_boolean",
+                        CacheableBoolean::create(serialized.getBool()));
+    factory.writeObject("m_char",
+                        CacheableCharacter::create(serialized.getChar()));
+    factory.writeObject("m_byte", CacheableByte::create(serialized.getByte()));
+    factory.writeObject("m_short",
+                        CacheableInt16::create(serialized.getShort()));
+    factory.writeObject("m_int", CacheableInt32::create(serialized.getInt()));
+    factory.writeObject("m_long", CacheableInt64::create(serialized.getLong()));
+    factory.writeObject("m_float",
+                        CacheableFloat::create(serialized.getFloat()));
+    factory.writeObject("m_double",
+                        CacheableDouble::create(serialized.getDouble()));
+    auto&& instance = factory.create();
+
+    auto collector =
+        FunctionService::onRegion(region).withArgs(instance).execute(
+            "HashCodeFunction");
+    ASSERT_THAT(collector, NotNull());
+
+    auto resultSet = collector->getResult();
+    ASSERT_THAT(resultSet, NotNull());
+
+    ASSERT_THAT(resultSet->size(), Eq(1));
+
+    auto hashCode = std::dynamic_pointer_cast<CacheableInt32>((*resultSet)[0]);
+    ASSERT_THAT(hashCode, NotNull());
+
+    auto clientHashCode = instance->hashcode();
+    auto serverHashCode = hashCode->value();
+    ASSERT_THAT(clientHashCode, Eq(serverHashCode));
+  }
+}
+
+/**
+ * This test cover some of the edge cases for hash calculation
+ */
+TEST(PdxInstanceTest, testHashCodeEdgeCases) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = setupRegion(cache);
+  auto&& typeRegistry = cache.getTypeRegistry();
+  auto&& cachePerfStats = std::dynamic_pointer_cast<LocalRegion>(region)
+                              ->getCacheImpl()
+                              ->getCachePerfStats();
+
+  {
+    auto&& factory = cache.createPdxInstanceFactory("Test", false);
+
+    // This string hashCode should be 0
+    factory.writeObject("m_string_1", CacheableString::create("("));
+    factory.writeObject("m_string_2", CacheableString::create("0"));
+    factory.writeObject("m_string_3", CacheableString::create("&"));
+    factory.writeObject("m_string_4", CacheableString::create("P"));
+    factory.writeObject("m_string_5", CacheableString::create("I"));
+    factory.writeObject("m_string_6", CacheableString::create("2"));
+    factory.writeObject("m_string_7", CacheableString::create("<"));
     auto&& instance = factory.create();
 
     auto collector =
@@ -569,6 +778,52 @@ TEST(PdxInstanceTest, testInstancePutAfterRestart) {
   EXPECT_NO_THROW(result = q->execute());
   EXPECT_TRUE(result);
   EXPECT_EQ(result->size(), 1UL);
+}
+
+TEST(PdxInstanceTest, testReadFromPdxSerializable) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  std::shared_ptr<DeliveryAddress> entryV2;
+
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    entryV2 = std::make_shared<DeliveryAddress>(
+        "Some address line", "Some city", "Some country", "Some instructions",
+        std::shared_ptr<CacheableVector>{});
+
+    region->put("entry.v2", entryV2);
+  }
+
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    auto entry = region->get("entry.v2");
+    ASSERT_THAT(entry, NotNull());
+
+    auto pdxInstance = std::dynamic_pointer_cast<PdxInstance>(entry);
+    ASSERT_THAT(pdxInstance, NotNull());
+
+    ASSERT_THAT(pdxInstance->getClassName(), Eq(entryV2->getClassName()));
+    ASSERT_THAT(pdxInstance->getStringField("address"),
+                Eq(entryV2->getAddressLine()));
+    ASSERT_THAT(pdxInstance->getStringField("city"), Eq(entryV2->getCity()));
+    ASSERT_THAT(pdxInstance->getStringField("country"),
+                Eq(entryV2->getCountry()));
+    ASSERT_THAT(pdxInstance->getStringField("instructions"),
+                Eq(entryV2->getInstructions()));
+  }
 }
 
 }  // namespace

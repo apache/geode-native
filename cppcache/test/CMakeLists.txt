@@ -58,6 +58,7 @@ add_executable(apache-geode_unittests
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
   TXIdTest.cpp
+  WritablePdxInstanceImplTest.cpp
   mock/MockExpiryTask.hpp
   mock/MapEntryImplMock.hpp
   mock/ClientMetadataMock.hpp

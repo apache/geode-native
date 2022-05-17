@@ -65,6 +65,22 @@ class TESTOBJECT_EXPORT DeliveryAddress : public PdxSerializable {
 
   const std::string& getClassName() const override;
 
+  const std::string& getAddressLine() const {
+    return addressLine_;
+  }
+
+  const std::string& getCity() const {
+    return city_;
+  }
+
+  const std::string& getCountry() const {
+    return country_;
+  }
+
+  const std::string& getInstructions() const {
+    return instructions_;
+  }
+
  public:
   static std::shared_ptr<PdxSerializable> createDeserializable() {
     return std::make_shared<DeliveryAddress>();
@@ -85,8 +101,6 @@ class TESTOBJECT_EXPORT DeliveryAddress : public PdxSerializable {
  private:
   static int32_t version_;
 };
-
-int32_t DeliveryAddress::version_ = DeliveryAddress::VERSION_1;
 
 }  // namespace PdxTests
 

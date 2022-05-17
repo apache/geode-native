@@ -18,6 +18,9 @@
 #include "DeliveryAddress.hpp"
 
 namespace PdxTests {
+
+int32_t DeliveryAddress::version_ = DeliveryAddress::VERSION_1;
+
 DeliveryAddress::DeliveryAddress()
     : addressLine_{}, city_{}, country_{}, instructions_{}, phoneNumbers_{} {}
 

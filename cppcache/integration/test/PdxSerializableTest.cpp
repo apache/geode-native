@@ -38,6 +38,7 @@ using apache::geode::client::Cache;
 using apache::geode::client::Cacheable;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
+using apache::geode::client::CacheFactory;
 using apache::geode::client::FunctionService;
 using apache::geode::client::PdxReader;
 using apache::geode::client::PdxSerializable;
@@ -48,8 +49,10 @@ using apache::geode::client::RegionShortcut;
 using PdxTests::DeliveryAddress;
 
 using ::testing::Eq;
-using ::testing::Ref;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::NotNull;
+using ::testing::Ref;
 
 std::shared_ptr<Region> setupRegion(Cache& cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -152,6 +155,235 @@ TEST(PdxSerializableTest, testRightPdxTypeForDiffPdxVersions) {
     auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
     EXPECT_THAT(address, NotNull());
     EXPECT_THAT(*entryV2, Eq(std::ref(*address)));
+  }
+}
+
+TEST(PdxSerializableTest, testUnreadFields) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  std::shared_ptr<DeliveryAddress> entryV2;
+
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    entryV2 = std::make_shared<DeliveryAddress>(
+        "Some address line", "Some city", "Some country", "Some instructions",
+        std::shared_ptr<CacheableVector>{});
+    region->put("entry.v2", entryV2);
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_1);
+    region->put("entry.v1", region->get("entry.v2"));
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_1);
+    auto entry = region->get("entry.v1");
+    ASSERT_THAT(entry, NotNull());
+
+    auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
+    ASSERT_THAT(address, NotNull());
+    ASSERT_THAT(*address, Not(Eq(std::ref(*entryV2))));
+    ASSERT_THAT(address->getInstructions(), IsEmpty());
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    auto entry = region->get("entry.v1");
+    ASSERT_THAT(entry, NotNull());
+
+    auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
+    ASSERT_THAT(address, NotNull());
+    ASSERT_THAT(*address, Eq(std::ref(*entryV2)));
+  }
+}
+
+TEST(PdxSerializableTest, testUnreadFieldsIgnored) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  std::shared_ptr<DeliveryAddress> entryV2;
+
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    entryV2 = std::make_shared<DeliveryAddress>(
+        "Some address line", "Some city", "Some country", "Some instructions",
+        std::shared_ptr<CacheableVector>{});
+    region->put("entry.v2", entryV2);
+  }
+  {
+    CacheFactory cacheFactory;
+    cacheFactory.setPdxIgnoreUnreadFields(true)
+        .set("log-level", "none")
+        .set("statistic-sampling-enabled", "false");
+    auto cache = cacheFactory.create();
+    {
+      auto factory =
+          cache.getPoolManager().createFactory().setSubscriptionEnabled(false);
+      cluster.applyLocators(factory);
+      factory.create("default");
+    }
+
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_1);
+
+    region->put("entry.v1", region->get("entry.v2"));
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    auto entry = region->get("entry.v1");
+    ASSERT_THAT(entry, NotNull());
+
+    auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
+    ASSERT_THAT(address, NotNull());
+    ASSERT_THAT(address->getClassName(), Eq(entryV2->getClassName()));
+    ASSERT_THAT(address->getAddressLine(), Eq(entryV2->getAddressLine()));
+    ASSERT_THAT(address->getCity(), Eq(entryV2->getCity()));
+    ASSERT_THAT(address->getCountry(), Eq(entryV2->getCountry()));
+    ASSERT_THAT(address->getInstructions(), IsEmpty());
+  }
+}
+
+TEST(PdxSerializableTest, testUnreadFieldsExpired) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  std::shared_ptr<DeliveryAddress> entryV2;
+
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    entryV2 = std::make_shared<DeliveryAddress>(
+        "Some address line", "Some city", "Some country", "Some instructions",
+        std::shared_ptr<CacheableVector>{});
+    region->put("entry.v2", entryV2);
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_1);
+    auto entry = region->get("entry.v2");
+
+    // Right now, UnreadData lifespan is hardcoded to 20secs, that's why we are
+    // waiting for that time + 10secs
+    std::this_thread::sleep_for(std::chrono::seconds{30});
+    region->put("entry.v1", entry);
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    auto entry = region->get("entry.v1");
+    ASSERT_THAT(entry, NotNull());
+
+    auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
+    ASSERT_THAT(address, NotNull());
+    ASSERT_THAT(address->getClassName(), Eq(entryV2->getClassName()));
+    ASSERT_THAT(address->getAddressLine(), Eq(entryV2->getAddressLine()));
+    ASSERT_THAT(address->getCity(), Eq(entryV2->getCity()));
+    ASSERT_THAT(address->getCountry(), Eq(entryV2->getCountry()));
+    ASSERT_THAT(address->getInstructions(), IsEmpty());
+  }
+}
+
+TEST(PdxSerializableTest, testReadFromPdxInstance) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start();
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  std::shared_ptr<DeliveryAddress> entryV2;
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+
+    entryV2 = std::make_shared<DeliveryAddress>(
+        "Some address line", "Some city", "Some country", "Some instructions",
+        std::shared_ptr<CacheableVector>{});
+
+    auto&& factory = cache.createPdxInstanceFactory(entryV2->getClassName());
+    factory.writeString("address", entryV2->getAddressLine());
+    factory.writeString("city", entryV2->getCity());
+    factory.writeString("country", entryV2->getCountry());
+    factory.writeString("instructions", entryV2->getInstructions());
+    factory.writeObject("phoneNumbers", nullptr);
+    region->put("entry.v2", factory.create());
+  }
+  {
+    auto cache = cluster.createCache();
+    auto region = setupRegion(cache);
+    cache.getTypeRegistry().registerPdxType(
+        DeliveryAddress::createDeserializable);
+
+    DeliveryAddress::setSerializationVersion(DeliveryAddress::VERSION_2);
+    auto entry = region->get("entry.v2");
+    ASSERT_THAT(entry, NotNull());
+
+    auto address = std::dynamic_pointer_cast<DeliveryAddress>(entry);
+    ASSERT_THAT(address, NotNull());
+    ASSERT_THAT(*address, Eq(std::ref(*entryV2)));
   }
 }
 
