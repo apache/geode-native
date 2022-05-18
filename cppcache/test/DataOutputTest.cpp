@@ -17,7 +17,6 @@
 
 #include <stdint.h>
 
-#include <limits>
 #include <random>
 
 #include <gtest/gtest.h>
@@ -210,12 +209,42 @@ TEST_F(DataOutputTest, TestWriteDouble) {
   EXPECT_BYTEARRAY_EQ("400921FB54442EEA", dataOutput.getByteArray());
 }
 
-TEST_F(DataOutputTest, TestWriteString) {
+TEST_F(DataOutputTest, TestWriteStringAscii) {
   TestDataOutput dataOutput(nullptr);
   dataOutput.writeString("You had me at meat tornado.");
   EXPECT_BYTEARRAY_EQ(
-      "2A001B596F7520686164206D65206174206D65617420746F726E61646F2E",
+      "57001B596F7520686164206D65206174206D65617420746F726E61646F2E",
       dataOutput.getByteArray());
+}
+
+TEST_F(DataOutputTest, TestWriteStringUtf8) {
+  TestDataOutput dataOutput(nullptr);
+  dataOutput.writeString("You had me at meat tornado. €");
+  EXPECT_BYTEARRAY_EQ(
+      "2A001F596F7520686164206D65206174206D65617420746F726E61646F2E20E282AC",
+      dataOutput.getByteArray());
+}
+
+TEST_F(DataOutputTest, TestWriteStringAsciiHuge) {
+  TestDataOutput dataOutput(nullptr);
+  const unsigned int stringSize = 70000;
+  std::string testString(stringSize, 'x');
+  dataOutput.writeString(testString);
+
+  // 1 (dscode) + 4 (length) + string size
+  EXPECT_EQ(dataOutput.getByteArray().size(), 1 + 4 + stringSize);
+  EXPECT_EQ(dataOutput.getByteArray()[0], 88);
+}
+
+TEST_F(DataOutputTest, TestWriteStringUtfHuge) {
+  TestDataOutput dataOutput(nullptr);
+  const unsigned int stringSize = 70000;
+  std::string testString(stringSize, 'x');
+  dataOutput.writeString(testString + "€");
+
+  // 1 (dscode) + 4 (length) + 2*string size + 2 (size of non ASCII char)
+  EXPECT_EQ(dataOutput.getByteArray().size(), 1 + 4 + (2 * stringSize) + 2);
+  EXPECT_EQ(dataOutput.getByteArray()[0], 89);
 }
 
 TEST_F(DataOutputTest, TestWriteUTF) {
