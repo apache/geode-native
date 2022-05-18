@@ -89,23 +89,20 @@ class PdxType : public internal::DataSerializableInternal,
   void initialize();
 
   int32_t getFieldPosition(std::shared_ptr<PdxFieldType> field,
-                           uint8_t* offsetPosition, int32_t offsetSize,
-                           int32_t pdxStreamlen);
-
-  int32_t getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
-                           int32_t offsetSize, int32_t pdxStreamlen);
+                           uint8_t* offsets, int32_t offsetSize,
+                           int32_t length);
 
   bool operator==(const PdxType& other) const;
 
  protected:
 
  private:
-  int32_t getFixedFieldPos(std::shared_ptr<PdxFieldType> fixLenField,
-                           uint8_t* offsetPosition, int32_t offsetSize,
-                           int32_t pdxStreamlen);
+  int32_t getFixedFieldPos(std::shared_ptr<PdxFieldType> field,
+                           uint8_t* offsets, int32_t offsetSize,
+                           int32_t length);
 
-  int32_t getVarFieldPos(std::shared_ptr<PdxFieldType> varLenField,
-                         uint8_t* offsetPosition, int32_t offsetSize);
+  int32_t getVarFieldPos(std::shared_ptr<PdxFieldType> field,
+                         uint8_t* offsets, int32_t offsetSize);
 
  private:
   bool initialized_;

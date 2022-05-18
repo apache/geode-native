@@ -211,55 +211,43 @@ std::shared_ptr<PdxFieldType> PdxType::getField(int32_t idx) const {
   return fields_.at(idx);
 }
 
-int32_t PdxType::getFieldPosition(int32_t fieldIdx, uint8_t* offsetPosition,
-                                  int32_t offsetSize, int32_t pdxStreamlen) {
-  auto field = fields_.at(fieldIdx);
-  if (!field) {
-    return PdxFieldType::npos;
-  }
-
-  return getFieldPosition(field, offsetPosition, offsetSize, pdxStreamlen);
-}
-
 int32_t PdxType::getFieldPosition(std::shared_ptr<PdxFieldType> field,
-                                  uint8_t* offsetPosition, int32_t offsetSize,
-                                  int32_t pdxStreamlen) {
+                                  uint8_t* offsets, int32_t offsetSize,
+                                  int32_t length) {
   if (field->isVariable()) {
-    return getVarFieldPos(field, offsetPosition, offsetSize);
+    return getVarFieldPos(field, offsets, offsetSize);
   } else {
-    return getFixedFieldPos(field, offsetPosition, offsetSize, pdxStreamlen);
+    return getFixedFieldPos(field, offsets, offsetSize, length);
   }
 }
 
-int32_t PdxType::getFixedFieldPos(std::shared_ptr<PdxFieldType> fixLenField,
-                                  uint8_t* offsetPosition, int32_t offsetSize,
-                                  int32_t pdxStreamlen) {
-  int32_t offset = fixLenField->getVarLenOffsetIndex();
-  if (fixLenField->getRelativeOffset() >= 0) {
+int32_t PdxType::getFixedFieldPos(std::shared_ptr<PdxFieldType> field,
+                                  uint8_t* offsets, int32_t offsetSize,
+                                  int32_t length) {
+  int32_t offset = field->getVarLenOffsetIndex();
+  if (field->getRelativeOffset() >= 0) {
     // starting fields
-    return fixLenField->getRelativeOffset();
+    return field->getRelativeOffset();
   } else if (offset == PdxFieldType::npos) { // Pdx length
     // there is no var len field so just subtracts relative offset from behind
-    return pdxStreamlen + fixLenField->getRelativeOffset();
+    return length + field->getRelativeOffset();
   } else {
     // need to read offset and then subtract relative offset
     // TODO
-    return PdxHelper::readInt(
-               offsetPosition + (lastVarFieldId_ - offset) * offsetSize,
+    return PdxHelper::readInt(offsets + (lastVarFieldId_ - offset) * offsetSize,
                offsetSize) +
-           fixLenField->getRelativeOffset();
+           field->getRelativeOffset();
   }
 }
 
-int32_t PdxType::getVarFieldPos(std::shared_ptr<PdxFieldType> varLenField,
-                                uint8_t* offsetPosition, int32_t offsetSize) {
-  int32_t offset = varLenField->getVarLenOffsetIndex();
+int32_t PdxType::getVarFieldPos(std::shared_ptr<PdxFieldType> field,
+                                uint8_t* offsets, int32_t offsetSize) {
+  int32_t offset = field->getVarLenOffsetIndex();
   if (offset == -1) {
-    return /*first var len field*/ varLenField->getRelativeOffset();
+    return /*first var len field*/ field->getRelativeOffset();
   } else {
     // we write offset from behind
-    return PdxHelper::readInt(
-        offsetPosition + (lastVarFieldId_ - offset) * offsetSize, offsetSize);
+    return PdxHelper::readInt(offsets + (lastVarFieldId_ - offset) * offsetSize, offsetSize);
   }
 }
 

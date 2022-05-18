@@ -288,10 +288,6 @@ class PdxInstanceImpl : virtual public PdxInstance {
   CachePerfStats& cacheStats_;
   const CacheImpl& cache_;
   bool enableTimeStatistics_;
-
- private:
-  // For UT purposes
-  friend class PdxInstanceImplTest;
 };
 }  // namespace client
 }  // namespace geode
