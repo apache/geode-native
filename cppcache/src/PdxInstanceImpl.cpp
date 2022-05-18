@@ -1160,12 +1160,10 @@ void PdxInstanceImpl::deserialize() {
         delete array;
         break;
       }
-      default:
       case PdxFieldTypes::UNKNOWN:
         throw IllegalStateException(
             "Field \"" + field->getName() + "\" has an invalid type " +
             std::to_string(static_cast<int32_t>(field->getType())));
-        break;
     }
   }
 }
@@ -1263,7 +1261,7 @@ std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
         std::vector<int8_t>(value[i], value[i] + elementLength[i])));
   }
 
-  return vector;
+  return std::move(vector);
 }
 
 std::shared_ptr<Cacheable> PdxInstanceImpl::toCacheableField(
@@ -1319,13 +1317,21 @@ bool PdxInstanceImpl::isDefaultFieldValue(PdxFieldTypes type,
     }
     case PdxFieldTypes::FLOAT: {
       auto object = dynamic_cast<CacheableFloat*>(value);
-      auto val = object->value();
-      return *reinterpret_cast<uint32_t*>(&val) == 0;
+      union float_uint32_t {
+        float f;
+        uint32_t u;
+      } val;
+      val.f = object->value();
+      return val.u == 0;
     }
     case PdxFieldTypes::DOUBLE: {
       auto object = dynamic_cast<CacheableDouble*>(value);
-      auto val = object->value();
-      return *reinterpret_cast<uint64_t*>(&val) == 0;
+      union double_int64_t {
+        double d;
+        int64_t u;
+      } val;
+      val.d = object->value();
+      return val.u == 0;
     }
     case PdxFieldTypes::STRING:
     case PdxFieldTypes::BOOLEAN_ARRAY:
