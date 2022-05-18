@@ -41,8 +41,8 @@ using internal::DataSerializablePrimitive;
 WritablePdxInstanceImpl::WritablePdxInstanceImpl(
     Fields fields, FieldsBuffer buffer, std::shared_ptr<PdxType> pdxType,
     const CacheImpl& cache)
-    : PdxInstanceImpl{std::move(fields), std::move(buffer), std::move(pdxType),
-                      cache} {}
+    : PdxInstanceImpl(std::move(fields), std::move(buffer), std::move(pdxType),
+                      cache) {}
 
 WritablePdxInstanceImpl::~WritablePdxInstanceImpl() noexcept = default;
 
