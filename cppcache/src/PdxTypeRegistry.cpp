@@ -148,8 +148,7 @@ void PdxTypeRegistry::setUnreadData(ExpiryTaskManager& expiryTaskManager,
     auto expireAt = std::chrono::steady_clock::now() + lifespan;
     auto task = std::make_shared<PdxUnreadDataExpiryTask>(
         expiryTaskManager, shared_from_this(), obj);
-    auto id =
-        expiryTaskManager.schedule(std::move(task), lifespan);
+    auto id = expiryTaskManager.schedule(std::move(task), lifespan);
     data->taskId(id);
     data->expiresAt(expireAt);
 

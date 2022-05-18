@@ -145,7 +145,7 @@ std::vector<std::shared_ptr<PdxFieldType>> PdxType::getIdentityFields() const {
 }
 
 void PdxType::initialize() {
-  if(initialized_) {
+  if (initialized_) {
     return;
   }
 
@@ -228,14 +228,14 @@ int32_t PdxType::getFixedFieldPos(std::shared_ptr<PdxFieldType> field,
   if (field->getRelativeOffset() >= 0) {
     // starting fields
     return field->getRelativeOffset();
-  } else if (offset == PdxFieldType::npos) { // Pdx length
+  } else if (offset == PdxFieldType::npos) {  // Pdx length
     // there is no var len field so just subtracts relative offset from behind
     return length + field->getRelativeOffset();
   } else {
     // need to read offset and then subtract relative offset
     // TODO
     return PdxHelper::readInt(offsets + (lastVarFieldId_ - offset) * offsetSize,
-               offsetSize) +
+                              offsetSize) +
            field->getRelativeOffset();
   }
 }
@@ -247,7 +247,8 @@ int32_t PdxType::getVarFieldPos(std::shared_ptr<PdxFieldType> field,
     return /*first var len field*/ field->getRelativeOffset();
   } else {
     // we write offset from behind
-    return PdxHelper::readInt(offsets + (lastVarFieldId_ - offset) * offsetSize, offsetSize);
+    return PdxHelper::readInt(offsets + (lastVarFieldId_ - offset) * offsetSize,
+                              offsetSize);
   }
 }
 

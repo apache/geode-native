@@ -532,7 +532,7 @@ int32_t PdxInstanceImpl::hashcode() const {
     hash = 31 * hash + hashDelta;
   }
 
-  if(hash == 0) {
+  if (hash == 0) {
     hash = 1;
   }
 

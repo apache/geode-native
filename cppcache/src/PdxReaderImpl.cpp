@@ -37,8 +37,7 @@ PdxReaderImpl::PdxReaderImpl()
       offsets_{nullptr} {}
 
 PdxReaderImpl::PdxReaderImpl(DataInput& input,
-                             std::shared_ptr<PdxType> remoteType,
-                             size_t length)
+                             std::shared_ptr<PdxType> remoteType, size_t length)
     : pdxType_{remoteType}, dataInput_{&input}, lengthWithOffsets_{length} {
   initialize();
 }
@@ -54,7 +53,8 @@ void PdxReaderImpl::initialize() {
       const_cast<uint8_t*>(dataInput_->currentBufferPosition()) + length_;
 }
 
-void PdxReaderImpl::moveInputToField(std::shared_ptr<PdxFieldType> field) const {
+void PdxReaderImpl::moveInputToField(
+    std::shared_ptr<PdxFieldType> field) const {
   auto position =
       pdxType_->getFieldPosition(field, offsets_, offsetSize_, length_);
   dataInput_->reset(startPosition_ + position);
@@ -195,7 +195,8 @@ std::shared_ptr<CacheableDate> PdxReaderImpl::readDate(
   return readDate(field);
 }
 
-std::string PdxReaderImpl::readString(std::shared_ptr<PdxFieldType> field) const {
+std::string PdxReaderImpl::readString(
+    std::shared_ptr<PdxFieldType> field) const {
   moveInputToField(field);
   return dataInput_->readString();
 }

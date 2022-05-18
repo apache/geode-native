@@ -737,9 +737,8 @@ void TheTypeMap::unbindPdxSerializable(const std::string& objFullName) {
   pdxSerializableMap_.erase(objFullName);
 }
 
-void PdxTypeHandler::serialize(
-    const std::shared_ptr<PdxSerializable>& object,
-    DataOutput& output) const {
+void PdxTypeHandler::serialize(const std::shared_ptr<PdxSerializable>& object,
+                               DataOutput& output) const {
   PdxHelper::serializePdx(output, object);
 }
 

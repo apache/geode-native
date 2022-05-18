@@ -80,20 +80,20 @@ void PdxWriterImpl::completeSerialization() {
 
 void PdxWriterImpl::writeOffsets(int32_t len) {
   int32_t count = offsets_.size() - 1;
-  if(count <= 0) {
+  if (count <= 0) {
     return;
   }
 
   if (len <= std::numeric_limits<uint8_t>::max()) {
-    for (auto i = count; i > 0; ) {
+    for (auto i = count; i > 0;) {
       dataOutput_->write(static_cast<uint8_t>(offsets_[i--]));
     }
   } else if (len <= std::numeric_limits<uint16_t>::max()) {
-    for (auto i = count; i > 0; ) {
+    for (auto i = count; i > 0;) {
       dataOutput_->writeInt(static_cast<uint16_t>(offsets_[i--]));
     }
   } else {
-    for (auto i = count; i > 0; ) {
+    for (auto i = count; i > 0;) {
       dataOutput_->writeInt(static_cast<uint32_t>(offsets_[i--]));
     }
   }

@@ -65,10 +65,10 @@ using apache::geode::statistics::StatisticsFactory;
 
 using ::testing::ContainerEq;
 using ::testing::Eq;
-using ::testing::Not;
 using ::testing::IsFalse;
 using ::testing::IsNull;
 using ::testing::IsTrue;
+using ::testing::Not;
 using ::testing::NotNull;
 
 TEST(PdxInstanceImplTest, testGetNonExsitantField) {
