@@ -63,23 +63,10 @@ bool useReplyTimeout(const apache::geode::client::TcrMessage& request) {
 }
 
 int expiryTimeVariancePercentage() {
-  auto nowTimePoint = std::chrono::steady_clock::now().time_since_epoch();
-  auto now_ms =
-      std::chrono::duration_cast<std::chrono::milliseconds>(nowTimePoint)
-          .count();
-  auto now_s =
-      std::chrono::duration_cast<std::chrono::seconds>(nowTimePoint).count();
-
-  srand(static_cast<unsigned int>((now_s * 1000) + (now_ms / 1000)));
-
-  const int numbers = 21;
-  // NOLINTNEXTLINE(clang-analyzer-security.insecureAPI.rand): TODO replace
-  int random = rand() % numbers + 1;
-
-  if (random > 10) {
-    random = random - numbers;
-  }
-  return random;
+  std::random_device rd;
+  std::default_random_engine generator(rd());
+  std::uniform_int_distribution<int> distribution(-9, 9);
+  return distribution(generator);
 }
 
 const int HEADER_LENGTH = 17;
@@ -108,9 +95,9 @@ namespace geode {
 namespace client {
 
 TcrConnection::TcrConnection(const TcrConnectionManager& connectionManager)
-    : connectionId(0),
+    : expiryTimeVariancePercentage_{expiryTimeVariancePercentage()},
+      connectionId(0),
       connectionManager_(connectionManager),
-      expiryTimeVariancePercentage_{expiryTimeVariancePercentage()},
       hasServerQueue_(NON_REDUNDANT_SERVER),
       queueSize_(0),
       port_(0),
