@@ -204,6 +204,13 @@ popd
 version=$(cat version/number)
 builddate=$(date "+%Y-%m-%d")
 remote_shell cmake -E make_directory build
+remote_shell echo cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
+    -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
+    -DGEODE_ROOT=../geode \
+    -DPRODUCT_VERSION=${version} \
+    -DPRODUCT_BUILDDATE=${builddate} \
+    -DPRODUCT_SOURCE_REVISION=${git_rev} \
+    -DPRODUCT_SOURCE_REPOSITORY=${git_url}
 remote_shell cmake -E time cmake -E chdir build cmake ../source ${CMAKE_CONFIGURE_FLAGS} \
     -DCMAKE_BUILD_TYPE=${CMAKE_CONFIG} \
     -DGEODE_ROOT=../geode \
