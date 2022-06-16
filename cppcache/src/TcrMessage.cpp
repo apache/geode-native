@@ -3216,7 +3216,6 @@ TcrMessageHelper::ChunkObjectType TcrMessageHelper::readChunkPartHeader(
       msg.setMessageType(TcrMessage::EXCEPTION);
       return ChunkObjectType::EXCEPTION;
     } else {
-      char exMsg[256];
       throw MessageException(
           std::string("TcrMessageHelper::readChunkPartHeader: ") + methodName +
           ": cannot handle java serializable object from server");
