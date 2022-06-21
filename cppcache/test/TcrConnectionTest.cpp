@@ -37,12 +37,11 @@ class TcrConnectionTest : public TcrConnection {
   }
 };
 
-TEST(TcrConnectionTest,
-     getExpiryTimeVariancePercentageReturnsRandomBetweenMinusNineAndNine) {
-  CacheImpl* cache = nullptr;
-
+TEST(
+    TcrConnectionTest,
+    getExpiryTimeVariancePercentageReturnsUniformRandomBetweenMinusNineAndNine) {
   // Create several connections at the same time
-  const int connections = 100;
+  const int connections = 1000;
   std::unique_ptr<TcrConnectionTest> tcrConnections[connections];
   for (int i = 0; i < connections; i++) {
     tcrConnections[i] =
@@ -50,18 +49,29 @@ TEST(TcrConnectionTest,
             static_cast<const TcrConnectionManager>(nullptr)));
   }
 
+  const int variancesPositions = 19;
+  int variances[variancesPositions];
+  for (int i = 0; i < variancesPositions; i++) {
+    variances[i] = 0;
+  }
+
   // Check that the variance of the connections lies between -9 and 9
-  int appearancesOfFirstValue = 0;
-  int firstValue = tcrConnections[0]->getExpiryTimeVariancePercentage();
   for (int i = 0; i < connections; i++) {
     int variance = tcrConnections[i]->getExpiryTimeVariancePercentage();
-    EXPECT_LT(abs(variance), 10);
-    if (variance == firstValue) {
-      appearancesOfFirstValue++;
-    }
+    EXPECT_LE(abs(variance), 9);
+    variances[variance + 9]++;
   }
-  // Check that not all the variance values are the same
-  EXPECT_NE(appearancesOfFirstValue, connections);
+
+  // Check that the variance is distributed uniformly
+  float tolerance = 0.5;
+  int minOccurrences = connections / variancesPositions -
+                       (connections / variancesPositions) * tolerance;
+  int maxOccurrences = connections / variancesPositions +
+                       (connections / variancesPositions) * tolerance;
+  for (int i = 0; i < variancesPositions; i++) {
+    EXPECT_GT(variances[i], minOccurrences);
+    EXPECT_LT(variances[i], maxOccurrences);
+  }
 }
 
 }  // namespace
