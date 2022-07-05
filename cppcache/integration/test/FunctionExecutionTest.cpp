@@ -19,6 +19,7 @@
 #include <thread>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
@@ -28,6 +29,7 @@
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
 #include <geode/RegionShortcut.hpp>
+#include <geode/UserFunctionExecutionException.hpp>
 
 #include "CacheRegionHelper.hpp"
 #include "framework/Cluster.h"
@@ -50,8 +52,13 @@ using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
+using apache::geode::client::UserFunctionExecutionException;
+
+using ::testing::Le;
+
 const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
 const int PARTITION_REGION_ENTRIES_SIZE = 113;
+
 
 std::shared_ptr<Region> setupRegion(Cache &cache) {
   auto region = cache.createRegionFactory(RegionShortcut::PROXY)
@@ -557,4 +564,54 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
   cluster.getServers()[1].stop();
 
   threadAux->join();
+}
+
+TEST(FunctionExecutionTest,
+     testThatServerFunctionThrowingWrappedISEDoesntDropsEndpoint) {
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().set("log-level", "debug").create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
+
+  auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  populateRegion(region);
+
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  auto poolSizeBefore = cacheImpl->getPoolSize("pool");
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+
+  EXPECT_ANY_THROW(execute.execute("ThrowingISEFunction"));
+
+  auto poolSizeAfter = cacheImpl->getPoolSize("pool");
+  ASSERT_THAT(poolSizeBefore, Le(poolSizeAfter));
 }

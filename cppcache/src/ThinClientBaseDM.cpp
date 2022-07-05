@@ -137,8 +137,8 @@ GfErrType ThinClientBaseDM::handleEPError(TcrEndpoint* ep,
             (markServerDead || cacheClosedEx || nonFatalServerError(exceptStr));
         if (doFailover) {
           LOGFINE(
-              "ThinClientDistributionManager::sendRequestToEP: retrying for "
-              "server [" +
+              "ThinClientDistributionManager::sendRequestToEP: Server failure  "
+              "[" +
               ep->name() + "] exception: " + exceptStr);
           error = GF_NOTCON;
           if (markServerDead) {
@@ -185,12 +185,15 @@ bool ThinClientBaseDM::unrecoverableServerError(const std::string& exceptStr) {
  * This method is for exceptions when server should *not* be marked as dead.
  */
 bool ThinClientBaseDM::nonFatalServerError(const std::string& exceptStr) {
-  return (
-      (exceptStr.find("org.apache.geode.distributed.TimeoutException") !=
-       std::string::npos) ||
-      (exceptStr.find("org.apache.geode.ThreadInterruptedException") !=
-       std::string::npos) ||
-      (exceptStr.find("java.lang.IllegalStateException") != std::string::npos));
+  // Ignore exceptions when they are wrapped into a FunctionException
+  return exceptStr.find("org.apache.geode.cache.execute.FunctionException") ==
+             std::string::npos &&
+         ((exceptStr.find("org.apache.geode.distributed.TimeoutException") !=
+           std::string::npos) ||
+          (exceptStr.find("org.apache.geode.ThreadInterruptedException") !=
+           std::string::npos) ||
+          (exceptStr.find("java.lang.IllegalStateException") !=
+           std::string::npos));
 }
 
 void ThinClientBaseDM::failover() {}
