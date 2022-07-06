@@ -55,6 +55,7 @@ add_executable(apache-geode_unittests
   SerializableCreateTests.cpp
   StringPrefixPartitionResolverTest.cpp
   StructSetTest.cpp
+  TcrConnectionTest.cpp
   TcrMessageTest.cpp
   ThreadPoolTest.cpp
   TXIdTest.cpp

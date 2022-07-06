@@ -269,10 +269,12 @@ class TcrConnection {
     return connectionManager_;
   }
 
+ protected:
+  int expiryTimeVariancePercentage_ = 0;
+
  private:
   int64_t connectionId;
   const TcrConnectionManager& connectionManager_;
-  int expiryTimeVariancePercentage_ = 0;
 
   std::chrono::microseconds calculateHeaderTimeout(
       std::chrono::microseconds receiveTimeout, bool retry);
