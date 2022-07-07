@@ -458,10 +458,10 @@ TEST(PdxInstanceTest, comparePdxInstanceWithStringWithJavaPdxInstance) {
         cache.createPdxInstanceFactory("PdxTests.MyTestClass", false);
 
     pdxInstanceFactory.writeString("asciiField", "value");
-    pdxInstanceFactory.writeString("utf8Field", "value€");
+    pdxInstanceFactory.writeString("utf8Field", u8"value€");
     pdxInstanceFactory.writeString("asciiHugeField", std::string(70000, 'x'));
     pdxInstanceFactory.writeString("utfHugeField",
-                                   std::string(70000, 'x') + "€");
+                                   std::string(70000, 'x') + u8"€");
     entry = pdxInstanceFactory.create();
   }
 
