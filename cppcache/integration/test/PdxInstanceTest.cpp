@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 #include <geode/Cache.hpp>
+#include <geode/FunctionService.hpp>
 #include <geode/PdxInstanceFactory.hpp>
 #include <geode/PoolManager.hpp>
 #include <geode/RegionFactory.hpp>
@@ -37,11 +38,13 @@
 namespace {
 
 using apache::geode::client::Cache;
+using apache::geode::client::CacheableBoolean;
 using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheListenerMock;
 using apache::geode::client::CacheRegionHelper;
+using apache::geode::client::FunctionService;
 using apache::geode::client::IllegalStateException;
 using apache::geode::client::LocalRegion;
 using apache::geode::client::PdxInstance;
@@ -268,7 +271,7 @@ TEST(PdxInstanceTest, testPdxInstance) {
       pdxTypeFromPdxTypeInstance->equals(*pdxTypeFromPdxTypeInstanceGet, false))
       << "PdxObjects should be equal.";
 
-  EXPECT_EQ(-960665662, pdxTypeInstance->hashcode())
+  EXPECT_EQ(-1302455415, pdxTypeInstance->hashcode())
       << "Pdxhashcode hashcode not matched with java pdx hash code.";
 }
 
@@ -432,6 +435,47 @@ TEST(PdxInstanceTest, testInstancePutAfterRestart) {
   EXPECT_NO_THROW(result = q->execute());
   EXPECT_TRUE(result);
   EXPECT_EQ(result->size(), 1UL);
+}
+
+TEST(PdxInstanceTest, comparePdxInstanceWithStringWithJavaPdxInstance) {
+  Cluster cluster{LocatorCount{1}, ServerCount{1}};
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  auto& gfsh = cluster.getGfsh();
+  auto cache = createTestCache();
+  auto poolFactory = cache.getPoolManager().createFactory();
+  cluster.applyLocators(poolFactory);
+  auto pool = poolFactory.create("default");
+
+  std::shared_ptr<PdxInstance> entry;
+  {
+    auto pdxInstanceFactory =
+        cache.createPdxInstanceFactory("PdxTests.MyTestClass", false);
+
+    pdxInstanceFactory.writeString("asciiField", "value");
+    pdxInstanceFactory.writeString("utf8Field", u8"value€");
+    pdxInstanceFactory.writeString("asciiHugeField", std::string(70000, 'x'));
+    pdxInstanceFactory.writeString("utfHugeField",
+                                   std::string(70000, 'x') + u8"€");
+    entry = pdxInstanceFactory.create();
+  }
+
+  auto execution = FunctionService::onServers(pool);
+  auto rc = execution.withArgs(entry).execute("ComparePdxInstanceFunction");
+  EXPECT_TRUE(rc);
+
+  auto rs = rc->getResult();
+  EXPECT_TRUE(rs);
+  EXPECT_EQ(rs->size(), 1);
+
+  auto flag = std::dynamic_pointer_cast<CacheableBoolean>((*rs)[0]);
+  EXPECT_TRUE(flag);
+  EXPECT_TRUE(flag->value());
 }
 
 }  // namespace
