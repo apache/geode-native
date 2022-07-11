@@ -47,8 +47,8 @@ using ::testing::Return;
 using ::testing::SetArrayArgument;
 using ::testing::SizeIs;
 
-const size_t kReadBuffSize = 3000;
-const size_t kStreamBufferSize = 10000;
+constexpr size_t kReadBuffSize = 3000;
+constexpr size_t kStreamBufferSize = 10000;
 
 ACTION_P(WaitMs, milliseconds) {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));

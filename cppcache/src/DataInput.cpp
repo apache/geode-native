@@ -30,9 +30,9 @@ namespace client {
 
 DataInput::DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
                      Pool* pool)
-    : buf_(buffer),
-      bufHead_(buffer),
-      bufLength_(len),
+    : buffer_(buffer),
+      bufferHead_(buffer),
+      bufferLength_(len),
       pool_(pool),
       cache_(cache) {}
 
@@ -63,7 +63,7 @@ void DataInput::readJavaModifiedUtf8(
   uint16_t length = readInt16();
   _GEODE_CHECK_BUFFER_SIZE(length);
   value = internal::JavaModifiedUtf8::decode(
-      reinterpret_cast<const char*>(buf_), length);
+      reinterpret_cast<const char*>(buffer_), length);
   advanceCursor(length);
 }
 template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void

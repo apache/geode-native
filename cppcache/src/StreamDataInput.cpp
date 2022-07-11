@@ -26,7 +26,7 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const size_t kBufferSize = 3000;
+constexpr size_t kBufferSize = 3000;
 
 StreamDataInput::StreamDataInput(std::chrono::milliseconds timeout,
                                  std::unique_ptr<Connector> connector,
@@ -53,30 +53,30 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
 
     LOGDEBUG(
         "received %d bytes from %s: %s, time spent: "
-        "%ld microsecs, time remaining before timeout: %ld microsecs",
+        "%ld millisecs, time remaining before timeout: %ld millisecs",
         receivedLength, connector_->getRemoteEndpoint().c_str(),
         Utils::convertBytesToString(reinterpret_cast<uint8_t*>(buff),
                                     receivedLength)
             .c_str(),
-        std::chrono::duration_cast<std::chrono::microseconds>(timeSpent)
+        std::chrono::duration_cast<std::chrono::milliseconds>(timeSpent)
             .count(),
-        std::chrono::duration_cast<std::chrono::microseconds>(
+        std::chrono::duration_cast<std::chrono::milliseconds>(
             remainingTimeBeforeTimeout_)
             .count());
 
-    if (remainingTimeBeforeTimeout_ <= std::chrono::microseconds ::zero()) {
+    if (remainingTimeBeforeTimeout_ <= std::chrono::milliseconds ::zero()) {
       throw(TimeoutException(std::string("Timeout when receiving from ")
                                  .append(connector_->getRemoteEndpoint())));
     }
 
-    auto newLength = bufLength_ + receivedLength;
+    auto newLength = bufferLength_ + receivedLength;
     auto currentPosition = getBytesRead();
     streamBuf_.resize(newLength);
-    memcpy(streamBuf_.data() + bufLength_, buff, receivedLength);
+    memcpy(streamBuf_.data() + bufferLength_, buff, receivedLength);
 
-    bufHead_ = streamBuf_.data();
-    buf_ = bufHead_ + currentPosition;
-    bufLength_ = newLength;
+    bufferHead_ = streamBuf_.data();
+    buffer_ = bufferHead_ + currentPosition;
+    bufferLength_ = newLength;
   }
 }
 

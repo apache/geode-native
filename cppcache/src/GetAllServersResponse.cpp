@@ -21,9 +21,9 @@ namespace geode {
 namespace client {
 
 void GetAllServersResponse::toData(DataOutput& output) const {
-  int32_t numServers = static_cast<int32_t>(servers_.size());
-  output.writeInt(numServers);
-  for (int32_t i = 0; i < numServers; i++) {
+  auto numServers = servers_.size();
+  output.writeInt(static_cast<int32_t>(numServers));
+  for (unsigned int i = 0; i < numServers; i++) {
     output.writeObject(servers_.at(i));
   }
 }

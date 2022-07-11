@@ -51,7 +51,7 @@ class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
 
  private:
   std::unique_ptr<Connector> connector_;
-  std::chrono::microseconds remainingTimeBeforeTimeout_;
+  std::chrono::milliseconds remainingTimeBeforeTimeout_;
   std::vector<uint8_t> streamBuf_;
 };
 }  // namespace client
