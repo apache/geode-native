@@ -24,6 +24,8 @@
 #include "util/JavaModifiedUtf8.hpp"
 #include "util/string.hpp"
 
+using apache::geode::client::internal::JavaModifiedUtf8;
+
 namespace apache {
 namespace geode {
 namespace client {
@@ -62,8 +64,8 @@ void DataInput::readJavaModifiedUtf8(
     std::basic_string<char16_t, _Traits, _Allocator>& value) {
   uint16_t length = readInt16();
   _GEODE_CHECK_BUFFER_SIZE(length);
-  value = internal::JavaModifiedUtf8::decode(
-      reinterpret_cast<const char*>(m_buf), length);
+  value =
+      JavaModifiedUtf8::decode(reinterpret_cast<const char*>(m_buf), length);
   advanceCursor(length);
 }
 template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
@@ -72,10 +74,10 @@ DataInput::readJavaModifiedUtf8(std::u16string&);
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(
     std::basic_string<char32_t, _Traits, _Allocator>& value) {
-  // TODO string OPTIMIZE convert from UTF-16 to UCS-4 directly
-  std::u16string utf16;
-  readJavaModifiedUtf8(utf16);
-  value = to_ucs4(utf16);
+  uint16_t length = readInt16();
+  _GEODE_CHECK_BUFFER_SIZE(length);
+  value =
+      JavaModifiedUtf8::decodeU32(reinterpret_cast<const char*>(m_buf), length);
 }
 template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void
 DataInput::readJavaModifiedUtf8(std::u32string&);

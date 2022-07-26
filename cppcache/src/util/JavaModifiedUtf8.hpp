@@ -27,6 +27,9 @@ namespace geode {
 namespace client {
 namespace internal {
 
+struct ju8type_traits : std::char_traits<char> {};
+typedef std::basic_string<char, ju8type_traits> ju8string;
+
 struct JavaModifiedUtf8 {
   /**
    * Calculate the length of the given UTF-8 string when encoded in Java
@@ -45,21 +48,36 @@ struct JavaModifiedUtf8 {
   /**
    * Converts given UTF-8 string to Java Modified UTF-8 string.
    */
-  static std::string fromString(const std::string& utf8);
+  static ju8string fromString(const std::string& utf8);
 
   /**
    * Converts given UTF-16 string to Java Modified UTF-8 string.
    */
-  static std::string fromString(const std::u16string& utf16);
+  static ju8string fromString(const std::u16string& utf16);
+
+  /**
+   * Converts Java-Modified UTF-8 string to UTF-8 string.
+   */
+  std::string toString(const ju8string& jmutf8);
 
   /**
    * Converts a single UTF-16 code unit into Java Modified UTF-8 code units.
    */
-  static void encode(const char16_t c, std::string& jmutf8);
+  static void encode(const char16_t c, ju8string& jmutf8);
 
   static std::u16string decode(const char* buf, uint16_t len);
 
+  static ju8string decode(const std::string& utf8char);
+
+  static std::u32string decodeU32(const char* buf, uint16_t len);
+
   static char16_t decodeJavaModifiedUtf8Char(const char** pbuf);
+
+ private:
+  static bool IsValidCodePoint(uint16_t code_point);
+  static ju8string decode2byte(const std::string& utf8char);
+  static ju8string decode3byte(const std::string& utf8char);
+  static ju8string decode4byte(const std::string& utf8char);
 };
 
 }  // namespace internal
