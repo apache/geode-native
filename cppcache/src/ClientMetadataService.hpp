@@ -179,7 +179,7 @@ class ClientMetadataService {
 
   std::shared_ptr<ClientMetadataService::ServerToBucketsMap>
   groupByServerToBuckets(const std::shared_ptr<ClientMetadata>& metadata,
-                         const BucketSet& bucketSet, bool optimizeForWrite);
+                         const BucketSet& bucketSet, bool primaryOnly);
 
   static std::shared_ptr<ClientMetadataService::ServerToBucketsMap> pruneNodes(
       const std::shared_ptr<ClientMetadata>& metadata,

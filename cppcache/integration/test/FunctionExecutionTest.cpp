@@ -19,6 +19,7 @@
 #include <thread>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <geode/Cache.hpp>
 #include <geode/CacheFactory.hpp>
@@ -50,6 +51,10 @@ using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
+
+using ::testing::Eq;
+using ::testing::Le;
+
 const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
 const int PARTITION_REGION_ENTRIES_SIZE = 113;
 
@@ -557,4 +562,65 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
   cluster.getServers()[1].stop();
 
   threadAux->join();
+}
+
+TEST(FunctionExecutionTest,
+     testThatServerFunctionThrowingWrappedISEDoesntDropsEndpoint) {
+  std::vector<uint16_t> serverPorts;
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  serverPorts.push_back(Framework::getAvailablePort());
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("partition_region")
+      .withType("PARTITION")
+      .execute();
+
+  auto cache = CacheFactory().create();
+  auto poolFactory = cache.getPoolManager().createFactory();
+
+  ServerAddress serverAddress = cluster.getServers()[1].getAddress();
+  cluster.applyServer(poolFactory, serverAddress);
+
+  auto pool = poolFactory.setPRSingleHopEnabled(true).create("pool");
+
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("pool")
+                    .create("partition_region");
+
+  populateRegion(region);
+
+  CacheImpl *cacheImpl = CacheRegionHelper::getCacheImpl(&cache);
+  waitUntilPRMetadataIsRefreshed(cacheImpl);
+
+  auto poolSizeBefore = cacheImpl->getPoolSize("pool");
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+
+  try {
+    execute.execute("ThrowingISEFunction");
+    ASSERT_TRUE(false) << "An exception is expected";
+  } catch (Exception &e) {
+    std::string expected =
+        "org.apache.geode.cache.execute.FunctionException: An error occurred";
+    ASSERT_THAT(e.getMessage().substr(0, expected.length()), Eq(expected));
+  }
+
+  auto poolSizeAfter = cacheImpl->getPoolSize("pool");
+  ASSERT_THAT(poolSizeBefore, Le(poolSizeAfter));
 }

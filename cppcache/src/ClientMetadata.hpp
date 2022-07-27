@@ -41,76 +41,69 @@ class ClientMetadata;
 
 typedef std::vector<std::shared_ptr<BucketServerLocation>>
     BucketServerLocationsType;
-// typedef std::map<int,BucketServerLocationsType >
-// BucketServerLocationsListType;
 typedef std::vector<BucketServerLocationsType> BucketServerLocationsListType;
 typedef std::map<std::string, std::vector<int>> FixedMapType;
 
 class ClientMetadata {
- private:
-  void setPartitionNames();
-  std::shared_ptr<CacheableHashSet> m_partitionNames;
-
-  BucketServerLocationsListType m_bucketServerLocationsList;
-  std::shared_ptr<ClientMetadata> m_previousOne;
-  int m_totalNumBuckets;
-  // std::shared_ptr<PartitionResolver> m_partitionResolver;
-  std::string m_colocatedWith;
-  ThinClientPoolDM* m_tcrdm;
-  FixedMapType m_fpaMap;
-  inline void checkBucketId(size_t bucketId) {
-    if (bucketId >= m_bucketServerLocationsList.size()) {
-      LOGERROR("ClientMetadata::getServerLocation(): BucketId out of range.");
-      throw IllegalStateException(
-          "ClientMetadata::getServerLocation(): BucketId out of range.");
-    }
-  }
-
  public:
-  void setPreviousone(std::shared_ptr<ClientMetadata> cptr) {
-    m_previousOne = cptr;
-  }
   virtual ~ClientMetadata();
+
   ClientMetadata();
   ClientMetadata(
       int totalNumBuckets, std::string colocatedWith, ThinClientPoolDM* tcrdm,
       std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>* fpaSet);
 
+  ClientMetadata(ClientMetadata& other);
+  ClientMetadata& operator=(const ClientMetadata&) = delete;
+
+  int getTotalNumBuckets() const { return totalBucketsCount_; }
+
+  const std::string& getColocatedWith() const { return colocatedWith_; }
+
+  const std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() const {
+    return partitionNames_;
+  }
+
   void getServerLocation(int bucketId, bool tryPrimary,
                          std::shared_ptr<BucketServerLocation>& serverLocation,
                          int8_t& version);
-  // ServerLocation getPrimaryServerLocation(int bucketId);
+
+  void setPreviousMetadata(std::shared_ptr<ClientMetadata> cptr);
+
   void updateBucketServerLocations(
       int bucketId, BucketServerLocationsType bucketServerLocations);
-  int getTotalNumBuckets();
-  // std::shared_ptr<PartitionResolver> getPartitionResolver();
-  const std::string& getColocatedWith();
+
   int assignFixedBucketId(const char* partitionName,
-                          std::shared_ptr<CacheableKey> resolvekey);
-  std::shared_ptr<CacheableHashSet>& getFixedPartitionNames() {
-    /* if(m_fpaMap.size() >0)
-     {
-      auto partitionNames = CacheableHashSet::create();
-       for ( FixedMapType::iterator it=m_fpaMap.begin() ; it != m_fpaMap.end();
-     it++ ) {
-         partitionNames->insert(CacheableString::create(((*it).first).c_str()));
-       }
-       return partitionNames;
-     }*/
-    return m_partitionNames;
-  }
-  ClientMetadata(ClientMetadata& other);
-  ClientMetadata& operator=(const ClientMetadata&) = delete;
-  virtual std::vector<std::shared_ptr<BucketServerLocation>>
-  adviseServerLocations(int bucketId);
+                          std::shared_ptr<CacheableKey> key);
+
   std::shared_ptr<BucketServerLocation> advisePrimaryServerLocation(
       int bucketId);
-  std::shared_ptr<BucketServerLocation> adviseRandomServerLocation();
 
   void removeBucketServerLocation(
       const std::shared_ptr<BucketServerLocation>& serverLocation);
 
   std::string toString();
+
+  virtual BucketServerLocationsType adviseServerLocations(int bucketId);
+
+ private:
+  void setPartitionNames();
+
+  void checkBucketId(int bucketId);
+
+ private:
+  std::shared_ptr<CacheableHashSet> partitionNames_;
+
+  BucketServerLocationsListType locationsList_;
+
+  std::shared_ptr<ClientMetadata> previous_;
+
+  int totalBucketsCount_;
+  std::string colocatedWith_;
+
+  ThinClientPoolDM* tcrdm_;
+
+  FixedMapType fpaMap_;
 };
 }  // namespace client
 }  // namespace geode

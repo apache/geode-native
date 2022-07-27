@@ -150,8 +150,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     newCptr = SendClientPRMetadata(regionFullPath, cptr);
     // now we will get new instance so assign it again
     if (newCptr != nullptr) {
-      cptr->setPreviousone(nullptr);
-      newCptr->setPreviousone(cptr);
+      cptr->setPreviousMetadata(nullptr);
+      newCptr->setPreviousMetadata(cptr);
       boost::unique_lock<decltype(m_regionMetadataLock)> lock(
           m_regionMetadataLock);
       m_regionMetaDataMap[path] = newCptr;
@@ -162,8 +162,8 @@ void ClientMetadataService::getClientPRMetadata(const char* regionFullPath) {
     newCptr = SendClientPRMetadata(colocatedWith.c_str(), cptr);
 
     if (newCptr) {
-      cptr->setPreviousone(nullptr);
-      newCptr->setPreviousone(cptr);
+      cptr->setPreviousMetadata(nullptr);
+      newCptr->setPreviousMetadata(cptr);
       // now we will get new instance so assign it again
       boost::unique_lock<decltype(m_regionMetadataLock)> lock(
           m_regionMetadataLock);
@@ -683,19 +683,19 @@ ClientMetadataService::groupByServerToAllBuckets(
 std::shared_ptr<ClientMetadataService::ServerToBucketsMap>
 ClientMetadataService::groupByServerToBuckets(
     const std::shared_ptr<ClientMetadata>& metadata, const BucketSet& bucketSet,
-    bool optimizeForWrite) {
-  if (optimizeForWrite) {
+    bool primaryOnly) {
+  if (primaryOnly) {
     auto serverToBucketsMap = std::make_shared<ServerToBucketsMap>();
     BucketSet bucketsWithoutServer(bucketSet.size());
     for (const auto& bucketId : bucketSet) {
       const auto serverLocation =
           metadata->advisePrimaryServerLocation(bucketId);
-      if (serverLocation == nullptr) {
-        bucketsWithoutServer.insert(bucketId);
-        continue;
-      } else if (!serverLocation->isValid()) {
-        bucketsWithoutServer.insert(bucketId);
-        continue;
+      if (!serverLocation || !serverLocation->isValid()) {
+        LOGINFO(
+            "ClientMetadataService::groupByServerToBuckets: Primary for bucket "
+            "%d is not known for region %s",
+            bucketId, metadata->getColocatedWith().c_str());
+        return std::shared_ptr<ServerToBucketsMap>{};
       }
 
       std::shared_ptr<BucketSet> buckets;
