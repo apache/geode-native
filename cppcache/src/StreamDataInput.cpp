@@ -41,9 +41,7 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
     const auto start = std::chrono::system_clock::now();
 
     const auto receivedLength = connector_->receive_nothrowiftimeout(
-        buff, kBufferSize,
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            remainingTimeBeforeTimeout_));
+        buff, kBufferSize, remainingTimeBeforeTimeout_);
 
     const auto timeSpent = std::chrono::system_clock::now() - start;
 
@@ -60,9 +58,7 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
             .c_str(),
         std::chrono::duration_cast<std::chrono::milliseconds>(timeSpent)
             .count(),
-        std::chrono::duration_cast<std::chrono::milliseconds>(
-            remainingTimeBeforeTimeout_)
-            .count());
+        remainingTimeBeforeTimeout_.count());
 
     if (remainingTimeBeforeTimeout_ <= std::chrono::milliseconds ::zero()) {
       throw(TimeoutException(std::string("Timeout when receiving from ")
