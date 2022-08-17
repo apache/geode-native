@@ -60,7 +60,7 @@ void StreamDataInput::readDataIfNotAvailable(size_t size) {
             .count(),
         remainingTimeBeforeTimeout_.count());
 
-    if (remainingTimeBeforeTimeout_ <= std::chrono::milliseconds ::zero()) {
+    if (remainingTimeBeforeTimeout_ <= std::chrono::milliseconds::zero()) {
       throw(TimeoutException(std::string("Timeout when receiving from ")
                                  .append(connector_->getRemoteEndpoint())));
     }
