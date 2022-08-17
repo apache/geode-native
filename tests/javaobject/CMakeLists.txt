@@ -21,6 +21,8 @@ find_package(Java REQUIRED)
 include(UseJava)
 include(CheckJavaClassExists)
 
+set(CMAKE_JAVA_COMPILE_FLAGS -encoding utf8)
+
 check_java_class_exists(org.apache.geode.security.AuthenticationExpiredException ${Geode_CLASSPATH} hasAuthenticationExpiredException)
 
 file(GLOB_RECURSE SOURCES "*.java")

@@ -37,9 +37,9 @@ public class ComparePdxInstanceFunction implements Function {
 
     PdxInstanceFactory pdxInstanceFactory = context.getCache().createPdxInstanceFactory("PdxTests.MyTestClass");
     pdxInstanceFactory.writeString("asciiField", "value");
-    pdxInstanceFactory.writeString("utf8Field", "value€");
-    pdxInstanceFactory.writeString("asciiHugeField", longString);
-    pdxInstanceFactory.writeString("utfHugeField", longString + "€");
+    pdxInstanceFactory.writeString("utf8Field", "value\u20AC");
+    pdxInstanceFactory.writeString("asciiHugeField", longString );
+    pdxInstanceFactory.writeString("utfHugeField", longString + "\u20AC");
 
     PdxInstance expectedInstance = pdxInstanceFactory.create();
 
