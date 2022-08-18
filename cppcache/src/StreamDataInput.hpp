@@ -14,29 +14,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "GetAllServersResponse.hpp"
+
+#pragma once
+
+#ifndef GEODE_STREAMDATAINPUT_H_
+#define GEODE_STREAMDATAINPUT_H_
+
+#include <chrono>
+
+#include "Connector.hpp"
+#include "geode/DataInput.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
 
-void GetAllServersResponse::toData(DataOutput& output) const {
-  auto numServers = servers_.size();
-  output.writeInt(static_cast<int32_t>(numServers));
-  for (unsigned int i = 0; i < numServers; i++) {
-    output.writeObject(servers_.at(i));
-  }
-}
-void GetAllServersResponse::fromData(DataInput& input) {
-  int numServers = input.readInt32();
-  LOGFINER("GetAllServersResponse::fromData length = %d ", numServers);
-  for (int i = 0; i < numServers; i++) {
-    std::shared_ptr<ServerLocation> sLoc = std::make_shared<ServerLocation>();
-    sLoc->fromData(input);
-    servers_.push_back(sLoc);
-  }
-}
+class Connector;
 
+/**
+ * Provides the same functionality as its parent class but
+ * data is retrieved, instead of from a passed buffer,
+ * from a socket connection.
+ */
+class APACHE_GEODE_EXPORT StreamDataInput : public DataInput {
+ public:
+  StreamDataInput(std::chrono::milliseconds timeout,
+                  std::unique_ptr<Connector> connector, const CacheImpl* cache,
+                  Pool* pool);
+
+ protected:
+  void _checkBufferSize(size_t size, int32_t /* line */) override {
+    readDataIfNotAvailable(size);
+  }
+
+  void readDataIfNotAvailable(size_t size);
+
+ private:
+  std::unique_ptr<Connector> connector_;
+  std::chrono::milliseconds remainingTimeBeforeTimeout_;
+  std::vector<uint8_t> streamBuf_;
+};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_STREAMDATAINPUT_H_

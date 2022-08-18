@@ -30,21 +30,21 @@ namespace client {
 
 DataInput::DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
                      Pool* pool)
-    : m_buf(buffer),
-      m_bufHead(buffer),
-      m_bufLength(len),
-      m_pool(pool),
-      m_cache(cache) {}
+    : buffer_(buffer),
+      bufferHead_(buffer),
+      bufferLength_(len),
+      pool_(pool),
+      cache_(cache) {}
 
 std::shared_ptr<Serializable> DataInput::readObjectInternal(int8_t typeId) {
   return getSerializationRegistry().deserialize(*this, typeId);
 }
 
 const SerializationRegistry& DataInput::getSerializationRegistry() const {
-  return *m_cache->getSerializationRegistry();
+  return *cache_->getSerializationRegistry();
 }
 
-Cache* DataInput::getCache() const { return m_cache->getCache(); }
+Cache* DataInput::getCache() const { return cache_->getCache(); }
 
 template <class _Traits, class _Allocator>
 void DataInput::readJavaModifiedUtf8(
@@ -63,7 +63,7 @@ void DataInput::readJavaModifiedUtf8(
   uint16_t length = readInt16();
   _GEODE_CHECK_BUFFER_SIZE(length);
   value = internal::JavaModifiedUtf8::decode(
-      reinterpret_cast<const char*>(m_buf), length);
+      reinterpret_cast<const char*>(buffer_), length);
   advanceCursor(length);
 }
 template APACHE_GEODE_EXPLICIT_TEMPLATE_EXPORT void

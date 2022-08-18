@@ -17,7 +17,6 @@
 
 #include "TcpConn.hpp"
 
-#include <iomanip>
 #include <iostream>
 
 #include <boost/optional.hpp>
@@ -292,6 +291,11 @@ size_t TcpConn::send(const char *buff, const size_t len,
 
 //  Return the local port for this TCP connection.
 uint16_t TcpConn::getPort() { return socket_.local_endpoint().port(); }
+
+std::string TcpConn::getRemoteEndpoint() {
+  return socket_.remote_endpoint().address().to_string().append(":").append(
+      std::to_string(socket_.remote_endpoint().port()));
+}
 
 void TcpConn::connect(boost::asio::ip::tcp::resolver::results_type r,
                       std::chrono::microseconds timeout) {

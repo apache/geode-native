@@ -73,7 +73,7 @@ class APACHE_GEODE_EXPORT DataInput {
    */
   inline bool readBoolean() {
     _GEODE_CHECK_BUFFER_SIZE(1);
-    return *(m_buf++) == 1 ? true : false;
+    return *(buffer_++) == 1 ? true : false;
   }
 
   /**
@@ -89,8 +89,8 @@ class APACHE_GEODE_EXPORT DataInput {
   inline void readBytesOnly(uint8_t* buffer, size_t len) {
     if (len > 0) {
       _GEODE_CHECK_BUFFER_SIZE(len);
-      std::memcpy(buffer, m_buf, len);
-      m_buf += len;
+      std::memcpy(buffer, buffer_, len);
+      buffer_ += len;
     }
   }
 
@@ -107,8 +107,8 @@ class APACHE_GEODE_EXPORT DataInput {
   inline void readBytesOnly(int8_t* buffer, size_t len) {
     if (len > 0) {
       _GEODE_CHECK_BUFFER_SIZE(len);
-      std::memcpy(buffer, m_buf, len);
-      m_buf += len;
+      std::memcpy(buffer, buffer_, len);
+      buffer_ += len;
     }
   }
 
@@ -129,8 +129,8 @@ class APACHE_GEODE_EXPORT DataInput {
     if (length > 0) {
       _GEODE_CHECK_BUFFER_SIZE(length);
       _GEODE_NEW(buffer, uint8_t[length]);
-      std::memcpy(buffer, m_buf, length);
-      m_buf += length;
+      std::memcpy(buffer, buffer_, length);
+      buffer_ += length;
     }
     *bytes = buffer;
   }
@@ -152,8 +152,8 @@ class APACHE_GEODE_EXPORT DataInput {
     if (length > 0) {
       _GEODE_CHECK_BUFFER_SIZE(length);
       _GEODE_NEW(buffer, int8_t[length]);
-      std::memcpy(buffer, m_buf, length);
-      m_buf += length;
+      std::memcpy(buffer, buffer_, length);
+      buffer_ += length;
     }
     *bytes = buffer;
   }
@@ -173,10 +173,10 @@ class APACHE_GEODE_EXPORT DataInput {
    */
   inline int32_t readInt32() {
     _GEODE_CHECK_BUFFER_SIZE(4);
-    int32_t tmp = *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
+    int32_t tmp = *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
     return tmp;
   }
 
@@ -186,14 +186,14 @@ class APACHE_GEODE_EXPORT DataInput {
   inline int64_t readInt64() {
     _GEODE_CHECK_BUFFER_SIZE(8);
     int64_t tmp;
-    tmp = *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
-    tmp = (tmp << 8) | *(m_buf++);
+    tmp = *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
+    tmp = (tmp << 8) | *(buffer_++);
     return tmp;
   }
 
@@ -396,33 +396,33 @@ class APACHE_GEODE_EXPORT DataInput {
    * as readonly and modification of contents using this internal pointer
    * has undefined behavior.
    */
-  inline const uint8_t* currentBufferPosition() const { return m_buf; }
+  inline const uint8_t* currentBufferPosition() const { return buffer_; }
 
   /** get the number of bytes read in the buffer */
-  inline size_t getBytesRead() const { return m_buf - m_bufHead; }
+  inline size_t getBytesRead() const { return buffer_ - bufferHead_; }
 
   /** get the number of bytes remaining to be read in the buffer */
   inline size_t getBytesRemaining() const {
-    return (m_bufLength - getBytesRead());
+    return (bufferLength_ - getBytesRead());
   }
 
   /** advance the cursor by given offset */
-  inline void advanceCursor(size_t offset) { m_buf += offset; }
+  inline void advanceCursor(size_t offset) { buffer_ += offset; }
 
   /** rewind the cursor by given offset */
-  inline void rewindCursor(size_t offset) { m_buf -= offset; }
+  inline void rewindCursor(size_t offset) { buffer_ -= offset; }
 
   /** reset the cursor to the start of buffer */
-  inline void reset() { m_buf = m_bufHead; }
+  inline void reset() { buffer_ = bufferHead_; }
 
   inline void setBuffer() {
-    m_buf = currentBufferPosition();
-    m_bufLength = getBytesRemaining();
+    buffer_ = currentBufferPosition();
+    bufferLength_ = getBytesRemaining();
   }
 
-  inline void resetPdx(size_t offset) { m_buf = m_bufHead + offset; }
+  inline void resetPdx(size_t offset) { buffer_ = bufferHead_ + offset; }
 
-  inline size_t getPdxBytes() const { return m_bufLength; }
+  inline size_t getPdxBytes() const { return bufferLength_; }
 
   static uint8_t* getBufferCopy(const uint8_t* from, size_t length) {
     uint8_t* result;
@@ -432,7 +432,7 @@ class APACHE_GEODE_EXPORT DataInput {
     return result;
   }
 
-  inline void reset(size_t offset) { m_buf = m_bufHead + offset; }
+  inline void reset(size_t offset) { buffer_ = bufferHead_ + offset; }
 
   uint8_t* getBufferCopyFrom(const uint8_t* from, size_t length) {
     uint8_t* result;
@@ -452,6 +452,12 @@ class APACHE_GEODE_EXPORT DataInput {
   DataInput& operator=(DataInput&&) = default;
 
  protected:
+  const uint8_t* buffer_;
+  const uint8_t* bufferHead_;
+  size_t bufferLength_;
+  Pool* pool_;
+  const CacheImpl* cache_;
+
   /** constructor given a pre-allocated byte array with size */
   DataInput(const uint8_t* buffer, size_t len, const CacheImpl* cache,
             Pool* pool);
@@ -459,12 +465,6 @@ class APACHE_GEODE_EXPORT DataInput {
   virtual const SerializationRegistry& getSerializationRegistry() const;
 
  private:
-  const uint8_t* m_buf;
-  const uint8_t* m_bufHead;
-  size_t m_bufLength;
-  Pool* m_pool;
-  const CacheImpl* m_cache;
-
   std::shared_ptr<Serializable> readObjectInternal(int8_t typeId = -1);
 
   template <typename mType>
@@ -502,21 +502,21 @@ class APACHE_GEODE_EXPORT DataInput {
 
   inline char readPdxChar() { return static_cast<char>(readInt16()); }
 
-  inline void _checkBufferSize(size_t size, int32_t line) {
-    if ((m_bufLength - (m_buf - m_bufHead)) < size) {
+  virtual void _checkBufferSize(size_t size, int32_t line) {
+    if ((bufferLength_ - (buffer_ - bufferHead_)) < size) {
       throw OutOfRangeException(
           "DataInput: attempt to read beyond buffer at line " +
           std::to_string(line) + ": available buffer size " +
-          std::to_string(m_bufLength - (m_buf - m_bufHead)) +
+          std::to_string(bufferLength_ - (buffer_ - bufferHead_)) +
           ", attempted read of size " + std::to_string(size));
     }
   }
 
-  inline int8_t readNoCheck() { return *(m_buf++); }
+  inline int8_t readNoCheck() { return *(buffer_++); }
 
   inline int16_t readInt16NoCheck() {
-    int16_t tmp = *(m_buf++);
-    tmp = static_cast<int16_t>((tmp << 8) | *(m_buf++));
+    int16_t tmp = *(buffer_++);
+    tmp = static_cast<int16_t>((tmp << 8) | *(buffer_++));
     return tmp;
   }
 
@@ -605,7 +605,7 @@ class APACHE_GEODE_EXPORT DataInput {
     value.assign(reinterpret_cast<const wchar_t*>(tmp.data()), tmp.length());
   }
 
-  Pool* getPool() const { return m_pool; }
+  Pool* getPool() const { return pool_; }
 
   friend Cache;
   friend CacheImpl;

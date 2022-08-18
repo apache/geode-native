@@ -14,29 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "GetAllServersResponse.hpp"
+
+#ifndef GEODE_CONNECTORMOCK_H_
+#define GEODE_CONNECTORMOCK_H_
+
+#include <gmock/gmock.h>
+
+#include "Connector.hpp"
 
 namespace apache {
 namespace geode {
 namespace client {
-
-void GetAllServersResponse::toData(DataOutput& output) const {
-  auto numServers = servers_.size();
-  output.writeInt(static_cast<int32_t>(numServers));
-  for (unsigned int i = 0; i < numServers; i++) {
-    output.writeObject(servers_.at(i));
+class ConnectorMock : public Connector {
+ public:
+  ConnectorMock(){
   }
-}
-void GetAllServersResponse::fromData(DataInput& input) {
-  int numServers = input.readInt32();
-  LOGFINER("GetAllServersResponse::fromData length = %d ", numServers);
-  for (int i = 0; i < numServers; i++) {
-    std::shared_ptr<ServerLocation> sLoc = std::make_shared<ServerLocation>();
-    sLoc->fromData(input);
-    servers_.push_back(sLoc);
-  }
-}
 
+  MOCK_METHOD3(receive, size_t(char *b, size_t len,
+                         std::chrono::milliseconds timeout));
+
+  MOCK_METHOD0(getPort, uint16_t());
+
+  MOCK_METHOD0(getRemoteEndpoint, std::string());
+
+  MOCK_METHOD3(send, size_t(const char *b, size_t len,
+                            std::chrono::milliseconds timeout));
+
+  MOCK_METHOD3(receive_nothrowiftimeout, size_t(
+      char *b, size_t len, std::chrono::milliseconds timeout));
+
+
+};
 }  // namespace client
 }  // namespace geode
 }  // namespace apache
+
+#endif  // GEODE_CONNECTORMOCK_H_

@@ -22,8 +22,6 @@
 
 #include <boost/thread/lock_types.hpp>
 
-#include <geode/DataInput.hpp>
-#include <geode/DataOutput.hpp>
 #include <geode/SystemProperties.hpp>
 
 #include "CacheImpl.hpp"
@@ -35,6 +33,7 @@
 #include "LocatorListResponse.hpp"
 #include "QueueConnectionRequest.hpp"
 #include "QueueConnectionResponse.hpp"
+#include "StreamDataInput.hpp"
 #include "TcpConn.hpp"
 #include "TcpSslConn.hpp"
 #include "TcrConnectionManager.hpp"
@@ -47,7 +46,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-const size_t BUFF_SIZE = 3000;
 const size_t DEFAULT_CONNECTION_RETRIES = 3;
 
 ThinClientLocatorHelper::ThinClientLocatorHelper(
@@ -143,20 +141,10 @@ std::shared_ptr<Serializable> ThinClientLocatorHelper::sendRequest(
     if (sentLength <= 0) {
       return nullptr;
     }
-    char buff[BUFF_SIZE];
-    const auto receivedLength = conn->receive(buff, m_poolDM->getReadTimeout());
-    if (!receivedLength) {
-      return nullptr;
-    }
 
-    LOGDEBUG("%s(%p): received %d bytes from locator: %s", __GNFN__, this,
-             receivedLength,
-             Utils::convertBytesToString(reinterpret_cast<uint8_t*>(buff),
-                                         receivedLength)
-                 .c_str());
-
-    auto di = m_poolDM->getConnectionManager().getCacheImpl()->createDataInput(
-        reinterpret_cast<uint8_t*>(buff), receivedLength);
+    StreamDataInput di(m_poolDM->getReadTimeout(), std::move(conn),
+                       m_poolDM->getConnectionManager().getCacheImpl(),
+                       nullptr);
 
     if (di.read() == REPLY_SSL_ENABLED && !sys_prop.sslEnabled()) {
       LOGERROR(
