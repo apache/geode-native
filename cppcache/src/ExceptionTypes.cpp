@@ -46,7 +46,6 @@ using apache::geode::client::FunctionException;
 using apache::geode::client::GeodeIOException;
 using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::IllegalStateException;
-using apache::geode::client::InternalFunctionInvocationTargetException;
 using apache::geode::client::LeaseExpiredException;
 using apache::geode::client::LowMemoryException;
 using apache::geode::client::MessageException;
@@ -317,16 +316,6 @@ using apache::geode::client::UnknownException;
   throw AllConnectionsInUseException{message};
 }
 
-[[noreturn]] void internalFunctionExecutionException(std::string message,
-                                                     const std::string& exMsg,
-                                                     GfErrType, std::string) {
-  message.append(
-      !exMsg.empty()
-          ? exMsg
-          : ": Internal function invocation target execution failed");
-  throw InternalFunctionInvocationTargetException{message};
-}
-
 [[noreturn]] void functionException(std::string message,
                                     const std::string& exMsg, GfErrType,
                                     std::string) {
@@ -452,7 +441,7 @@ std::map<GfErrType, error_function_t>& get_error_map() {
       {GF_CACHE_LOCATOR_EXCEPTION, noAvailableLocatorsException},
       {GF_ALL_CONNECTIONS_IN_USE_EXCEPTION, allConnectionsInUseException},
       {GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION,
-       internalFunctionExecutionException},
+       functionException},
       {GF_FUNCTION_EXCEPTION, functionException},
       {GF_DISKFULL, diskFailureException},
       {GF_ROLLBACK_EXCEPTION, rollbackException},

@@ -46,7 +46,6 @@ using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::Exception;
 using apache::geode::client::FunctionException;
 using apache::geode::client::FunctionService;
-using apache::geode::client::InternalFunctionInvocationTargetException;
 using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
@@ -362,7 +361,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto execute =
       functionService.withCollector(std::make_shared<TestResultCollector>());
   ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               InternalFunctionInvocationTargetException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest,
@@ -421,7 +420,7 @@ TEST(FunctionExecutionTest,
       functionService.withCollector(std::make_shared<TestResultCollector>())
           .withFilter(filter);
   ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               InternalFunctionInvocationTargetException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
@@ -562,4 +561,37 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
   cluster.getServers()[1].stop();
 
   threadAux->join();
+}
+
+TEST(FunctionExecutionTest,
+     testUserFunctionExceptionThrowsRightException) {
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("default")
+                    .create("region");
+
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+  EXPECT_THROW(execute.execute("UserExceptionFunction"), FunctionException);
 }

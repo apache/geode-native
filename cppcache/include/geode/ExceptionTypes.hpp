@@ -691,18 +691,6 @@ class APACHE_GEODE_EXPORT FunctionException : public Exception {
 };
 
 /**
- *@brief Thrown if function execution failed
- **/
-class APACHE_GEODE_EXPORT InternalFunctionInvocationTargetException : public FunctionException {
- public:
-  using FunctionException::FunctionException;
-  ~InternalFunctionInvocationTargetException() noexcept override {}
-  std::string getName() const override {
-    return "apache::geode::client::InternalFunctionInvocationTargetException";
-  }
-};
-
-/**
  *@brief Thrown if the No locators are active to reply for new connection.
  **/
 class APACHE_GEODE_EXPORT NoAvailableLocatorsException : public Exception {
