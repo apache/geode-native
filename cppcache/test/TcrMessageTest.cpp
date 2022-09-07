@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 
-#include <TcrMessage.hpp>
 #include <iostream>
 
 #include <gtest/gtest.h>
@@ -25,6 +24,9 @@
 
 #include "ByteArrayFixture.hpp"
 #include "SerializationRegistry.hpp"
+#include "TcrMessage.hpp"
+#include "TcrMessageDestroy.hpp"
+#include "TcrMessagePut.hpp"
 
 namespace {
 
@@ -34,6 +36,7 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CqState;
+using apache::geode::client::EventOperation;
 using apache::geode::client::DataOutput;
 using apache::geode::client::InterestResultPolicy;
 using apache::geode::client::Region;
@@ -258,22 +261,35 @@ TEST_F(TcrMessageTest, testConstructor2WithREQUEST) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor2WithDestroy) {
+TEST_F(TcrMessageTest, testDestroy) {
   using apache::geode::client::TcrMessageDestroy;
 
-  TcrMessageDestroy message(
-      new DataOutputUnderTest(), static_cast<const Region *>(nullptr),
-      CacheableString::create("mykey"),
-      static_cast<const std::shared_ptr<CacheableKey>>(nullptr), true,
-      static_cast<const std::shared_ptr<Serializable>>(nullptr),
-      static_cast<ThinClientBaseDM *>(nullptr));
+  TcrMessageDestroy message(new DataOutputUnderTest(), nullptr,
+                            CacheableString::create("mykey"), nullptr, nullptr,
+                            EventOperation::DESTROY, nullptr);
 
   EXPECT_EQ(TcrMessage::DESTROY, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
-      "000000090000004900000005FFFFFFFF000000001300494E56414C49445F524547494F4E"
-      "5F4E414D4500000008015700056D796B6579000000010129000000020137080000001200"
-      "03000000000000000103\\h{16}",
+      "000000090000004800000005FFFFFFFF000000001300494E56414C49445F524547494F4E"
+      "5F4E414D4500000008015700056D796B6579000000010129000000010013000000120003"
+      "000000000000000103\\h{16}",
+      message);
+}
+
+TEST_F(TcrMessageTest, testRemove) {
+  using apache::geode::client::TcrMessageDestroy;
+
+  TcrMessageDestroy message(new DataOutputUnderTest(), nullptr,
+                            CacheableString::create("mykey"), nullptr, nullptr,
+                            EventOperation::REMOVE, nullptr);
+
+  EXPECT_EQ(TcrMessage::DESTROY, message.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000090000004800000005FFFFFFFF000000001300494E56414C49445F524547494F4E"
+      "5F4E414D4500000008015700056D796B657900000001012900000001002E000000120003"
+      "000000000000000103\\h{16}",
       message);
 }
 
@@ -297,24 +313,79 @@ TEST_F(TcrMessageTest, testConstructor2WithInvalidate) {
       message);
 }
 
-TEST_F(TcrMessageTest, testConstructor3WithPut) {
+TEST_F(TcrMessageTest, testPut) {
   using apache::geode::client::TcrMessagePut;
 
   TcrMessagePut message(
-      new DataOutputUnderTest(), static_cast<const Region *>(nullptr),
+      new DataOutputUnderTest(), nullptr, CacheableString::create("mykey"),
+      CacheableString::create("myvalue"), nullptr, EventOperation::UPDATE,
+      false, nullptr, false, false, "myRegionName");
+
+  EXPECT_EQ(TcrMessage::PUT, message.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000070000005A00000007FFFFFFFF000000000C006D79526567696F6E4E616D650000"
+      "0001000C00000004000000000000000008015700056D796B657900000002013500000000"
+      "0A015700076D7976616C7565000000120003000000000000000103\\h"
+      "{16}",
+      message);
+}
+
+TEST_F(TcrMessageTest, testPutIfAbsent) {
+  using apache::geode::client::TcrMessagePut;
+
+  TcrMessagePut message(new DataOutputUnderTest(), nullptr,
+                        CacheableString::create("mykey"),
+                        CacheableString::create("myvalue"), nullptr,
+                        EventOperation::PUT_IF_ABSENT, false, nullptr, false,
+                        false, "myRegionName");
+
+  EXPECT_EQ(TcrMessage::PUT, message.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000070000005A00000007FFFFFFFF000000000C006D79526567696F6E4E616D650000"
+      "0001002C00000004000000000000000008015700056D796B657900000002013500000000"
+      "0A015700076D7976616C7565000000120003000000000000000103\\h"
+      "{16}",
+      message);
+}
+
+TEST_F(TcrMessageTest, testCreate) {
+  using apache::geode::client::TcrMessagePut;
+
+  TcrMessagePut message(
+      new DataOutputUnderTest(), nullptr,
       CacheableString::create("mykey"), CacheableString::create("myvalue"),
-      static_cast<const std::shared_ptr<Serializable>>(nullptr),
-      false,  // isDelta
-      static_cast<ThinClientBaseDM *>(nullptr),
-      false,  // isMetaRegion
-      false,  // fullValueAfterDeltaFail
+      nullptr,
+      EventOperation::CREATE,
+      false, nullptr,
+      false,
+      false,
       "myRegionName");
 
   EXPECT_EQ(TcrMessage::PUT, message.getMessageType());
 
   EXPECT_MESSAGE_EQ(
       "000000070000005A00000007FFFFFFFF000000000C006D79526567696F6E4E616D650000"
-      "0001012900000004000000000000000008015700056D796B657900000002013500000000"
+      "0001000100000004000000000000000008015700056D796B657900000002013500000000"
+      "0A015700076D7976616C7565000000120003000000000000000103\\h"
+      "{16}",
+      message);
+}
+
+TEST_F(TcrMessageTest, testReplace) {
+  using apache::geode::client::TcrMessagePut;
+
+  TcrMessagePut message(
+      new DataOutputUnderTest(), nullptr, CacheableString::create("mykey"),
+      CacheableString::create("myvalue"), nullptr, EventOperation::REPLACE,
+      false, nullptr, false, false, "myRegionName");
+
+  EXPECT_EQ(TcrMessage::PUT, message.getMessageType());
+
+  EXPECT_MESSAGE_EQ(
+      "000000070000005A00000007FFFFFFFF000000000C006D79526567696F6E4E616D650000"
+      "0001002D00000004000000000000000008015700056D796B657900000002013500000000"
       "0A015700076D7976616C7565000000120003000000000000000103\\h"
       "{16}",
       message);
