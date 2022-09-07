@@ -314,13 +314,13 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * @throws RegionDestroyedException if the method is called on a destroyed
    *region
    **/
-  virtual std::shared_ptr<Cacheable> get(
+  virtual std::shared_ptr<Serializable> get(
       const std::shared_ptr<CacheableKey>& key,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline std::shared_ptr<Cacheable> get(
+  inline std::shared_ptr<Serializable> get(
       const KEYTYPE& key,
       const std::shared_ptr<Serializable>& callbackArg = nullptr) {
     return get(CacheableKey::create(key), callbackArg);
@@ -373,7 +373,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void put(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -385,7 +385,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
 
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
-  inline void put(const KEYTYPE& key, const std::shared_ptr<Cacheable>& value,
+  inline void put(const KEYTYPE& key, const std::shared_ptr<Serializable>& value,
                   const std::shared_ptr<Serializable>& arg = nullptr) {
     put(CacheableKey::create(key), value, arg);
   }
@@ -397,6 +397,11 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
                   const std::shared_ptr<Serializable>& arg = nullptr) {
     put(key, Serializable::create(value), arg);
   }
+
+  virtual std::shared_ptr<Serializable> putIfAbsent(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Serializable>& value,
+      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /**
    * Places a set of new values in this region with the specified keys
@@ -447,7 +452,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void localPut(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -460,7 +465,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localPut(const KEYTYPE& key,
-                       const std::shared_ptr<Cacheable>& value,
+                       const std::shared_ptr<Serializable>& value,
                        const std::shared_ptr<Serializable>& arg = nullptr) {
     localPut(CacheableKey::create(key), value, arg);
   }
@@ -521,7 +526,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void create(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -534,7 +539,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void create(const KEYTYPE& key,
-                     const std::shared_ptr<Cacheable>& value,
+                     const std::shared_ptr<Serializable>& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
     create(CacheableKey::create(key), value, arg);
   }
@@ -574,7 +579,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual void localCreate(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -587,7 +592,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline void localCreate(const KEYTYPE& key,
-                          const std::shared_ptr<Cacheable>& value,
+                          const std::shared_ptr<Serializable>& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
     localCreate(CacheableKey::create(key), value, arg);
   }
@@ -804,7 +809,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual bool remove(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -817,7 +822,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool remove(const KEYTYPE& key,
-                     const std::shared_ptr<Cacheable>& value,
+                     const std::shared_ptr<Serializable>& value,
                      const std::shared_ptr<Serializable>& arg = nullptr) {
     return remove(CacheableKey::create(key), value, arg);
   }
@@ -926,7 +931,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    */
   virtual bool localRemove(
       const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Serializable>& value,
       const std::shared_ptr<Serializable>& aCallbackArgument = nullptr) = 0;
 
   /** Convenience method allowing both key and value to be a const char* */
@@ -940,7 +945,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
   /** Convenience method allowing key to be a const char* */
   template <class KEYTYPE>
   inline bool localRemove(const KEYTYPE& key,
-                          const std::shared_ptr<Cacheable>& value,
+                          const std::shared_ptr<Serializable>& value,
                           const std::shared_ptr<Serializable>& arg = nullptr) {
     return localRemove(CacheableKey::create(key), value, arg);
   }
@@ -1027,7 +1032,7 @@ class APACHE_GEODE_EXPORT Region : public std::enable_shared_from_this<Region> {
    * Return all values in the local process for this region. No value is
    * included for entries that are invalidated.
    */
-  virtual std::vector<std::shared_ptr<Cacheable>> values() = 0;
+  virtual std::vector<std::shared_ptr<Serializable>> values() = 0;
 
   virtual std::vector<std::shared_ptr<RegionEntry>> entries(bool recursive) = 0;
 

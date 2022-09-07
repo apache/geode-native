@@ -362,10 +362,12 @@ void TcrMessage::readBooleanPartAsObject(DataInput& input, bool* boolVal) {
 
 void TcrMessage::readOldValue(DataInput& input) {
   // read and ignore length
-  input.readInt32();
+  auto size = input.readInt32();
   input.read();  // ignore isObj
-  std::shared_ptr<Cacheable> value;
-  input.readObject(value);  // we are not using this value currently
+
+  if (size > 0) {
+    input.readObject(m_value);  // we are not using this value currently
+  }
 }
 
 void TcrMessage::readPrMetaData(DataInput& input) {
@@ -1926,107 +1928,6 @@ TcrMessageInvalidate::TcrMessageInvalidate(
   if (aCallbackArgument != nullptr) {
     // set bool variable to true.
     m_isCallBackArguement = true;
-    writeObjectPart(aCallbackArgument);
-  }
-  writeMessageLength();
-}
-
-TcrMessageDestroy::TcrMessageDestroy(
-    DataOutput* dataOutput, const Region* region,
-    const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value, bool isUserNullValue,
-    const std::shared_ptr<Serializable>& aCallbackArgument,
-    ThinClientBaseDM* connectionDM) {
-  m_request.reset(dataOutput);
-  m_msgType = TcrMessage::DESTROY;
-  m_tcdm = connectionDM;
-  m_key = key;
-  m_regionName =
-      (region == nullptr ? "INVALID_REGION_NAME" : region->getFullPath());
-  m_region = region;
-  m_timeout = DEFAULT_TIMEOUT;
-  uint32_t numOfParts = 2;
-  if (aCallbackArgument != nullptr) {
-    ++numOfParts;
-  }
-
-  numOfParts++;
-
-  if (key == nullptr) {
-    throw IllegalArgumentException(
-        "key passed to the constructor can't be nullptr");
-  }
-
-  if (value != nullptr || isUserNullValue) {
-    numOfParts += 2;  // for GFE Destroy65.java
-    writeHeader(TcrMessage::DESTROY, numOfParts);
-    writeRegionPart(m_regionName);
-    writeObjectPart(key);
-    writeObjectPart(value);  // expectedOldValue part
-    uint8_t removeByte = 8;  // OP_TYPE_DESTROY value from Operation.java
-    auto removeBytePart = CacheableByte::create(removeByte);
-    writeObjectPart(removeBytePart);  // operation part
-    writeEventIdPart();
-    if (aCallbackArgument != nullptr) {
-      writeObjectPart(aCallbackArgument);
-    }
-    writeMessageLength();
-  } else {
-    numOfParts += 2;  // for GFE Destroy65.java
-    writeHeader(TcrMessage::DESTROY, numOfParts);
-    writeRegionPart(m_regionName);
-    writeObjectPart(key);
-    writeObjectPart(nullptr);  // expectedOldValue part
-    writeObjectPart(nullptr);  // operation part
-    writeEventIdPart();
-    if (aCallbackArgument != nullptr) {
-      writeObjectPart(aCallbackArgument);
-    }
-    writeMessageLength();
-  }
-}
-
-TcrMessagePut::TcrMessagePut(
-    DataOutput* dataOutput, const Region* region,
-    const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
-    const std::shared_ptr<Serializable>& aCallbackArgument, bool isDelta,
-    ThinClientBaseDM* connectionDM, bool isMetaRegion,
-    bool fullValueAfterDeltaFail, const char* regionName) {
-  m_request.reset(dataOutput);
-  // m_securityHeaderLength = 0;
-  m_isMetaRegion = isMetaRegion;
-  m_msgType = TcrMessage::PUT;
-  m_tcdm = connectionDM;
-  m_key = key;
-  m_regionName = region != nullptr ? region->getFullPath() : regionName;
-  m_region = region;
-  m_timeout = DEFAULT_TIMEOUT;
-
-  // TODO check the number of parts in this constructor. doubt because in PUT
-  // value can be nullptr also.
-  uint32_t numOfParts = 5;
-  if (aCallbackArgument != nullptr) {
-    ++numOfParts;
-  }
-
-  numOfParts++;
-
-  if (key == nullptr) {
-    throw IllegalArgumentException(
-        "key passed to the constructor can't be nullptr");
-  }
-
-  numOfParts++;
-  writeHeader(m_msgType, numOfParts);
-  writeRegionPart(m_regionName);
-  writeObjectPart(nullptr);  // operation = null
-  writeIntPart(0);           // flags = 0
-  writeObjectPart(key);
-  writeObjectPart(CacheableBoolean::create(isDelta));
-  writeObjectPart(value, isDelta);
-  writeEventIdPart(0, fullValueAfterDeltaFail);
-  if (aCallbackArgument != nullptr) {
     writeObjectPart(aCallbackArgument);
   }
   writeMessageLength();

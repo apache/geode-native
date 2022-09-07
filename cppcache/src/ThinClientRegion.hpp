@@ -28,6 +28,7 @@
 
 #include "CacheableObjectPartList.hpp"
 #include "ClientMetadataService.hpp"
+#include "EventOperation.hpp"
 #include "LocalRegion.hpp"
 #include "Queue.hpp"
 #include "RegionGlobalLocks.hpp"
@@ -82,7 +83,7 @@ class ThinClientRegion : public LocalRegion {
                      bool receiveValues = true) override;
   void unregisterRegex(const std::string& regex) override;
   std::vector<std::shared_ptr<CacheableKey>> serverKeys() override;
-  void clear(const std::shared_ptr<Serializable>& aCallbackArgument =
+  void clear(const std::shared_ptr<Cacheable>& aCallbackArgument =
                  nullptr) override;
 
   std::shared_ptr<SelectResults> query(
@@ -94,7 +95,7 @@ class ThinClientRegion : public LocalRegion {
                    std::chrono::milliseconds timeout =
                        DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
 
-  std::shared_ptr<Serializable> selectValue(
+  std::shared_ptr<Cacheable> selectValue(
       const std::string& predicate,
       std::chrono::milliseconds timeout =
           DEFAULT_QUERY_RESPONSE_TIMEOUT) override;
@@ -106,12 +107,12 @@ class ThinClientRegion : public LocalRegion {
       const HashMapOfCacheable& map,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
       std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const std::shared_ptr<Serializable>& aCallbackArgument =
+      const std::shared_ptr<Cacheable>& aCallbackArgument =
           nullptr) override;
   GfErrType removeAllNoThrow_remote(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
-      const std::shared_ptr<Serializable>& aCallbackArgument =
+      const std::shared_ptr<Cacheable>& aCallbackArgument =
           nullptr) override;
   GfErrType registerKeys(TcrEndpoint* endpoint = nullptr,
                          const TcrMessage* request = nullptr,
@@ -181,14 +182,14 @@ class ThinClientRegion : public LocalRegion {
   uint32_t size_remote() override;
 
   void txDestroy(const std::shared_ptr<CacheableKey>& key,
-                 const std::shared_ptr<Serializable>& callBack,
+                 const std::shared_ptr<Cacheable>& callBack,
                  std::shared_ptr<VersionTag> versionTag) override;
   void txInvalidate(const std::shared_ptr<CacheableKey>& key,
-                    const std::shared_ptr<Serializable>& callBack,
+                    const std::shared_ptr<Cacheable>& callBack,
                     std::shared_ptr<VersionTag> versionTag) override;
   void txPut(const std::shared_ptr<CacheableKey>& key,
              const std::shared_ptr<Cacheable>& value,
-             const std::shared_ptr<Serializable>& callBack,
+             const std::shared_ptr<Cacheable>& callBack,
              std::shared_ptr<VersionTag> versionTag) override;
 
   void clearKeysOfInterest();
@@ -197,35 +198,36 @@ class ThinClientRegion : public LocalRegion {
   GfErrType getNoThrow_remote(
       const std::shared_ptr<CacheableKey>& keyPtr,
       std::shared_ptr<Cacheable>& valPtr,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
+      const std::shared_ptr<Cacheable>& aCallbackArgument,
       std::shared_ptr<VersionTag>& versionTag) override;
-  GfErrType putNoThrow_remote(
+  GfErrType remotePut(const std::shared_ptr<CacheableKey>& key,
+                      const std::shared_ptr<Cacheable>& value,
+                      const std::shared_ptr<Cacheable>& cbArg,
+                      std::shared_ptr<VersionTag>& versionTag,
+                      std::shared_ptr<Cacheable>& retValue, EventOperation op,
+                      bool checkDelta = true) noexcept override;
+  GfErrType remoteCreate(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Cacheable>& cbArg,
+      std::shared_ptr<VersionTag>& versionTag) noexcept override;
+  GfErrType remoteDestroy(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& cbArg,
+      std::shared_ptr<VersionTag>& versionTag) noexcept override;
+  GfErrType remoteRemove(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& value,
+      const std::shared_ptr<Cacheable>& cbArg,
+      std::shared_ptr<VersionTag>& versionTag) noexcept override;
+  GfErrType remoteRemoveEx(
+      const std::shared_ptr<CacheableKey>& key,
+      const std::shared_ptr<Cacheable>& cbArg,
+      std::shared_ptr<VersionTag>& versionTag) noexcept override;
+  GfErrType remoteInvalidate(
       const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Cacheable>& cvalue,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag, bool checkDelta = true) override;
-  GfErrType createNoThrow_remote(
-      const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Cacheable>& cvalue,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) override;
-  GfErrType destroyNoThrow_remote(
-      const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) override;
-  GfErrType removeNoThrow_remote(
-      const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Cacheable>& cvalue,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) override;
-  GfErrType removeNoThrowEX_remote(
-      const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) override;
-  GfErrType invalidateNoThrow_remote(
-      const std::shared_ptr<CacheableKey>& keyPtr,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) override;
+      const std::shared_ptr<Cacheable>& aCallbackArgument,
+      std::shared_ptr<VersionTag>& versionTag) noexcept override;
   GfErrType getAllNoThrow_remote(
       const std::vector<std::shared_ptr<CacheableKey>>* keys,
       const std::shared_ptr<HashMapOfCacheable>& values,
@@ -233,9 +235,9 @@ class ThinClientRegion : public LocalRegion {
       const std::shared_ptr<std::vector<std::shared_ptr<CacheableKey>>>&
           resultKeys,
       bool addToLocalCache,
-      const std::shared_ptr<Serializable>& aCallbackArgument) override;
+      const std::shared_ptr<Cacheable>& aCallbackArgument) override;
   GfErrType destroyRegionNoThrow_remote(
-      const std::shared_ptr<Serializable>& aCallbackArgument) override;
+      const std::shared_ptr<Cacheable>& aCallbackArgument) override;
   GfErrType registerKeysNoThrow(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       bool attemptFailover = true, TcrEndpoint* endpoint = nullptr,
@@ -322,7 +324,7 @@ class ThinClientRegion : public LocalRegion {
   GfErrType createOnServer(
       const std::shared_ptr<CacheableKey>& keyPtr,
       const std::shared_ptr<Cacheable>& cvalue,
-      const std::shared_ptr<Serializable>& aCallbackArgument);
+      const std::shared_ptr<Cacheable>& aCallbackArgument);
   GfErrType getNoThrow_FullObject(
       std::shared_ptr<EventId> eventId, std::shared_ptr<Cacheable>& fullObject,
       std::shared_ptr<VersionTag>& versionTag) override;
@@ -331,28 +333,28 @@ class ThinClientRegion : public LocalRegion {
       ThinClientPoolDM* tcrdm, const HashMapOfCacheable& map,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
       std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
+      const std::shared_ptr<Cacheable>& aCallbackArgument = nullptr);
   GfErrType multiHopPutAllNoThrow_remote(
       const HashMapOfCacheable& map,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
       std::chrono::milliseconds timeout = DEFAULT_RESPONSE_TIMEOUT,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
+      const std::shared_ptr<Cacheable>& aCallbackArgument = nullptr);
 
   GfErrType singleHopRemoveAllNoThrow_remote(
       ThinClientPoolDM* tcrdm,
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
+      const std::shared_ptr<Cacheable>& aCallbackArgument = nullptr);
   GfErrType multiHopRemoveAllNoThrow_remote(
       const std::vector<std::shared_ptr<CacheableKey>>& keys,
       std::shared_ptr<VersionedCacheableObjectPartList>& versionedObjPartList,
-      const std::shared_ptr<Serializable>& aCallbackArgument = nullptr);
+      const std::shared_ptr<Cacheable>& aCallbackArgument = nullptr);
 
   boost::shared_mutex region_mutex_;
   bool m_isMetaDataRefreshed;
 
   typedef std::unordered_map<
-      std::shared_ptr<BucketServerLocation>, std::shared_ptr<Serializable>,
+      std::shared_ptr<BucketServerLocation>, std::shared_ptr<Cacheable>,
       dereference_hash<std::shared_ptr<BucketServerLocation>>,
       dereference_equal_to<std::shared_ptr<BucketServerLocation>>>
       ResultMap;

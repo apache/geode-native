@@ -547,18 +547,6 @@ class TcrMessageInvalidate : public TcrMessage {
   ~TcrMessageInvalidate() override = default;
 };
 
-class TcrMessageDestroy : public TcrMessage {
- public:
-  TcrMessageDestroy(DataOutput* dataOutput, const Region* region,
-                    const std::shared_ptr<CacheableKey>& key,
-                    const std::shared_ptr<Cacheable>& value,
-                    bool isUserNullValue,
-                    const std::shared_ptr<Serializable>& aCallbackArgument,
-                    ThinClientBaseDM* connectionDM = nullptr);
-
-  ~TcrMessageDestroy() override = default;
-};
-
 class TcrMessageRegisterInterestList : public TcrMessage {
  public:
   TcrMessageRegisterInterestList(
@@ -580,19 +568,6 @@ class TcrMessageUnregisterInterestList : public TcrMessage {
       bool isDurable = false, ThinClientBaseDM* connectionDM = nullptr);
 
   ~TcrMessageUnregisterInterestList() override = default;
-};
-
-class TcrMessagePut : public TcrMessage {
- public:
-  TcrMessagePut(DataOutput* dataOutput, const Region* region,
-                const std::shared_ptr<CacheableKey>& key,
-                const std::shared_ptr<Cacheable>& value,
-                const std::shared_ptr<Serializable>& aCallbackArgument,
-                bool isDelta = false, ThinClientBaseDM* connectionDM = nullptr,
-                bool isMetaRegion = false, bool fullValueAfterDeltaFail = false,
-                const char* regionName = nullptr);
-
-  ~TcrMessagePut() override = default;
 };
 
 class TcrMessageCreateRegion : public TcrMessage {

@@ -29,13 +29,18 @@
 #include "CacheImpl.hpp"
 #include "CacheRegionHelper.hpp"
 #include "CacheableToken.hpp"
+#include "CreateAction.hpp"
+#include "DestroyAction.hpp"
 #include "EntriesMapFactory.hpp"
 #include "EntryExpiryTask.hpp"
 #include "ExpiryTaskManager.hpp"
 #include "InterestResultPolicy.hpp"
+#include "InvalidateAction.hpp"
 #include "LRUEntriesMap.hpp"
+#include "PutAction.hpp"
 #include "RegionExpiryTask.hpp"
 #include "RegionGlobalLocks.hpp"
+#include "RemoveAction.hpp"
 #include "SerializableHelper.hpp"
 #include "TXState.hpp"
 #include "TcrConnectionManager.hpp"
@@ -317,7 +322,7 @@ std::shared_ptr<RegionEntry> LocalRegion::getEntry(
                             GF_NOTSUP);
   }
   std::shared_ptr<RegionEntry> rptr;
-  std::shared_ptr<Cacheable> valuePtr;
+  std::shared_ptr<Serializable> valuePtr;
   getEntry(key, valuePtr);
   if (valuePtr != nullptr) {
     rptr = createRegionEntry(key, valuePtr);
@@ -326,7 +331,7 @@ std::shared_ptr<RegionEntry> LocalRegion::getEntry(
 }
 
 void LocalRegion::getEntry(const std::shared_ptr<CacheableKey>& key,
-                           std::shared_ptr<Cacheable>& valuePtr) {
+                           std::shared_ptr<Serializable>& valuePtr) {
   if (key == nullptr) {
     throw IllegalArgumentException("LocalRegion::getEntry: null key");
   }
@@ -337,10 +342,10 @@ void LocalRegion::getEntry(const std::shared_ptr<CacheableKey>& key,
     m_entries->getEntry(key, mePtr, valuePtr);
   }
 }
-std::shared_ptr<Cacheable> LocalRegion::get(
+std::shared_ptr<Serializable> LocalRegion::get(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  std::shared_ptr<Cacheable> rptr;
+  std::shared_ptr<Serializable> rptr;
   int64_t sampleStartNanos = startStatOpTime();
   GfErrType err = getNoThrow(key, rptr, aCallbackArgument);
   updateStatOpTime(m_regionStats->getStat(), m_regionStats->getGetTimeId(),
@@ -354,9 +359,9 @@ std::shared_ptr<Cacheable> LocalRegion::get(
 }
 
 void LocalRegion::put(const std::shared_ptr<CacheableKey>& key,
-                      const std::shared_ptr<Cacheable>& value,
+                      const std::shared_ptr<Serializable>& value,
                       const std::shared_ptr<Serializable>& aCallbackArgument) {
-  std::shared_ptr<Cacheable> oldValue;
+  std::shared_ptr<Serializable> oldValue;
   int64_t sampleStartNanos = startStatOpTime();
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
@@ -367,11 +372,27 @@ void LocalRegion::put(const std::shared_ptr<CacheableKey>& key,
   throwExceptionIfError("Region::put", err);
 }
 
+std::shared_ptr<Serializable> LocalRegion::putIfAbsent(
+    const std::shared_ptr<CacheableKey>& key,
+    const std::shared_ptr<Serializable>& value,
+    const std::shared_ptr<Serializable>& cbArg) {
+  auto opTime = startStatOpTime();
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<VersionTag> versionTag;
+  GfErrType err = putIfAbsentImpl(key, value, cbArg, retValue, -1,
+                                  CacheEventFlags::NORMAL, versionTag);
+
+  updateStatOpTime(m_regionStats->getStat(), m_regionStats->getPutTimeId(),
+                   opTime);
+  throwExceptionIfError("Region::putIfAbsent", err);
+  return retValue;
+}
+
 void LocalRegion::localPut(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  std::shared_ptr<Cacheable> oldValue;
+  std::shared_ptr<Serializable> oldValue;
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = putNoThrow(key, value, aCallbackArgument, oldValue, -1,
                              CacheEventFlags::LOCAL, versionTag);
@@ -406,7 +427,7 @@ void LocalRegion::removeAll(
 
 void LocalRegion::create(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
@@ -417,7 +438,7 @@ void LocalRegion::create(
 
 void LocalRegion::localCreate(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = createNoThrow(key, value, aCallbackArgument, -1,
@@ -473,7 +494,7 @@ void LocalRegion::localDestroy(
 
 bool LocalRegion::remove(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = removeNoThrow(key, value, aCallbackArgument, -1,
@@ -509,7 +530,7 @@ bool LocalRegion::removeEx(
 
 bool LocalRegion::localRemove(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   std::shared_ptr<VersionTag> versionTag;
   GfErrType err = removeNoThrow(key, value, aCallbackArgument, -1,
@@ -554,10 +575,10 @@ std::vector<std::shared_ptr<CacheableKey>> LocalRegion::serverKeys() {
       "serverKeys is not supported for local regions.");
 }
 
-std::vector<std::shared_ptr<Cacheable>> LocalRegion::values() {
+std::vector<std::shared_ptr<Serializable>> LocalRegion::values() {
   CHECK_DESTROY_PENDING(shared_lock, LocalRegion::values);
 
-  std::vector<std::shared_ptr<Cacheable>> values;
+  std::vector<std::shared_ptr<Serializable>> values;
 
   if (m_regionAttributes.getCachingEnabled()) {
     // invalidToken should not be added by the MapSegments.
@@ -643,7 +664,7 @@ bool LocalRegion::containsValueForKey_remote(
   if (!m_regionAttributes.getCachingEnabled()) {
     return false;
   }
-  std::shared_ptr<Cacheable> valuePtr;
+  std::shared_ptr<Serializable> valuePtr;
   std::shared_ptr<MapEntryImpl> mePtr;
   m_entries->getEntry(keyPtr, mePtr, valuePtr);
   if (mePtr == nullptr) {
@@ -850,7 +871,7 @@ std::vector<std::shared_ptr<Region>> LocalRegion::subregions_internal(
 
 GfErrType LocalRegion::getNoThrow(
     const std::shared_ptr<CacheableKey>& keyPtr,
-    std::shared_ptr<Cacheable>& value,
+    std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
@@ -887,7 +908,7 @@ GfErrType LocalRegion::getNoThrow(
   bool isLoaderInvoked = false;
   bool isLocal = false;
   bool cachingEnabled = m_regionAttributes.getCachingEnabled();
-  std::shared_ptr<Cacheable> localValue = nullptr;
+  std::shared_ptr<Serializable> localValue = nullptr;
   if (cachingEnabled) {
     isLocal = m_entries->get(keyPtr, value, me);
     if (isLocal && (value != nullptr && !CacheableToken::isInvalid(value))) {
@@ -967,7 +988,7 @@ GfErrType LocalRegion::getNoThrow(
     }
   }
 
-  std::shared_ptr<Cacheable> oldValue;
+  std::shared_ptr<Serializable> oldValue;
   // Found it somehow, so store it.
   if (value != nullptr /*&& value != CacheableToken::invalid( )*/ &&
       cachingEnabled &&
@@ -1033,7 +1054,7 @@ GfErrType LocalRegion::getAllNoThrow(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
   CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
   GfErrType err = GF_NOERR;
-  std::shared_ptr<Cacheable> value;
+  std::shared_ptr<Serializable> value;
 
   TXState* txState = getTXState();
   if (txState != nullptr) {
@@ -1092,572 +1113,32 @@ GfErrType LocalRegion::getAllNoThrow(
   return err;
 }
 
-// encapsulates actions that need to be taken for a put() operation
-class PutActions {
- public:
-  static const EntryEventType s_beforeEventType = BEFORE_UPDATE;
-  static const EntryEventType s_afterEventType = AFTER_UPDATE;
-  static const bool s_addIfAbsent = true;
-  static const bool s_failIfPresent = false;
-  TXState* m_txState;
-
-  inline explicit PutActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::get().getTXState();
-  }
-
-  inline static const char* name() { return "Region::put"; }
-
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& value,
-                                    DataInput* delta = nullptr) {
-    if (key == nullptr || (value == nullptr && delta == nullptr)) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-
-  inline void getCallbackOldValue(bool cachingEnabled,
-                                  const std::shared_ptr<CacheableKey>& key,
-                                  std::shared_ptr<MapEntryImpl>& entry,
-                                  std::shared_ptr<Cacheable>& oldValue) const {
-    if (cachingEnabled) {
-      m_region.m_entries->getEntry(key, entry, oldValue);
-    }
-  }
-
-  inline static void logCacheWriterFailure(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& oldValue) {
-    bool isUpdate = (oldValue != nullptr);
-    LOGFINER("Cache writer vetoed %s for key %s",
-             (isUpdate ? "update" : "create"),
-             Utils::nullSafeToString(key).c_str());
-  }
-
-  inline GfErrType remoteUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) {
-    // propagate the put to remote server, if any
-    return m_region.putNoThrow_remote(key, value, aCallbackArgument,
-                                      versionTag);
-  }
-
-  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& value,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               bool cachingEnabled,
-                               const CacheEventFlags /*eventFlags*/,
-                               int updateCount,
-                               std::shared_ptr<VersionTag> versionTag,
-                               DataInput* delta = nullptr,
-                               std::shared_ptr<EventId> eventId = nullptr,
-                               bool /*afterRemote*/ = false) {
-    return m_region.putLocal(name(), false, key, value, oldValue,
-                             cachingEnabled, updateCount, 0, versionTag, delta,
-                             eventId);
-  }
-
- private:
-  LocalRegion& m_region;
-};
-
-// encapsulates actions that need to be taken for a put() operation. This
-// implementation allows
-// null values in Put during transaction. See defect #743
-class PutActionsTx : public PutActions {
- public:
-  inline explicit PutActionsTx(LocalRegion& region) : PutActions(region) {}
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& /*value*/,
-                                    DataInput* /*delta*/ = nullptr) {
-    if (key == nullptr) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-};
-
-// encapsulates actions that need to be taken for a create() operation
-class CreateActions {
- public:
-  static const EntryEventType s_beforeEventType = BEFORE_CREATE;
-  static const EntryEventType s_afterEventType = AFTER_CREATE;
-  static const bool s_addIfAbsent = true;
-  static const bool s_failIfPresent = true;
-  TXState* m_txState;
-
-  inline explicit CreateActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::get().getTXState();
-  }
-
-  inline static const char* name() { return "Region::create"; }
-
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& /*value*/,
-                                    DataInput* /*delta*/) {
-    if (key == nullptr) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-
-  inline void getCallbackOldValue(
-      bool /*cachingEnabled*/, const std::shared_ptr<CacheableKey>& /*key*/,
-      std::shared_ptr<MapEntryImpl>& /*entry*/,
-      std::shared_ptr<Cacheable>& /*oldValue*/) const {}
-
-  inline static void logCacheWriterFailure(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*oldValue*/) {
-    LOGFINER("Cache writer vetoed create for key %s",
-             Utils::nullSafeToString(key).c_str());
-  }
-
-  inline GfErrType remoteUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& value,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) {
-    return m_region.createNoThrow_remote(key, value, aCallbackArgument,
-                                         versionTag);
-  }
-
-  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& value,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               bool cachingEnabled,
-                               const CacheEventFlags /*eventFlags*/,
-                               int updateCount,
-                               std::shared_ptr<VersionTag> versionTag,
-                               DataInput* /*delta*/ = nullptr,
-                               std::shared_ptr<EventId> /*eventId*/ = nullptr,
-                               bool /*afterRemote*/ = false) {
-    return m_region.putLocal(name(), true, key, value, oldValue, cachingEnabled,
-                             updateCount, 0, versionTag);
-  }
-
- private:
-  LocalRegion& m_region;
-};
-
-// encapsulates actions that need to be taken for a destroy() operation
-class DestroyActions {
- public:
-  static const EntryEventType s_beforeEventType = BEFORE_DESTROY;
-  static const EntryEventType s_afterEventType = AFTER_DESTROY;
-  static const bool s_addIfAbsent = true;
-  static const bool s_failIfPresent = false;
-  TXState* m_txState;
-
-  inline explicit DestroyActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::get().getTXState();
-  }
-
-  inline static const char* name() { return "Region::destroy"; }
-
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& /*value*/,
-                                    DataInput* /*delta*/) {
-    if (key == nullptr) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-
-  inline void getCallbackOldValue(bool cachingEnabled,
-                                  const std::shared_ptr<CacheableKey>& key,
-                                  std::shared_ptr<MapEntryImpl>& entry,
-                                  std::shared_ptr<Cacheable>& oldValue) const {
-    if (cachingEnabled) {
-      m_region.m_entries->getEntry(key, entry, oldValue);
-    }
-  }
-
-  inline static void logCacheWriterFailure(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*oldValue*/) {
-    LOGFINER("Cache writer vetoed destroy for key %s",
-             Utils::nullSafeToString(key).c_str());
-  }
-
-  inline GfErrType remoteUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*value*/,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) {
-    return m_region.destroyNoThrow_remote(key, aCallbackArgument, versionTag);
-  }
-
-  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& /*value*/,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               bool cachingEnabled,
-                               const CacheEventFlags eventFlags,
-                               int updateCount,
-                               std::shared_ptr<VersionTag> versionTag,
-                               DataInput* /*delta*/ = nullptr,
-                               std::shared_ptr<EventId> /*eventId*/ = nullptr,
-                               bool afterRemote = false) {
-    auto& cachePerfStats = m_region.m_cacheImpl->getCachePerfStats();
-
-    if (cachingEnabled) {
-      std::shared_ptr<MapEntryImpl> entry;
-      //  for notification invoke the listener even if the key does
-      // not exist locally
-      GfErrType err;
-      LOGDEBUG("Region::destroy: region [%s] destroying key [%s]",
-               m_region.getFullPath().c_str(),
-               Utils::nullSafeToString(key).c_str());
-      if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
-                                            versionTag, afterRemote)) !=
-          GF_NOERR) {
-        if (eventFlags.isNotification()) {
-          LOGDEBUG(
-              "Region::destroy: region [%s] destroy key [%s] for "
-              "notification having value [%s] failed with %d",
-              m_region.getFullPath().c_str(),
-              Utils::nullSafeToString(key).c_str(),
-              Utils::nullSafeToString(oldValue).c_str(), err);
-          err = GF_NOERR;
-        }
-        return err;
-      }
-
-      if (oldValue != nullptr) {
-        LOGDEBUG(
-            "Region::destroy: region [%s] destroyed key [%s] having "
-            "value [%s]",
-            m_region.getFullPath().c_str(),
-            Utils::nullSafeToString(key).c_str(),
-            Utils::nullSafeToString(oldValue).c_str());
-        // any cleanup required for the entry (e.g. removing from LRU list)
-        if (entry != nullptr) {
-          entry->cleanup(eventFlags);
-        }
-        // entry/region expiration
-        if (!eventFlags.isEvictOrExpire()) {
-          m_region.updateAccessAndModifiedTime(true);
-        }
-        // update the stats
-        m_region.m_regionStats->setEntries(m_region.m_entries->size());
-        cachePerfStats.incEntries(-1);
-      }
-    }
-    // update the stats
-    m_region.m_regionStats->incDestroys();
-    cachePerfStats.incDestroys();
-    return GF_NOERR;
-  }
-
- private:
-  LocalRegion& m_region;
-};
-
-// encapsulates actions that need to be taken for a remove() operation
-class RemoveActions {
- public:
-  static const EntryEventType s_beforeEventType = BEFORE_DESTROY;
-  static const EntryEventType s_afterEventType = AFTER_DESTROY;
-  static const bool s_addIfAbsent = true;
-  static const bool s_failIfPresent = false;
-  TXState* m_txState;
-  bool allowNULLValue;
-
-  inline explicit RemoveActions(LocalRegion& region)
-      : m_region(region), m_ServerResponse(GF_ENOENT) {
-    m_txState = TSSTXStateWrapper::get().getTXState();
-    allowNULLValue = false;
-  }
-
-  inline static const char* name() { return "Region::remove"; }
-
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& /*value*/,
-                                    DataInput* /*delta*/) {
-    if (key == nullptr) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-
-  inline void getCallbackOldValue(bool cachingEnabled,
-                                  const std::shared_ptr<CacheableKey>& key,
-                                  std::shared_ptr<MapEntryImpl>& entry,
-                                  std::shared_ptr<Cacheable>& oldValue) const {
-    if (cachingEnabled) {
-      m_region.m_entries->getEntry(key, entry, oldValue);
-    }
-  }
-
-  inline static void logCacheWriterFailure(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*oldValue*/) {
-    LOGFINER("Cache writer vetoed remove for key %s",
-             Utils::nullSafeToString(key).c_str());
-  }
-
-  bool serializedEqualTo(const std::shared_ptr<Cacheable>& lhs,
-                         const std::shared_ptr<Cacheable>& rhs) {
-    auto&& cache = *(m_region.getCacheImpl());
-
-    if (const auto dataSerializablePrimitive =
-            std::dynamic_pointer_cast<DataSerializablePrimitive>(lhs)) {
-      return SerializableHelper<DataSerializablePrimitive>{}.equalTo(
-          cache, dataSerializablePrimitive,
-          std::dynamic_pointer_cast<DataSerializablePrimitive>(rhs));
-    } else if (const auto dataSerializable =
-                   std::dynamic_pointer_cast<DataSerializable>(lhs)) {
-      return SerializableHelper<DataSerializable>{}.equalTo(
-          cache, dataSerializable,
-          std::dynamic_pointer_cast<DataSerializable>(rhs));
-    } else if (const auto pdxSerializable =
-                   std::dynamic_pointer_cast<PdxSerializable>(lhs)) {
-      return SerializableHelper<PdxSerializable>{}.equalTo(
-          cache, pdxSerializable,
-          std::dynamic_pointer_cast<PdxSerializable>(rhs));
-    } else if (const auto dataSerializableInternal =
-                   std::dynamic_pointer_cast<DataSerializableInternal>(lhs)) {
-      return SerializableHelper<DataSerializableInternal>{}.equalTo(
-          cache, dataSerializableInternal,
-          std::dynamic_pointer_cast<DataSerializableInternal>(rhs));
-    } else {
-      throw UnsupportedOperationException(
-          "Serialization type not implemented.");
-    }
-  }
-
-  inline GfErrType remoteUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& newValue,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) {
-    // propagate the remove to remote server, if any
-    std::shared_ptr<Cacheable> oldValue;
-    GfErrType err = GF_NOERR;
-    if (!allowNULLValue && m_region.getAttributes().getCachingEnabled()) {
-      m_region.getEntry(key, oldValue);
-      if (oldValue != nullptr && newValue != nullptr) {
-        if (!serializedEqualTo(oldValue, newValue)) {
-          err = GF_ENOENT;
-          return err;
-        }
-      } else if ((oldValue == nullptr || CacheableToken::isInvalid(oldValue))) {
-        m_ServerResponse = m_region.removeNoThrow_remote(
-            key, newValue, aCallbackArgument, versionTag);
-
-        return m_ServerResponse;
-      } else if (oldValue != nullptr && newValue == nullptr) {
-        err = GF_ENOENT;
-        return err;
-      }
-    }
-    if (allowNULLValue) {
-      m_ServerResponse =
-          m_region.removeNoThrowEX_remote(key, aCallbackArgument, versionTag);
-    } else {
-      m_ServerResponse = m_region.removeNoThrow_remote(
-          key, newValue, aCallbackArgument, versionTag);
-    }
-    LOGDEBUG("serverResponse::%d", m_ServerResponse);
-    return m_ServerResponse;
-  }
-
-  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& value,
-                               std::shared_ptr<Cacheable>& oldValue,
-                               bool cachingEnabled,
-                               const CacheEventFlags eventFlags,
-                               int updateCount,
-                               std::shared_ptr<VersionTag> versionTag,
-                               DataInput* /*delta*/ = nullptr,
-                               std::shared_ptr<EventId> /*eventId*/ = nullptr,
-                               bool afterRemote = false) {
-    std::shared_ptr<Cacheable> valuePtr;
-    GfErrType err = GF_NOERR;
-    if (!allowNULLValue && cachingEnabled) {
-      m_region.getEntry(key, valuePtr);
-      if (valuePtr != nullptr && value != nullptr) {
-        if (!serializedEqualTo(valuePtr, value)) {
-          err = GF_ENOENT;
-          return err;
-        }
-      } else if (value == nullptr && (!CacheableToken::isInvalid(valuePtr) ||
-                                      valuePtr == nullptr)) {
-        err = (m_ServerResponse == 0 && valuePtr == nullptr) ? GF_NOERR
-                                                             : GF_ENOENT;
-        if (updateCount >= 0 &&
-            !m_region.getAttributes().getConcurrencyChecksEnabled()) {
-          // This means server has deleted an entry & same entry has been
-          // destroyed locally
-          // So call removeTrackerForEntry to remove key that
-          // was added in the  map during addTrackerForEntry call.
-          m_region.m_entries->removeTrackerForEntry(key);
-        }
-        return err;
-      } else if (valuePtr == nullptr && value != nullptr &&
-                 m_ServerResponse != 0) {
-        err = GF_ENOENT;
-        return err;
-      }
-    }
-    auto& cachePerfStats = m_region.m_cacheImpl->getCachePerfStats();
-
-    if (cachingEnabled) {
-      std::shared_ptr<MapEntryImpl> entry;
-      //  for notification invoke the listener even if the key does
-      // not exist locally
-      LOGDEBUG("Region::remove: region [%s] removing key [%s]",
-               m_region.getFullPath().c_str(),
-               Utils::nullSafeToString(key).c_str());
-      if ((err = m_region.m_entries->remove(key, oldValue, entry, updateCount,
-                                            versionTag, afterRemote)) !=
-          GF_NOERR) {
-        if (eventFlags.isNotification()) {
-          LOGDEBUG(
-              "Region::remove: region [%s] remove key [%s] for "
-              "notification having value [%s] failed with %d",
-              m_region.getFullPath().c_str(),
-              Utils::nullSafeToString(key).c_str(),
-              Utils::nullSafeToString(oldValue).c_str(), err);
-          err = GF_NOERR;
-        }
-        return err;
-      }
-      if (oldValue != nullptr) {
-        LOGDEBUG(
-            "Region::remove: region [%s] removed key [%s] having "
-            "value [%s]",
-            m_region.getFullPath().c_str(),
-            Utils::nullSafeToString(key).c_str(),
-            Utils::nullSafeToString(oldValue).c_str());
-        // any cleanup required for the entry (e.g. removing from LRU list)
-        if (entry != nullptr) {
-          entry->cleanup(eventFlags);
-        }
-        // entry/region expiration
-        if (!eventFlags.isEvictOrExpire()) {
-          m_region.updateAccessAndModifiedTime(true);
-        }
-        // update the stats
-        m_region.m_regionStats->setEntries(m_region.m_entries->size());
-        cachePerfStats.incEntries(-1);
-      }
-    }
-    // update the stats
-    m_region.m_regionStats->incDestroys();
-    cachePerfStats.incDestroys();
-    return GF_NOERR;
-  }
-
- private:
-  LocalRegion& m_region;
-  GfErrType m_ServerResponse;
-};
-
-class RemoveActionsEx : public RemoveActions {
- public:
-  inline explicit RemoveActionsEx(LocalRegion& region) : RemoveActions(region) {
-    allowNULLValue = true;
-  }
-};
-
-// encapsulates actions that need to be taken for a invalidate() operation
-class InvalidateActions {
- public:
-  static const EntryEventType s_beforeEventType = BEFORE_INVALIDATE;
-  static const EntryEventType s_afterEventType = AFTER_INVALIDATE;
-  static const bool s_addIfAbsent = true;
-  static const bool s_failIfPresent = false;
-  TXState* m_txState;
-
-  inline explicit InvalidateActions(LocalRegion& region) : m_region(region) {
-    m_txState = TSSTXStateWrapper::get().getTXState();
-  }
-
-  inline static const char* name() { return "Region::invalidate"; }
-
-  inline static GfErrType checkArgs(const std::shared_ptr<CacheableKey>& key,
-                                    const std::shared_ptr<Cacheable>& /*value*/,
-                                    DataInput* /*delta*/ = nullptr) {
-    if (key == nullptr) {
-      return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
-    }
-    return GF_NOERR;
-  }
-
-  inline void getCallbackOldValue(bool cachingEnabled,
-                                  const std::shared_ptr<CacheableKey>& key,
-                                  std::shared_ptr<MapEntryImpl>& entry,
-                                  std::shared_ptr<Cacheable>& oldValue) const {
-    if (cachingEnabled) {
-      m_region.m_entries->getEntry(key, entry, oldValue);
-    }
-  }
-
-  inline static void logCacheWriterFailure(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& oldValue) {
-    bool isUpdate = (oldValue != nullptr);
-    LOGFINER("Cache writer vetoed %s for key %s",
-             (isUpdate ? "update" : "invalidate"),
-             Utils::nullSafeToString(key).c_str());
-  }
-
-  inline GfErrType remoteUpdate(
-      const std::shared_ptr<CacheableKey>& key,
-      const std::shared_ptr<Cacheable>& /*value*/,
-      const std::shared_ptr<Serializable>& aCallbackArgument,
-      std::shared_ptr<VersionTag>& versionTag) {
-    // propagate the invalidate to remote server, if any
-    return m_region.invalidateNoThrow_remote(key, aCallbackArgument,
-                                             versionTag);
-  }
-
-  inline GfErrType localUpdate(const std::shared_ptr<CacheableKey>& key,
-                               const std::shared_ptr<Cacheable>& value,
-                               std::shared_ptr<Cacheable>& /*oldValue*/,
-                               bool /*cachingEnabled*/,
-                               const CacheEventFlags eventFlags,
-                               int /*updateCount*/,
-                               std::shared_ptr<VersionTag> versionTag,
-                               DataInput* /*delta*/ = nullptr,
-                               std::shared_ptr<EventId> /*eventId*/ = nullptr,
-                               bool /*afterRemote*/ = false) {
-    return m_region.invalidateLocal(name(), key, value, eventFlags, versionTag);
-  }
-
- private:
-  LocalRegion& m_region;
-};
-
-template <typename TAction>
-GfErrType LocalRegion::updateNoThrow(
-    const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
-    const std::shared_ptr<Serializable>& aCallbackArgument,
-    std::shared_ptr<Cacheable>& oldValue, int updateCount,
-    const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag,
-    DataInput* delta, std::shared_ptr<EventId> eventId) {
+template <typename Action_>
+GfErrType LocalRegion::update(const std::shared_ptr<CacheableKey>& key,
+                              const std::shared_ptr<Serializable>& value,
+                              const std::shared_ptr<Serializable>& cbArg,
+                              std::shared_ptr<Serializable>& retValue,
+                              std::shared_ptr<Serializable>& oldValue,
+                              int updateCount, const CacheEventFlags eventFlags,
+                              std::shared_ptr<VersionTag> versionTag,
+                              DataInput* delta,
+                              std::shared_ptr<EventId> eventId) noexcept {
   GfErrType err = GF_NOERR;
-  if ((err = TAction::checkArgs(key, value, delta)) != GF_NOERR) {
+  if ((err = Action_::checkArgs(key, value, delta)) != GF_NOERR) {
     return err;
   }
 
   CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
 
-  TAction action(*this);
-  TXState* txState = action.m_txState;
+  Action_ action{*this};
+
+  auto txState = action.getTxState();
   if (txState != nullptr) {
     if (isLocalOp(&eventFlags)) {
       return GF_NOTSUP;
     }
-    /* adongre - Coverity II
-     * CID 29194 (6): Parse warning (PW.PARAMETER_HIDDEN)
-     */
-    // std::shared_ptr<VersionTag> versionTag;
-    err = action.remoteUpdate(key, value, aCallbackArgument, versionTag);
+
+    err = action.remoteUpdate(key, value, cbArg, retValue, versionTag);
     if (err == GF_NOERR) {
       txState->setDirty();
     }
@@ -1665,8 +1146,8 @@ GfErrType LocalRegion::updateNoThrow(
     return err;
   }
 
-  bool cachingEnabled = m_regionAttributes.getCachingEnabled();
   std::shared_ptr<MapEntryImpl> entry;
+  bool cachingEnabled = m_regionAttributes.getCachingEnabled();
 
   //  do not invoke the writer in case of notification/eviction
   // or expiration
@@ -1675,13 +1156,13 @@ GfErrType LocalRegion::updateNoThrow(
     // invokeCacheWriterForEntryEvent method has the check that if oldValue
     // is a CacheableToken then it sets it to nullptr; also determines if it
     // should be BEFORE_UPDATE or BEFORE_CREATE depending on oldValue
-    if (!invokeCacheWriterForEntryEvent(key, oldValue, value, aCallbackArgument,
-                                        eventFlags,
-                                        TAction::s_beforeEventType)) {
-      TAction::logCacheWriterFailure(key, oldValue);
+    if (!invokeCacheWriterForEntryEvent(key, oldValue, value, cbArg, eventFlags,
+                                        Action_::s_beforeEventType)) {
+      Action_::logCacheWriterFailure(key, oldValue);
       return GF_CACHEWRITER_ERROR;
     }
   }
+
   bool remoteOpDone = false;
   //  try the remote update; but if this fails (e.g. due to security
   // exception) do not do the local update
@@ -1694,7 +1175,7 @@ GfErrType LocalRegion::updateNoThrow(
         !m_regionAttributes.getConcurrencyChecksEnabled()) {
       // add a tracking for the entry
       if ((updateCount = m_entries->addTrackerForEntry(
-               key, oldValue, TAction::s_addIfAbsent, TAction::s_failIfPresent,
+               key, oldValue, Action_::s_addIfAbsent, Action_::s_failIfPresent,
                true)) < 0) {
         if (oldValue != nullptr) {
           // fail for "create" when entry exists
@@ -1702,44 +1183,49 @@ GfErrType LocalRegion::updateNoThrow(
         }
       }
     }
+
     // propagate the update to remote server, if any
-    err = action.remoteUpdate(key, value, aCallbackArgument, versionTag);
+    err = action.remoteUpdate(key, value, cbArg, retValue, versionTag);
     if (err != GF_NOERR) {
       if (updateCount >= 0 &&
           !m_regionAttributes.getConcurrencyChecksEnabled()) {
         m_entries->removeTrackerForEntry(key);
       }
+
       return err;
     }
+
     remoteOpDone = true;
   }
+
   if (!eventFlags.isNotification() || getProcessedMarker()) {
-    if ((err = action.localUpdate(key, value, oldValue, cachingEnabled,
-                                  eventFlags, updateCount, versionTag, delta,
-                                  eventId, remoteOpDone)) ==
-        GF_CACHE_ENTRY_UPDATED) {
+    err = action.localUpdate(key, value, oldValue, cachingEnabled, eventFlags,
+                             updateCount, versionTag, delta, eventId,
+                             remoteOpDone);
+
+    if (err == GF_CACHE_ENTRY_UPDATED) {
       LOGFINEST(
           "%s: did not change local value for key [%s] since it has "
           "been updated by another thread while operation was in progress",
-          TAction::name(), Utils::nullSafeToString(key).c_str());
+          Action_::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
       LOGDEBUG(
-          "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because the cache already contains \
-        an entry with higher version. The cache listener will not be invoked.",
-          TAction::name(), Utils::nullSafeToString(key).c_str());
+          "Region::localUpdate: update<%s> for key [%s] failed because the "
+          "cache already contains an entry with higher version. The cache "
+          "listener will not be invoked.",
+          Action_::name(), Utils::nullSafeToString(key).c_str());
       // Cache listener won't be called in this case
       return GF_NOERR;
     } else if (err == GF_INVALID_DELTA) {
       LOGDEBUG(
-          "Region::localUpdate: updateNoThrow<%s> for key [%s] failed "
-          "because "
-          "of invalid delta.",
-          TAction::name(), Utils::nullSafeToString(key).c_str());
+          "Region::localUpdate: update<%s> for key [%s] failed "
+          "because of invalid delta.",
+          Action_::name(), Utils::nullSafeToString(key).c_str());
       m_cacheImpl->getCachePerfStats().incFailureOnDeltaReceived();
       // Get full object from server.
-      std::shared_ptr<Cacheable>& newValue1 =
-          const_cast<std::shared_ptr<Cacheable>&>(value);
+      std::shared_ptr<Serializable>& newValue1 =
+          const_cast<std::shared_ptr<Serializable>&>(value);
       std::shared_ptr<VersionTag> versionTag1;
       err = getNoThrow_FullObject(eventId, newValue1, versionTag1);
       if (err == GF_NOERR && newValue1 != nullptr) {
@@ -1747,9 +1233,10 @@ GfErrType LocalRegion::updateNoThrow(
                              versionTag1 != nullptr ? versionTag1 : versionTag);
         if (err == GF_CACHE_CONCURRENT_MODIFICATION_EXCEPTION) {
           LOGDEBUG(
-              "Region::localUpdate: updateNoThrow<%s> for key [%s] failed because the cache already contains \
-            an entry with higher version. The cache listener will not be invoked.",
-              TAction::name(), Utils::nullSafeToString(key).c_str());
+              "Region::localUpdate: update<%s> for key [%s] failed because the "
+              "cache already contains an entry with higher version. The cache "
+              "listener will not be invoked.",
+              Action_::name(), Utils::nullSafeToString(key).c_str());
           // Cache listener won't be called in this case
           return GF_NOERR;
         } else if (err != GF_NOERR) {
@@ -1770,29 +1257,29 @@ GfErrType LocalRegion::updateNoThrow(
     // invokeCacheListenerForEntryEvent method has the check that if oldValue
     // is a CacheableToken then it sets it to nullptr; also determines if it
     // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
-    err = invokeCacheListenerForEntryEvent(key, oldValue, value,
-                                           aCallbackArgument, eventFlags,
-                                           TAction::s_afterEventType);
+    err = invokeCacheListenerForEntryEvent(
+        key, oldValue, value, cbArg, eventFlags, Action_::s_afterEventType);
   }
 
+  oldValue = retValue;
   return err;
 }
 
-template <typename TAction>
-GfErrType LocalRegion::updateNoThrowTX(
+template <typename Action_>
+GfErrType LocalRegion::updateTX(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument,
-    std::shared_ptr<Cacheable>& oldValue, int updateCount,
+    std::shared_ptr<Serializable>& oldValue, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag,
-    DataInput* delta, std::shared_ptr<EventId> eventId) {
+    DataInput* delta, std::shared_ptr<EventId> eventId) noexcept {
   GfErrType err = GF_NOERR;
-  if ((err = TAction::checkArgs(key, value, delta)) != GF_NOERR) {
+  if ((err = Action_::checkArgs(key, value, delta)) != GF_NOERR) {
     return err;
   }
 
   CHECK_DESTROY_PENDING_NOTHROW(shared_lock);
-  TAction action(*this);
+  Action_ action(*this);
 
   bool cachingEnabled = m_regionAttributes.getCachingEnabled();
   std::shared_ptr<MapEntryImpl> entry;
@@ -1804,7 +1291,7 @@ GfErrType LocalRegion::updateNoThrowTX(
       LOGFINEST(
           "%s: did not change local value for key [%s] since it has "
           "been updated by another thread while operation was in progress",
-          TAction::name(), Utils::nullSafeToString(key).c_str());
+          Action_::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err == GF_CACHE_ENTRY_NOT_FOUND) {
       // Entry not found. Possibly because the entry was added and removed in
@@ -1814,7 +1301,7 @@ GfErrType LocalRegion::updateNoThrowTX(
           "%s: No entry found. Possibly because the entry was added and "
           "removed in the same transaction. "
           "Ignoring this error. ",
-          TAction::name(), Utils::nullSafeToString(key).c_str());
+          Action_::name(), Utils::nullSafeToString(key).c_str());
       err = GF_NOERR;
     } else if (err != GF_NOERR) {
       return err;
@@ -1830,102 +1317,118 @@ GfErrType LocalRegion::updateNoThrowTX(
   // should be AFTER_UPDATE or AFTER_CREATE depending on oldValue
   err =
       invokeCacheListenerForEntryEvent(key, oldValue, value, aCallbackArgument,
-                                       eventFlags, TAction::s_afterEventType);
+                                       eventFlags, Action_::s_afterEventType);
   return err;
 }
 
-GfErrType LocalRegion::putNoThrow(
+GfErrType LocalRegion::putNoThrow(const std::shared_ptr<CacheableKey>& key,
+                                  const std::shared_ptr<Serializable>& value,
+                                  const std::shared_ptr<Serializable>& cbArg,
+                                  std::shared_ptr<Serializable>& oldValue,
+                                  int updateCount,
+                                  const CacheEventFlags eventFlags,
+                                  std::shared_ptr<VersionTag> versionTag,
+                                  DataInput* delta,
+                                  std::shared_ptr<EventId> eventId) {
+  std::shared_ptr<Serializable> retValue;
+  return update<PutAction>(key, value, cbArg, retValue, oldValue, updateCount,
+                           eventFlags, versionTag, delta, eventId);
+}
+
+GfErrType LocalRegion::putIfAbsentImpl(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
-    const std::shared_ptr<Serializable>& aCallbackArgument,
-    std::shared_ptr<Cacheable>& oldValue, int updateCount,
+    const std::shared_ptr<Serializable>& value,
+    const std::shared_ptr<Serializable>& cbArg,
+    std::shared_ptr<Serializable>& retValue, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag,
-    DataInput* delta, std::shared_ptr<EventId> eventId) {
-  return updateNoThrow<PutActions>(key, value, aCallbackArgument, oldValue,
+    DataInput* delta, std::shared_ptr<EventId> eventId) noexcept {
+  std::shared_ptr<Serializable> oldValue;
+  return update<PutIfAbsentAction>(key, value, cbArg, retValue, oldValue,
                                    updateCount, eventFlags, versionTag, delta,
                                    eventId);
 }
 
 GfErrType LocalRegion::putNoThrowTX(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument,
-    std::shared_ptr<Cacheable>& oldValue, int updateCount,
+    std::shared_ptr<Serializable>& oldValue, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag,
     DataInput* delta, std::shared_ptr<EventId> eventId) {
-  return updateNoThrowTX<PutActionsTx>(key, value, aCallbackArgument, oldValue,
-                                       updateCount, eventFlags, versionTag,
-                                       delta, eventId);
+  return updateTX<PutActionTx>(key, value, aCallbackArgument, oldValue,
+                               updateCount, eventFlags, versionTag, delta,
+                               eventId);
 }
 
 GfErrType LocalRegion::createNoThrow(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrow<CreateActions>(key, value, aCallbackArgument, oldValue,
-                                      updateCount, eventFlags, versionTag);
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<Serializable> oldValue;
+  return update<CreateAction>(key, value, aCallbackArgument, retValue, oldValue,
+                              updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::destroyNoThrow(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrow<DestroyActions>(key, nullptr, aCallbackArgument,
-                                       oldValue, updateCount, eventFlags,
-                                       versionTag);
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<Serializable> oldValue;
+  return update<DestroyAction>(key, nullptr, aCallbackArgument, retValue,
+                               oldValue, updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::destroyNoThrowTX(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrowTX<DestroyActions>(key, nullptr, aCallbackArgument,
-                                         oldValue, updateCount, eventFlags,
-                                         versionTag);
+  std::shared_ptr<Serializable> oldValue;
+  return updateTX<DestroyAction>(key, nullptr, aCallbackArgument, oldValue,
+                                 updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::removeNoThrow(
     const std::shared_ptr<CacheableKey>& key,
-    const std::shared_ptr<Cacheable>& value,
+    const std::shared_ptr<Serializable>& value,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrow<RemoveActions>(key, value, aCallbackArgument, oldValue,
-                                      updateCount, eventFlags, versionTag);
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<Serializable> oldValue;
+  return update<RemoveAction>(key, value, aCallbackArgument, retValue, oldValue,
+                              updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::removeNoThrowEx(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrow<RemoveActionsEx>(key, nullptr, aCallbackArgument,
-                                        oldValue, updateCount, eventFlags,
-                                        versionTag);
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<Serializable> oldValue;
+  return update<RemoveActionEx>(key, nullptr, aCallbackArgument, retValue,
+                                oldValue, updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::invalidateNoThrow(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrow<InvalidateActions>(key, nullptr, aCallbackArgument,
-                                          oldValue, updateCount, eventFlags,
-                                          versionTag);
+  std::shared_ptr<Serializable> retValue;
+  std::shared_ptr<Serializable> oldValue;
+  return update<InvalidateAction>(key, nullptr, aCallbackArgument, retValue,
+                                  oldValue, updateCount, eventFlags,
+                                  versionTag);
 }
 
 GfErrType LocalRegion::invalidateNoThrowTX(
     const std::shared_ptr<CacheableKey>& key,
     const std::shared_ptr<Serializable>& aCallbackArgument, int updateCount,
     const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
-  std::shared_ptr<Cacheable> oldValue;
-  return updateNoThrowTX<InvalidateActions>(key, nullptr, aCallbackArgument,
-                                            oldValue, updateCount, eventFlags,
-                                            versionTag);
+  std::shared_ptr<Serializable> oldValue;
+  return updateTX<InvalidateAction>(key, nullptr, aCallbackArgument, oldValue,
+                                    updateCount, eventFlags, versionTag);
 }
 
 GfErrType LocalRegion::putAllNoThrow(
@@ -1977,7 +1480,7 @@ GfErrType LocalRegion::putAllNoThrow(
   } _removeTracking(oldValueMap, *this);
 
   if (cachingEnabled || m_writer != nullptr) {
-    std::shared_ptr<Cacheable> oldValue;
+    std::shared_ptr<Serializable> oldValue;
     for (const auto& iter : map) {
       const auto& key = iter.first;
       if (cachingEnabled && !m_regionAttributes.getConcurrencyChecksEnabled()) {
@@ -1994,7 +1497,7 @@ GfErrType LocalRegion::putAllNoThrow(
         if (!invokeCacheWriterForEntryEvent(
                 key, oldValue, iter.second, aCallbackArgument,
                 CacheEventFlags::LOCAL, BEFORE_UPDATE)) {
-          PutActions::logCacheWriterFailure(key, oldValue);
+          PutAction::logCacheWriterFailure(key, oldValue);
           return GF_CACHEWRITER_ERROR;
         }
       }
@@ -2019,7 +1522,7 @@ GfErrType LocalRegion::putAllNoThrow(
             versionedObjPartListPtr->getSucceededKeys()->at(keyIndex);
         const auto& mapIter = map.find(valPtr);
         std::shared_ptr<CacheableKey> key = nullptr;
-        std::shared_ptr<Cacheable> value = nullptr;
+        std::shared_ptr<Serializable> value = nullptr;
 
         if (mapIter != map.end()) {
           key = mapIter->first;
@@ -2040,7 +1543,7 @@ GfErrType LocalRegion::putAllNoThrow(
                 versionedObjPartListPtr->getVersionedTagptr()[keyIndex];
           }
         }
-        std::pair<std::shared_ptr<Cacheable>, int>& p = oldValueMap[key];
+        std::pair<std::shared_ptr<Serializable>, int>& p = oldValueMap[key];
         if ((localErr = LocalRegion::putNoThrow(
                  key, value, aCallbackArgument, p.first, p.second,
                  CacheEventFlags::LOCAL | CacheEventFlags::NOCACHEWRITER,
@@ -2227,8 +1730,8 @@ GfErrType LocalRegion::localClearNoThrow(
 
 GfErrType LocalRegion::invalidateLocal(
     const std::string& name, const std::shared_ptr<CacheableKey>& keyPtr,
-    const std::shared_ptr<Cacheable>& value, const CacheEventFlags eventFlags,
-    std::shared_ptr<VersionTag> versionTag) {
+    const std::shared_ptr<Serializable>& value,
+    const CacheEventFlags eventFlags, std::shared_ptr<VersionTag> versionTag) {
   if (keyPtr == nullptr) {
     return GF_CACHE_ILLEGAL_ARGUMENT_EXCEPTION;
   }
@@ -2237,7 +1740,7 @@ GfErrType LocalRegion::invalidateLocal(
   GfErrType err = GF_NOERR;
 
   bool cachingEnabled = m_regionAttributes.getCachingEnabled();
-  std::shared_ptr<Cacheable> oldValue;
+  std::shared_ptr<Serializable> oldValue;
   std::shared_ptr<MapEntryImpl> me;
 
   if (!eventFlags.isNotification() || getProcessedMarker()) {
@@ -2321,7 +1824,7 @@ GfErrType LocalRegion::invalidateRegionNoThrow(
     std::shared_ptr<MapEntryImpl> me;
     for (decltype(size) i = 0; i < size; i++) {
       {
-        std::shared_ptr<Cacheable> oldValue;
+        std::shared_ptr<Serializable> oldValue;
         // invalidate all the entries with a nullptr versionTag
         std::shared_ptr<VersionTag> versionTag;
         m_entries->invalidate(v.at(i), me, oldValue, versionTag);
@@ -2470,8 +1973,8 @@ GfErrType LocalRegion::destroyRegionNoThrow(
 
 GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
                                 const std::shared_ptr<CacheableKey>& key,
-                                const std::shared_ptr<Cacheable>& value,
-                                std::shared_ptr<Cacheable>& oldValue,
+                                const std::shared_ptr<Serializable>& value,
+                                std::shared_ptr<Serializable>& oldValue,
                                 bool cachingEnabled, int updateCount,
                                 int destroyTracker,
                                 std::shared_ptr<VersionTag> versionTag,
@@ -2495,8 +1998,8 @@ GfErrType LocalRegion::putLocal(const std::string& name, bool isCreate,
       if (err == GF_INVALID_DELTA) {
         cachePerfStats.incFailureOnDeltaReceived();
         // PXR: Get full object from server.
-        std::shared_ptr<Cacheable>& newValue1 =
-            const_cast<std::shared_ptr<Cacheable>&>(value);
+        std::shared_ptr<Serializable>& newValue1 =
+            const_cast<std::shared_ptr<Serializable>&>(value);
         std::shared_ptr<VersionTag> versionTag1;
         err = getNoThrow_FullObject(eventId, newValue1, versionTag1);
         if (err == GF_NOERR && newValue1 != nullptr) {
@@ -2572,8 +2075,8 @@ void LocalRegion::removeRegion(const std::string& name) {
 
 bool LocalRegion::invokeCacheWriterForEntryEvent(
     const std::shared_ptr<CacheableKey>& key,
-    std::shared_ptr<Cacheable>& oldValue,
-    const std::shared_ptr<Cacheable>& newValue,
+    std::shared_ptr<Serializable>& oldValue,
+    const std::shared_ptr<Serializable>& newValue,
     const std::shared_ptr<Serializable>& aCallbackArgument,
     CacheEventFlags eventFlags, EntryEventType type) {
   // Check if we have a local cache writer. If so, invoke and return.
@@ -2692,8 +2195,8 @@ bool LocalRegion::invokeCacheWriterForRegionEvent(
 
 GfErrType LocalRegion::invokeCacheListenerForEntryEvent(
     const std::shared_ptr<CacheableKey>& key,
-    std::shared_ptr<Cacheable>& oldValue,
-    const std::shared_ptr<Cacheable>& newValue,
+    std::shared_ptr<Serializable>& oldValue,
+    const std::shared_ptr<Serializable>& newValue,
     const std::shared_ptr<Serializable>& aCallbackArgument,
     CacheEventFlags eventFlags, EntryEventType type, bool isLocal) {
   GfErrType err = GF_NOERR;
@@ -3034,16 +2537,18 @@ std::chrono::seconds LocalRegion::getEntryExpiryDuration() const {
 GfErrType LocalRegion::unregisterKeysBeforeDestroyRegion() { return GF_NOERR; }
 
 GfErrType LocalRegion::getNoThrow_remote(const std::shared_ptr<CacheableKey>&,
-                                         std::shared_ptr<Cacheable>&,
+                                         std::shared_ptr<Serializable>&,
                                          const std::shared_ptr<Serializable>&,
                                          std::shared_ptr<VersionTag>&) {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::putNoThrow_remote(const std::shared_ptr<CacheableKey>&,
-                                         const std::shared_ptr<Cacheable>&,
-                                         const std::shared_ptr<Serializable>&,
-                                         std::shared_ptr<VersionTag>&, bool) {
+GfErrType LocalRegion::remotePut(const std::shared_ptr<CacheableKey>&,
+                                 const std::shared_ptr<Serializable>&,
+                                 const std::shared_ptr<Serializable>&,
+                                 std::shared_ptr<VersionTag>&,
+                                 std::shared_ptr<Serializable>&, EventOperation,
+                                 bool) noexcept {
   return GF_NOERR;
 }
 
@@ -3061,33 +2566,35 @@ GfErrType LocalRegion::removeAllNoThrow_remote(
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::createNoThrow_remote(
-    const std::shared_ptr<CacheableKey>&, const std::shared_ptr<Cacheable>&,
-    const std::shared_ptr<Serializable>&, std::shared_ptr<VersionTag>&) {
+GfErrType LocalRegion::remoteCreate(const std::shared_ptr<CacheableKey>&,
+                                    const std::shared_ptr<Serializable>&,
+                                    const std::shared_ptr<Serializable>&,
+                                    std::shared_ptr<VersionTag>&) noexcept {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::destroyNoThrow_remote(
-    const std::shared_ptr<CacheableKey>&, const std::shared_ptr<Serializable>&,
-    std::shared_ptr<VersionTag>&) {
+GfErrType LocalRegion::remoteDestroy(const std::shared_ptr<CacheableKey>&,
+                                     const std::shared_ptr<Serializable>&,
+                                     std::shared_ptr<VersionTag>&) noexcept {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::removeNoThrow_remote(
-    const std::shared_ptr<CacheableKey>&, const std::shared_ptr<Cacheable>&,
-    const std::shared_ptr<Serializable>&, std::shared_ptr<VersionTag>&) {
+GfErrType LocalRegion::remoteRemove(const std::shared_ptr<CacheableKey>&,
+                                    const std::shared_ptr<Serializable>&,
+                                    const std::shared_ptr<Serializable>&,
+                                    std::shared_ptr<VersionTag>&) noexcept {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::removeNoThrowEX_remote(
-    const std::shared_ptr<CacheableKey>&, const std::shared_ptr<Serializable>&,
-    std::shared_ptr<VersionTag>&) {
+GfErrType LocalRegion::remoteRemoveEx(const std::shared_ptr<CacheableKey>&,
+                                      const std::shared_ptr<Serializable>&,
+                                      std::shared_ptr<VersionTag>&) noexcept {
   return GF_NOERR;
 }
 
-GfErrType LocalRegion::invalidateNoThrow_remote(
-    const std::shared_ptr<CacheableKey>&, const std::shared_ptr<Serializable>&,
-    std::shared_ptr<VersionTag>&) {
+GfErrType LocalRegion::remoteInvalidate(const std::shared_ptr<CacheableKey>&,
+                                        const std::shared_ptr<Serializable>&,
+                                        std::shared_ptr<VersionTag>&) noexcept {
   return GF_NOERR;
 }
 
@@ -3187,13 +2694,13 @@ void LocalRegion::invokeAfterAllEndPointDisconnected() {
 }
 
 GfErrType LocalRegion::getNoThrow_FullObject(std::shared_ptr<EventId>,
-                                             std::shared_ptr<Cacheable>&,
+                                             std::shared_ptr<Serializable>&,
                                              std::shared_ptr<VersionTag>&) {
   return GF_NOERR;
 }
 
-std::shared_ptr<Cacheable> LocalRegion::handleReplay(
-    GfErrType& err, std::shared_ptr<Cacheable> value) const {
+std::shared_ptr<Serializable> LocalRegion::handleReplay(
+    GfErrType& err, std::shared_ptr<Serializable> value) const {
   if (err == GF_TRANSACTION_DATA_REBALANCED_EXCEPTION ||
       err == GF_TRANSACTION_DATA_NODE_HAS_DEPARTED_EXCEPTION) {
     bool isRollBack = (err == GF_TRANSACTION_DATA_REBALANCED_EXCEPTION);

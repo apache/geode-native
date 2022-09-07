@@ -23,6 +23,7 @@
 
 #include "CacheImpl.hpp"
 #include "TcrConnectionManager.hpp"
+#include "TcrMessagePut.hpp"
 #include "ThinClientCacheDistributionManager.hpp"
 #include "ThinClientPoolDM.hpp"
 #include "ThinClientRegion.hpp"
@@ -76,8 +77,8 @@ GfErrType AdminRegion::putNoThrow(const std::shared_ptr<CacheableKey>& keyPtr,
 
   TcrMessagePut request(
       new DataOutput(m_connectionMgr->getCacheImpl()->createDataOutput()),
-      nullptr, keyPtr, valuePtr, nullptr, false, m_distMngr, true, false,
-      m_fullPath.c_str());
+      nullptr, keyPtr, valuePtr, nullptr, EventOperation::UPDATE, false,
+      m_distMngr, true, false, m_fullPath.c_str());
   request.setMetaRegion(true);
   TcrMessageReply reply(true, m_distMngr);
   reply.setMetaRegion(true);

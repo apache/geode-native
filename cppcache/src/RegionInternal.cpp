@@ -25,23 +25,6 @@ namespace apache {
 namespace geode {
 namespace client {
 
-// Static initializers for CacheEventFlags
-const CacheEventFlags CacheEventFlags::NORMAL(CacheEventFlags::GF_NORMAL);
-const CacheEventFlags CacheEventFlags::LOCAL(CacheEventFlags::GF_LOCAL);
-const CacheEventFlags CacheEventFlags::NOTIFICATION(
-    CacheEventFlags::GF_NOTIFICATION);
-const CacheEventFlags CacheEventFlags::NOTIFICATION_UPDATE(
-    CacheEventFlags::GF_NOTIFICATION_UPDATE);
-const CacheEventFlags CacheEventFlags::EVICTION(CacheEventFlags::GF_EVICTION);
-const CacheEventFlags CacheEventFlags::EXPIRATION(
-    CacheEventFlags::GF_EXPIRATION);
-const CacheEventFlags CacheEventFlags::CACHE_CLOSE(
-    CacheEventFlags::GF_CACHE_CLOSE);
-const CacheEventFlags CacheEventFlags::NOCACHEWRITER(
-    CacheEventFlags::GF_NOCACHEWRITER);
-const CacheEventFlags CacheEventFlags::NOCALLBACKS(
-    CacheEventFlags::GF_NOCALLBACKS);
-
 RegionInternal::RegionInternal(CacheImpl* cacheImpl,
                                RegionAttributes attributes)
     : Region(cacheImpl), m_regionAttributes(attributes) {}
