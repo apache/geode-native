@@ -36,8 +36,8 @@ using apache::geode::client::CacheableKey;
 using apache::geode::client::CacheableString;
 using apache::geode::client::CacheableVector;
 using apache::geode::client::CqState;
-using apache::geode::client::EventOperation;
 using apache::geode::client::DataOutput;
+using apache::geode::client::EventOperation;
 using apache::geode::client::InterestResultPolicy;
 using apache::geode::client::Region;
 using apache::geode::client::Serializable;
@@ -354,14 +354,9 @@ TEST_F(TcrMessageTest, testCreate) {
   using apache::geode::client::TcrMessagePut;
 
   TcrMessagePut message(
-      new DataOutputUnderTest(), nullptr,
-      CacheableString::create("mykey"), CacheableString::create("myvalue"),
-      nullptr,
-      EventOperation::CREATE,
-      false, nullptr,
-      false,
-      false,
-      "myRegionName");
+      new DataOutputUnderTest(), nullptr, CacheableString::create("mykey"),
+      CacheableString::create("myvalue"), nullptr, EventOperation::CREATE,
+      false, nullptr, false, false, "myRegionName");
 
   EXPECT_EQ(TcrMessage::PUT, message.getMessageType());
 

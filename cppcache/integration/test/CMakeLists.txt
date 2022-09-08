@@ -46,6 +46,7 @@ add_executable(cpp-integration-test
   PositionKey.cpp
   PositionKey.hpp
   RegionGetAllTest.cpp
+  RegionPutTest.cpp
   RegionPutAllTest.cpp
   RegionPutGetAllTest.cpp
   RegisterKeysTest.cpp
@@ -69,6 +70,7 @@ add_executable(cpp-integration-test
   HARegionCacheListenerKeyValueTest.cpp
   LocalRegionCacheListenerTest.cpp
 )
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   target_compile_options(cpp-integration-test
     PUBLIC
