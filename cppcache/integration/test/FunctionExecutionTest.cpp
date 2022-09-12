@@ -360,8 +360,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto functionService = FunctionService::onRegion(region);
   auto execute =
       functionService.withCollector(std::make_shared<TestResultCollector>());
-  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               FunctionException);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"), FunctionException);
 }
 
 TEST(FunctionExecutionTest,
@@ -419,8 +418,7 @@ TEST(FunctionExecutionTest,
   auto execute =
       functionService.withCollector(std::make_shared<TestResultCollector>())
           .withFilter(filter);
-  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               FunctionException);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"), FunctionException);
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
@@ -563,8 +561,7 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
   threadAux->join();
 }
 
-TEST(FunctionExecutionTest,
-     testUserFunctionExceptionThrowsRightException) {
+TEST(FunctionExecutionTest, testUserFunctionExceptionThrowsRightException) {
   Cluster cluster{
       InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
       InitialServers{{{"localhost", Framework::getAvailablePort()},

@@ -2654,8 +2654,7 @@ GfErrType ThinClientRegion::handleServerException(
              std::string::npos) {
     error = GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION;
   } else if (exceptionMsg.find("org.apache.geode.cache.execute."
-                               "FunctionException") !=
-             std::string::npos) {
+                               "FunctionException") != std::string::npos) {
     error = GF_FUNCTION_EXCEPTION;
   } else if (exceptionMsg.find(
                  "org.apache.geode.cache.CommitConflictException") !=
