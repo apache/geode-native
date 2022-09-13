@@ -2648,6 +2648,13 @@ GfErrType ThinClientRegion::handleServerException(
   } else if (exceptionMsg.find("org.apache.geode.internal.cache.execute."
                                "InternalFunctionInvocationTargetException") !=
              std::string::npos) {
+    error = GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.internal.cache.execute."
+                               "InternalFunctionInvocationTargetException") !=
+             std::string::npos) {
+    error = GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION;
+  } else if (exceptionMsg.find("org.apache.geode.cache.execute."
+                               "FunctionException") != std::string::npos) {
     error = GF_FUNCTION_EXCEPTION;
   } else if (exceptionMsg.find(
                  "org.apache.geode.cache.CommitConflictException") !=
@@ -2881,15 +2888,16 @@ void ThinClientRegion::executeFunction(
     if (ThinClientBaseDM::isFatalClientError(err)) {
       throwExceptionIfError("ExecuteOnRegion:", err);
     } else if (err != GF_NOERR) {
-      if (err == GF_FUNCTION_EXCEPTION) {
+      if (err == GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION) {
         reExecute = true;
         rc->clearResults();
         std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
         failedNodes->clear();
         if (failedNodesIds) {
           LOGDEBUG(
-              "ThinClientRegion::executeFunction with GF_FUNCTION_EXCEPTION "
-              "failedNodesIds size = %zu ",
+              "ThinClientRegion::executeFunction with "
+              "GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION failedNodesIds "
+              "size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
@@ -2975,7 +2983,7 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
     if (ThinClientBaseDM::isFatalClientError(err)) {
       throwExceptionIfError("ExecuteOnRegion:", err);
     } else if (err != GF_NOERR) {
-      if (err == GF_FUNCTION_EXCEPTION) {
+      if (err == GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION) {
         reExecute = true;
         rc->clearResults();
         std::shared_ptr<CacheableHashSet> failedNodesIds(reply.getFailedNode());
@@ -2983,8 +2991,8 @@ std::shared_ptr<CacheableVector> ThinClientRegion::reExecuteFunction(
         if (failedNodesIds) {
           LOGDEBUG(
               "ThinClientRegion::reExecuteFunction with "
-              "GF_FUNCTION_EXCEPTION "
-              "failedNodesIds size = %zu ",
+              "GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION failedNodesIds "
+              "size = %zu ",
               failedNodesIds->size());
           failedNodes->insert(failedNodesIds->begin(), failedNodesIds->end());
         }
@@ -3053,7 +3061,7 @@ bool ThinClientRegion::executeFunctionSH(
     }
 
     if (err != GF_NOERR) {
-      if (err == GF_FUNCTION_EXCEPTION) {
+      if (err == GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION) {
         if (auto poolDM =
                 std::dynamic_pointer_cast<ThinClientPoolDM>(m_tcrdm)) {
           if (poolDM->getClientMetaDataService()) {
@@ -3077,7 +3085,7 @@ bool ThinClientRegion::executeFunctionSH(
           if (failedNodeIds) {
             LOGDEBUG(
                 "ThinClientRegion::executeFunctionSH with "
-                "GF_FUNCTION_EXCEPTION "
+                "GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION "
                 "failedNodeIds size = %zu ",
                 failedNodeIds->size());
             failedNodes->insert(failedNodeIds->begin(), failedNodeIds->end());
@@ -3153,7 +3161,7 @@ GfErrType ThinClientRegion::getFuncAttributes(
     }
     case TcrMessage::REQUEST_DATA_ERROR: {
       LOGERROR("Error message from server: " + reply.getValue()->toString());
-      throw FunctionExecutionException(reply.getValue()->toString());
+      throw FunctionException(reply.getValue()->toString());
     }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",

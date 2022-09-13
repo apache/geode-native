@@ -42,7 +42,7 @@ using apache::geode::client::DuplicateDurableClientException;
 using apache::geode::client::EntryDestroyedException;
 using apache::geode::client::EntryExistsException;
 using apache::geode::client::EntryNotFoundException;
-using apache::geode::client::FunctionExecutionException;
+using apache::geode::client::FunctionException;
 using apache::geode::client::GeodeIOException;
 using apache::geode::client::IllegalArgumentException;
 using apache::geode::client::IllegalStateException;
@@ -316,11 +316,11 @@ using apache::geode::client::UnknownException;
   throw AllConnectionsInUseException{message};
 }
 
-[[noreturn]] void functionExecutionException(std::string message,
-                                             std::string& exMsg, GfErrType,
-                                             std::string) {
+[[noreturn]] void functionException(std::string message,
+                                    const std::string& exMsg, GfErrType,
+                                    std::string) {
   message.append(!exMsg.empty() ? exMsg : ": Function execution failed");
-  throw FunctionExecutionException{message};
+  throw FunctionException{message};
 }
 
 [[noreturn]] void diskFailureException(std::string message, std::string& exMsg,
@@ -440,7 +440,8 @@ std::map<GfErrType, error_function_t>& get_error_map() {
       {GF_REMOTE_QUERY_EXCEPTION, queryException},
       {GF_CACHE_LOCATOR_EXCEPTION, noAvailableLocatorsException},
       {GF_ALL_CONNECTIONS_IN_USE_EXCEPTION, allConnectionsInUseException},
-      {GF_FUNCTION_EXCEPTION, functionExecutionException},
+      {GF_INTERNAL_FUNCTION_INVOCATION_TARGET_EXCEPTION, functionException},
+      {GF_FUNCTION_EXCEPTION, functionException},
       {GF_DISKFULL, diskFailureException},
       {GF_ROLLBACK_EXCEPTION, rollbackException},
       {GF_COMMIT_CONFLICT_EXCEPTION, commitConflictException},

@@ -381,7 +381,7 @@ GfErrType ExecutionImpl::getFuncAttributes(
     }
     case TcrMessage::REQUEST_DATA_ERROR: {
       LOGERROR("Error message from server: " + reply.getValue()->toString());
-      throw FunctionExecutionException(reply.getValue()->toString());
+      throw FunctionException(reply.getValue()->toString());
     }
     default: {
       LOGERROR("Unknown message type %d while getting function attributes.",
@@ -427,7 +427,7 @@ void ExecutionImpl::executeOnAllServers(const std::string& func,
       } else {
         message = "Execute: failed to execute function with server.";
       }
-      throw FunctionExecutionException(message);
+      throw FunctionException(message);
     } else {
       throwExceptionIfError("Execute", err);
     }

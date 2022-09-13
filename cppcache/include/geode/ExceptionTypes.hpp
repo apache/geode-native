@@ -681,14 +681,15 @@ class APACHE_GEODE_EXPORT CqInvalidException : public Exception {
 /**
  *@brief Thrown if function execution failed
  **/
-class APACHE_GEODE_EXPORT FunctionExecutionException : public Exception {
+class APACHE_GEODE_EXPORT FunctionException : public Exception {
  public:
   using Exception::Exception;
-  ~FunctionExecutionException() noexcept override {}
+  ~FunctionException() noexcept override {}
   std::string getName() const override {
-    return "apache::geode::client::FunctionExecutionException";
+    return "apache::geode::client::FunctionException";
   }
 };
+
 /**
  *@brief Thrown if the No locators are active to reply for new connection.
  **/
@@ -849,6 +850,8 @@ class APACHE_GEODE_EXPORT SslException : public Exception {
     return "apache::geode::client::SslException";
   }
 };
+
+using FunctionExecutionException = FunctionException;
 
 }  // namespace client
 }  // namespace geode

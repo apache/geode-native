@@ -52,7 +52,7 @@ class NoResult final : public ResultCollector {
 
   inline std::shared_ptr<CacheableVector> getResult(
       std::chrono::milliseconds) final {
-    throw FunctionExecutionException(
+    throw FunctionException(
         "Cannot return any result, as Function.hasResult() is false");
   }
 

@@ -44,12 +44,16 @@ using apache::geode::client::CacheFactory;
 using apache::geode::client::CacheImpl;
 using apache::geode::client::CacheRegionHelper;
 using apache::geode::client::Exception;
-using apache::geode::client::FunctionExecutionException;
+using apache::geode::client::FunctionException;
 using apache::geode::client::FunctionService;
 using apache::geode::client::NotConnectedException;
 using apache::geode::client::Region;
 using apache::geode::client::RegionShortcut;
 using apache::geode::client::ResultCollector;
+
+using ::testing::Eq;
+using ::testing::Le;
+
 const int ON_SERVERS_TEST_REGION_ENTRIES_SIZE = 34;
 const int PARTITION_REGION_ENTRIES_SIZE = 113;
 
@@ -103,7 +107,7 @@ TEST(FunctionExecutionTest, UnknownFunctionOnServer) {
 
   ASSERT_THROW(FunctionService::onServer(region->getRegionService())
                    .execute("I_Don_t_Exist"),
-               FunctionExecutionException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest, UnknownFunctionOnRegion) {
@@ -122,7 +126,7 @@ TEST(FunctionExecutionTest, UnknownFunctionOnRegion) {
   auto region = setupRegion(cache);
 
   ASSERT_THROW(FunctionService::onRegion(region).execute("I_Don_t_Exist"),
-               FunctionExecutionException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest, UnknownFunctionAsyncOnServer) {
@@ -143,7 +147,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnServer) {
   ASSERT_THROW(FunctionService::onServer(region->getRegionService())
                    .withCollector(std::make_shared<TestResultCollector>())
                    .execute("I_Don_t_Exist"),
-               FunctionExecutionException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
@@ -164,7 +168,7 @@ TEST(FunctionExecutionTest, UnknownFunctionAsyncOnRegion) {
   ASSERT_THROW(FunctionService::onRegion(region)
                    .withCollector(std::make_shared<TestResultCollector>())
                    .execute("I_Don_t_Exist"),
-               FunctionExecutionException);
+               FunctionException);
 }
 
 TEST(FunctionExecutionTest,
@@ -356,8 +360,7 @@ TEST(FunctionExecutionTest, testThatFunctionExecutionThrowsExceptionNonHA) {
   auto functionService = FunctionService::onRegion(region);
   auto execute =
       functionService.withCollector(std::make_shared<TestResultCollector>());
-  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               FunctionExecutionException);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"), FunctionException);
 }
 
 TEST(FunctionExecutionTest,
@@ -415,8 +418,7 @@ TEST(FunctionExecutionTest,
   auto execute =
       functionService.withCollector(std::make_shared<TestResultCollector>())
           .withFilter(filter);
-  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"),
-               FunctionExecutionException);
+  ASSERT_THROW(execute.execute("MultiGetAllFunctionNonHA"), FunctionException);
 }
 
 TEST(FunctionExecutionTest, OnServersWithReplicatedRegionsInPool) {
@@ -557,4 +559,36 @@ TEST(FunctionExecutionTest, OnServersOneServerGoesDown) {
   cluster.getServers()[1].stop();
 
   threadAux->join();
+}
+
+TEST(FunctionExecutionTest, testUserFunctionExceptionThrowsRightException) {
+  Cluster cluster{
+      InitialLocators{{{"localhost", Framework::getAvailablePort()}}},
+      InitialServers{{{"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()},
+                      {"localhost", Framework::getAvailablePort()}}}};
+
+  cluster.start([&]() {
+    cluster.getGfsh()
+        .deploy()
+        .jar(getFrameworkString(FrameworkVariable::JavaObjectJarPath))
+        .execute();
+  });
+
+  cluster.getGfsh()
+      .create()
+      .region()
+      .withName("region")
+      .withType("REPLICATE")
+      .execute();
+
+  auto cache = cluster.createCache();
+  auto region = cache.createRegionFactory(RegionShortcut::PROXY)
+                    .setPoolName("default")
+                    .create("region");
+
+  auto functionService = FunctionService::onRegion(region);
+  auto execute =
+      functionService.withCollector(std::make_shared<TestResultCollector>());
+  EXPECT_THROW(execute.execute("UserExceptionFunction"), FunctionException);
 }

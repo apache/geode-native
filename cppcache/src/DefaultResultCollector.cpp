@@ -32,7 +32,7 @@ std::shared_ptr<CacheableVector> DefaultResultCollector::getResult(
     return resultList;
   }
 
-  throw FunctionExecutionException(
+  throw FunctionException(
       "Result is not ready, endResults callback is called before invoking "
       "getResult() method");
 }
