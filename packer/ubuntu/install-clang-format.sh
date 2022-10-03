@@ -19,7 +19,7 @@ set -x -e -o pipefail
 
 . /etc/os-release
 
-CLANG_VERSION=11
+CLANG_VERSION=12
 
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -
 apt-add-repository "deb http://apt.llvm.org/${VERSION_CODENAME}/ llvm-toolchain-${VERSION_CODENAME}-${CLANG_VERSION} main"
