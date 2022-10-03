@@ -20,6 +20,7 @@ option(USE_PCH "Use precompiled headers (PCH)." OFF)
 option(USE_CPP_COVERAGE "Enable profiling and coverage report analysis for apache-geode cpp library." OFF)
 option(USE_RAT "Enable Apache Rat checking." OFF)
 option(WITH_IPV6 "Enable IPv6 support." OFF)
+option(GEN_DOCS "Enable documentation generation" ON)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -358,7 +359,11 @@ add_subdirectory(dependencies)
 add_subdirectory(cppcache)
 add_subdirectory(sqliteimpl)
 add_subdirectory(templates/security)
-add_subdirectory(docs/api)
+
+if (GEN_DOCS)
+  add_subdirectory(docs/api)
+endif()
+
 add_subdirectory(examples)
 if (${BUILD_CLI})
   add_subdirectory(clicache)
