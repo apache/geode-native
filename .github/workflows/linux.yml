@@ -1,0 +1,26 @@
+name: Linux verification
+
+on:
+  pull_request_target:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: build-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docker-build:
+    name: Build source docker image
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY_URL: ${{ github.repositoryUrl }}
+      IMAGE_NAME: ghcr.io/${{ github.repository }}/build-source:${{ github.sha }}
+    steps:
+    - name: Build image
+      run: |
+        docker build -t "${IMAGE_NAME}" \
+               --label "org.opencontainers.image.source=${REPOSITORY_URL}" \
+               docker/test
