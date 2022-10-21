@@ -18,6 +18,7 @@
 #include <gmock/gmock.h>
 
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include <boost/process/environment.hpp>
 
 #include <gtest/gtest.h>

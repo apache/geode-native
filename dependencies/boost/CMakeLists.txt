@@ -13,9 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project(boost VERSION 1.76.0 LANGUAGES NONE)
+project(boost VERSION 1.80.0 LANGUAGES NONE)
 
-set(SHA256 7bd7ddceec1a1dfdcbdb3e609b60d01739c38390a5f956385a12f3122049f0ca)
+set(SHA256 4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847)
 
 if (WIN32)
   set(BOOTSTRAP_COMMAND bootstrap.bat)
@@ -164,7 +164,10 @@ target_compile_definitions(boost_asio INTERFACE
 if(WIN32)
   target_compile_definitions(boost INTERFACE
     # Required for Boost.WinAPI
-    _WIN32_WINNT=0x06020000
+    # Since boost 1.78.0, set value >= 0x0602 will cause linker errors
+    _WIN32_WINNT=0x0602
+    # Set this as 0x0601 to fix linking error independent of target Windows version like above 
+    BOOST_USE_WINAPI_VERSION=0x0601
   )
 endif()
 
