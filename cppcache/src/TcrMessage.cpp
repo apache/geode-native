@@ -425,6 +425,13 @@ void TcrMessage::readIntPart(DataInput& input, uint32_t* intValue) {
   *intValue = input.readInt32();
 }
 
+uint32_t TcrMessage::readIntPart(DataInput& input) {
+  uint32_t ret_val;
+  readIntPart(input, &ret_val);
+
+  return ret_val;
+}
+
 const std::string TcrMessage::readStringPart(DataInput& input) {
   auto stringLength = input.readInt32();
   if (input.read()) {
@@ -440,13 +447,15 @@ const std::string TcrMessage::readStringPart(DataInput& input) {
 void TcrMessage::readCqsPart(DataInput& input) {
   m_cqs->clear();
   readIntPart(input, &m_numCqPart);
-  for (uint32_t cqCnt = 0; cqCnt < m_numCqPart;) {
-    auto cq = readStringPart(input);
-    cqCnt++;
-    int32_t cqOp;
-    readIntPart(input, reinterpret_cast<uint32_t*>(&cqOp));
-    cqCnt++;
-    (*m_cqs)[cq] = cqOp;
+  if (m_numCqPart % 2 == 0) {
+    std::generate_n(std::inserter(*m_cqs, std::end(*m_cqs)), m_numCqPart / 2,
+                    [&]() {
+                      auto key = readStringPart(input);
+                      auto value = readIntPart(input);
+                      return std::map<std::string, int>::value_type{key, value};
+                    });
+  } else {
+    throw;
   }
 }
 
@@ -705,9 +714,9 @@ void TcrMessage::writeObjectPart(
         m_request->writeArrayLen(static_cast<int32_t>(getAllKeyList->size()));
         m_request->write(static_cast<int8_t>(DSCode::Class));
         m_request->writeString("java.lang.Object");
-        for (const auto& key : *getAllKeyList) {
-          m_request->writeObject(key);
-        }
+        std::for_each(std::begin(*getAllKeyList), std::end(*getAllKeyList),
+                      std::bind(&DataOutput::writeObject<CacheableKey>,
+                                m_request.get(), std::placeholders::_1, false));
       } else {
         m_request->writeObject(se, isDelta);
       }
@@ -760,7 +769,7 @@ void TcrMessage::writeBytesOnly(const std::shared_ptr<Serializable>& se) {
       startBytes = cursor + 2;
       m_request->rewindCursor(2);
     }
-    for (int i = 0; i < result; i++) cursor[i] = startBytes[i];
+    std::copy_n(startBytes, result, cursor);
   }
 }
 
@@ -1456,35 +1465,47 @@ void TcrMessage::handleByteArrayResponse(
       }
       m_metadata =
           new std::vector<std::vector<std::shared_ptr<BucketServerLocation>>>();
-      for (int32_t i = 0; i < numparts; i++) {
-        input.readInt32();          // ignore partlen
-        input.read();               // ignore  isObj;
+
+      std::generate_n(std::back_inserter(*m_metadata), numparts, [&input]() {
+        input.advanceCursor(5);     // ignore partlen, isObj
         auto bits8 = input.read();  // cacheable vector typeid
         LOGDEBUG("Expected typeID %d, got %d", DSCode::CacheableArrayList,
                  bits8);
 
         auto arrayLength = input.readArrayLength();  // array length
         LOGDEBUG("Array length = %d ", arrayLength);
-        if (arrayLength > 0) {
-          std::vector<std::shared_ptr<BucketServerLocation>>
-              bucketServerLocations;
-          for (int32_t index = 0; index < arrayLength; index++) {
-            // ignore DS typeid, CLASS typeid, and string typeid
-            input.advanceCursor(3);
-            uint16_t classLen = input.readInt16();  // Read classLen
-            input.advanceCursor(classLen);
-            auto location = std::make_shared<BucketServerLocation>();
-            location->fromData(input);
-            LOGFINE("location contains %d\t%s\t%d\t%d\t%s",
-                    location->getBucketId(), location->getServerName().c_str(),
-                    location->getPort(), location->getVersion(),
-                    (location->isPrimary() ? "true" : "false"));
-            bucketServerLocations.push_back(location);
-          }
-          m_metadata->push_back(bucketServerLocations);
-        }
-        LOGFINER("Metadata size is %zu", m_metadata->size());
-      }
+
+        std::vector<std::shared_ptr<BucketServerLocation>>
+            bucketServerLocations;
+
+        std::generate_n(
+            std::back_inserter(bucketServerLocations), arrayLength, [&input]() {
+              // ignore DS typeid, CLASS typeid, and string typeid
+              input.advanceCursor(3);
+              uint16_t classLen = input.readInt16();  // Read classLen
+              input.advanceCursor(classLen);
+              auto location = std::make_shared<BucketServerLocation>();
+              location->fromData(input);
+              LOGFINE("location contains %d\t%s\t%d\t%d\t%s",
+                      location->getBucketId(),
+                      location->getServerName().c_str(), location->getPort(),
+                      location->getVersion(),
+                      (location->isPrimary() ? "true" : "false"));
+              return location;
+            });
+
+        return bucketServerLocations;
+      });
+
+      m_metadata->erase(
+          std::remove_if(
+              std::begin(*m_metadata), std::end(*m_metadata),
+              std::bind(
+                  &std::vector<std::shared_ptr<BucketServerLocation>>::empty,
+                  std::placeholders::_1)),
+          std::end(*m_metadata));
+
+      LOGFINER("Metadata size is %zu", m_metadata->size());
       break;
     }
 
@@ -1523,18 +1544,19 @@ void TcrMessage::handleByteArrayResponse(
         if (arrayLength > 0) {
           m_fpaSet =
               new std::vector<std::shared_ptr<FixedPartitionAttributesImpl>>();
-          for (int32_t index = 0; index < arrayLength; index++) {
-            input.advanceCursor(
-                3);  // ignore DS typeid, CLASS typeid, string typeid
-            auto classLen = input.readInt16();  // Read classLen
-            input.advanceCursor(classLen);
-            auto fpa = std::make_shared<FixedPartitionAttributesImpl>();
-            fpa->fromData(input);  // PART4 = set of FixedAttributes.
-            LOGDEBUG("fpa contains %d\t%s\t%d\t%d", fpa->getNumBuckets(),
-                     fpa->getPartitionName().c_str(), fpa->isPrimary(),
-                     fpa->getStartingBucketID());
-            m_fpaSet->push_back(fpa);
-          }
+          std::generate_n(
+              std::back_inserter(*m_fpaSet), arrayLength, [&input]() {
+                input.advanceCursor(
+                    3);  // ignore DS typeid, CLASS typeid, string typeid
+                auto classLen = input.readInt16();  // Read classLen
+                input.advanceCursor(classLen);
+                auto fpa = std::make_shared<FixedPartitionAttributesImpl>();
+                fpa->fromData(input);  // PART4 = set of FixedAttributes.
+                LOGDEBUG("fpa contains %d\t%s\t%d\t%d", fpa->getNumBuckets(),
+                         fpa->getPartitionName().c_str(), fpa->isPrimary(),
+                         fpa->getStartingBucketID());
+                return fpa;
+              });
         }
       }
       break;
@@ -1798,9 +1820,10 @@ TcrMessageQueryWithParameters::TcrMessageQueryWithParameters(
   }
   // Part-5: Parameters
   if (paramList != nullptr) {
-    for (const auto& value : *paramList) {
-      writeObjectPart(value);
-    }
+    std::for_each(std::begin(*paramList), std::end(*paramList),
+                  [=](const CacheableVector::value_type& object) {
+                    writeObjectPart(object);
+                  });
   }
   writeMessageLength();
 }
@@ -2101,13 +2124,15 @@ TcrMessageRegisterInterestList::TcrMessageRegisterInterestList(
 
   // Part 4
   auto cal = CacheableArrayList::create();
-  for (const auto& key : keys) {
-    if (!key) {
-      throw IllegalArgumentException(
-          "keys in the interest list cannot be nullptr");
-    }
-    cal->push_back(key);
+  if (!std::all_of(std::begin(keys), std::end(keys),
+                   std::bind(&std::shared_ptr<CacheableKey>::operator bool,
+                             std::placeholders::_1))) {
+    throw IllegalArgumentException(
+        "keys in the interest list cannot be nullptr");
   }
+
+  std::copy(std::begin(keys), std::end(keys), std::back_inserter(*cal));
+
   writeObjectPart(cal);
 
   // Part 5
@@ -2159,13 +2184,16 @@ TcrMessageUnregisterInterestList::TcrMessageUnregisterInterestList(
   writeIntPart(static_cast<int32_t>(numberOfKeys));
 
   // part N
-  for (decltype(numberOfKeys) i = 0; i < numberOfKeys; i++) {
-    if (!keys[i]) {
-      throw IllegalArgumentException(
-          "keys in the interest list cannot be nullptr");
-    }
-    writeObjectPart(keys[i]);
+  if (!std::all_of(std::begin(keys), std::end(keys),
+                   std::bind(&std::shared_ptr<CacheableKey>::operator bool,
+                             std::placeholders::_1))) {
+    throw IllegalArgumentException(
+        "keys in the interest list cannot be nullptr");
   }
+
+  std::for_each(
+      std::begin(keys), std::end(keys),
+      [=](const std::shared_ptr<CacheableKey>& key) { writeObjectPart(key); });
 
   writeMessageLength();
 }
@@ -2340,14 +2368,13 @@ TcrMessagePeriodicAck::TcrMessagePeriodicAck(
 
   uint32_t numParts = static_cast<uint32_t>(entries.size());
   writeHeader(m_msgType, numParts);
-  for (EventIdMapEntryList::const_iterator entry = entries.begin();
-       entry != entries.end(); ++entry) {
-    auto src = entry->first;
-    auto seq = entry->second;
-    auto eid = EventId::create(src->getMemId(), src->getMemIdLen(),
-                               src->getThrId(), seq->getSeqNum());
-    writeObjectPart(eid);
-  }
+  std::for_each(std::begin(entries), std::end(entries),
+                [=](const EventIdMapEntryList::value_type& entry) {
+                  writeObjectPart(EventId::create(
+                      entry.first->getMemId(), entry.first->getMemIdLen(),
+                      entry.first->getThrId(), entry.second->getSeqNum()));
+                });
+
   writeMessageLength();
 }
 
@@ -2410,10 +2437,11 @@ TcrMessagePutAll::TcrMessagePutAll(
     writeObjectPart(aCallbackArgument);
   }
 
-  for (const auto& iter : map) {
-    writeObjectPart(iter.first);
-    writeObjectPart(iter.second);
-  }
+  std::for_each(std::begin(map), std::end(map),
+                [&](const HashMapOfCacheable::value_type& iter) {
+                  writeObjectPart(iter.first);
+                  writeObjectPart(iter.second);
+                });
 
   if (m_messageResponseTimeout >= std::chrono::milliseconds::zero()) {
     writeMillisecondsPart(m_messageResponseTimeout);
@@ -2461,9 +2489,10 @@ TcrMessageRemoveAll::TcrMessageRemoveAll(
   writeObjectPart(aCallbackArgument);
   writeIntPart(static_cast<int32_t>(keys.size()));
 
-  for (const auto& key : keys) {
-    writeObjectPart(key);
-  }
+  std::for_each(
+      std::begin(keys), std::end(keys),
+      [=](const std::shared_ptr<CacheableKey>& key) { writeObjectPart(key); });
+
   writeMessageLength();
 }
 
@@ -2480,13 +2509,6 @@ TcrMessageGetAll::TcrMessageGetAll(
   m_region = region;
   m_request.reset(dataOutput);
 
-  /*CacheableObjectArrayPtr keyArr = nullptr;
-  if (keys != nullptr) {
-    keyArr = CacheableObjectArray::create();
-    for (int32_t index = 0; index < keys->size(); ++index) {
-      keyArr->push_back(keys->operator[](index));
-    }
-  }*/
   if (m_callbackArgument != nullptr) {
     m_msgType = TcrMessage::GET_ALL_WITH_CALLBACK;
   } else {
@@ -2495,24 +2517,10 @@ TcrMessageGetAll::TcrMessageGetAll(
 
   writeHeader(m_msgType, 3);
   writeRegionPart(m_regionName);
-  /*writeHeader(m_msgType, 2);
-  writeRegionPart(regionName);
-  writeObjectPart(keyArr);
-  writeMessageLength();*/
 }
 
 void TcrMessage::InitializeGetallMsg(
     const std::shared_ptr<Serializable>& aCallbackArgument) {
-  /*CacheableObjectArrayPtr keyArr = nullptr;
-  if (m_keyList != nullptr) {
-    keyArr = CacheableObjectArray::create();
-    for (int32_t index = 0; index < m_keyList->size(); ++index) {
-      keyArr->push_back(m_keyList->operator[](index));
-    }
-  }*/
-  // LOGINFO(" in InitializeGetallMsg %s ", m_regionName.c_str());
-  // writeHeader(m_msgType, 2);
-  // writeRegionPart(m_regionName);
   writeObjectPart(nullptr, false, false, m_keyList);  // will do manually
   if (aCallbackArgument != nullptr) {
     writeObjectPart(aCallbackArgument);
@@ -2632,9 +2640,10 @@ TcrMessageExecuteRegionFunction::TcrMessageExecuteRegionFunction(
   writeBytePart(reExecute);  // FunctionHA isReExecute = false
   if (routingObj) {
     writeIntPart(static_cast<int32_t>(routingObj->size()));
-    for (const auto& value : *routingObj) {
-      writeObjectPart(value);
-    }
+    std::for_each(std::begin(*routingObj), std::end(*routingObj),
+                  [=](const CacheableVector::value_type& object) {
+                    writeObjectPart(object);
+                  });
   } else {
     writeIntPart(0);
   }
@@ -2683,15 +2692,19 @@ TcrMessageExecuteRegionFunctionSingleHop::
     if (allBuckets) {
       LOGDEBUG("All Buckets so putting IntPart for buckets = %zu",
                routingObj->size());
-      for (const auto& itr : *routingObj) {
-        writeIntPart(std::dynamic_pointer_cast<CacheableInt32>(itr)->value());
-      }
+      std::for_each(
+          std::begin(*routingObj), std::end(*routingObj),
+          [=](const CacheableHashSet::value_type& value) {
+            writeIntPart(
+                std::dynamic_pointer_cast<CacheableInt32>(value)->value());
+          });
     } else {
       LOGDEBUG("putting keys as withFilter called, routing Keys size = %zu",
                routingObj->size());
-      for (const auto& itr : *routingObj) {
-        writeObjectPart(itr);
-      }
+      std::for_each(std::begin(*routingObj), std::end(*routingObj),
+                    [=](const CacheableHashSet::value_type& value) {
+                      writeObjectPart(value);
+                    });
     }
   } else {
     writeIntPart(0);
@@ -3139,27 +3152,23 @@ void TcrMessage::readHashMapForGCVersions(
   }
   int32_t len = input.readArrayLength();
 
-  if (len > 0) {
-    std::shared_ptr<CacheableKey> key;
-    std::shared_ptr<Cacheable> val;
-    for (int32_t index = 0; index < len; index++) {
-      key = readDSMember(input);
-      // read and ignore versionType
-      input.read();
-
-      auto valVersion = CacheableInt64::create(input.readInt64());
-      auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(key);
-      auto valVersionPtr = std::dynamic_pointer_cast<Cacheable>(valVersion);
-
-      if (value) {
-        value->emplace(keyPtr, valVersionPtr);
-      } else {
-        throw Exception(
-            "Inserting values in HashMap For GC versions. value must not be "
-            "nullptr. ");
-      }
-    }
+  if (len > 0 && !value) {
+    throw Exception(
+        "Inserting values in HashMap For GC versions. value must not be "
+        "nullptr. ");
   }
+
+  std::generate_n(std::inserter(*value, std::end(*value)), len, [&]() {
+    auto key = readDSMember(input);
+    // read and ignore versionType
+    input.read();
+
+    auto valVersion = CacheableInt64::create(input.readInt64());
+
+    return CacheableHashMap::value_type{
+        std::dynamic_pointer_cast<CacheableKey>(key),
+        std::dynamic_pointer_cast<Cacheable>(valVersion)};
+  });
 }
 
 void TcrMessage::readHashSetForGCVersions(
@@ -3171,11 +3180,11 @@ void TcrMessage::readHashSetForGCVersions(
         "Reading HashSet For GC versions. Expecting type id of hash set. ");
   }
 
-  auto len = input.readArrayLength();
-  for (decltype(len) index = 0; index < len; index++) {
-    auto keyPtr = std::dynamic_pointer_cast<CacheableKey>(input.readObject());
-    value->insert(keyPtr);
-  }
+  std::generate_n(
+      std::inserter(*value, std::end(*value)), input.readArrayLength(),
+      [&input]() {
+        return std::dynamic_pointer_cast<CacheableKey>(input.readObject());
+      });
 }
 
 bool TcrMessageHelper::readExceptionPart(TcrMessage& msg, DataInput& input,
