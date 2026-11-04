@@ -51,7 +51,7 @@ class TombstoneList {
   // Reaps the tombstones which have been gc'ed on server.
   // A map that has identifier for ClientProxyMembershipID as key
   // and server version of the tombstone with highest version as the
-  // value is passed as paramter
+  // value is passed as parameter
   void reap_tombstones(std::map<uint16_t, int64_t>& gcVersions);
   void reap_tombstones(const std::shared_ptr<CacheableHashSet>& keys);
 
